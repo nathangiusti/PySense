@@ -101,5 +101,5 @@ def post_dashboards_import_bulk(dashboard, action=None, republish=None, importFo
         'importFolder': importFolder
     })
     dashboard = "[" + dashboard + "]"
-    print(requests.post('{}/api/v1/dashboards/import/bulk?{}'.format(config.host, param_string),
-                        headers=config.token, json=json.loads(dashboard)).content)
+    requests.post('{}/api/v1/dashboards/import/bulk?{}'.format(config.host, param_string),
+                  headers=config.token, json=json.loads(dashboard)).content
