@@ -4,30 +4,33 @@ import json
 from collections import namedtuple
 
 
-def _parse_error_response(response, error_text, exit_on_error=False):
+def set_host(host):
+    config.host = host
+    return config.host
+
+
+def get_host():
+    return config.host
+
+
+def _response_successful(response):
     """
     Parses REST response object for errors
 
     :param response: the REST response object
-    :param error_text: Text to print on error
-    :param exit_on_error: True to exit on error, false to continue
     :return: True if no error, false if response errored
 
     """
 
     if response.status_code != 200:
-        print("ERROR: {}: {}".format(error_text, response.status_code))
+        print("ERROR: {}: {}".format(response.status_code, response.content))
         print(response.content)
-        if exit_on_error:
-            exit()
-
         return False
-
     return True
 
 
 def check_authentication():
-    return {'host':config.host, 'token':config.token}
+    return {'host': config.host, 'token': config.token}
 
 
 def authenticate(host, username, password):
@@ -43,55 +46,81 @@ def authenticate(host, username, password):
     data = {'username': username, 'password': password}
     if not host.startswith('http://'):
         host = 'http://' + host
+    if host.endswith('/'):
+        host = host[:-1]
     resp = requests.post('{}/api/v1/authentication/login'.format(host), data=data)
-    _parse_error_response(resp, "Error authenticating", True)
+    if _response_successful(resp):
+        access_code = "Bearer " + resp.json()['access_token']
+        config.token = {'authorization': access_code}
+        config.host = host
+        return True
+    return False
 
-    access_code = "Bearer " + resp.json()['access_token']
-    config.token = {'authorization': access_code}
-    config.host = host
-    return True
 
-
-def _build_params(dict):
+def _build_params(dictionary):
     ret_arr = []
     separator = '&'
-    for key, value in dict.items():
+    for key, value in dictionary.items():
         if value is not None:
             ret_arr.append("{}={}".format(key, value))
     return separator.join(ret_arr)
 
 
-def get_dashboards(parentFolder=None, name=None, datasourceTitle=None, datasourceAddress=None, fields=None, expand=None):
-    param_string = _build_params({
-        'parentFolder': parentFolder,
-        'name': name,
-        'datasourceTitle': datasourceTitle,
-        'datasourceAddress': datasourceAddress,
-        'fields': fields,
-        'expand': expand
-    })
+def get_dashboards(param_dict=None, parentFolder=None, name=None, datasourceTitle=None, datasourceAddress=None, fields=None, expand=None):
+    if param_dict:
+        param_string = _build_params(param_dict)
+    else:
+        param_string = _build_params({
+            'parentFolder': parentFolder,
+            'name': name,
+            'datasourceTitle': datasourceTitle,
+            'datasourceAddress': datasourceAddress,
+            'fields': fields,
+            'expand': expand
+        })
     resp = requests.get('{}/api/v1/dashboards?{}'.format(config.host, param_string), headers=config.token)
-    ret_arr = []
-    json_arr = resp.json()
-    for json_obj in json_arr:
-        json_obj['id'] = json_obj.pop('_id')
-        ret_arr.append(namedtuple("Dashboard", json_obj.keys())(*json_obj.values()))
-
-    return ret_arr
-
-
-def get_dashboard_export_dash(dashboard_id, path):
-    resp = requests.get('{}/api/v1/dashboards?{}'.format(config.host, dashboard_id), headers=config.token)
-    with open(path, 'wb') as out_file:
-        out_file.write(resp.content)
-    return path
+    if _response_successful(resp):
+        ret_arr = []
+        json_arr = resp.json()
+        for json_obj in json_arr:
+            json_obj['id'] = json_obj.pop('_id')
+            ret_arr.append(namedtuple("Dashboard", json_obj.keys())(*json_obj.values()))
+        return ret_arr
+    return None
 
 
-def get_dashboard_export_png(dashboard_id, path):
-    resp = requests.get('{}/api/v1/dashboards?{}'.format(config.host, dashboard_id), headers=config.token)
-    with open(path, 'wb') as out_file:
-        out_file.write(resp.content)
-    return path
+def get_dashboard_export_png(dashboard_id, path, param_dict=None, includeTitle=None, includeFilters=None, includeDs=None, width=None):
+    if param_dict:
+        param_string = _build_params(param_dict)
+    else:
+        param_string = _build_params({
+            'includeTitle': includeTitle,
+            'includeFilters': includeFilters,
+            'includeDs': includeDs,
+            'width': width
+        })
+    resp = requests.get('{}/api/v1/dashboards/{}/export/png?{}'.format(config.host, dashboard_id, param_string),
+                        headers=config.token)
+    if _response_successful(resp):
+        with open(path, 'wb') as out_file:
+            out_file.write(resp.content)
+        return path
+    return None
+
+
+def get_dashboard_export_pdf(dashboard_id, path, paperFormat, paperOrientation, layout):
+    param_string = _build_params({
+        'paperFormat': paperFormat,
+        'paperOrientation': paperOrientation,
+        'layout': layout
+    })
+    resp = requests.get('{}/api/v1/dashboards/{}/export/pdf?{}'.format(config.host, dashboard_id, param_string),
+                        headers=config.token)
+    if _response_successful(resp):
+        with open(path, 'wb') as out_file:
+            out_file.write(resp.content)
+        return path
+    return None
 
 
 def post_dashboards_import_bulk(dashboard, action=None, republish=None, importFolder=None):
@@ -101,5 +130,42 @@ def post_dashboards_import_bulk(dashboard, action=None, republish=None, importFo
         'importFolder': importFolder
     })
     dashboard = "[" + dashboard + "]"
-    requests.post('{}/api/v1/dashboards/import/bulk?{}'.format(config.host, param_string),
-                  headers=config.token, json=json.loads(dashboard)).content
+    resp = requests.post('{}/api/v1/dashboards/import/bulk?{}'.format(config.host, param_string),
+                         headers=config.token, json=json.loads(dashboard)).content
+    return _response_successful(resp)
+
+
+def post_dashboard_widget_export_png(dashboard_id, widget_id, path, param_dict=None, width=None, height=None):
+    param_string = None
+    if param_dict:
+        if 'width' in param_dict and 'height' in param_dict:
+            param_string = _build_params(param_dict)
+
+    if not param_string:
+        if width is not None and height is not None:
+            param_string = _build_params({
+                'width': width,
+                'height': height
+            })
+    if not param_string:
+        print("No width or height given")
+        return None
+
+    resp = requests.get('{}/api/v1/dashboards/{}/widgets/{}/export/png?{}'.format(config.host, dashboard_id, widget_id, param_string), headers=config.token)
+    if _response_successful(resp):
+        with open(path, 'wb') as out_file:
+            out_file.write(resp.content)
+        return path
+    else:
+        return None
+
+
+def get_dashboard_export_dash(dashboard, path):
+    resp = requests.get('{}/api/v1/dashboards/{}/export/dash'.format(config.host, dashboard), headers=config.token)
+    if _response_successful(resp):
+        with open(path, 'wb') as out_file:
+            out_file.write(resp.content)
+        return path
+    else:
+        return None
+
