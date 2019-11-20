@@ -1,5 +1,5 @@
 import requests
-import config
+import PySenseConfig
 import json
 from collections import namedtuple
 
