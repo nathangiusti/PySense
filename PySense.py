@@ -50,8 +50,8 @@ def set_host(host):
     @param host: The new host
     @return: The host as it is set
     """
-    config.host = _format_host(host)
-    return config.host
+    PySenseConfig.host = _format_host(host)
+    return PySenseConfig.host
 
 
 def get_host():
@@ -59,7 +59,7 @@ def get_host():
 
     @return: Returns the current host string
     """
-    return config.host
+    return PySenseConfig.host
 
 
 def check_authentication():
@@ -67,7 +67,7 @@ def check_authentication():
     Returns authentication parameters
     @return: A dictionary with an entry for host and token
     """
-    return {'host': config.host, 'token': config.token}
+    return {'host': PySenseConfig.host, 'token': PySenseConfig.token}
 
 
 def authenticate(host, username, password):
@@ -85,8 +85,9 @@ def authenticate(host, username, password):
     resp = requests.post('{}/api/v1/authentication/login'.format(host), data=data)
     if _response_successful(resp):
         access_code = "Bearer " + resp.json()['access_token']
-        config.token = {'authorization': access_code}
-        config.host = _format_host(host)
+        PySenseConfig.token = {'authorization': access_code}
+        PySenseConfig.host = _format_host(host)
+        PySenseConfig.host = _format_host(host)
         return True
     return False
 
@@ -113,7 +114,7 @@ def get_dashboards(parentFolder=None, name=None, datasourceTitle=None,
 
 
 def _get_dashboards(param_string):
-    resp = requests.get('{}/api/v1/dashboards?{}'.format(config.host, param_string), headers=config.token)
+    resp = requests.get('{}/api/v1/dashboards?{}'.format(PySenseConfig.host, param_string), headers=PySenseConfig.token)
     if _response_successful(resp):
         ret_arr = []
         json_arr = resp.json()
@@ -140,8 +141,8 @@ def get_dashboard_export_png(dashboard_id, path, includeTitle=None, includeFilte
 
 
 def _get_dashboard_export_png(dashboard_id, path, param_string):
-    resp = requests.get('{}/api/v1/dashboards/{}/export/png?{}'.format(config.host, dashboard_id, param_string),
-                        headers=config.token)
+    resp = requests.get('{}/api/v1/dashboards/{}/export/png?{}'.format(PySenseConfig.host, dashboard_id, param_string),
+                        headers=PySenseConfig.token)
     if _response_successful(resp):
         with open(path, 'wb') as out_file:
             out_file.write(resp.content)
@@ -168,8 +169,8 @@ def get_dashboard_export_pdf(dashboard_id, path, paperFormat, paperOrientation, 
 
 
 def _get_dashboard_export_pdf(dashboard_id, path, param_string):
-    resp = requests.get('{}/api/v1/dashboards/{}/export/pdf?{}'.format(config.host, dashboard_id, param_string),
-                        headers=config.token)
+    resp = requests.get('{}/api/v1/dashboards/{}/export/pdf?{}'.format(PySenseConfig.host, dashboard_id, param_string),
+                        headers=PySenseConfig.token)
     if _response_successful(resp):
         with open(path, 'wb') as out_file:
             out_file.write(resp.content)
@@ -193,8 +194,8 @@ def post_dashboards_import_bulk(dashboard, action=None, republish=None, importFo
 
 def _post_dashboards_import_bulk(dashboard, param_string):
     dashboard = "[" + dashboard + "]"
-    resp = requests.post('{}/api/v1/dashboards/import/bulk?{}'.format(config.host, param_string),
-                         headers=config.token, json=json.loads(dashboard)).content
+    resp = requests.post('{}/api/v1/dashboards/import/bulk?{}'.format(PySenseConfig.host, param_string),
+                         headers=PySenseConfig.token, json=json.loads(dashboard)).content
     return _response_successful(resp)
 
 
@@ -215,7 +216,7 @@ def post_dashboard_widget_export_png(dashboard_id, widget_id, path, width, heigh
 
 
 def _post_dashboard_widget_export_png(dashboard_id, widget_id, path, param_string):
-    resp = requests.get('{}/api/v1/dashboards/{}/widgets/{}/export/png?{}'.format(config.host, dashboard_id, widget_id, param_string), headers=config.token)
+    resp = requests.get('{}/api/v1/dashboards/{}/widgets/{}/export/png?{}'.format(PySenseConfig.host, dashboard_id, widget_id, param_string), headers=PySenseConfig.token)
     if _response_successful(resp):
         with open(path, 'wb') as out_file:
             out_file.write(resp.content)
@@ -225,7 +226,7 @@ def _post_dashboard_widget_export_png(dashboard_id, widget_id, path, param_strin
 
 
 def get_dashboard_export_dash(dashboard, path):
-    resp = requests.get('{}/api/v1/dashboards/{}/export/dash'.format(config.host, dashboard), headers=config.token)
+    resp = requests.get('{}/api/v1/dashboards/{}/export/dash'.format(PySenseConfig.host, dashboard), headers=PySenseConfig.token)
     if _response_successful(resp):
         with open(path, 'wb') as out_file:
             out_file.write(resp.content)
