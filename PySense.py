@@ -1,48 +1,14 @@
 import requests
 import PySenseConfig
 import json
-from collections import namedtuple
-
-############################################
-# Utility methods #
-############################################
-
-
-def _response_successful(response):
-    """
-    Parses REST response object for errors
-
-    :param response: the REST response object
-    :return: True if no error, false if response errored
-    """
-
-    if response.status_code != 200:
-        print("ERROR: {}: {}".format(response.status_code, response.content))
-        print(response.content)
-        return False
-    return True
-
-
-def _format_host(host):
-    if not host.startswith('http'):
-        host = 'http://' + host
-    if host.endswith('/'):
-        host = host[:-1]
-    return host
-
-
-def _build_query_string(dictionary):
-    ret_arr = []
-    separator = '&'
-    for key, value in dictionary.items():
-        if value is not None:
-            ret_arr.append("{}={}".format(key, value))
-    return separator.join(ret_arr)
+import PySenseUtils
+import PySenseDashboard
 
 
 ############################################
 # Authentication and configuration methods #
 ############################################
+
 
 def set_host(host):
     """
@@ -50,7 +16,7 @@ def set_host(host):
     @param host: The new host
     @return: The host as it is set
     """
-    PySenseConfig.host = _format_host(host)
+    PySenseConfig.host = PySenseUtils.format_host(host)
     return PySenseConfig.host
 
 
@@ -81,28 +47,27 @@ def authenticate(host, username, password):
     """
 
     data = {'username': username, 'password': password}
-
+    host = PySenseUtils.format_host(host)
     resp = requests.post('{}/api/v1/authentication/login'.format(host), data=data)
-    if _response_successful(resp):
+    if PySenseUtils.response_successful(resp):
         access_code = "Bearer " + resp.json()['access_token']
         PySenseConfig.token = {'authorization': access_code}
-        PySenseConfig.host = _format_host(host)
-        PySenseConfig.host = _format_host(host)
+        PySenseConfig.host = host
         return True
     return False
 
 ############################################
-# REST API wrappers                        #
+# Dashboards                               #
 ############################################
 
 
 def get_dashboards(param_dict):
-    return _get_dashboards(_build_query_string(param_dict))
+    return PySenseDashboard.get_dashboards(PySenseUtils.build_query_string(param_dict))
 
 
 def get_dashboards(parentFolder=None, name=None, datasourceTitle=None,
                    datasourceAddress=None, fields=None, expand=None):
-    param_string = _build_query_string({
+    param_string = PySenseUtils.build_query_string({
         'parentFolder': parentFolder,
         'name': name,
         'datasourceTitle': datasourceTitle,
@@ -110,114 +75,75 @@ def get_dashboards(parentFolder=None, name=None, datasourceTitle=None,
         'fields': fields,
         'expand': expand
     })
-    return _get_dashboards(param_string)
-
-
-def _get_dashboards(param_string):
-    resp = requests.get('{}/api/v1/dashboards?{}'.format(PySenseConfig.host, param_string), headers=PySenseConfig.token)
-    if _response_successful(resp):
-        ret_arr = []
-        json_arr = resp.json()
-        for json_obj in json_arr:
-            json_obj['id'] = json_obj.pop('_id')
-            ret_arr.append(namedtuple("Dashboard", json_obj.keys())(*json_obj.values()))
-        return ret_arr
-    return None
+    return PySenseDashboard.get_dashboards(param_string)
 
 
 def get_dashboard_export_png(dashboard_id, path, param_dict):
-    param_string = _build_query_string(param_dict)
-    return _get_dashboard_export_png(dashboard_id, path, param_string)
+    param_string = PySenseUtils.build_query_string(param_dict)
+    return PySenseDashboard.get_dashboard_export_png(dashboard_id, path, param_string)
 
 
 def get_dashboard_export_png(dashboard_id, path, includeTitle=None, includeFilters=None, includeDs=None, width=None):
-    param_string = _build_query_string({
+    param_string = PySenseUtils.build_query_string({
         'includeTitle': includeTitle,
         'includeFilters': includeFilters,
         'includeDs': includeDs,
         'width': width
     })
-    return _get_dashboard_export_png(dashboard_id, path, param_string)
-
-
-def _get_dashboard_export_png(dashboard_id, path, param_string):
-    resp = requests.get('{}/api/v1/dashboards/{}/export/png?{}'.format(PySenseConfig.host, dashboard_id, param_string),
-                        headers=PySenseConfig.token)
-    if _response_successful(resp):
-        with open(path, 'wb') as out_file:
-            out_file.write(resp.content)
-        return path
-    return None
+    return PySenseDashboard.get_dashboard_export_png(dashboard_id, path, param_string)
 
 
 def get_dashboard_export_pdf(dashboard_id, path, param_dict):
     # These are required parameters
     if 'paperFormat' in param_dict and 'paperOrientation' in param_dict and 'layout' in param_dict:
-        param_string = _build_query_string(param_dict)
-        return _get_dashboard_export_pdf(dashboard_id, path, param_string)
+        param_string = PySenseUtils.build_query_string(param_dict)
+        return PySenseDashboard.get_dashboard_export_pdf(dashboard_id, path, param_string)
     else:
         return None
 
 
 def get_dashboard_export_pdf(dashboard_id, path, paperFormat, paperOrientation, layout):
-    param_string = _build_query_string({
+    param_string = PySenseUtils.build_query_string({
         'paperFormat': paperFormat,
         'paperOrientation': paperOrientation,
         'layout': layout
     })
-    return _get_dashboard_export_pdf(dashboard_id, path, param_string)
+    return PySenseDashboard.get_dashboard_export_pdf(dashboard_id, path, param_string)
 
 
-def _get_dashboard_export_pdf(dashboard_id, path, param_string):
-    resp = requests.get('{}/api/v1/dashboards/{}/export/pdf?{}'.format(PySenseConfig.host, dashboard_id, param_string),
-                        headers=PySenseConfig.token)
-    if _response_successful(resp):
-        with open(path, 'wb') as out_file:
-            out_file.write(resp.content)
-        return path
-    return None
+def post_dashboards_import_bulk(dashboard_id, param_dict):
+    param_string = PySenseUtils.build_query_string(param_dict)
+    return PySenseDashboard.post_dashboards_import_bulk(dashboard_id, param_string)
 
 
-def post_dashboards_import_bulk(dashboard, param_dict):
-    param_string = _build_query_string(param_dict)
-    return _post_dashboards_import_bulk(dashboard, param_string)
-
-
-def post_dashboards_import_bulk(dashboard, action=None, republish=None, importFolder=None):
-    param_string = _build_query_string({
+def post_dashboards_import_bulk(dashboard_id, action=None, republish=None, importFolder=None):
+    param_string = PySenseUtils.build_query_string({
         'action': action,
         'republish': republish,
         'importFolder': importFolder
     })
-    return _post_dashboards_import_bulk(dashboard, param_string)
-
-
-def _post_dashboards_import_bulk(dashboard, param_string):
-    dashboard = "[" + dashboard + "]"
-    resp = requests.post('{}/api/v1/dashboards/import/bulk?{}'.format(PySenseConfig.host, param_string),
-                         headers=PySenseConfig.token, json=json.loads(dashboard)).content
-    return _response_successful(resp)
+    return PySenseDashboard.post_dashboards_import_bulk(dashboard_id, param_string)
 
 
 def post_dashboard_widget_export_png(dashboard_id, widget_id, path, param_dict):
     if 'width' in param_dict and 'height' in param_dict:
-        param_string = _build_query_string(param_dict)
-        return _post_dashboard_widget_export_png(dashboard_id, widget_id, path, param_string)
+        param_string = PySenseUtils.build_query_string(param_dict)
+        return PySenseDashboard.post_dashboard_widget_export_png(dashboard_id, widget_id, path, param_string)
     else:
         return None
 
 
 def post_dashboard_widget_export_png(dashboard_id, widget_id, path, width, height):
-    param_string = _build_query_string({
+    param_string = PySenseUtils.build_query_string({
         'width': width,
         'height': height
     })
-    return _post_dashboard_widget_export_png(dashboard_id, widget_id, path, param_string)
+    return PySenseDashboard.post_dashboard_widget_export_png(dashboard_id, widget_id, path, param_string)
 
 
-def _post_dashboard_widget_export_png(dashboard_id, widget_id, path, param_string):
-    resp = requests.get('{}/api/v1/dashboards/{}/widgets/{}/export/png?{}'.format(PySenseConfig.host, dashboard_id, widget_id, param_string), headers=PySenseConfig.token)
-    if _response_successful(resp):
+def get_dashboard_export_dash(dashboard_id, path):
+    resp = requests.get('{}/api/v1/dashboards/{}/export/dash'.format(PySenseConfig.host, dashboard_id), headers=PySenseConfig.token)
+    if PySenseUtils.response_successful(resp):
         with open(path, 'wb') as out_file:
             out_file.write(resp.content)
         return path
@@ -225,12 +151,64 @@ def _post_dashboard_widget_export_png(dashboard_id, widget_id, path, param_strin
         return None
 
 
-def get_dashboard_export_dash(dashboard, path):
-    resp = requests.get('{}/api/v1/dashboards/{}/export/dash'.format(PySenseConfig.host, dashboard), headers=PySenseConfig.token)
-    if _response_successful(resp):
-        with open(path, 'wb') as out_file:
-            out_file.write(resp.content)
-        return path
+############################################
+# Widgets                                  #
+############################################
+
+
+def get_dashboards_widget(dashboard_id, widget_id):
+    resp = requests.get('{}/api/v1/dashboards/{}/widgets/{}'.format(PySenseConfig.host, dashboard_id, widget_id),
+                        headers=PySenseConfig.token)
+    if PySenseUtils.response_successful(resp):
+        return resp.content
     else:
         return None
+
+def get_dashboards_widgets(dashboard_id):
+    resp = requests.get('{}/api/v1/dashboards/{}/widgets'.format(PySenseConfig.host, dashboard_id),
+                        headers=PySenseConfig.token)
+    if PySenseUtils.response_successful(resp):
+        return resp.content
+    else:
+        return None
+
+
+def post_dashboards_widgets(dashboard_id, widget):
+    widget_str = widget.decode("utf-8")
+    resp = requests.post('{}/api/v1/dashboards/{}/widgets'.format(PySenseConfig.host, dashboard_id),
+                         headers=PySenseConfig.token, json=json.loads(widget_str))
+    if PySenseUtils.response_successful(resp):
+        return resp
+    else:
+        return None
+
+
+def delete_dashboards_widgets(dashboard_id, widget_id):
+    resp = requests.delete('{}/api/v1/dashboards/{}/widgets/{}'.format(PySenseConfig.host, dashboard_id, widget_id),
+                           headers=PySenseConfig.token)
+    if PySenseUtils.response_successful(resp):
+        return resp
+
+
+############################################
+# Helper Methods                           #
+############################################
+
+def move_widget(source_dashboard_id, destination_dashboard_id, widget_id):
+    if copy_widget(source_dashboard_id, destination_dashboard_id, widget_id):
+        resp = delete_dashboards_widgets(source_dashboard_id, widget_id)
+        if PySenseUtils.response_successful(resp):
+            return resp
+        else:
+            return None
+
+
+def copy_widget(source_dashboard_id, destination_dashboard_id, widget_id):
+    widget = get_dashboards_widget(source_dashboard_id, widget_id)
+    if widget:
+        resp = post_dashboards_widgets(destination_dashboard_id, widget)
+        if PySenseUtils.response_successful(resp):
+            return resp
+        else:
+            return None
 
