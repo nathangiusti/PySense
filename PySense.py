@@ -1,9 +1,10 @@
-import requests
-import PySenseConfig
 import json
-import PySenseUtils
-import PySenseDashboard
+import requests
 
+import PySenseConfig
+import PySenseDashboard
+import PySenseFolder
+import PySenseUtils
 
 ############################################
 # Authentication and configuration methods #
@@ -65,10 +66,10 @@ def get_dashboards(param_dict):
     return PySenseDashboard.get_dashboards(PySenseUtils.build_query_string(param_dict))
 
 
-def get_dashboards(parentFolder=None, name=None, datasourceTitle=None,
+def get_dashboards(parentFolder_id=None, name=None, datasourceTitle=None,
                    datasourceAddress=None, fields=None, expand=None):
     param_string = PySenseUtils.build_query_string({
-        'parentFolder': parentFolder,
+        'parentFolder': parentFolder_id,
         'name': name,
         'datasourceTitle': datasourceTitle,
         'datasourceAddress': datasourceAddress,
@@ -150,6 +151,28 @@ def get_dashboard_export_dash(dashboard_id, path):
     else:
         return None
 
+############################################
+# Folders                                  #
+############################################
+
+
+def get_folders(param_dict):
+    return PySenseFolder.get_folders(PySenseUtils.build_query_string(param_dict))
+
+
+def get_folders(name=None, structure=None, ids=None, fields=None,
+                sort=None, skip=None, limit=None, expand=None):
+    param_string = PySenseUtils.build_query_string({
+        'name': name,
+        'structure': structure,
+        'ids': ids,
+        'fields': fields,
+        'sort': sort,
+        'skip': skip,
+        'limit': limit,
+        'expand': expand
+    })
+    return PySenseFolder.get_folders(param_string)
 
 ############################################
 # Widgets                                  #
@@ -163,6 +186,7 @@ def get_dashboards_widget(dashboard_id, widget_id):
         return resp.content
     else:
         return None
+
 
 def get_dashboards_widgets(dashboard_id):
     resp = requests.get('{}/api/v1/dashboards/{}/widgets'.format(PySenseConfig.host, dashboard_id),
@@ -193,6 +217,14 @@ def delete_dashboards_widgets(dashboard_id, widget_id):
 ############################################
 # Helper Methods                           #
 ############################################
+
+def get_folder_by_name(folder_name):
+    folders = get_folders(name=folder_name)
+    for folder in folders:
+        if folder['name'] == folder_name:
+            return folder
+    return None
+
 
 def move_widget(source_dashboard_id, destination_dashboard_id, widget_id):
     if copy_widget(source_dashboard_id, destination_dashboard_id, widget_id):
