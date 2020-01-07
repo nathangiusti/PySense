@@ -1,16 +1,11 @@
 import unittest
-
 import PySense
-
-host = 'localhost:8081/'
-username = 'nathan.giusti@sisense.com'
-password = ''
 
 
 class PySenseTests(unittest.TestCase):
 
     def test_auth(self):
-        assert PySense.authenticate(host, username, password)
+        assert PySense.authenticate_by_file('C:\\PySenseConfig.yaml')
         ret = PySense.check_authentication()
         assert ret['host'] == 'http://localhost:8081'
         assert ret['token'] is not None

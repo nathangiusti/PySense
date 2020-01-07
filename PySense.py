@@ -1,5 +1,6 @@
 import json
 import requests
+import yaml
 
 import PySenseConfig
 import PySenseDashboard
@@ -56,6 +57,12 @@ def authenticate(host, username, password):
         PySenseConfig.host = host
         return True
     return False
+
+
+def authenticate_by_file(config_file):
+    with open(config_file, 'r') as ymlfile:
+        cfg = yaml.safe_load(ymlfile)
+        return authenticate(cfg['host'], cfg['username'], cfg['password'])
 
 ############################################
 # Dashboards                               #
