@@ -19,7 +19,7 @@ class PySenseTests(unittest.TestCase):
         ret = PySense.get_folders(name='PySense')
         assert ret[0]['name'] == 'PySense'
         folder_id = ret[0]['oid']
-        ret = PySense.get_dashboards(parentFolder_id=folder_id)
+        ret = PySense.get_dashboards(parentFolder=folder_id)
         assert ret[0]['title'] == 'PySense'
         assert len(ret) == 1
 

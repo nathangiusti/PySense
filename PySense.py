@@ -1,6 +1,7 @@
 import json
 import requests
 import yaml
+import re
 
 import PySenseConfig
 import PySenseDashboard
@@ -60,6 +61,12 @@ def authenticate(host, username, password):
 
 
 def authenticate_by_file(config_file):
+    """
+    Authenticates with Sisense via settings in file. Saves host and user token.
+
+    :param config_file: The yaml file with authentication settings
+    :return: True if successful, else false
+    """
     with open(config_file, 'r') as ymlfile:
         cfg = yaml.safe_load(ymlfile)
         return authenticate(cfg['host'], cfg['username'], cfg['password'])
@@ -70,28 +77,74 @@ def authenticate_by_file(config_file):
 
 
 def get_dashboards(param_dict):
+    """
+    Get all dashboards
+
+    :param param_dict: Dictionary of search parameters
+    :return: All found dashboards
+    """
     return PySenseDashboard.get_dashboards(PySenseUtils.build_query_string(param_dict))
 
 
-def get_dashboards(parentFolder_id=None, name=None, datasourceTitle=None,
-                   datasourceAddress=None, fields=None, expand=None):
+def get_dashboards(parentFolder=None, name=None, datasourceTitle=None,
+                   datasourceAddress=None, fields=None, sort=None, expand=None):
+    """
+     Get all dashboards
+
+     :param parentfolder: Parent folder ID or name to filter by
+     :param name: Name to filter by
+     :param datasourceTitle: Data source name to filter by
+     :param datasourceAddress: Data source address to filter by
+     :param fields: Whitelist of fields to return for each document. Can also exclude by prefixing field names with -
+     :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+     :param expand: List of fields that should be expanded
+     :return: All found dashboards
+     """
+    if re.match(r"^[0-9a-fA-F]{24}$", parentFolder):
+        folder_id = parentFolder
+    else:
+        folder_id = get_folder_by_name(parentFolder)
+
+    if not folder_id:
+        print("Folder {} not found".format(parentFolder))
+
     param_string = PySenseUtils.build_query_string({
-        'parentFolder': parentFolder_id,
+        'parentFolder': folder_id,
         'name': name,
         'datasourceTitle': datasourceTitle,
         'datasourceAddress': datasourceAddress,
         'fields': fields,
+        'sort': sort,
         'expand': expand
     })
     return PySenseDashboard.get_dashboards(param_string)
 
 
 def get_dashboard_export_png(dashboard_id, path, param_dict):
+    """
+     Get dashboard as png
+
+     :param dashboard_id: The ID of the dashboard to export
+     :param path: Path to save location of png
+     :param param_dict: Dictionary of parameters
+     :return: The path of the created file or None on error
+     """
     param_string = PySenseUtils.build_query_string(param_dict)
     return PySenseDashboard.get_dashboard_export_png(dashboard_id, path, param_string)
 
 
 def get_dashboard_export_png(dashboard_id, path, includeTitle=None, includeFilters=None, includeDs=None, width=None):
+    """
+     Get dashboard as png
+
+     :param dashboard_id: The ID of the dashboard to export
+     :param path: Path to save location of png
+     :param includeTitle: Should dashboard title be included in the exported file
+     :param includeFilters: Should dashboard filters be included in the exported file
+     :param includeDs: Should dashboard datasource info be included in the exported file
+     :param width: Render width in pixels
+     :return: The path of the created file or None on error
+     """
     param_string = PySenseUtils.build_query_string({
         'includeTitle': includeTitle,
         'includeFilters': includeFilters,
@@ -102,7 +155,15 @@ def get_dashboard_export_png(dashboard_id, path, includeTitle=None, includeFilte
 
 
 def get_dashboard_export_pdf(dashboard_id, path, param_dict):
-    # These are required parameters
+    """
+     Get dashboard as pdf
+
+     :param dashboard_id: The ID of the dashboard to export
+     :param path: Path to save location of pdf
+     :param param_dict: Dictionary of parameters
+     :return: The path of the created file or None on error
+     """
+    # Paper format, paper orientation, and layout are required
     if 'paperFormat' in param_dict and 'paperOrientation' in param_dict and 'layout' in param_dict:
         param_string = PySenseUtils.build_query_string(param_dict)
         return PySenseDashboard.get_dashboard_export_pdf(dashboard_id, path, param_string)
@@ -110,11 +171,46 @@ def get_dashboard_export_pdf(dashboard_id, path, param_dict):
         return None
 
 
-def get_dashboard_export_pdf(dashboard_id, path, paperFormat, paperOrientation, layout):
+def get_dashboard_export_pdf(dashboard_id, path, paperFormat, paperOrientation, layout,
+                             includeTitle=None, includeFilters=None, includeDs=None, widgetid=None, preview=None,
+                             rowCount=None, showTitle=None, showFooter=None, title=None, titleSize=None,
+                             titlePosition=None):
+    """
+    Get dashboard as pdf
+
+    :param dashboard_id: The ID of the dashboard to export
+    :param path: Path to save location of pdf
+    :param paperFormat: What paper format should be used while rendering the dashboard
+    :param paperOrientation: What paper orientation should be used while rendering the dashboard
+    :param layout: What layout should be used while rendering the dashboard, as is or feed
+    :param includeTitle: Should dashboard title be included in the exported file
+    :param includeFilters: Should dashboard filters be included in the exported file
+    :param includeDs: Should dashboard datasource info be included in the exported file
+    :param widgetid: Widget Id (Use only for Table and Pivot Widgets)
+    :param preview: Should use a new Pixel Perfect Reporting
+    :param rowCount: Count of Table/Pivot rows to export
+    :param showTitle: Should Table/Pivot Widget title be included in the exported file
+    :param showFooter: Should Table/Pivot Widget footer be included in the exported file
+    :param title: Table/Pivot Widget title text in the exported file
+    :param titleSize: Table/Pivot widget title size in the exported file
+    :param titlePosition: Table/Pivot widget title position in the exported file
+    :return: The path of the created file or None on error
+    """
     param_string = PySenseUtils.build_query_string({
         'paperFormat': paperFormat,
         'paperOrientation': paperOrientation,
-        'layout': layout
+        'layout': layout,
+        'includeTitle': includeTitle,
+        'includeFilters': includeFilters,
+        'includeDs': includeDs,
+        'widgetid': widgetid,
+        'preview': preview,
+        'rowCount': rowCount,
+        'showTitle': showTitle,
+        'showFooter': showFooter,
+        'title': title,
+        'titleSize': titleSize,
+        'titlePosition': titlePosition
     })
     return PySenseDashboard.get_dashboard_export_pdf(dashboard_id, path, param_string)
 
@@ -181,6 +277,14 @@ def get_folders(name=None, structure=None, ids=None, fields=None,
     })
     return PySenseFolder.get_folders(param_string)
 
+def get_folder_by_name(folder_name):
+    folders = get_folders(name=folder_name)
+    for folder in folders:
+        if folder['name'] == folder_name:
+            return folder
+    return None
+
+
 ############################################
 # Widgets                                  #
 ############################################
@@ -220,16 +324,56 @@ def delete_dashboards_widgets(dashboard_id, widget_id):
     if PySenseUtils.response_successful(resp):
         return resp
 
+
+def move_widget(source_dashboard_id, destination_dashboard_id, widget_id):
+    if copy_widget(source_dashboard_id, destination_dashboard_id, widget_id):
+        resp = delete_dashboards_widgets(source_dashboard_id, widget_id)
+        if PySenseUtils.response_successful(resp):
+            return resp
+        else:
+            return None
+
+
+def copy_widget(source_dashboard_id, destination_dashboard_id, widget_id):
+    widget = get_dashboards_widget(source_dashboard_id, widget_id)
+    if widget:
+        resp = post_dashboards_widgets(destination_dashboard_id, widget)
+        if PySenseUtils.response_successful(resp):
+            return resp
+        else:
+            return None
+
+
+############################################
+# Groups                                   #
+############################################
+
+
+def get_group_ids(groups):
+    resp = requests.get('{}/api/v1/groups'.format(PySenseConfig.host),
+                        headers=PySenseConfig.token)
+    json_rep = json.loads(resp.content.decode('utf8'))
+    ret = []
+    for group in groups:
+        found = False
+        for item in json_rep:
+            if group == item['_id'] or group == item['name']:
+                ret.append(item['_id'])
+                found = True
+        if not found:
+            return 'Cannot find id for group {}'.format(group)
+    return ret
+
 ############################################
 # Users                                    #
 ############################################
 
 
 def post_user(email, username, roleId, firstName=None, lastName=None, groups=[], preferences={}, uiSettings={}):
-    role_id = PySenseUtils.get_role_id(roleId)
+    role_id = get_role_id(roleId)
     if not role_id:
         return "Role {} not found".format(roleId)
-    groups_obj = PySenseUtils.get_group_ids(groups)
+    groups_obj = get_group_ids(groups)
     user_obj = {
         'email': email,
         'username': username,
@@ -263,33 +407,22 @@ def delete_user(user):
         None
 
 
-############################################
-# Helper Methods                           #
-############################################
-
-def get_folder_by_name(folder_name):
-    folders = get_folders(name=folder_name)
-    for folder in folders:
-        if folder['name'] == folder_name:
-            return folder
+def get_role_id(role_id):
+    resp = requests.get('{}/api/roles'.format(PySenseConfig.host),
+                        headers=PySenseConfig.token)
+    json_rep = json.loads(resp.content.decode('utf8'))
+    for item in json_rep:
+        if role_id == item['_id'] or role_id == item['name'] or role_id == item['displayName']:
+            return item['_id']
     return None
 
 
-def move_widget(source_dashboard_id, destination_dashboard_id, widget_id):
-    if copy_widget(source_dashboard_id, destination_dashboard_id, widget_id):
-        resp = delete_dashboards_widgets(source_dashboard_id, widget_id)
-        if PySenseUtils.response_successful(resp):
-            return resp
-        else:
-            return None
-
-
-def copy_widget(source_dashboard_id, destination_dashboard_id, widget_id):
-    widget = get_dashboards_widget(source_dashboard_id, widget_id)
-    if widget:
-        resp = post_dashboards_widgets(destination_dashboard_id, widget)
-        if PySenseUtils.response_successful(resp):
-            return resp
-        else:
-            return None
-
+def get_user_id_by_email(email):
+    resp = requests.get('{}/api/v1/users?email={}'.format(PySenseConfig.host, email),
+                        headers=PySenseConfig.token)
+    json_rep = json.loads(resp.content.decode('utf8'))
+    if len(json_rep) == 1:
+        return json_rep[0]['_id']
+    else:
+        print('{} users found with email address {}'.format(len(json_rep), email))
+        return None
