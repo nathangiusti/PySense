@@ -220,6 +220,48 @@ def delete_dashboards_widgets(dashboard_id, widget_id):
     if PySenseUtils.response_successful(resp):
         return resp
 
+############################################
+# Users                                    #
+############################################
+
+
+def post_user(email, username, roleId, firstName=None, lastName=None, groups=[], preferences={}, uiSettings={}):
+    role_id = PySenseUtils.get_role_id(roleId)
+    if not role_id:
+        return "Role {} not found".format(roleId)
+    groups_obj = PySenseUtils.get_group_ids(groups)
+    user_obj = {
+        'email': email,
+        'username': username,
+        'firstName': firstName,
+        'lastName': lastName,
+        'roleId': role_id,
+        'groups': groups_obj,
+        'preferences': preferences,
+        'uiSettings': uiSettings
+    }
+    return post_user_obj(user_obj)
+
+
+def post_user_obj(user_obj):
+    resp = requests.post('{}/api/v1/users'.format(PySenseConfig.host), headers=PySenseConfig.token,
+                         json=user_obj)
+    if PySenseUtils.response_successful(resp):
+        return resp
+    else:
+        None
+
+def delete_user(user):
+    if user.find('@') > 0:
+        user_id = PySenseUtils.get_user_id_by_email(user)
+    else:
+        user_id = user
+    resp = requests.delete('{}/api/v1/users/{}'.format(PySenseConfig.host, user_id), headers=PySenseConfig.token)
+    if PySenseUtils.response_successful(resp):
+        return resp
+    else:
+        None
+
 
 ############################################
 # Helper Methods                           #
