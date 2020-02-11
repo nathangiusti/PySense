@@ -13,22 +13,18 @@ import PySenseUtils
 ############################################
 
 
-def set_host(host):
-    """
-    Set host manually. Host is automatically set when calling authenticate
-    @param host: The new host
-    @return: The host as it is set
-    """
-    PySenseConfig.host = PySenseUtils.format_host(host)
-    return PySenseConfig.host
-
-
 def get_host():
     """
-
     @return: Returns the current host string
     """
     return PySenseConfig.host
+
+
+def get_token():
+    """
+    @return: Returns the current host string
+    """
+    return PySenseConfig.token
 
 
 def check_authentication():
@@ -103,10 +99,11 @@ def get_dashboards(parentFolder=None, name=None, datasourceTitle=None,
     if re.match(r"^[0-9a-fA-F]{24}$", parentFolder):
         folder_id = parentFolder
     else:
-        folder_id = get_folder_by_name(parentFolder)
+        folder_id = get_folder_by_name(parentFolder)['oid']
 
     if not folder_id:
         print("Folder {} not found".format(parentFolder))
+        return None
 
     param_string = PySenseUtils.build_query_string({
         'parentFolder': folder_id,
@@ -180,7 +177,7 @@ def get_dashboard_export_pdf(dashboard_id, path, paperFormat, paperOrientation, 
 
     :param dashboard_id: The ID of the dashboard to export
     :param path: Path to save location of pdf
-    :param paperFormat: What paper format should be used while rendering the dashboard
+    :param paperFormat: What paper format should be used while rendering the dashboard.
     :param paperOrientation: What paper orientation should be used while rendering the dashboard
     :param layout: What layout should be used while rendering the dashboard, as is or feed
     :param includeTitle: Should dashboard title be included in the exported file
@@ -220,13 +217,13 @@ def post_dashboards_import_bulk(dashboard_id, param_dict):
     return PySenseDashboard.post_dashboards_import_bulk(dashboard_id, param_string)
 
 
-def post_dashboards_import_bulk(dashboard_id, action=None, republish=None, importFolder=None):
+def post_dashboards_import_bulk(dashboard, action=None, republish=None, importFolder=None):
     param_string = PySenseUtils.build_query_string({
         'action': action,
         'republish': republish,
         'importFolder': importFolder
     })
-    return PySenseDashboard.post_dashboards_import_bulk(dashboard_id, param_string)
+    return PySenseDashboard.post_dashboards_import_bulk(dashboard, param_string)
 
 
 def post_dashboard_widget_export_png(dashboard_id, widget_id, path, param_dict):
@@ -394,6 +391,7 @@ def post_user_obj(user_obj):
         return resp
     else:
         None
+
 
 def delete_user(user):
     if user.find('@') > 0:

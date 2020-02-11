@@ -35,7 +35,13 @@ def build_query_string(dictionary):
     separator = '&'
     for key, value in dictionary.items():
         if value is not None:
-            ret_arr.append("{}={}".format(key, value))
+            validated = value
+            if isinstance(value, bool):
+                if value is True:
+                    validated = 'true'
+                elif value is False:
+                    validated = 'false'
+            ret_arr.append("{}={}".format(key, validated))
     return separator.join(ret_arr)
 
 
