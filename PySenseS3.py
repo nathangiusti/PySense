@@ -29,7 +29,7 @@ def create_bucket(bucket_name, region=None):
                                     CreateBucketConfiguration=location)
     except ClientError as e:
         logging.error(e)
-        return False
+        return None
     return True
 
 
@@ -50,7 +50,7 @@ def upload_file(file_name, bucket, object_name=None):
         response = s3_client.upload_file(file_name, bucket, object_name)
     except ClientError as e:
         logging.error(e)
-        return False
+        return None
     return True
 
 

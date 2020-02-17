@@ -1,2 +1,0 @@
-token = None
-host = None

@@ -10,7 +10,6 @@ import PySense
 RETRY = 3
 ERROR_DASHES = []
 
-
 def build_path(folder, dashboard_id, file_format, file_num=None):
     """
     Builds the path to save the export to
@@ -65,19 +64,20 @@ def export_png(format_vars, dashboard, file_folder, cropping):
     Exports dashboard to png
 
     :param format_vars: Dictionary from YAML containing format variables
-    :param dashboard: The dashboard id
+    :param dashboard: The dashboard object
     :param file_folder: Folder to export dashboard to
     :param cropping: The cropping yaml section
     :return: Nothing
     """
-    if cropping and dashboard in cropping:
+    dashboard_id = dashboard.get_dashboard_id()
+    if cropping and dashboard_id in cropping:
         i = 0
-        for coord_str in cropping[dashboard]:
+        for coord_str in cropping[dashboard.get_dashboard_id()]:
             i += 1
             coord_arr = coord_str.split(',')
             if len(coord_arr) == 5:
-                file_path = build_path(file_folder, dashboard, format_vars['file_type'], i)
-                png_file = PySense.get_dashboard_export_png(dashboard, file_path, format_vars['query_params'])
+                file_path = build_path(file_folder, dashboard_id, format_vars['file_type'], i)
+                png_file = dashboard.get_dashboard_export_png(file_path, width=format_vars['query_params']['width'])
                 image_obj = Image.open(png_file)
                 x1 = int(coord_arr[0])
                 y1 = int(coord_arr[1])
@@ -88,22 +88,21 @@ def export_png(format_vars, dashboard, file_folder, cropping):
                 scaling_ratio = width / (x2 - x1)
                 y_coord = scaling_ratio * (y2 - y1)
                 resized_image = cropped_image.resize((width, int(y_coord)))
-                file_path = build_path(file_folder, dashboard, format_vars['file_type'], i)
+                file_path = build_path(file_folder, dashboard_id, format_vars['file_type'], i)
                 print('Cropped image to {} by {}'.format(width, int(y_coord)))
                 resized_image.save(file_path)
                 print("Image saved to {}".format(file_path))
             elif len(coord_arr) == 3:
                 width = int(coord_arr[1])
                 height = int(coord_arr[2])
-                widget_format = {'file_type': 'png', 'query_params': {'width': width, 'height': height}}
-                PySense.post_dashboard_widget_export_png(dashboard,
-                                                         coord_arr[0],
-                                                         build_path(file_folder, dashboard, format_vars['file_type']),
-                                                         widget_format['query_params'])
+                dashboard.\
+                    post_dashboard_widget_export_png(
+                        coord_arr[0], build_path(file_folder, dashboard_id, format_vars['file_type']),
+                        width, height)
+
     else:
-        return PySense.get_dashboard_export_png(dashboard,
-                                                build_path(file_folder, dashboard, format_vars['file_type']),
-                                                param_dict=format_vars['query_params'])
+        return dashboard.get_dashboard_export_png(build_path(file_folder, dashboard_id, format_vars['file_type']),
+                                                width=format_vars['query_params']['width'])
 
 
 def main():
@@ -117,31 +116,31 @@ def main():
         data_loaded = yaml.safe_load(stream)
 
     host = data_loaded['host']
-    PySense.authenticate(host, data_loaded['authentication']['username'], data_loaded['authentication']['password'])
+    pyClient = PySense.PySense(host, data_loaded['authentication']['username'], data_loaded['authentication']['password'])
     global_vars = data_loaded['globals']
     format_vars = global_vars['format']
     file_folder = global_vars['folder']
     cropping = data_loaded['cropping'] if 'cropping' in data_loaded else None
 
-    dashboard_id_list = []
+    dashboard_list = []
     if 'query_params' in data_loaded['dashboards']:
-        dashboard_id_list = PySense.get_dashboards(param_dict=data_loaded['dashboards']['query_params'])
+        dashboard_list = pyClient.get_dashboards()
 
     if 'ids' in data_loaded['dashboards']:
         for dashboard in data_loaded['dashboards']['ids']:
-            if dashboard not in dashboard_id_list:
-                dashboard_id_list.append(dashboard)
+            if dashboard not in dashboard_list:
+                dashboard_list.append(pyClient.get_dashboards_id(dashboard))
 
-    print('Backing up {} dashboards'.format(len(dashboard_id_list)))
-    for dashboard in dashboard_id_list:
+    print('Backing up {} dashboards'.format(len(dashboard_list)))
+    for dashboard in dashboard_list:
         if format_vars['file_type'] == 'png':
             export_png(format_vars, dashboard, file_folder, cropping)
         elif format_vars['file_type'] == 'pdf':
             query_params = format_vars['query_params']
-            PySense.get_dashboard_export_pdf(dashboard, file_folder + dashboard + '.pdf', query_params['paperFormat'],
+            dashboard.get_dashboard_export_pdf(file_folder + dashboard + '.pdf', query_params['paperFormat'],
                                              query_params['paperOrientation'], query_params['layout'])
         elif format_vars['file_type'] == 'dash':
-            PySense.get_dashboard_export_dash(dashboard, file_folder + dashboard + '.dash')
+            dashboard.get_dashboard_export_dash(file_folder + dashboard + '.dash')
 
     print('Backups complete')
     if len(ERROR_DASHES) > 0:
