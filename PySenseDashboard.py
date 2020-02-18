@@ -20,11 +20,13 @@ class Dashboard:
     def get_dashboard_title(self):
         return self.dashboard_json['title']
 
+    def get_dashboard_json(self):
+        return self.dashboard_json
+
     def get_dashboard_export_png(self, path, includeTitle=None, includeFilters=None, includeDs=None, width=None):
         """
          Get dashboard as png
 
-         :param dashboard_id: The ID of the dashboard to export
          :param path: Path to save location of png
          :param includeTitle: Should dashboard title be included in the exported file
          :param includeFilters: Should dashboard filters be included in the exported file

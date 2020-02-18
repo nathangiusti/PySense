@@ -6,7 +6,7 @@ import re
 import PySenseAlert
 import PySenseDashboard
 import PySenseUtils
-
+import PySenseFolder
 
 def authenticate_by_file(config_file):
     with open(config_file, 'r') as ymlfile:
@@ -73,7 +73,7 @@ class PySense:
             else:
                 folders = self.get_folders(name=parentFolder)
                 if len(folders) == 1:
-                    folder_id = folders[0]['oid']
+                    folder_id = folders[0].get_folder_oid()
                 else:
                     print("{} folders found with name {}".format(len(folders), parentFolder))
                     return None
@@ -99,6 +99,16 @@ class PySense:
             return None
 
     def get_dashboards_id(self, dashboard_id, fields=None, expand=None):
+        """
+        Returns a specific dashboard object by ID.
+
+        :param dashboard_id: The ID of the dashboard to get
+        :param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude
+            by prefixing field names with -
+        :param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be nested
+            using the resource.subResource format
+        :return: Dashboard with id given or None on error
+        """
         param_string = PySenseUtils.build_query_string({
             'fields': fields,
             'expand': expand
@@ -108,20 +118,15 @@ class PySense:
         return PySenseUtils.response_successful(resp,
                                                 success=PySenseDashboard.Dashboard(self.host, self.token, resp.json()))
 
-    def post_dashboards_import_bulk(self, dashboard_file, param_string):
-        resp = requests.post('{}/api/v1/dashboards/import/bulk?{}'.format(self.host, param_string),
-                             headers=self.token, json=json.loads(dashboard_file))
-        return PySenseUtils.response_successful(resp)
-
     def post_dashboards(self, dashboard_obj):
         """
         Import given dashboard
 
-        :param dashboard_obj: The JSON dashboard object
-        :return: The response object or None on failure
+        :param dashboard_obj: A PySense dashboard object
+        :return: The dashboard given by the response object or None on failure
         """
-        resp = requests.post('{}/api/v1/dashboards/'.format(self.host, dashboard_obj), headers=self.token,
-                             json=json.loads(dashboard_obj))
+        resp = requests.post('{}/api/v1/dashboards/'.format(self.host), headers=self.token,
+                             json=dashboard_obj.get_dashboard_json())
         return PySenseUtils.response_successful(resp,
                                                 success=PySenseDashboard.Dashboard(
                                                     self.host, self.token, json.loads(resp.content)))
@@ -137,24 +142,28 @@ class PySense:
                                headers=self.token)
         return PySenseUtils.response_successful(resp)
 
-    def post_dashboards_import_bulk(self, dashboard, param_dict):
-        param_string = PySenseUtils.build_query_string(param_dict)
-        return PySenseDashboard.post_dashboards_import_bulk(dashboard, param_string)
-
-    def post_dashboards_import_bulk(self, dashboard, action=None, republish=None, importFolder=None):
-        param_string = PySenseUtils.build_query_string({
-            'action': action,
-            'republish': republish,
-            'importFolder': importFolder
-        })
-        return PySenseDashboard.post_dashboards_import_bulk(dashboard, param_string)
-
     ############################################
     # Folders                                  #
     ############################################
 
     def get_folders(self, name=None, structure=None, ids=None, fields=None,
                     sort=None, skip=None, limit=None, expand=None):
+        """
+        Prrovides access to a specified user’s folders in their stored format
+
+        @param name: Name to filter by
+        @param structure: Structure type of the folders
+        @param ids: Array of folder IDs to get, separated by a comma (,) and without spaces
+        @param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude
+            by prefixing field names with -
+        @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+        @param skip: Number of results to skip from the start of the data set. skip is to be used with the limit
+            parameter for paging
+        @param limit: How many results should be returned. limit is to be used with the skip parameter for paging
+        @param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be
+            nested using the resource.subResource format
+        @return:
+        """
         ret_arr = []
         param_string = PySenseUtils.build_query_string({
             'name': name,
@@ -173,15 +182,22 @@ class PySense:
             if name:
                 for folder in resp.json():
                     if folder['name'] == name:
-                        ret_arr.append(folder)
-                return ret_arr
+                        ret_arr.append(PySenseFolder.Folder(self.host, self.token, folder))
             else:
-                return resp.json()
+                for folder in resp.json():
+                    ret_arr.append(PySenseFolder.Folder(self.host, self.token, folder))
+            return ret_arr
         return None
 
     def get_folders_id(self, folder_id):
+        """
+        Get a specific folder by folder id
+
+        @param folder_id: The folder id of the folder
+        @return: A PySense folder object of the folder or None on error
+        """
         resp = requests.get('{}/api/v1/folders/{}'.format(self.host, folder_id), headers=self.token)
-        return PySenseUtils.response_successful(resp, success=resp.json())
+        return PySenseUtils.response_successful(resp, success=PySenseFolder.Folder(self.host, self.token, resp.json()))
 
     ############################################
     # Widgets                                  #
