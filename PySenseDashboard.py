@@ -1,12 +1,10 @@
 import requests
 import PySenseUtils
 import json
+import PySenseWidget
 
 
 class Dashboard:
-    host = None
-    token = None
-    dashboard_json = None
 
     def __init__(self, host, token, dashboard_json):
         self.host = host
@@ -113,36 +111,69 @@ class Dashboard:
         else:
             return None
 
-    def post_dashboard_widget_export_png(self, widget_id, path, width, height):
+    def get_dashboard_widgets(self, title=None, type=None, subtype=None,
+                              fields=None, sort=None, skip=None, limit=None):
+        """
+        Returns an array of a dashboard’s widgets.
+
+        @param title: Widget title to filter by
+        @param type: Widget type to filter by
+        @param subtype: Widget sub-type to filter by
+        @param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude
+            by prefixing field names with -
+        @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+        @param skip: Number of results to skip from the start of the data set. skip is to be used with the limit
+            parameter for paging
+        @param limit: How many results should be returned. limit is to be used with the skip parameter for paging
+        @return: An array of widget objects or None on error
+        """
         param_string = PySenseUtils.build_query_string({
-            'width': width,
-            'height': height
+            'title': title,
+            'type': type,
+            'subtype': subtype,
+            'fields': fields,
+            'sort': sort,
+            'skip': skip,
+            'limit': limit
         })
+
         resp = requests.get(
-            '{}/api/v1/dashboards/{}/widgets/{}/export/png?{}'.format(self.host, self.get_dashboard_id(), widget_id,
-                                                                      param_string), headers=self.token)
+            '{}/api/v1/dashboards/{}/widgets?{}'.format(self.host, self.get_dashboard_id(), param_string),
+            headers=self.token)
+
         if PySenseUtils.response_successful(resp):
-            with open(path, 'wb') as out_file:
-                out_file.write(resp.content)
-            return path
+            ret_arr = []
+            widgets_json = json.loads(resp.content)
+            for widget in widgets_json:
+                ret_arr.append(PySenseWidget.Widget(self.host, self.token, widget))
+            return ret_arr
         else:
             return None
 
-    def get_dashboards_widget(self, widget_id):
-        resp = requests.get('{}/api/v1/dashboards/{}/widgets/{}'.format(self.host, self.get_dashboard_id(), widget_id),
-                            headers=self.token)
-        return PySenseUtils.response_successful(resp, success=resp.content)
+    def get_dashboards_widget_by_id(self, widget_id, fields=None):
+        """
+        Returns a specific widget (by ID) from a specific dashboard.
 
-    def get_dashboards_widgets(self):
-        resp = requests.get('{}/api/v1/dashboards/{}/widgets'.format(self.host, self.get_dashboard_id()),
+        @param widget_id: The ID of the widget to get
+        @param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude
+            by prefixing field names with -
+        @return: A widget object or None on error
+        """
+        param_string = PySenseUtils.build_query_string({
+            'fields': fields
+        })
+
+        resp = requests.get('{}/api/v1/dashboards/{}/widgets/{}?{}'.format(self.host, self.get_dashboard_id(),
+                                                                           widget_id, param_string),
                             headers=self.token)
-        return PySenseUtils.response_successful(resp, success=resp.content)
+        return PySenseUtils.response_successful(resp, success=PySenseWidget.Widget(
+            self.host, self.token, json.loads(resp.content)))
 
     def post_dashboards_widgets(self, widget):
-        widget_str = widget.decode("utf-8")
         resp = requests.post('{}/api/v1/dashboards/{}/widgets'.format(self.host, self.get_dashboard_id()),
-                             headers=self.token, json=json.loads(widget_str))
-        return PySenseUtils.response_successful(resp)
+                             headers=self.token, json=widget.get_widget_json())
+        return PySenseUtils.response_successful(resp, success=PySenseWidget.Widget(
+            self.host, self.token, json.loads(resp.content)))
 
     def delete_dashboards_widgets(self, widget_id):
         resp = requests.delete('{}/api/v1/dashboards/{}/widgets/{}'

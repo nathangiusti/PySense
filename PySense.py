@@ -204,9 +204,16 @@ class PySense:
     ############################################
 
     def move_widget(self, source_dashboard_id, destination_dashboard_id, widget_id):
+        """
+        Move a widget from one dashboard to another
+        @param source_dashboard_id:
+        @param destination_dashboard_id:
+        @param widget_id:
+        @return:
+        """
         if self.copy_widget(source_dashboard_id, destination_dashboard_id, widget_id):
             resp = self.delete_dashboards_widgets(source_dashboard_id, widget_id)
-            return PySenseUtils.response_successful(resp)
+            return PySenseUtils.response_successful(resp, success=True)
         else:
             return None
 
@@ -214,7 +221,7 @@ class PySense:
         widget = self.get_dashboards_widget(source_dashboard_id, widget_id)
         if widget:
             resp = self.post_dashboards_widgets(destination_dashboard_id, widget)
-            return PySenseUtils.response_successful(resp)
+            return PySenseUtils.response_successful(resp, success)
         else:
             return None
 
