@@ -1,0 +1,8 @@
+
+*.xml
+*.iml
+*.gz
+PySenseSDK.egg-info/dependency_links.txt
+PySenseSDK.egg-info/PKG-INFO
+PySenseSDK.egg-info/SOURCES.txt
+PySenseSDK.egg-info/top_level.txt
