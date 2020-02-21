@@ -44,7 +44,9 @@ class PySenseTests(unittest.TestCase):
         folder2 = self.pyClient.get_folders_id(folder.get_folder_oid())
         assert folder.get_folder_oid() == folder2.get_folder_oid()
 
-
+    def test_post_update_delete_user(self):
+        user = self.pyClient.post_user('thisisfake@example.com', 'fake', 'Viewer', groups='PySense')
+        assert user is not None
 
 
 if __name__ == '__main__':

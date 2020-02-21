@@ -1,5 +1,5 @@
-from collections import namedtuple
-
+import json
+import requests
 
 def response_successful(response, success=None, failure=None):
     """
@@ -59,6 +59,28 @@ def build_query_string(dictionary):
             ret_arr.append("{}={}".format(key, validated))
     return separator.join(ret_arr)
 
+def build_json_object(dictionary):
+    ret_json = {}
+    for key, value in dictionary.items():
+        if value is not None:
+            validated = value
+            if isinstance(value, bool):
+                if value is True:
+                    validated = 'true'
+                elif value is False:
+                    validated = 'false'
+            ret_json[key] = validated
+    return ret_json
 
 
+def get_role_id(host, token, role_name):
+    resp = requests.get('{}/api/roles'.format(host),
+                        headers=token)
+    if not response_successful(resp):
+        return
 
+    json_rep = json.loads(resp.content.decode('utf8'))
+    for item in json_rep:
+        if role_name == item['_id'] or role_name == item['name'] or role_name == item['displayName']:
+            return item['_id']
+    return None

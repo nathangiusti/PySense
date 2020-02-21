@@ -97,7 +97,7 @@ class Dashboard:
 
     def get_dashboard_export_dash(self, path):
         """
-        Get dashboard as pdf
+        Get dashboard as dash file
 
         :param path: Path to save location of dash file
         :return: The path of the created file or None on error
@@ -170,12 +170,24 @@ class Dashboard:
             self.host, self.token, json.loads(resp.content)))
 
     def post_dashboards_widgets(self, widget):
+        """
+        Adds the provided widget object to the dashboard
+
+        @param widget: widget object to add
+        @return: The widget added to the dashboard or None on error
+        """
         resp = requests.post('{}/api/v1/dashboards/{}/widgets'.format(self.host, self.get_dashboard_id()),
                              headers=self.token, json=widget.get_widget_json())
         return PySenseUtils.response_successful(resp, success=PySenseWidget.Widget(
             self.host, self.token, json.loads(resp.content)))
 
     def delete_dashboards_widgets(self, widget_id):
+        """
+        Deletes a widget with the provided ID from it’s dashboard.
+
+        @param widget_id: The ID of the widget to delete
+        @return: Response object if successful, None on error
+        """
         resp = requests.delete('{}/api/v1/dashboards/{}/widgets/{}'
                                .format(self.host,  self.get_dashboard_id(), widget_id), headers=self.token)
         return PySenseUtils.response_successful(resp)

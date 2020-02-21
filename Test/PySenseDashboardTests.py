@@ -29,10 +29,16 @@ class PySenseDashboardTests(unittest.TestCase):
         path = self.sample_path + '\\' + self.dashboard.get_dashboard_id() + '.dash'
         assert self.dashboard.get_dashboard_export_dash(path) == path
 
-    def test_get_dashboard_widgets(self):
+    def test_dashboard_widgets(self):
         widget_array = self.dashboard.get_dashboard_widgets()
         assert len(widget_array) == 2
         widget = self.dashboard.get_dashboards_widget_by_id(widget_array[0].get_widget_id())
         assert widget.get_widget_id() == widget_array[0].get_widget_id()
+        added_widget = self.dashboard.post_dashboards_widgets(widget)
+        assert len(self.dashboard.get_dashboard_widgets()) == 3
+        self.dashboard.delete_dashboards_widgets(added_widget.get_widget_id())
+        assert len(self.dashboard.get_dashboard_widgets()) == 2
+
+
 
 

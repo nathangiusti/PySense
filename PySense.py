@@ -7,6 +7,8 @@ import PySenseAlert
 import PySenseDashboard
 import PySenseUtils
 import PySenseFolder
+import PySenseUser
+
 
 def authenticate_by_file(config_file):
     with open(config_file, 'r') as ymlfile:
@@ -46,7 +48,6 @@ class PySense:
         else:
             return None
 
-
     ############################################
     # Dashboards                               #
     ############################################
@@ -60,7 +61,8 @@ class PySense:
          :param name: Name to filter by
          :param datasourceTitle: Data source name to filter by
          :param datasourceAddress: Data source address to filter by
-         :param fields: Whitelist of fields to return for each document. Can also exclude by prefixing field names with -
+         :param fields: Whitelist of fields to return for each document.
+            Can also exclude by prefixing field names with -
          :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
          :param expand: List of fields that should be expanded
          :return: All found dashboards
@@ -200,36 +202,15 @@ class PySense:
         return PySenseUtils.response_successful(resp, success=PySenseFolder.Folder(self.host, self.token, resp.json()))
 
     ############################################
-    # Widgets                                  #
-    ############################################
-
-    def move_widget(self, source_dashboard_id, destination_dashboard_id, widget_id):
-        """
-        Move a widget from one dashboard to another
-        @param source_dashboard_id:
-        @param destination_dashboard_id:
-        @param widget_id:
-        @return:
-        """
-        if self.copy_widget(source_dashboard_id, destination_dashboard_id, widget_id):
-            resp = self.delete_dashboards_widgets(source_dashboard_id, widget_id)
-            return PySenseUtils.response_successful(resp, success=True)
-        else:
-            return None
-
-    def copy_widget(self, source_dashboard_id, destination_dashboard_id, widget_id):
-        widget = self.get_dashboards_widget(source_dashboard_id, widget_id)
-        if widget:
-            resp = self.post_dashboards_widgets(destination_dashboard_id, widget)
-            return PySenseUtils.response_successful(resp, success)
-        else:
-            return None
-
-    ############################################
     # Groups                                   #
     ############################################
 
     def get_group_ids(self, groups):
+        """
+        Get the ids for groups
+        @param groups: An array of group names
+        @return: An array of ids for the groups, None on rest error
+        """
         resp = requests.get('{}/api/v1/groups'.format(self.host),
                             headers=self.token)
         if PySenseUtils.response_successful(resp):
@@ -238,7 +219,7 @@ class PySense:
             for group in groups:
                 found = False
                 for item in json_rep:
-                    if group == item['_id'] or group == item['name']:
+                    if group == item['name']:
                         ret.append(item['_id'])
                         found = True
                 if not found:
@@ -251,13 +232,27 @@ class PySense:
     # Users                                    #
     ############################################
 
+    def post_user(self, email, username, role, firstName=None, lastName=None,
+                  groups=None, preferences=None, uiSettings=None):
+        """
+        Receives a new user object and creates that user in Sisense, returning the created object.
+        If a user with the same username or email exists, it will return an error.
 
-    def post_user(self, email, username, roleId, firstName=None, lastName=None, groups=[], preferences={}, uiSettings={}):
-        role_id = self.get_role_id(roleId)
+        @param email: email address for user
+        @param username: username
+        @param role: role name
+        @param firstName: user first name
+        @param lastName: user last name
+        @param groups: The groups to add the user to
+        @param preferences: User preferences
+        @param uiSettings: User ui settings
+        @return: Newly created user object or None on error
+        """
+        role_id = PySenseUtils.get_role_id(self.host, self.token, role)
         if not role_id:
-            return "Role {} not found".format(roleId)
+            return "Role {} not found".format(role)
         groups_obj = self.get_group_ids(groups)
-        user_obj = {
+        user_obj = PySenseUtils.build_json_object({
             'email': email,
             'username': username,
             'firstName': firstName,
@@ -266,61 +261,84 @@ class PySense:
             'groups': groups_obj,
             'preferences': preferences,
             'uiSettings': uiSettings
-        }
-        return self.post_user_obj(user_obj)
-
-
-    def post_user_obj(self, user_obj):
+        })
         resp = requests.post('{}/api/v1/users'.format(self.host), headers=self.token,
                              json=user_obj)
-        PySenseUtils.response_successful(resp)
+        return PySenseUtils.response_successful(resp, success=PySenseUser.User(
+            self.host, self.token, json.loads(resp.content)))
 
+    def get_users(self, userName=None, email=None, firstName=None, lastName=None, role=None, group=None, active=None,
+                  origin=None, ids=None, fields=None, sort=None, skip=None, limit=None, expand=None):
+        """
+        Returns a list of users with their details.
+        Results can be filtered by parameters such as username and email.
+        The expandable fields for the user object are groups, adgroups and role.
 
-    def delete_user(self, user):
-        if user.find('@') > 0:
-            user_id = PySenseUtils.get_user_id_by_email(user)
-        else:
-            user_id = user
-        resp = requests.delete('{}/api/v1/users/{}'.format(PySenseConfig.host, user_id), headers=PySenseConfig.token)
-        PySenseUtils.response_successful(resp)
+        @param userName: Username to filter by
+        @param email: Email to filter by
+        @param firstName: First name to filter by
+        @param lastName: Last name to filter by
+        @param role: Role filter by
+        @param group: Group to filter by
+        @param active: User state to filter by (true for active users, false for inactive users)
+        @param origin: User origin to filter by (ad for active directory or sisense)
+        @param ids: Array of user ids to get separated by comma and without spaces
+        @param fields: Whitelist of fields to return for each document.
+            Fields can also define which fields to exclude by prefixing field names with -
+        @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+        @param skip: Number of results to skip from the start of the data set.
+            Skip is to be used with the limit parameter for paging
+        @param limit: How many results should be returned. limit is to be used with the skip parameter for paging
+        @param expand: List of fields that should be expanded (substitutes their IDs with actual objects).
+            May be nested using the resource.subResource format
 
-    def get_role_id(self, role_id):
-        resp = requests.get('{}/api/roles'.format(self.host),
-                            headers=self.token)
-        if not PySenseUtils.response_successful(resp):
-            return
+        @return: An array of users objects or None on error
+        """
+        role_id = PySenseUtils.get_role_id(self.host, self.token, role)
+        if not role_id:
+            return "Role {} not found".format(role)
 
-        json_rep = json.loads(resp.content.decode('utf8'))
-        for item in json_rep:
-            if role_id == item['_id'] or role_id == item['name'] or role_id == item['displayName']:
-                return item['_id']
-
-    def get_user_id(self, userName=None, email=None):
         param_string = PySenseUtils.build_query_string({
             'userName': userName,
-            'email': email
+            'email': email,
+            'firstName': firstName,
+            'lastName': lastName,
+            'role': role_id,
+            'group': group,
+            'active': active,
+            'origin': origin,
+            'ids': ids,
+            'fields': fields,
+            'sort': sort,
+            'skip': skip,
+            'limit': limit,
+            'expand': expand
         })
-        resp = requests.get('{}/api/v1/users?{}'.format(self.host, param_string),
-                            headers=self.token)
-        if not PySenseUtils.response_successful(resp):
-            return None
-        json_rep = json.loads(resp.content.decode('utf8'))
-        if len(json_rep) == 1:
-            return json_rep[0]['_id']
+        resp = requests.get('{}/api/v1/users?{}'.format(self.host, param_string), headers=self.token)
+        ret_arr = []
+        if PySenseUtils.response_successful(resp):
+            for user in json.loads(resp):
+                ret_arr.append((PySenseUser.User(self.host, self.token, user)))
+            return ret_arr
         else:
-            print('{} users found with {}'.format(len(json_rep), param_string))
-            return None
+            None
+
+    def delete_user(self, user):
+        """
+        Deletes the specified user
+        @param user: User obj to delete
+        @return: Response or None on error
+        """
+        resp = requests.delete('{}/api/v1/users/{}'.format(self.host, user.get_user_id()), headers=self.token)
+        return PySenseUtils.response_successful(resp)
 
     ############################################
     # Alerts                                   #
     ############################################
-
+    # This isn't at all done
     def post_alert(self, alert_obj):
         resp = requests.post('{}/api/v1/alerts'.format(self.host),
                              headers=self.token, json=json.loads(alert_obj))
         PySenseUtils.response_successful(resp)
 
-    def post_alert(self, user, name):
-        alert_obj = PySenseAlert.createAlert(user, name)
-        return post_alert(alert_obj)
 
