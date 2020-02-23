@@ -1,117 +1,114 @@
-import requests
-import PySenseUtils
 import json
-import PySenseWidget
+import requests
+
+from Source import PySenseUtils
+from Source import PySenseWidget
 
 
 class Dashboard:
 
     def __init__(self, host, token, dashboard_json):
-        self.host = host
-        self.token = token
-        self.dashboard_json = dashboard_json
-        self.dashboard_id = dashboard_json['oid']
+        self._host = host
+        self._token = token
+        self._dashboard_json = dashboard_json
+        self._dashboard_id = dashboard_json['oid']
 
     def get_dashboard_id(self):
-        return self.dashboard_id
+        return self._dashboard_id
 
     def get_dashboard_title(self):
-        return self.dashboard_json['title']
+        return self._dashboard_json['title']
 
     def get_dashboard_json(self):
-        return self.dashboard_json
+        return self._dashboard_json
 
-    def get_dashboard_export_png(self, path, includeTitle=None, includeFilters=None, includeDs=None, width=None):
+    def get_dashboard_export_png(self, path, *, include_title=None, include_filters=None, include_ds=None, width=None):
         """
          Get dashboard as png
 
          :param path: Path to save location of png
-         :param includeTitle: Should dashboard title be included in the exported file
-         :param includeFilters: Should dashboard filters be included in the exported file
-         :param includeDs: Should dashboard datasource info be included in the exported file
+         :param include_title: Should dashboard title be included in the exported file
+         :param include_filters: Should dashboard filters be included in the exported file
+         :param include_ds: Should dashboard data source info be included in the exported file
          :param width: Render width in pixels
-         :return: The path of the created file or None on error
+         :return: The path of the created file
          """
         param_string = PySenseUtils.build_query_string({
-            'includeTitle': includeTitle,
-            'includeFilters': includeFilters,
-            'includeDs': includeDs,
+            'includeTitle': include_title,
+            'includeFilters': include_filters,
+            'includeDs': include_ds,
             'width': width
         })
         resp = requests.get(
-            '{}/api/v1/dashboards/{}/export/png?{}'.format(self.host, self.get_dashboard_id(), param_string),
-            headers=self.token)
-        if PySenseUtils.response_successful(resp):
-            with open(path, 'wb') as out_file:
-                out_file.write(resp.content)
-            return path
-        return None
+            '{}/api/v1/dashboards/{}/export/png?{}'.format(self._host, self.get_dashboard_id(), param_string),
+            headers=self._token)
+        PySenseUtils.parse_response(resp)
+        with open(path, 'wb') as out_file:
+            out_file.write(resp.content)
+        return path
 
-    def get_dashboard_export_pdf(self, path, paperFormat, paperOrientation, layout,
-                                 includeTitle=None, includeFilters=None, includeDs=None, widgetid=None, preview=None,
-                                 rowCount=None, showTitle=None, showFooter=None, title=None, titleSize=None,
-                                 titlePosition=None):
+    def get_dashboard_export_pdf(self, path, paper_format, paper_orientation, layout, *,
+                                 include_title=None, include_filters=None, include_ds=None, widget_id=None, preview=None,
+                                 row_count=None, show_title=None, show_footer=None, title=None, title_size=None,
+                                 title_position=None):
         """
         Get dashboard as pdf
 
         :param path: Path to save location of pdf
-        :param paperFormat: What paper format should be used while rendering the dashboard.
-        :param paperOrientation: What paper orientation should be used while rendering the dashboard
+        :param paper_format: What paper format should be used while rendering the dashboard.
+        :param paper_orientation: What paper orientation should be used while rendering the dashboard
         :param layout: What layout should be used while rendering the dashboard, as is or feed
-        :param includeTitle: Should dashboard title be included in the exported file
-        :param includeFilters: Should dashboard filters be included in the exported file
-        :param includeDs: Should dashboard datasource info be included in the exported file
-        :param widgetid: Widget Id (Use only for Table and Pivot Widgets)
+        :param include_title: Should dashboard title be included in the exported file
+        :param include_filters: Should dashboard filters be included in the exported file
+        :param include_ds: Should dashboard datasource info be included in the exported file
+        :param widget_id: Widget Id (Use only for Table and Pivot Widgets)
         :param preview: Should use a new Pixel Perfect Reporting
-        :param rowCount: Count of Table/Pivot rows to export
-        :param showTitle: Should Table/Pivot Widget title be included in the exported file
-        :param showFooter: Should Table/Pivot Widget footer be included in the exported file
+        :param row_count: Count of Table/Pivot rows to export
+        :param show_title: Should Table/Pivot Widget title be included in the exported file
+        :param show_footer: Should Table/Pivot Widget footer be included in the exported file
         :param title: Table/Pivot Widget title text in the exported file
-        :param titleSize: Table/Pivot widget title size in the exported file
-        :param titlePosition: Table/Pivot widget title position in the exported file
-        :return: The path of the created file or None on error
+        :param title_size: Table/Pivot widget title size in the exported file
+        :param title_position: Table/Pivot widget title position in the exported file
+        :return: The path of the created file
         """
         param_string = PySenseUtils.build_query_string({
-            'paperFormat': paperFormat,
-            'paperOrientation': paperOrientation,
+            'paperFormat': paper_format,
+            'paperOrientation': paper_orientation,
             'layout': layout,
-            'includeTitle': includeTitle,
-            'includeFilters': includeFilters,
-            'includeDs': includeDs,
-            'widgetid': widgetid,
+            'includeTitle': include_title,
+            'includeFilters': include_filters,
+            'includeDs': include_ds,
+            'widgetid': widget_id,
             'preview': preview,
-            'rowCount': rowCount,
-            'showTitle': showTitle,
-            'showFooter': showFooter,
+            'rowCount': row_count,
+            'showTitle': show_title,
+            'showFooter': show_footer,
             'title': title,
-            'titleSize': titleSize,
-            'titlePosition': titlePosition
+            'titleSize': title_size,
+            'titlePosition': title_position
         })
         resp = requests.get('{}/api/v1/dashboards/{}/export/pdf?{}'
-                            .format(self.host, self.get_dashboard_id(), param_string), headers=self.token)
-        if PySenseUtils.response_successful(resp):
-            with open(path, 'wb') as out_file:
-                out_file.write(resp.content)
-            return path
-        return None
+                            .format(self._host, self.get_dashboard_id(), param_string), headers=self._token)
+        PySenseUtils.parse_response(resp)
+        with open(path, 'wb') as out_file:
+            out_file.write(resp.content)
+        return path
 
     def get_dashboard_export_dash(self, path):
         """
         Get dashboard as dash file
 
         :param path: Path to save location of dash file
-        :return: The path of the created file or None on error
+        :return: The path of the created file
         """
-        resp = requests.get('{}/api/v1/dashboards/{}/export/dash'.format(self.host, self.get_dashboard_id()),
-                            headers=self.token)
-        if PySenseUtils.response_successful(resp):
-            with open(path, 'wb') as out_file:
-                out_file.write(resp.content)
-            return path
-        else:
-            return None
+        resp = requests.get('{}/api/v1/dashboards/{}/export/dash'.format(self._host, self.get_dashboard_id()),
+                            headers=self._token)
+        PySenseUtils.parse_response(resp)
+        with open(path, 'wb') as out_file:
+            out_file.write(resp.content)
+        return path
 
-    def get_dashboard_widgets(self, title=None, type=None, subtype=None,
+    def get_dashboard_widgets(self, *, title=None, type=None, subtype=None,
                               fields=None, sort=None, skip=None, limit=None):
         """
         Returns an array of a dashboard’s widgets.
@@ -125,7 +122,7 @@ class Dashboard:
         @param skip: Number of results to skip from the start of the data set. skip is to be used with the limit
             parameter for paging
         @param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-        @return: An array of widget objects or None on error
+        @return: An array of widget objects
         """
         param_string = PySenseUtils.build_query_string({
             'title': title,
@@ -138,56 +135,54 @@ class Dashboard:
         })
 
         resp = requests.get(
-            '{}/api/v1/dashboards/{}/widgets?{}'.format(self.host, self.get_dashboard_id(), param_string),
-            headers=self.token)
+            '{}/api/v1/dashboards/{}/widgets?{}'.format(self._host, self.get_dashboard_id(), param_string),
+            headers=self._token)
 
-        if PySenseUtils.response_successful(resp):
-            ret_arr = []
-            widgets_json = json.loads(resp.content)
-            for widget in widgets_json:
-                ret_arr.append(PySenseWidget.Widget(self.host, self.token, widget))
-            return ret_arr
-        else:
-            return None
+        PySenseUtils.parse_response(resp)
+        ret_arr = []
+        widgets_json = json.loads(resp.content)
+        for widget in widgets_json:
+            ret_arr.append(PySenseWidget.Widget(self._host, self._token, widget))
+        return ret_arr
 
-    def get_dashboards_widget_by_id(self, widget_id, fields=None):
+    def get_dashboards_widget_by_id(self, widget_id, *, fields=None):
         """
         Returns a specific widget (by ID) from a specific dashboard.
 
         @param widget_id: The ID of the widget to get
         @param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude
             by prefixing field names with -
-        @return: A widget object or None on error
+        @return: A widget object
         """
         param_string = PySenseUtils.build_query_string({
             'fields': fields
         })
 
-        resp = requests.get('{}/api/v1/dashboards/{}/widgets/{}?{}'.format(self.host, self.get_dashboard_id(),
+        resp = requests.get('{}/api/v1/dashboards/{}/widgets/{}?{}'.format(self._host, self.get_dashboard_id(),
                                                                            widget_id, param_string),
-                            headers=self.token)
-        return PySenseUtils.response_successful(resp, success=PySenseWidget.Widget(
-            self.host, self.token, json.loads(resp.content)))
+                            headers=self._token)
+        PySenseUtils.parse_response(resp)
+        return PySenseWidget.Widget(self._host, self._token, json.loads(resp.content))
 
     def post_dashboards_widgets(self, widget):
         """
         Adds the provided widget object to the dashboard
 
         @param widget: widget object to add
-        @return: The widget added to the dashboard or None on error
+        @return: The widget added to the dashboard
         """
-        resp = requests.post('{}/api/v1/dashboards/{}/widgets'.format(self.host, self.get_dashboard_id()),
-                             headers=self.token, json=widget.get_widget_json())
-        return PySenseUtils.response_successful(resp, success=PySenseWidget.Widget(
-            self.host, self.token, json.loads(resp.content)))
+        resp = requests.post('{}/api/v1/dashboards/{}/widgets'.format(self._host, self.get_dashboard_id()),
+                             headers=self._token, json=widget.get_widget_json())
+        PySenseUtils.parse_response(resp)
+        return PySenseWidget.Widget(self._host, self._token, json.loads(resp.content))
 
     def delete_dashboards_widgets(self, widget_id):
         """
         Deletes a widget with the provided ID from it’s dashboard.
 
         @param widget_id: The ID of the widget to delete
-        @return: Response object if successful, None on error
+        @return: Response object
         """
         resp = requests.delete('{}/api/v1/dashboards/{}/widgets/{}'
-                               .format(self.host,  self.get_dashboard_id(), widget_id), headers=self.token)
-        return PySenseUtils.response_successful(resp)
+                               .format(self._host, self.get_dashboard_id(), widget_id), headers=self._token)
+        return PySenseUtils.parse_response(resp)

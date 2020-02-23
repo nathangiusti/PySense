@@ -1,7 +1,7 @@
 import json
 import requests
 
-import PySenseUtils
+from . import PySenseUtils
 
 
 class User:
@@ -12,49 +12,48 @@ class User:
         self.user_json = user_json
         self.user_id = user_json['_id']
 
-    def reset(self, user_json):
+    def _reset(self, user_json):
         self.user_json = user_json
         self.user_id = user_json['_id']
 
     def get_user_id(self):
         return self.user_id
 
-    def update_user(self, email=None, userName=None, firstName=None, lastName=None, role=None, groups=None,
-                    preferences=None, uiSettings=None):
+    def get_user_user_name(self):
+        return self.user_json['userName']
+
+    def update_user(self, *, email=None, user_name=None, first_name=None, last_name=None, role_name=None, groups=None,
+                    preferences=None, ui_settings=None):
         """
         Updates given fields for user object. Returns true if successful, None if error
 
         @param email: Value to update email to
-        @param userName: Value to update username to
-        @param firstName: Value to update firstName to
-        @param lastName: Value to update lastName to
-        @param role: New role for user
+        @param user_name: Value to update username to
+        @param first_name: Value to update firstName to
+        @param last_name: Value to update lastName to
+        @param role_name: New role for user
         @param groups: Groups to put user in
         @param preferences: Preferences to be updated for user
-        @param uiSettings: UI Settings to be updated for user
-        @return:
+        @param ui_settings: UI Settings to be updated for user
+        @return: True if successful
         """
-        role_id = PySenseUtils.get_role_id(self.host, self.token, role)
-        if not role_id:
-            return "Role {} not found".format(role)
+
         json_obj = PySenseUtils.build_json_object(
             {
                 'email': email,
-                'userName': userName,
-                'firstName': firstName,
-                'lastName': lastName,
-                'role': role_id,
+                'userName': user_name,
+                'firstName': first_name,
+                'lastName': last_name,
+                'role': PySenseUtils.get_role_id(self.host, self.token, role_name),
                 'groups': groups,
                 'preferences': preferences,
-                'uiSettings': uiSettings
+                'uiSettings': ui_settings
             }
         )
         resp = requests.patch('{}/api/v1/users/{}'.format(
             self.host, self.get_user_id()), json=json_obj, headers=self.token)
-        if PySenseUtils.response_successful(resp):
-            self.reset(json.loads(resp.content))
-            return True
-        else:
-            return None
+        PySenseUtils.parse_response(resp)
+        self._reset(json.loads(resp.content))
+        return True
 
 

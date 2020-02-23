@@ -1,7 +1,8 @@
 import json
 import unittest
-import PySense
-import PySenseDashboard
+
+from Source import PySense
+from Source import PySenseDashboard
 
 
 class PySenseTests(unittest.TestCase):
@@ -15,12 +16,12 @@ class PySenseTests(unittest.TestCase):
         assert self.pyClient.get_authentication() is not None
 
     def test_get_dashboards(self):
-        ret = self.pyClient.get_dashboards(parentFolder='PySense')
+        ret = self.pyClient.get_dashboards(parent_folder_name='PySense')
         assert len(ret) == 1
         assert ret[0].get_dashboard_title() == 'PySense'
 
     def test_get_dashboards_id(self):
-        ret = self.pyClient.get_dashboards(parentFolder='PySense')
+        ret = self.pyClient.get_dashboards(parent_folder_name='PySense')
         dashboard_id = ret[0].get_dashboard_id()
         assert dashboard_id == self.pyClient.get_dashboards_id(dashboard_id).get_dashboard_id()
 
@@ -45,8 +46,12 @@ class PySenseTests(unittest.TestCase):
         assert folder.get_folder_oid() == folder2.get_folder_oid()
 
     def test_post_update_delete_user(self):
-        user = self.pyClient.post_user('thisisfake@example.com', 'fake', 'Viewer', groups='PySense')
+        user = self.pyClient.post_user('thisisfake@example.com', 'fake', 'Viewer', groups=['PySense'])
         assert user is not None
+        user.update_user(user_name='new name')
+        assert user.get_user_user_name() == 'new name'
+        self.pyClient.delete_user(user)
+        assert len(self.pyClient.get_users(user_name='new name')) == 0
 
 
 if __name__ == '__main__':

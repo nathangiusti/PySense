@@ -1,11 +1,12 @@
 import setuptools
 
-with open("README.md", "r") as fh:
+
+with open("readme.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="PySenseSDK",
-    version="0.0.1",
+    version="0.0.4",
     author="Nathan Giusti",
     author_email="nathanggiusti@gmail.com",
     description="Sisense Python SDK",

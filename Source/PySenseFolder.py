@@ -1,6 +1,3 @@
-import json
-
-
 class Folder:
     host = None
     token = None

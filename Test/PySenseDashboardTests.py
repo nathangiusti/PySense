@@ -1,6 +1,7 @@
-import unittest
-import PySense
 import os
+import unittest
+
+from Source import PySense
 
 
 class PySenseDashboardTests(unittest.TestCase):
@@ -8,22 +9,22 @@ class PySenseDashboardTests(unittest.TestCase):
     def setUp(self):
         self.pyClient = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
         self.sample_path = 'C:\\PySense\\'
-        self.dashboard = self.pyClient.get_dashboards(parentFolder='PySense')[0]
+        self.dashboard = self.pyClient.get_dashboards(parent_folder_name='PySense')[0]
 
     def test_get_dashboard_export_png(self):
         path = self.sample_path + '\\' + self.dashboard.get_dashboard_id() + '.png'
         assert self.dashboard.get_dashboard_export_png(
             self.sample_path + '\\' + self.dashboard.get_dashboard_id() + '.png',
-            includeTitle='true', includeFilters=True, includeDs=False, width=1000) == path
+            include_title='true', include_filters=True, include_ds=False, width=1000) == path
         os.remove(path)
 
     def test_get_dashboard_export_pdf(self):
         path = self.sample_path + '\\' + self.dashboard.get_dashboard_id() + '.dash'
         assert self.dashboard.get_dashboard_export_pdf(path, 'A4', 'portrait', 'asis',
-                                                       includeTitle=True, includeFilters=False, includeDs=True,
-                                                       widgetid=None, preview=True, rowCount=None, showTitle=True,
-                                                       showFooter=False, title='Hello World', titleSize='medium',
-                                                       titlePosition='flex-start') == path
+                                                       include_title=True, include_filters=False, include_ds=True,
+                                                       widget_id=None, preview=True, row_count=None, show_title=True,
+                                                       show_footer=False, title='Hello World', title_size='medium',
+                                                       title_position='flex-start') == path
 
     def test_get_dashboard_dash_export(self):
         path = self.sample_path + '\\' + self.dashboard.get_dashboard_id() + '.dash'

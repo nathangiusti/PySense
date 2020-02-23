@@ -1,4 +1,3 @@
-import json
 
 def createAlert(user, name):
     alert = {}
