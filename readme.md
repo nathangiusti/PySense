@@ -10,8 +10,8 @@ PySense is a python wrapper for the Sisense REST API. The goal of this project i
 
 **How to install**
 
-To use Sisense in your python script, download a copy of the project and reference as needed. A pip library is forthcoming. 
+pip install PySenseSDK
 
 **How to use**
 
-See the provided examples for adding users or backing up dashboards for examples. 
+See provided examples
