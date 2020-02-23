@@ -1,8 +1,8 @@
 import json
 import unittest
 
-from Source import PySense
-from Source import PySenseDashboard
+from PySense import PySense
+from PySense import PySenseDashboard
 
 
 class PySenseTests(unittest.TestCase):

@@ -1,8 +1,8 @@
 import json
 import requests
 
-from Source import PySenseUtils
-from Source import PySenseWidget
+from PySense import PySenseUtils
+from PySense import PySenseWidget
 
 
 class Dashboard:
