@@ -1,5 +1,6 @@
 """
-This is a rewritten version of the backup dashboards script at https://github.com/nathangiusti/Sisense/tree/master/BackupDashboards that uses the PySense Library. 
+This is a rewritten version of the backup dashboards script at
+https://github.com/nathangiusti/Sisense/tree/master/BackupDashboards that uses the PySense Library.
 """
 
 from PIL import Image
@@ -9,6 +10,7 @@ import PySense
 
 RETRY = 3
 ERROR_DASHES = []
+
 
 def build_path(folder, dashboard_id, file_format, file_num=None):
     """
@@ -116,7 +118,7 @@ def main():
         data_loaded = yaml.safe_load(stream)
 
     host = data_loaded['host']
-    pyClient = PySense.PySense(host, data_loaded['authentication']['username'], data_loaded['authentication']['password'])
+    py_client = PySense.PySense(host, data_loaded['authentication']['username'], data_loaded['authentication']['password'])
     global_vars = data_loaded['globals']
     format_vars = global_vars['format']
     file_folder = global_vars['folder']
@@ -124,12 +126,12 @@ def main():
 
     dashboard_list = []
     if 'query_params' in data_loaded['dashboards']:
-        dashboard_list = pyClient.get_dashboards()
+        dashboard_list = py_client.get_dashboards()
 
     if 'ids' in data_loaded['dashboards']:
         for dashboard in data_loaded['dashboards']['ids']:
             if dashboard not in dashboard_list:
-                dashboard_list.append(pyClient.get_dashboards_id(dashboard))
+                dashboard_list.append(py_client.get_dashboards_id(dashboard))
 
     print('Backing up {} dashboards'.format(len(dashboard_list)))
     for dashboard in dashboard_list:
@@ -137,8 +139,9 @@ def main():
             export_png(format_vars, dashboard, file_folder, cropping)
         elif format_vars['file_type'] == 'pdf':
             query_params = format_vars['query_params']
-            dashboard.get_dashboard_export_pdf(file_folder + dashboard + '.pdf', query_params['paperFormat'],
-                                             query_params['paperOrientation'], query_params['layout'])
+            dashboard.get_dashboard_export_pdf(
+                file_folder + dashboard + '.pdf', query_params['paperFormat'],
+                query_params['paperOrientation'], query_params['layout'])
         elif format_vars['file_type'] == 'dash':
             dashboard.get_dashboard_export_dash(file_folder + dashboard + '.dash')
 
