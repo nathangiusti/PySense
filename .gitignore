@@ -8,3 +8,4 @@ PySenseSDK.egg-info/SOURCES.txt
 PySenseSDK.egg-info/top_level.txt
 *.pyc
 dist/
+build/
