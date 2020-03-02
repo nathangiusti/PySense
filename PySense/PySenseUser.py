@@ -1,7 +1,7 @@
 import json
 import requests
 
-from . import PySenseUtils
+from PySense import PySenseUtils
 
 
 class User:

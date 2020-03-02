@@ -3,7 +3,6 @@ import os
 import unittest
 
 from PySense import PySense
-from PySense import PySenseDashboard
 
 
 class PySenseTests(unittest.TestCase):
@@ -28,10 +27,8 @@ class PySenseTests(unittest.TestCase):
 
     def test_dashboard_import_delete(self):
         with open(self.sample_path + '\\' + 'ImportDash.dash', 'r', encoding="utf8") as file:
-            data = file.read()
-        dash = self.pyClient.post_dashboards(PySenseDashboard.Dashboard(self.pyClient.get_authentication()['host'],
-                                                                        self.pyClient.get_authentication()['token'],
-                                                                        json.loads(data)))
+            data = json.loads(file.read())
+        dash = self.pyClient.post_dashboards(data)
         assert dash is not None
         assert self.pyClient.delete_dashboards(dash.get_dashboard_id()) is not None
 
@@ -62,6 +59,12 @@ class PySenseTests(unittest.TestCase):
         path = self.pyClient.get_csv_for_table('Test', self.sample_path + 'test.csv', table_name='DIM_Date')
         assert path == self.sample_path + 'test.csv'
         os.remove(path)
+
+    def test_get_elasticubes(self):
+        ret = self.pyClient.get_elasticubes()
+        assert len(ret) > 1
+        ret = self.pyClient.get_elasticube_by_name('PySense')
+        assert ret.get_name() == 'PySense'
 
 
 if __name__ == '__main__':

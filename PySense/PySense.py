@@ -2,10 +2,11 @@ import json
 import requests
 import yaml
 
-from . import PySenseDashboard
-from . import PySenseFolder
-from . import PySenseUser
-from . import PySenseUtils
+from PySense import PySenseDashboard
+from PySense import PySenseElasticube
+from PySense import PySenseFolder
+from PySense import PySenseUser
+from PySense import PySenseUtils
 
 
 def authenticate_by_file(config_file):
@@ -116,15 +117,15 @@ class PySense:
         PySenseUtils.parse_response(resp)
         return PySenseDashboard.Dashboard(self._host, self._token, resp.json())
 
-    def post_dashboards(self, dashboard_obj):
+    def post_dashboards(self, dashboard_json):
         """
         Import given dashboard
 
-        :param dashboard_obj: A PySense dashboard object
+        :param dashboard_json: The dashboard json from the dash file
         :return: The dashboard given by the response object
         """
         resp = requests.post('{}/api/v1/dashboards/'.format(self._host), headers=self._token,
-                             json=dashboard_obj.get_dashboard_json())
+                             json=dashboard_json)
         PySenseUtils.parse_response(resp)
         return PySenseDashboard.Dashboard(self._host, self._token, json.loads(resp.content))
 
@@ -314,6 +315,38 @@ class PySense:
         """
         resp = requests.delete('{}/api/v1/users/{}'.format(self._host, user.get_user_id()), headers=self._token)
         return PySenseUtils.parse_response(resp)
+
+    ############################################
+    # Elasticubes                              #
+    ############################################
+
+    def get_elasticubes(self):
+        """
+        Gets elasticubes
+        :return: An array of elasticubes
+        """
+
+        resp = requests.get('{}/api/v1/elasticubes/getElasticubes'.format(self._host), headers=self._token)
+        PySenseUtils.parse_response(resp)
+        ret_arr = []
+        for cube in resp.json():
+            ret_arr.append(PySenseElasticube.Elasticube(self._host, self._token, cube))
+        return ret_arr
+
+    def get_elasticube_by_name(self, name):
+        """
+        Gets elasticube by name
+
+        :param name: Name of elasticube to get
+        :return: An array of elasticubes matching the query
+        """
+        cubes = self.get_elasticubes()
+        for cube in cubes:
+            if cube.get_name() == name:
+                return cube
+        return None
+
+
 
     ############################################
     # Alerts                                   #

@@ -13,6 +13,10 @@ class Dashboard:
         self._dashboard_json = dashboard_json
         self._dashboard_id = dashboard_json['oid']
 
+    def reset(self, dashboard_json):
+        self._dashboard_json = dashboard_json
+        self._dashboard_id = dashboard_json['oid']
+
     def get_dashboard_id(self):
         return self._dashboard_id
 
@@ -21,6 +25,9 @@ class Dashboard:
 
     def get_dashboard_json(self):
         return self._dashboard_json
+
+    def get_dashboard_folder_id(self):
+        return self._dashboard_json['parentFolder']
 
     def get_dashboard_shares(self):
         """
@@ -34,6 +41,24 @@ class Dashboard:
             headers=self._token)
         PySenseUtils.parse_response(resp)
         return resp.json()
+
+    def move_to_folder(self, folder):
+        """
+        Move dashboard to given folder
+        :param folder: Folder object to move dashboard to, None to remove from folder
+        :return: True if successful
+        """
+        if folder:
+            folder_oid = folder.get_folder_oid()
+        else:
+            folder_oid = None
+        resp = requests.patch(
+            '{}/api/v1/dashboards/{}'.format(self._host, self.get_dashboard_id()),
+            headers=self._token, json={'parentFolder': folder_oid})
+        PySenseUtils.parse_response(resp)
+        self.reset(resp.json())
+        return True
+
 
     def share_dashboard_to_user(self, email, rule, subscribe):
         """

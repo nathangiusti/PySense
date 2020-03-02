@@ -1,14 +1,18 @@
 import requests
 
-from . import PySenseUtils
+from PySense import PySenseUtils
 
 
 class Elasticube:
 
-    def __init__(self, host, token, name):
+    def __init__(self, host, token, cube_json):
         self._host = host
         self._token = token
-        self._name = name
+        self._cube_json = cube_json
+        self._name = cube_json['title']
+
+    def get_name(self):
+        return self._name
 
     def get_data_source_sql(self, path, query, file_type, *,
                             offset=None, count=None, include_metadata=None, is_masked_response=None):

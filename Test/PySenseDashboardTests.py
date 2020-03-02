@@ -46,6 +46,14 @@ class PySenseDashboardTests(unittest.TestCase):
         shares = self.dashboard.unshare_dashboard_to_user('thisistemp@example.com')
         assert len(shares['sharesTo']) == 1
 
+    def test_move_to_folder(self):
+        folder = self.pyClient.get_folders(name='PySense')[0]
+        self.dashboard.move_to_folder(None)
+        assert self.dashboard.get_dashboard_folder_id() is None
+        self.dashboard.move_to_folder(folder)
+        assert self.dashboard.get_dashboard_folder_id() == folder.get_folder_oid()
+
+
 
 
 
