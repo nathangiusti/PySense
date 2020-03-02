@@ -1,6 +1,8 @@
 import json
 import requests
 
+from PySense import PySenseUser
+
 
 def parse_response(response):
     """
@@ -63,6 +65,16 @@ def build_json_object(dictionary):
                     validated = 'false'
             ret_json[key] = validated
     return ret_json
+
+
+def get_user_id(host, token, email):
+    resp = requests.get('{}/api/users?email={}'.format(host, email),
+                        headers=token)
+    parse_response(resp)
+    for user in resp.json():
+        if user['email'] == email:
+            user = PySenseUser.User(host, token, user)
+            return user.get_user_id()
 
 
 def get_role_id(host, token, role_name):
