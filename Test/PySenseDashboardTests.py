@@ -40,6 +40,12 @@ class PySenseDashboardTests(unittest.TestCase):
         self.dashboard.delete_dashboards_widgets(added_widget.get_widget_id())
         assert len(self.dashboard.get_dashboard_widgets()) == 2
 
+    def test_dashboard_shares(self):
+        shares = self.dashboard.share_dashboard_to_user('thisistemp@example.com', 'view', 'false')
+        assert len(shares['sharesTo']) == 2
+        shares = self.dashboard.unshare_dashboard_to_user('thisistemp@example.com')
+        assert len(shares['sharesTo']) == 1
+
 
 
 

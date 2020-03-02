@@ -22,6 +22,54 @@ class Dashboard:
     def get_dashboard_json(self):
         return self._dashboard_json
 
+    def get_dashboard_shares(self):
+        """
+        Gets the dashboard shares json
+
+        :return: The dashboard shares json
+        """
+
+        resp = requests.get(
+            '{}/api/shares/dashboard/{}'.format(self._host, self.get_dashboard_id()),
+            headers=self._token)
+        PySenseUtils.parse_response(resp)
+        return resp.json()
+
+    def share_dashboard_to_user(self, email, rule, subscribe):
+        """
+        Share a dashboard to a user
+        :param email: The email address of the user
+        :param rule: The permission of the user on the dashboard (view, edit, etc)
+        :param subscribe: true or false, whether to subscribe the user to reports
+        :return: The updated share
+        """
+
+        user_id = PySenseUtils.get_user_id(self._host, self._token, email)
+        shares = self.get_dashboard_shares()
+        shares['sharesTo'].append({'shareId': user_id, 'type': 'user', 'rule': rule, 'subscribe': subscribe})
+        resp = requests.post(
+            '{}/api/shares/dashboard/{}'.format(self._host, self.get_dashboard_id()),
+            headers=self._token, json=shares)
+        PySenseUtils.parse_response(resp)
+        return self.get_dashboard_shares()
+
+    def unshare_dashboard_to_user(self, email):
+        """
+        Unshare a dashboard to a user
+        :param email: The email address of the user
+        :return: The updated share
+        """
+
+        shares = self.get_dashboard_shares()
+        for i, share in enumerate(shares['sharesTo']):
+            if share['email'] == email:
+                del shares['sharesTo'][i]
+        resp = requests.post(
+            '{}/api/shares/dashboard/{}'.format(self._host, self.get_dashboard_id()),
+            headers=self._token, json=shares)
+        PySenseUtils.parse_response(resp)
+        return self.get_dashboard_shares()
+
     def get_dashboard_export_png(self, path, *, include_title=None, include_filters=None, include_ds=None, width=None):
         """
          Get dashboard as png

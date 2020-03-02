@@ -31,6 +31,18 @@ class PySense:
         self._token = {'authorization': access_code}
         self._host = host
 
+    def custom_rest(self, action_type, url, *, data=None, json_payload=None):
+        if action_type.lower() == 'get':
+            return requests.get('{}/{}'.format(self._host, url), headers=self._token, data=data, json=json_payload)
+        elif action_type.lower() == 'post':
+            return requests.post('{}/{}'.format(self._host, url), headers=self._token, data=data, json=json_payload)
+        elif action_type.lower() == 'patch':
+            return requests.patch('{}/{}'.format(self._host, url), headers=self._token, data=data, json=json_payload)
+        elif action_type.lower() == 'delete':
+            return requests.delete('{}/{}'.format(self._host, url), headers=self._token, data=data, json=json_payload)
+        else:
+            raise Exception('No rest action {}'.format(action_type))
+
     def get_authentication(self):
         """
         Returns authentication parameters
@@ -311,5 +323,7 @@ class PySense:
         resp = requests.post('{}/api/v1/alerts'.format(self._host),
                              headers=self._token, json=json.loads(alert_obj))
         PySenseUtils.parse_response(resp)
+
+
 
 

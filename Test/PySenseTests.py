@@ -1,4 +1,5 @@
 import json
+import os
 import unittest
 
 from PySense import PySense
@@ -52,6 +53,15 @@ class PySenseTests(unittest.TestCase):
         assert user.get_user_user_name() == 'new name'
         self.pyClient.delete_user(user)
         assert len(self.pyClient.get_users(user_name='new name')) == 0
+
+    def test_custom_rest(self):
+        resp = self.pyClient.custom_rest('get', 'api/v1/plugins')
+        assert resp.response.status_code in [200, 201, 204]
+
+    def test_get_csv_for_table(self):
+        path = self.pyClient.get_csv_for_table('Test', self.sample_path + 'test.csv', table_name='DIM_Date')
+        assert path == self.sample_path + 'test.csv'
+        os.remove(path)
 
 
 if __name__ == '__main__':
