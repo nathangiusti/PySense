@@ -53,12 +53,7 @@ class PySenseTests(unittest.TestCase):
 
     def test_custom_rest(self):
         resp = self.pyClient.custom_rest('get', 'api/v1/plugins')
-        assert resp.response.status_code in [200, 201, 204]
-
-    def test_get_csv_for_table(self):
-        path = self.pyClient.get_csv_for_table('Test', self.sample_path + 'test.csv', table_name='DIM_Date')
-        assert path == self.sample_path + 'test.csv'
-        os.remove(path)
+        assert resp.status_code in [200, 201, 204]
 
     def test_get_elasticubes(self):
         ret = self.pyClient.get_elasticubes()
