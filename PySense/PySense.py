@@ -4,6 +4,7 @@ import yaml
 
 from PySense import PySenseDashboard
 from PySense import PySenseElasticube
+from PySense import PySenseGroup
 from PySense import PySenseFolder
 from PySense import PySenseUser
 from PySense import PySenseUtils
@@ -33,10 +34,21 @@ class PySense:
         self._host = host
 
     def custom_rest(self, action_type, url, *, data=None, json_payload=None):
+        """
+        Run an arbitrary rest command against your Sisense instance.
+
+        :param action_type: REST request type
+        :param url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding
+        :param data: The data portion of the payload
+        :param json_payload: The json portion of the payload
+        :return: The rest response object
+        """
         if action_type.lower() == 'get':
             return requests.get('{}/{}'.format(self._host, url), headers=self._token, data=data, json=json_payload)
         elif action_type.lower() == 'post':
             return requests.post('{}/{}'.format(self._host, url), headers=self._token, data=data, json=json_payload)
+        elif action_type.lower() == 'put':
+            return requests.put('{}/{}'.format(self._host, url), headers=self._token, data=data, json=json_payload)
         elif action_type.lower() == 'patch':
             return requests.patch('{}/{}'.format(self._host, url), headers=self._token, data=data, json=json_payload)
         elif action_type.lower() == 'delete':
@@ -75,7 +87,7 @@ class PySense:
         if parent_folder_name:
             folders = self.get_folders(name=parent_folder_name)
             if len(folders) == 1:
-                folder_id = folders[0].get_folder_oid()
+                folder_id = folders[0].get_folder_id()
             else:
                 raise Exception("{} folders found with name {}".format(len(folders), parent_folder_name))
 
@@ -201,6 +213,48 @@ class PySense:
     # Groups                                   #
     ############################################
 
+    def get_groups(self, *, name=None, mail=None, role=None, origin=None, ids=None, fields=None,
+                   sort=None, skip=None, limit=None, expand=None):
+        """
+        Returns a list of user groups with their details.
+        The results can be filtered by different parameters such as group name or origin.
+
+        :param name: Group name to filter by
+        :param mail: Group email to filter by
+        :param role: Group role to filter by
+        :param origin: Group origin to filter by (ad or sisense)
+        :param ids: Array of group IDs to filter by
+        :param fields: Whitelist of fields to return for each document.
+            Fields can also define which fields to exclude by prefixing field names with -
+        :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+        :param skip: Number of results to skip from the start of the data set.
+            Skip is to be used with the limit parameter for paging
+        :param limit: How many results should be returned. limit is to be used with the skip parameter for paging
+        :param expand: List of fields that should be expanded (substitures their IDs with actual objects).
+            May be nested using the resource.subResource format
+        :return: Array of found groups
+        """
+        param_string = PySenseUtils.build_query_string({
+            'name': name,
+            'mail': mail,
+            'roleId': PySenseUtils.get_role_id(self._host, self._token, role),
+            'origin': origin,
+            'ids': ids,
+            'fields': fields,
+            'sort': sort,
+            'skip': skip,
+            'limit': limit,
+            'expand': expand
+        })
+        resp = requests.get('{}/api/v1/groups?{}'.format(self._host, param_string),
+                            headers=self._token)
+
+        PySenseUtils.parse_response(resp)
+        ret_arr = []
+        for group in resp.json():
+            ret_arr.append(PySenseGroup.Group(self._host, self._token, group))
+        return ret_arr
+
     def get_group_ids(self, groups):
         """
         Get the ids for groups
@@ -219,8 +273,33 @@ class PySense:
                     ret.append(item['_id'])
                     found = True
             if not found:
-                return 'Cannot find id for group {}'.format(group)
+                print('Cannot find id for group {}'.format(group))
         return ret
+
+    def add_groups(self, name_array):
+        """
+        Add group with given name
+        @param name_array: Array of new group names
+        @return: Array of new groups
+        """
+        ret_arr = []
+        for name in name_array:
+            payload = {'name': name}
+            resp = requests.post('{}/api/v1/groups'.format(self._host), headers=self._token, json=payload)
+            PySenseUtils.parse_response(resp)
+            ret_arr.append(PySenseGroup.Group(self._host, self._token, resp.json()))
+        return ret_arr
+
+    def delete_groups(self, group_array):
+        """
+        Add group with given name
+        @param group_array: Array of groups to delete
+        @return: The new group
+        """
+        for group in group_array:
+            resp = requests.delete('{}/api/groups/{}'.format(self._host, group.get_group_id()), headers=self._token)
+            PySenseUtils.parse_response(resp)
+        return True
 
     ############################################
     # Users                                    #

@@ -11,22 +11,29 @@ class Dashboard:
         self._host = host
         self._token = token
         self._dashboard_json = dashboard_json
-        self._dashboard_id = dashboard_json['oid']
 
-    def reset(self, dashboard_json):
+    def _reset(self, dashboard_json):
         self._dashboard_json = dashboard_json
-        self._dashboard_id = dashboard_json['oid']
 
     def get_dashboard_id(self):
-        return self._dashboard_id
+        """
+        Gets the dashboard's id
+        :return: The dashboard's id
+        """
+        return self._dashboard_json['oid']
 
     def get_dashboard_title(self):
+        """
+        Gets the dashboard's title
+        :return: The dashboards title
+        """
         return self._dashboard_json['title']
 
-    def get_dashboard_json(self):
-        return self._dashboard_json
-
     def get_dashboard_folder_id(self):
+        """
+        Gets the dashboards folder id
+        :return: The folder id of the parent folder of the dashboard
+        """
         return self._dashboard_json['parentFolder']
 
     def get_dashboard_shares(self):
@@ -49,16 +56,15 @@ class Dashboard:
         :return: True if successful
         """
         if folder:
-            folder_oid = folder.get_folder_oid()
+            folder_oid = folder.get_folder_id()
         else:
             folder_oid = None
         resp = requests.patch(
             '{}/api/v1/dashboards/{}'.format(self._host, self.get_dashboard_id()),
             headers=self._token, json={'parentFolder': folder_oid})
         PySenseUtils.parse_response(resp)
-        self.reset(resp.json())
+        self._reset(resp.json())
         return True
-
 
     def share_dashboard_to_user(self, email, rule, subscribe):
         """
@@ -254,8 +260,64 @@ class Dashboard:
         Deletes a widget with the provided ID from it’s dashboard.
 
         @param widget_id: The ID of the widget to delete
-        @return: Response object
+        @return: True
         """
         resp = requests.delete('{}/api/v1/dashboards/{}/widgets/{}'
                                .format(self._host, self.get_dashboard_id(), widget_id), headers=self._token)
-        return PySenseUtils.parse_response(resp)
+        PySenseUtils.parse_response(resp)
+        # Get the updated dashboard from source and refresh object
+        resp = requests.get('{}/api/v1/dashboards/{}'.format(self._host, self.get_dashboard_id()),
+                            headers=self._token)
+        PySenseUtils.parse_response(resp)
+        self._reset(resp.json())
+        return True
+
+    def does_widget_exist(self, widget_id):
+        """
+        Returns whether or not a widget with the given id is in the dashboard
+        :param widget_id: The widget id to look for
+        :return: True if found, false if not.
+        """
+        try:
+            self.get_dashboards_widget_by_id(widget_id)
+        except PySenseUtils.RestError:
+            return False
+        else:
+            return True
+
+    def remove_ghost_widgets(self):
+        """
+        Removes ghost widgets from dashboard
+
+        :return: True
+        """
+        patch_json = {"layout": self._dashboard_json['layout']}
+        modified = True
+        while modified:
+            modified = False
+            for l, column in enumerate(patch_json['layout']['columns']):
+                for k, cell in enumerate(column['cells']):
+                    for j, sub_cell in enumerate(cell['subcells']):
+                        for i, element in enumerate(sub_cell['elements']):
+                            if not self.does_widget_exist(element['widgetid']):
+                                sub_cell['elements'].pop(i)
+                                modified = True
+                        if len(sub_cell['elements']) == 0:
+                            cell['subcells'].pop(j)
+                    if len(cell['subcells']) == 0:
+                        column['cells'].pop(k)
+                if len(column['cells']) == 0:
+                    patch_json['layout']['columns'].pop(l)
+        resp = requests.patch('{}/api/v1/dashboards/{}'.format(self._host, self.get_dashboard_id()),
+                              headers=self._token, json=patch_json)
+        PySenseUtils.parse_response(resp)
+        self._reset(resp.json())
+        return True
+
+
+
+
+
+
+
+

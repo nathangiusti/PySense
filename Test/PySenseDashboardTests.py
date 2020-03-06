@@ -51,7 +51,11 @@ class PySenseDashboardTests(unittest.TestCase):
         self.dashboard.move_to_folder(None)
         assert self.dashboard.get_dashboard_folder_id() is None
         self.dashboard.move_to_folder(folder)
-        assert self.dashboard.get_dashboard_folder_id() == folder.get_folder_oid()
+        assert self.dashboard.get_dashboard_folder_id() == folder.get_folder_id()
+
+    def test_remove_ghost_widgets(self):
+        self.dashboard.remove_ghost_widgets()
+
 
 
 

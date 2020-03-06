@@ -4,6 +4,10 @@ import requests
 from PySense import PySenseUser
 
 
+class RestError(Exception):
+    pass
+
+
 def parse_response(response):
     """
     Parses REST response object for errors
@@ -13,7 +17,7 @@ def parse_response(response):
     """
 
     if response.status_code not in [200, 201, 204]:
-        raise Exception("ERROR: {}: {}".format(response.status_code, response.content))
+        raise RestError("ERROR: {}: {}".format(response.status_code, response.content))
 
     return response
 
@@ -49,6 +53,8 @@ def build_query_string(dictionary):
                     validated = 'true'
                 elif value is False:
                     validated = 'false'
+            elif isinstance(value, list):
+                validated = ','.join(value)
             ret_arr.append("{}={}".format(key, validated))
     return separator.join(ret_arr)
 

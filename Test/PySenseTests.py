@@ -40,8 +40,8 @@ class PySenseTests(unittest.TestCase):
     def test_get_folder_by_name_by_id(self):
         folder = self.pyClient.get_folders(name='PySense')[0]
         assert folder.get_folder_name() == 'PySense'
-        folder2 = self.pyClient.get_folders_id(folder.get_folder_oid())
-        assert folder.get_folder_oid() == folder2.get_folder_oid()
+        folder2 = self.pyClient.get_folders_id(folder.get_folder_id())
+        assert folder.get_folder_id() == folder2.get_folder_id()
 
     def test_post_update_delete_user(self):
         user = self.pyClient.post_user('thisisfake@example.com', 'fake', 'Viewer', groups=['PySense'])
@@ -60,6 +60,19 @@ class PySenseTests(unittest.TestCase):
         assert len(ret) > 1
         ret = self.pyClient.get_elasticube_by_name('PySense')
         assert ret.get_name() == 'PySense'
+
+    def test_get_add_remove_group(self):
+        group_names = ["TempGroup", "TempGroup2"]
+        groups = self.pyClient.add_groups(group_names)
+        temp_group = self.pyClient.get_groups(name="TempGroup2")[0]
+        assert temp_group.get_group_name() == "TempGroup2"
+        assert len(groups) == 2
+        group_id_arr = []
+        for group in groups:
+            group_id_arr.append(group.get_group_id())
+        groups = self.pyClient.get_groups(ids=group_id_arr)
+        assert len(groups) == 2
+        assert self.pyClient.delete_groups(groups) is True
 
 
 if __name__ == '__main__':

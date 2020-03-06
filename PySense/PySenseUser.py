@@ -7,20 +7,26 @@ from PySense import PySenseUtils
 class User:
 
     def __init__(self, host, token, user_json):
-        self.host = host
-        self.token = token
-        self.user_json = user_json
-        self.user_id = user_json['_id']
+        self._host = host
+        self._token = token
+        self._user_json = user_json
 
     def _reset(self, user_json):
-        self.user_json = user_json
-        self.user_id = user_json['_id']
+        self._user_json = user_json
 
     def get_user_id(self):
-        return self.user_id
+        """
+        Returns the user's id
+        :return: The user id
+        """
+        return self._user_json['_id']
 
     def get_user_user_name(self):
-        return self.user_json['userName']
+        """
+        Returns the user's username
+        :return: The user's username
+        """
+        return self._user_json['userName']
 
     def update_user(self, *, email=None, user_name=None, first_name=None, last_name=None, role_name=None, groups=None,
                     preferences=None, ui_settings=None):
@@ -44,14 +50,14 @@ class User:
                 'userName': user_name,
                 'firstName': first_name,
                 'lastName': last_name,
-                'role': PySenseUtils.get_role_id(self.host, self.token, role_name),
+                'role': PySenseUtils.get_role_id(self._host, self._token, role_name),
                 'groups': groups,
                 'preferences': preferences,
                 'uiSettings': ui_settings
             }
         )
         resp = requests.patch('{}/api/v1/users/{}'.format(
-            self.host, self.get_user_id()), json=json_obj, headers=self.token)
+            self._host, self.get_user_id()), json=json_obj, headers=self._token)
         PySenseUtils.parse_response(resp)
         self._reset(json.loads(resp.content))
         return True
