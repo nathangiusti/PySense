@@ -1,7 +1,7 @@
 import unittest
 
-from Test.PySenseTests import PySenseTests
 from Test.PySenseDashboardTests import PySenseDashboardTests
+from Test.PySenseTests import PySenseTests
 
 scale_test_suite = unittest.TestSuite([
     unittest.TestLoader().loadTestsFromTestCase(PySenseDashboardTests),

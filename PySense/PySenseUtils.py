@@ -17,7 +17,7 @@ def parse_response(response):
     """
 
     if response.status_code not in [200, 201, 204]:
-        raise RestError("ERROR: {}: {}".format(response.status_code, response.content))
+        raise RestError('ERROR: {}: {}'.format(response.status_code, response.content))
 
     return response
 

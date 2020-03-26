@@ -18,10 +18,11 @@ class Elasticube:
     def get_name(self):
         return self._cube_json['title']
 
-    def get_data_source_sql(self, path, query, file_type, *,
+    def get_data_source_sql(self, query, file_type, *, path=None,
                             offset=None, count=None, include_metadata=None, is_masked_response=None):
         """
         Executes elasticube sql. This is a non public API. This functionality is beta
+        Seems to only work on localhost
 
         :param path: The location to save the file
         :param query: The query to execute
@@ -31,10 +32,10 @@ class Elasticube:
         :param count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.
         :param include_metadata: Whether to include metadata.
         :param is_masked_response: Whether response should be masked.
-        :return: The path of the created file
+        :return: The path of the created file or the content payload if path is None
         """
 
-        query = query.replace(' ', '%20')
+        query = urllib.parse.quote(query)
 
         param_string = PySenseUtils.build_query_string({
             'query': query,
@@ -44,16 +45,19 @@ class Elasticube:
             'includeMetadata': include_metadata,
             'isMaskedResponse': is_masked_response
         })
-
+        print('{}/api/datasources/{}/{}/sql?{}'.format(
+            self._host, self._host_formatted, urllib.parse.quote(self.get_name()), param_string))
         resp = requests.get('{}/api/datasources/{}/{}/sql?{}'.format(
-            self._host, self._host_formatted, urllib.parse.quote(self._name), param_string), headers=self._token)
+            self._host, self._host_formatted, urllib.parse.quote(self.get_name()), param_string), headers=self._token)
         PySenseUtils.parse_response(resp)
         output = resp.content.decode('utf-8-sig').splitlines()
-        with open(path, "w") as file:
-            for line in output:
-                file.write(line + '\n')
-
-        return path
+        if path is not None:
+            with open(path, "w") as file:
+                for line in output:
+                    file.write(line + '\n')
+            return path
+        else:
+            return output
 
     def add_security_rule(self, shares, table, column, data_type, members, *, exclusionary=False, all_members=None):
         """

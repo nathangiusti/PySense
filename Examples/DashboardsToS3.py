@@ -6,7 +6,7 @@ This script grabs all dashboards in an instance and uploads them to an S3 bucket
 """
 
 import PySense
-import PySenseS3
+from PySense import PySenseS3
 
 # Authenticate with a config file. See SampleConfig.yaml for example
 if not PySense.authenticate_by_file('C:\\PySenseConfig.yaml'):
