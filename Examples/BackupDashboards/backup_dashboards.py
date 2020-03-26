@@ -6,10 +6,7 @@ https://github.com/nathangiusti/Sisense/tree/master/BackupDashboards that uses t
 from PIL import Image
 import yaml
 import sys
-import PySense
-
-RETRY = 3
-ERROR_DASHES = []
+from PySense import PySense
 
 
 def build_path(folder, dashboard_id, file_format, file_num=None):
@@ -26,28 +23,6 @@ def build_path(folder, dashboard_id, file_format, file_num=None):
         return "{}\\{}-{}.{}".format(folder, dashboard_id, file_num, file_format)
     else:
         return "{}\\{}.{}".format(folder, dashboard_id, file_format)
-
-
-def build_query_string(query_parameters):
-    """
-    Turns a dictionary of query parameters into a query string
-    :param query_parameters: a dictionary of query parameters
-    :return: The query_parameters dictionary flattened into a string
-    """
-
-    query_string = ''
-    if not query_parameters:
-        return query_string
-    for param in query_parameters:
-        if isinstance(query_parameters[param], bool):
-            val = str(query_parameters[param]).lower()
-        else:
-            val = query_parameters[param]
-        query_string += '{}={}&'.format(param, val)
-    if not query_string:
-        return ''
-    else:
-        return query_string[:-1]
 
 
 def create_cropping_list(cropping_string):
@@ -146,10 +121,6 @@ def main():
             dashboard.get_dashboard_export_dash(file_folder + dashboard + '.dash')
 
     print('Backups complete')
-    if len(ERROR_DASHES) > 0:
-        print("Following calls failed:")
-        for dash in ERROR_DASHES:
-            print(dash)
 
 
 main()
