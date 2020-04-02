@@ -1,8 +1,7 @@
 import json
-import os
 import unittest
 
-from PySense import PySense
+import PySense.PySense as PySense
 
 
 class PySenseTests(unittest.TestCase):
@@ -23,7 +22,7 @@ class PySenseTests(unittest.TestCase):
     def test_get_dashboards_id(self):
         ret = self.pyClient.get_dashboards(parent_folder_name='PySense')
         dashboard_id = ret[0].get_dashboard_id()
-        assert dashboard_id == self.pyClient.get_dashboards_id(dashboard_id).get_dashboard_id()
+        assert dashboard_id == self.pyClient.get_dashboard_by_id(dashboard_id).get_dashboard_id()
 
     def test_dashboard_import_delete(self):
         with open(self.sample_path + '\\' + 'ImportDash.dash', 'r', encoding="utf8") as file:
@@ -40,11 +39,11 @@ class PySenseTests(unittest.TestCase):
     def test_get_folder_by_name_by_id(self):
         folder = self.pyClient.get_folders(name='PySense')[0]
         assert folder.get_folder_name() == 'PySense'
-        folder2 = self.pyClient.get_folders_id(folder.get_folder_id())
+        folder2 = self.pyClient.get_folder_by_id(folder.get_folder_id())
         assert folder.get_folder_id() == folder2.get_folder_id()
 
     def test_post_update_delete_user(self):
-        user = self.pyClient.post_user('thisisfake@example.com', 'fake', 'Viewer', groups=['PySense'])
+        user = self.pyClient.add_user('thisisfake@example.com', 'fake', 'Viewer', groups=['PySense'])
         assert user is not None
         user.update_user(user_name='new name')
         assert user.get_user_user_name() == 'new name'

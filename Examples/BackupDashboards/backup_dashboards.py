@@ -106,7 +106,7 @@ def main():
     if 'ids' in data_loaded['dashboards']:
         for dashboard in data_loaded['dashboards']['ids']:
             if dashboard not in dashboard_list:
-                dashboard_list.append(py_client.get_dashboards_id(dashboard))
+                dashboard_list.append(py_client.get_dashboard_by_id(dashboard))
 
     print('Backing up {} dashboards'.format(len(dashboard_list)))
     for dashboard in dashboard_list:

@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from PySense import PySense
+import PySense.PySense as PySense
 
 
 class PySenseDashboardTests(unittest.TestCase):

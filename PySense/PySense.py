@@ -109,7 +109,7 @@ class PySense:
             ret_arr.append(PySenseDashboard.Dashboard(self._host, self._token, dash))
         return ret_arr
 
-    def get_dashboards_id(self, dashboard_id, *, fields=None, expand=None):
+    def get_dashboard_by_id(self, dashboard_id, *, fields=None, expand=None):
         """
         Returns a specific dashboard object by ID.
 
@@ -198,7 +198,7 @@ class PySense:
                 ret_arr.append(PySenseFolder.Folder(self._host, self._token, folder))
         return ret_arr
 
-    def get_folders_id(self, folder_id):
+    def get_folder_by_id(self, folder_id):
         """
         Get a specific folder by folder id
 
@@ -261,6 +261,8 @@ class PySense:
         @param groups: An array of group names
         @return: An array of ids for the groups
         """
+        if groups is None:
+            return []
         resp = requests.get('{}/api/v1/groups'.format(self._host),
                             headers=self._token)
         PySenseUtils.parse_response(resp)
@@ -305,10 +307,10 @@ class PySense:
     # Users                                    #
     ############################################
 
-    def post_user(self, email, username, role, *, first_name=None, last_name=None,
-                  groups=None, preferences=None, ui_settings=None):
+    def add_user(self, email, username, role, *, first_name=None, last_name=None,
+                 groups=None, preferences=None, ui_settings=None):
         """
-        Receives a new user object and creates that user in SiSense, returning the created object.
+        Creates that user in SiSense, returning the created object.
         If a user with the same username or email exists, it will return an error.
 
         @param email: email address for user
@@ -333,6 +335,7 @@ class PySense:
         })
         resp = requests.post('{}/api/v1/users'.format(self._host), headers=self._token,
                              json=user_obj)
+
         PySenseUtils.parse_response(resp)
         return PySenseUser.User(self._host, self._token, json.loads(resp.content))
 
