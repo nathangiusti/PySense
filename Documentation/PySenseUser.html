@@ -42,33 +42,35 @@ class User:
 
     def get_user_id(self):
         &#34;&#34;&#34;
-        Returns the user&#39;s id
-        :return: The user id
+        Returns the user&#39;s id  
+
+        :return: The user id  
         &#34;&#34;&#34;
         return self._user_json[&#39;_id&#39;]
 
     def get_user_user_name(self):
         &#34;&#34;&#34;
-        Returns the user&#39;s username
-        :return: The user&#39;s username
+        Returns the user&#39;s username  
+  
+        :return: The user&#39;s    
         &#34;&#34;&#34;
         return self._user_json[&#39;userName&#39;]
 
     def update_user(self, *, email=None, user_name=None, first_name=None, last_name=None, role_name=None, groups=None,
                     preferences=None, ui_settings=None):
         &#34;&#34;&#34;
-        Updates given fields for user object. Returns true if successful, None if error
-
-        @param email: Value to update email to
-        @param user_name: Value to update username to
-        @param first_name: Value to update firstName to
-        @param last_name: Value to update lastName to
-        @param role_name: New role for user
-        @param groups: Groups to put user in
-        @param preferences: Preferences to be updated for user
-        @param ui_settings: UI Settings to be updated for user
-        @return: True if successful
-        &#34;&#34;&#34;
+        Updates given fields for user object. Returns true if successful, None if error   
+  
+        :param email: Value to update email to  
+        :param user_name: Value to update username to  
+        :param first_name: Value to update firstName to  
+        :param last_name: Value to update lastName to  
+        :param role_name: New role for user  
+        :param groups: Groups to put user in  
+        :param preferences: Preferences to be updated for user  
+        :param ui_settings: UI Settings to be updated for user  
+        :return: True if successful  
+        &#34;&#34;&#34;  
 
         json_obj = PySenseUtils.build_json_object(
             {
@@ -120,33 +122,35 @@ class User:
 
     def get_user_id(self):
         &#34;&#34;&#34;
-        Returns the user&#39;s id
-        :return: The user id
+        Returns the user&#39;s id  
+
+        :return: The user id  
         &#34;&#34;&#34;
         return self._user_json[&#39;_id&#39;]
 
     def get_user_user_name(self):
         &#34;&#34;&#34;
-        Returns the user&#39;s username
-        :return: The user&#39;s username
+        Returns the user&#39;s username  
+  
+        :return: The user&#39;s    
         &#34;&#34;&#34;
         return self._user_json[&#39;userName&#39;]
 
     def update_user(self, *, email=None, user_name=None, first_name=None, last_name=None, role_name=None, groups=None,
                     preferences=None, ui_settings=None):
         &#34;&#34;&#34;
-        Updates given fields for user object. Returns true if successful, None if error
-
-        @param email: Value to update email to
-        @param user_name: Value to update username to
-        @param first_name: Value to update firstName to
-        @param last_name: Value to update lastName to
-        @param role_name: New role for user
-        @param groups: Groups to put user in
-        @param preferences: Preferences to be updated for user
-        @param ui_settings: UI Settings to be updated for user
-        @return: True if successful
-        &#34;&#34;&#34;
+        Updates given fields for user object. Returns true if successful, None if error   
+  
+        :param email: Value to update email to  
+        :param user_name: Value to update username to  
+        :param first_name: Value to update firstName to  
+        :param last_name: Value to update lastName to  
+        :param role_name: New role for user  
+        :param groups: Groups to put user in  
+        :param preferences: Preferences to be updated for user  
+        :param ui_settings: UI Settings to be updated for user  
+        :return: True if successful  
+        &#34;&#34;&#34;  
 
         json_obj = PySenseUtils.build_json_object(
             {
@@ -173,15 +177,17 @@ class User:
 </code></dt>
 <dd>
 <section class="desc"><p>Returns the user's id
-:return: The user id</p></section>
+</p>
+<p>:return: The user id</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_user_id(self):
     &#34;&#34;&#34;
-    Returns the user&#39;s id
-    :return: The user id
+    Returns the user&#39;s id  
+
+    :return: The user id  
     &#34;&#34;&#34;
     return self._user_json[&#39;_id&#39;]</code></pre>
 </details>
@@ -191,15 +197,17 @@ class User:
 </code></dt>
 <dd>
 <section class="desc"><p>Returns the user's username
-:return: The user's username</p></section>
+</p>
+<p>:return: The user's</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_user_user_name(self):
     &#34;&#34;&#34;
-    Returns the user&#39;s username
-    :return: The user&#39;s username
+    Returns the user&#39;s username  
+
+    :return: The user&#39;s    
     &#34;&#34;&#34;
     return self._user_json[&#39;userName&#39;]</code></pre>
 </details>
@@ -208,16 +216,17 @@ class User:
 <span>def <span class="ident">update_user</span></span>(<span>self, *, email=None, user_name=None, first_name=None, last_name=None, role_name=None, groups=None, preferences=None, ui_settings=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Updates given fields for user object. Returns true if successful, None if error</p>
-<p>@param email: Value to update email to
-@param user_name: Value to update username to
-@param first_name: Value to update firstName to
-@param last_name: Value to update lastName to
-@param role_name: New role for user
-@param groups: Groups to put user in
-@param preferences: Preferences to be updated for user
-@param ui_settings: UI Settings to be updated for user
-@return: True if successful</p></section>
+<section class="desc"><p>Updates given fields for user object. Returns true if successful, None if error
+</p>
+<p>:param email: Value to update email to<br>
+:param user_name: Value to update username to<br>
+:param first_name: Value to update firstName to<br>
+:param last_name: Value to update lastName to<br>
+:param role_name: New role for user<br>
+:param groups: Groups to put user in<br>
+:param preferences: Preferences to be updated for user<br>
+:param ui_settings: UI Settings to be updated for user<br>
+:return: True if successful</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -225,18 +234,18 @@ class User:
 <pre><code class="python">def update_user(self, *, email=None, user_name=None, first_name=None, last_name=None, role_name=None, groups=None,
                 preferences=None, ui_settings=None):
     &#34;&#34;&#34;
-    Updates given fields for user object. Returns true if successful, None if error
+    Updates given fields for user object. Returns true if successful, None if error   
 
-    @param email: Value to update email to
-    @param user_name: Value to update username to
-    @param first_name: Value to update firstName to
-    @param last_name: Value to update lastName to
-    @param role_name: New role for user
-    @param groups: Groups to put user in
-    @param preferences: Preferences to be updated for user
-    @param ui_settings: UI Settings to be updated for user
-    @return: True if successful
-    &#34;&#34;&#34;
+    :param email: Value to update email to  
+    :param user_name: Value to update username to  
+    :param first_name: Value to update firstName to  
+    :param last_name: Value to update lastName to  
+    :param role_name: New role for user  
+    :param groups: Groups to put user in  
+    :param preferences: Preferences to be updated for user  
+    :param ui_settings: UI Settings to be updated for user  
+    :return: True if successful  
+    &#34;&#34;&#34;  
 
     json_obj = PySenseUtils.build_json_object(
         {

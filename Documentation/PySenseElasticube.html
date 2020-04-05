@@ -54,19 +54,19 @@ class Elasticube:
     def get_data_source_sql(self, server_address, query, file_type, *, path=None,
                             offset=None, count=None, include_metadata=None, is_masked_response=None):
         &#34;&#34;&#34;
-        Executes elasticube sql. This is a non public API. This functionality is beta
-        Seems to only work on localhost
-
-        :param path: The location to save the file
-        :param server_address: The server address of the ElastiCube.
-        :param query: The query to execute
-        :param file_type: File format to return
-        :param offset: Defines how many items to skip before returning the results.
-            For example, to return results from value #101 onward, enter a value of ‘100’.
-        :param count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.
-        :param include_metadata: Whether to include metadata.
-        :param is_masked_response: Whether response should be masked.
-        :return: The path of the created file or the content payload if path is None
+        Executes elasticube sql. This is a non public API. This functionality is beta  
+        Seems to only work on localhost  
+  
+        :param path: The location to save the file  
+        :param server_address: The server address of the ElastiCube.  
+        :param query: The query to execute  
+        :param file_type: File format to return  
+        :param offset: Defines how many items to skip before returning the results.  
+            For example, to return results from value #101 onward, enter a value of ‘100’.  
+        :param count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.  
+        :param include_metadata: Whether to include metadata.  
+        :param is_masked_response: Whether response should be masked.  
+        :return: The path of the created file or the content payload if path is None  
         &#34;&#34;&#34;
 
         query = urllib.parse.quote(query)
@@ -96,16 +96,16 @@ class Elasticube:
     def add_security_rule(self, server_address, shares, table, column, data_type, members, *,
                           exclusionary=False, all_members=None):
         &#34;&#34;&#34;
-        Defines data security rules for a column on a specific server and elasticube
-
-        :param shares: The users or groups to assign the security rule to
-        :param server_address: The server address of the ElastiCube. Use &#39;Set&#39; for Elasticube Set.
-        :param table: The table to apply security on
-        :param column: The column to apply security on
-        :param data_type: The data type of the column
-        :param members: An array of values which users should have access to
-        :param exclusionary: True if exclusionary rule
-        :param all_members: True if all members to be selectable
+        Defines data security rules for a column on a specific server and elasticube   
+  
+        :param shares: The users or groups to assign the security rule to  
+        :param server_address: The server address of the ElastiCube. Use &#39;Set&#39; for Elasticube Set.  
+        :param table: The table to apply security on  
+        :param column: The column to apply security on  
+        :param data_type: The data type of the column  
+        :param members: An array of values which users should have access to  
+        :param exclusionary: True if exclusionary rule  
+        :param all_members: True if all members to be selectable  
         :return:
         &#34;&#34;&#34;
 
@@ -140,13 +140,14 @@ class Elasticube:
 
     def add_default_rule(self, server_address, table_name, column_name, data_type, security_values=[]):
         &#34;&#34;&#34;
-        Add a rule for the default group
-        :param server_address: The server address of the ElastiCube. Use &#39;Set&#39; for Elasticube Set.
-        :param table_name: Table to apply data security to
-        :param column_name: Column to apply data security to
-        :param data_type: The data type
-        :param security_values: Default security values. Leave out for &#34;Nothing.&#34; (Recommended)
-        :return:
+        Add a rule for the default group  
+          
+        :param server_address: The server address of the ElastiCube. Use &#39;Set&#39; for Elasticube Set.  
+        :param table_name: Table to apply data security to  
+        :param column_name: Column to apply data security to  
+        :param data_type: The data type  
+        :param security_values: Default security values. Leave out for &#34;Nothing.&#34; (Recommended)  
+        :return:  The new security rule
         &#34;&#34;&#34;
         if &#39;Everything&#39; in security_values:
             return self.add_security_rule(server_address, [{&#34;type&#34;: &#34;default&#34;}], table_name, column_name, data_type, [],
@@ -157,8 +158,10 @@ class Elasticube:
 
     def get_elasticube_datasecurity(self, server_address):
         &#34;&#34;&#34;
-        Return data security rules for the elasticube
-        :return: The data security rules for the elasticube
+        Return data security rules for the elasticube  
+        
+        :param server_address: The server address of the ElastiCube  
+        :return: The data security rules for the elasticube   
         &#34;&#34;&#34;
         resp = requests.get(&#39;{}/api/elasticubes/{}/{}/datasecurity&#39;.format(
             self._host, server_address, urllib.parse.quote(self.get_name())), headers=self._token)
@@ -170,10 +173,11 @@ class Elasticube:
 
     def get_elasticube_datasecurity_by_table_column(self, server_address, table, column):
         &#34;&#34;&#34;
-        Returns ElastiCube data security rules for a column in a table in the ElastiCube
-        :param server_address: The server address of the ElastiCube.
-        :param table: The name of the table in the ElastiCube
-        :param column: The name of the column in the ElastiCube
+        Returns ElastiCube data security rules for a column in a table in the ElastiCube  
+          
+        :param server_address: The server address of the ElastiCube  
+        :param table: The name of the table in the ElastiCube  
+        :param column: The name of the column in the ElastiCube  
         :return:
         &#34;&#34;&#34;
         resp = requests.get(&#39;{}/api/elasticubes/{}/{}/datasecurity/{}/{}&#39;.format(
@@ -186,11 +190,11 @@ class Elasticube:
 
     def delete_rule(self, server_address, table, column):
         &#34;&#34;&#34;
-        Delete data security rule for a column
-        :param server_address: The server address of the ElastiCube.
-        :param table: The name of the table in the ElastiCube
-        :param column: The name of the column in the ElastiCube
-        :return: True
+        Delete data security rule for a column  
+          
+        :param server_address: The server address of the ElastiCube   
+        :param table: The name of the table in the ElastiCube  
+        :param column: The name of the column in the ElastiCube  
         &#34;&#34;&#34;
         param_string = PySenseUtils.build_query_string({
             &#39;table&#39;: table,
@@ -199,9 +203,13 @@ class Elasticube:
         resp = requests.delete(&#39;{}/api/elasticubes/{}/{}/datasecurity?{}&#39;.format(
             self._host, server_address, urllib.parse.quote(self.get_name()), param_string), headers=self._token)
         PySenseUtils.parse_response(resp)
-        return True
 
     def get_elasticube_oid(self):
+        &#34;&#34;&#34;  
+        Get&#39;s the elasticube&#39;s oid  
+          
+        :return: The elasitcube&#39;s oid  
+        &#34;&#34;&#34;
         return self._cube_json[&#39;oid&#39;]</code></pre>
 </details>
 </section>
@@ -243,19 +251,19 @@ class Elasticube:
     def get_data_source_sql(self, server_address, query, file_type, *, path=None,
                             offset=None, count=None, include_metadata=None, is_masked_response=None):
         &#34;&#34;&#34;
-        Executes elasticube sql. This is a non public API. This functionality is beta
-        Seems to only work on localhost
-
-        :param path: The location to save the file
-        :param server_address: The server address of the ElastiCube.
-        :param query: The query to execute
-        :param file_type: File format to return
-        :param offset: Defines how many items to skip before returning the results.
-            For example, to return results from value #101 onward, enter a value of ‘100’.
-        :param count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.
-        :param include_metadata: Whether to include metadata.
-        :param is_masked_response: Whether response should be masked.
-        :return: The path of the created file or the content payload if path is None
+        Executes elasticube sql. This is a non public API. This functionality is beta  
+        Seems to only work on localhost  
+  
+        :param path: The location to save the file  
+        :param server_address: The server address of the ElastiCube.  
+        :param query: The query to execute  
+        :param file_type: File format to return  
+        :param offset: Defines how many items to skip before returning the results.  
+            For example, to return results from value #101 onward, enter a value of ‘100’.  
+        :param count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.  
+        :param include_metadata: Whether to include metadata.  
+        :param is_masked_response: Whether response should be masked.  
+        :return: The path of the created file or the content payload if path is None  
         &#34;&#34;&#34;
 
         query = urllib.parse.quote(query)
@@ -285,16 +293,16 @@ class Elasticube:
     def add_security_rule(self, server_address, shares, table, column, data_type, members, *,
                           exclusionary=False, all_members=None):
         &#34;&#34;&#34;
-        Defines data security rules for a column on a specific server and elasticube
-
-        :param shares: The users or groups to assign the security rule to
-        :param server_address: The server address of the ElastiCube. Use &#39;Set&#39; for Elasticube Set.
-        :param table: The table to apply security on
-        :param column: The column to apply security on
-        :param data_type: The data type of the column
-        :param members: An array of values which users should have access to
-        :param exclusionary: True if exclusionary rule
-        :param all_members: True if all members to be selectable
+        Defines data security rules for a column on a specific server and elasticube   
+  
+        :param shares: The users or groups to assign the security rule to  
+        :param server_address: The server address of the ElastiCube. Use &#39;Set&#39; for Elasticube Set.  
+        :param table: The table to apply security on  
+        :param column: The column to apply security on  
+        :param data_type: The data type of the column  
+        :param members: An array of values which users should have access to  
+        :param exclusionary: True if exclusionary rule  
+        :param all_members: True if all members to be selectable  
         :return:
         &#34;&#34;&#34;
 
@@ -329,13 +337,14 @@ class Elasticube:
 
     def add_default_rule(self, server_address, table_name, column_name, data_type, security_values=[]):
         &#34;&#34;&#34;
-        Add a rule for the default group
-        :param server_address: The server address of the ElastiCube. Use &#39;Set&#39; for Elasticube Set.
-        :param table_name: Table to apply data security to
-        :param column_name: Column to apply data security to
-        :param data_type: The data type
-        :param security_values: Default security values. Leave out for &#34;Nothing.&#34; (Recommended)
-        :return:
+        Add a rule for the default group  
+          
+        :param server_address: The server address of the ElastiCube. Use &#39;Set&#39; for Elasticube Set.  
+        :param table_name: Table to apply data security to  
+        :param column_name: Column to apply data security to  
+        :param data_type: The data type  
+        :param security_values: Default security values. Leave out for &#34;Nothing.&#34; (Recommended)  
+        :return:  The new security rule
         &#34;&#34;&#34;
         if &#39;Everything&#39; in security_values:
             return self.add_security_rule(server_address, [{&#34;type&#34;: &#34;default&#34;}], table_name, column_name, data_type, [],
@@ -346,8 +355,10 @@ class Elasticube:
 
     def get_elasticube_datasecurity(self, server_address):
         &#34;&#34;&#34;
-        Return data security rules for the elasticube
-        :return: The data security rules for the elasticube
+        Return data security rules for the elasticube  
+        
+        :param server_address: The server address of the ElastiCube  
+        :return: The data security rules for the elasticube   
         &#34;&#34;&#34;
         resp = requests.get(&#39;{}/api/elasticubes/{}/{}/datasecurity&#39;.format(
             self._host, server_address, urllib.parse.quote(self.get_name())), headers=self._token)
@@ -359,10 +370,11 @@ class Elasticube:
 
     def get_elasticube_datasecurity_by_table_column(self, server_address, table, column):
         &#34;&#34;&#34;
-        Returns ElastiCube data security rules for a column in a table in the ElastiCube
-        :param server_address: The server address of the ElastiCube.
-        :param table: The name of the table in the ElastiCube
-        :param column: The name of the column in the ElastiCube
+        Returns ElastiCube data security rules for a column in a table in the ElastiCube  
+          
+        :param server_address: The server address of the ElastiCube  
+        :param table: The name of the table in the ElastiCube  
+        :param column: The name of the column in the ElastiCube  
         :return:
         &#34;&#34;&#34;
         resp = requests.get(&#39;{}/api/elasticubes/{}/{}/datasecurity/{}/{}&#39;.format(
@@ -375,11 +387,11 @@ class Elasticube:
 
     def delete_rule(self, server_address, table, column):
         &#34;&#34;&#34;
-        Delete data security rule for a column
-        :param server_address: The server address of the ElastiCube.
-        :param table: The name of the table in the ElastiCube
-        :param column: The name of the column in the ElastiCube
-        :return: True
+        Delete data security rule for a column  
+          
+        :param server_address: The server address of the ElastiCube   
+        :param table: The name of the table in the ElastiCube  
+        :param column: The name of the column in the ElastiCube  
         &#34;&#34;&#34;
         param_string = PySenseUtils.build_query_string({
             &#39;table&#39;: table,
@@ -388,9 +400,13 @@ class Elasticube:
         resp = requests.delete(&#39;{}/api/elasticubes/{}/{}/datasecurity?{}&#39;.format(
             self._host, server_address, urllib.parse.quote(self.get_name()), param_string), headers=self._token)
         PySenseUtils.parse_response(resp)
-        return True
 
     def get_elasticube_oid(self):
+        &#34;&#34;&#34;  
+        Get&#39;s the elasticube&#39;s oid  
+          
+        :return: The elasitcube&#39;s oid  
+        &#34;&#34;&#34;
         return self._cube_json[&#39;oid&#39;]</code></pre>
 </details>
 <h3>Methods</h3>
@@ -400,25 +416,28 @@ class Elasticube:
 </code></dt>
 <dd>
 <section class="desc"><p>Add a rule for the default group
-:param server_address: The server address of the ElastiCube. Use 'Set' for Elasticube Set.
-:param table_name: Table to apply data security to
-:param column_name: Column to apply data security to
-:param data_type: The data type
-:param security_values: Default security values. Leave out for "Nothing." (Recommended)
-:return:</p></section>
+</p>
+<p>:param server_address: The server address of the ElastiCube. Use 'Set' for Elasticube Set.<br>
+:param table_name: Table to apply data security to<br>
+:param column_name: Column to apply data security to<br>
+:param data_type: The data type<br>
+:param security_values: Default security values. Leave out for "Nothing." (Recommended)<br>
+:return:
+The new security rule</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def add_default_rule(self, server_address, table_name, column_name, data_type, security_values=[]):
     &#34;&#34;&#34;
-    Add a rule for the default group
-    :param server_address: The server address of the ElastiCube. Use &#39;Set&#39; for Elasticube Set.
-    :param table_name: Table to apply data security to
-    :param column_name: Column to apply data security to
-    :param data_type: The data type
-    :param security_values: Default security values. Leave out for &#34;Nothing.&#34; (Recommended)
-    :return:
+    Add a rule for the default group  
+      
+    :param server_address: The server address of the ElastiCube. Use &#39;Set&#39; for Elasticube Set.  
+    :param table_name: Table to apply data security to  
+    :param column_name: Column to apply data security to  
+    :param data_type: The data type  
+    :param security_values: Default security values. Leave out for &#34;Nothing.&#34; (Recommended)  
+    :return:  The new security rule
     &#34;&#34;&#34;
     if &#39;Everything&#39; in security_values:
         return self.add_security_rule(server_address, [{&#34;type&#34;: &#34;default&#34;}], table_name, column_name, data_type, [],
@@ -432,15 +451,16 @@ class Elasticube:
 <span>def <span class="ident">add_security_rule</span></span>(<span>self, server_address, shares, table, column, data_type, members, *, exclusionary=False, all_members=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Defines data security rules for a column on a specific server and elasticube</p>
-<p>:param shares: The users or groups to assign the security rule to
-:param server_address: The server address of the ElastiCube. Use 'Set' for Elasticube Set.
-:param table: The table to apply security on
-:param column: The column to apply security on
-:param data_type: The data type of the column
-:param members: An array of values which users should have access to
-:param exclusionary: True if exclusionary rule
-:param all_members: True if all members to be selectable
+<section class="desc"><p>Defines data security rules for a column on a specific server and elasticube
+</p>
+<p>:param shares: The users or groups to assign the security rule to<br>
+:param server_address: The server address of the ElastiCube. Use 'Set' for Elasticube Set.<br>
+:param table: The table to apply security on<br>
+:param column: The column to apply security on<br>
+:param data_type: The data type of the column<br>
+:param members: An array of values which users should have access to<br>
+:param exclusionary: True if exclusionary rule<br>
+:param all_members: True if all members to be selectable<br>
 :return:</p></section>
 <details class="source">
 <summary>
@@ -449,16 +469,16 @@ class Elasticube:
 <pre><code class="python">def add_security_rule(self, server_address, shares, table, column, data_type, members, *,
                       exclusionary=False, all_members=None):
     &#34;&#34;&#34;
-    Defines data security rules for a column on a specific server and elasticube
+    Defines data security rules for a column on a specific server and elasticube   
 
-    :param shares: The users or groups to assign the security rule to
-    :param server_address: The server address of the ElastiCube. Use &#39;Set&#39; for Elasticube Set.
-    :param table: The table to apply security on
-    :param column: The column to apply security on
-    :param data_type: The data type of the column
-    :param members: An array of values which users should have access to
-    :param exclusionary: True if exclusionary rule
-    :param all_members: True if all members to be selectable
+    :param shares: The users or groups to assign the security rule to  
+    :param server_address: The server address of the ElastiCube. Use &#39;Set&#39; for Elasticube Set.  
+    :param table: The table to apply security on  
+    :param column: The column to apply security on  
+    :param data_type: The data type of the column  
+    :param members: An array of values which users should have access to  
+    :param exclusionary: True if exclusionary rule  
+    :param all_members: True if all members to be selectable  
     :return:
     &#34;&#34;&#34;
 
@@ -497,21 +517,21 @@ class Elasticube:
 </code></dt>
 <dd>
 <section class="desc"><p>Delete data security rule for a column
-:param server_address: The server address of the ElastiCube.
-:param table: The name of the table in the ElastiCube
-:param column: The name of the column in the ElastiCube
-:return: True</p></section>
+</p>
+<p>:param server_address: The server address of the ElastiCube <br>
+:param table: The name of the table in the ElastiCube<br>
+:param column: The name of the column in the ElastiCube</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def delete_rule(self, server_address, table, column):
     &#34;&#34;&#34;
-    Delete data security rule for a column
-    :param server_address: The server address of the ElastiCube.
-    :param table: The name of the table in the ElastiCube
-    :param column: The name of the column in the ElastiCube
-    :return: True
+    Delete data security rule for a column  
+      
+    :param server_address: The server address of the ElastiCube   
+    :param table: The name of the table in the ElastiCube  
+    :param column: The name of the column in the ElastiCube  
     &#34;&#34;&#34;
     param_string = PySenseUtils.build_query_string({
         &#39;table&#39;: table,
@@ -519,25 +539,25 @@ class Elasticube:
     })
     resp = requests.delete(&#39;{}/api/elasticubes/{}/{}/datasecurity?{}&#39;.format(
         self._host, server_address, urllib.parse.quote(self.get_name()), param_string), headers=self._token)
-    PySenseUtils.parse_response(resp)
-    return True</code></pre>
+    PySenseUtils.parse_response(resp)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseElasticube.Elasticube.get_data_source_sql"><code class="name flex">
 <span>def <span class="ident">get_data_source_sql</span></span>(<span>self, server_address, query, file_type, *, path=None, offset=None, count=None, include_metadata=None, is_masked_response=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Executes elasticube sql. This is a non public API. This functionality is beta
-Seems to only work on localhost</p>
-<p>:param path: The location to save the file
-:param server_address: The server address of the ElastiCube.
-:param query: The query to execute
-:param file_type: File format to return
-:param offset: Defines how many items to skip before returning the results.
-For example, to return results from value #101 onward, enter a value of ‘100’.
-:param count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.
-:param include_metadata: Whether to include metadata.
-:param is_masked_response: Whether response should be masked.
+<section class="desc"><p>Executes elasticube sql. This is a non public API. This functionality is beta<br>
+Seems to only work on localhost
+</p>
+<p>:param path: The location to save the file<br>
+:param server_address: The server address of the ElastiCube.<br>
+:param query: The query to execute<br>
+:param file_type: File format to return<br>
+:param offset: Defines how many items to skip before returning the results.<br>
+For example, to return results from value #101 onward, enter a value of ‘100’.<br>
+:param count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.<br>
+:param include_metadata: Whether to include metadata.<br>
+:param is_masked_response: Whether response should be masked.<br>
 :return: The path of the created file or the content payload if path is None</p></section>
 <details class="source">
 <summary>
@@ -546,19 +566,19 @@ For example, to return results from value #101 onward, enter a value of ‘100�
 <pre><code class="python">def get_data_source_sql(self, server_address, query, file_type, *, path=None,
                         offset=None, count=None, include_metadata=None, is_masked_response=None):
     &#34;&#34;&#34;
-    Executes elasticube sql. This is a non public API. This functionality is beta
-    Seems to only work on localhost
+    Executes elasticube sql. This is a non public API. This functionality is beta  
+    Seems to only work on localhost  
 
-    :param path: The location to save the file
-    :param server_address: The server address of the ElastiCube.
-    :param query: The query to execute
-    :param file_type: File format to return
-    :param offset: Defines how many items to skip before returning the results.
-        For example, to return results from value #101 onward, enter a value of ‘100’.
-    :param count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.
-    :param include_metadata: Whether to include metadata.
-    :param is_masked_response: Whether response should be masked.
-    :return: The path of the created file or the content payload if path is None
+    :param path: The location to save the file  
+    :param server_address: The server address of the ElastiCube.  
+    :param query: The query to execute  
+    :param file_type: File format to return  
+    :param offset: Defines how many items to skip before returning the results.  
+        For example, to return results from value #101 onward, enter a value of ‘100’.  
+    :param count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.  
+    :param include_metadata: Whether to include metadata.  
+    :param is_masked_response: Whether response should be masked.  
+    :return: The path of the created file or the content payload if path is None  
     &#34;&#34;&#34;
 
     query = urllib.parse.quote(query)
@@ -591,6 +611,8 @@ For example, to return results from value #101 onward, enter a value of ‘100�
 </code></dt>
 <dd>
 <section class="desc"><p>Return data security rules for the elasticube
+</p>
+<p>:param server_address: The server address of the ElastiCube<br>
 :return: The data security rules for the elasticube</p></section>
 <details class="source">
 <summary>
@@ -598,8 +620,10 @@ For example, to return results from value #101 onward, enter a value of ‘100�
 </summary>
 <pre><code class="python">def get_elasticube_datasecurity(self, server_address):
     &#34;&#34;&#34;
-    Return data security rules for the elasticube
-    :return: The data security rules for the elasticube
+    Return data security rules for the elasticube  
+    
+    :param server_address: The server address of the ElastiCube  
+    :return: The data security rules for the elasticube   
     &#34;&#34;&#34;
     resp = requests.get(&#39;{}/api/elasticubes/{}/{}/datasecurity&#39;.format(
         self._host, server_address, urllib.parse.quote(self.get_name())), headers=self._token)
@@ -615,9 +639,10 @@ For example, to return results from value #101 onward, enter a value of ‘100�
 </code></dt>
 <dd>
 <section class="desc"><p>Returns ElastiCube data security rules for a column in a table in the ElastiCube
-:param server_address: The server address of the ElastiCube.
-:param table: The name of the table in the ElastiCube
-:param column: The name of the column in the ElastiCube
+</p>
+<p>:param server_address: The server address of the ElastiCube<br>
+:param table: The name of the table in the ElastiCube<br>
+:param column: The name of the column in the ElastiCube<br>
 :return:</p></section>
 <details class="source">
 <summary>
@@ -625,10 +650,11 @@ For example, to return results from value #101 onward, enter a value of ‘100�
 </summary>
 <pre><code class="python">def get_elasticube_datasecurity_by_table_column(self, server_address, table, column):
     &#34;&#34;&#34;
-    Returns ElastiCube data security rules for a column in a table in the ElastiCube
-    :param server_address: The server address of the ElastiCube.
-    :param table: The name of the table in the ElastiCube
-    :param column: The name of the column in the ElastiCube
+    Returns ElastiCube data security rules for a column in a table in the ElastiCube  
+      
+    :param server_address: The server address of the ElastiCube  
+    :param table: The name of the table in the ElastiCube  
+    :param column: The name of the column in the ElastiCube  
     :return:
     &#34;&#34;&#34;
     resp = requests.get(&#39;{}/api/elasticubes/{}/{}/datasecurity/{}/{}&#39;.format(
@@ -644,12 +670,19 @@ For example, to return results from value #101 onward, enter a value of ‘100�
 <span>def <span class="ident">get_elasticube_oid</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Get's the elasticube's oid
+</p>
+<p>:return: The elasitcube's oid</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_elasticube_oid(self):
+    &#34;&#34;&#34;  
+    Get&#39;s the elasticube&#39;s oid  
+      
+    :return: The elasitcube&#39;s oid  
+    &#34;&#34;&#34;
     return self._cube_json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>

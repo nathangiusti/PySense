@@ -38,10 +38,10 @@ from PySense import PySenseUtils
 
 def authenticate_by_file(config_file):
     &#34;&#34;&#34;
-    Creates a new PySense client with the credentials in the given config file.
+    Creates a new PySense client with the credentials in the given config file.  
 
-    :param config_file: Yaml file with entries for host, username, and password
-    :return: A new PySense client for the given credentials
+    :param config_file: Yaml file with entries for host, username, and password  
+    :return: A new PySense client for the given credentials  
     &#34;&#34;&#34;
     with open(config_file, &#39;r&#39;) as yml_file:
         cfg = yaml.safe_load(yml_file)
@@ -61,13 +61,13 @@ class PySense:
 
     def custom_rest(self, action_type, url, *, data=None, json_payload=None):
         &#34;&#34;&#34;
-        Run an arbitrary rest command against your Sisense instance.
+        Run an arbitrary rest command against your Sisense instance.  
 
-        :param action_type: REST request type
-        :param url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding
-        :param data: The data portion of the payload
-        :param json_payload: The json portion of the payload
-        :return: The rest response object
+        :param action_type: REST request type  
+        :param url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding  
+        :param data: The data portion of the payload  
+        :param json_payload: The json portion of the payload  
+        :return: The rest response object  
         &#34;&#34;&#34;
         if action_type.lower() == &#39;get&#39;:
             return requests.get(&#39;{}/{}&#39;.format(self._host, url), headers=self._token, data=data, json=json_payload)
@@ -84,8 +84,8 @@ class PySense:
 
     def get_authentication(self):
         &#34;&#34;&#34;
-        Returns authentication parameters
-        @return: A dictionary with an entry for host and token
+        Returns authentication parameters  
+        @return: A dictionary with an entry for host and token  
         &#34;&#34;&#34;
         return {&#39;host&#39;: self._host, &#39;token&#39;: self._token}
 
@@ -96,18 +96,18 @@ class PySense:
     def get_dashboards(self, *, parent_folder_name=None, name=None, data_source_title=None,
                        data_source_address=None, fields=None, sort=None, expand=None):
         &#34;&#34;&#34;
-         Get all dashboards
-
-         :param parent_folder_name: Parent folder name to filter by
-         :param name: Name to filter by
-         :param data_source_title: Data source name to filter by
-         :param data_source_address: Data source address to filter by
-         :param fields: Whitelist of fields to return for each document.
-            Can also exclude by prefixing field names with -
-         :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-         :param expand: List of fields that should be expanded
-         :return: All found dashboards
-         &#34;&#34;&#34;
+         Get all dashboards  
+  
+         :param parent_folder_name: Parent folder name to filter by  
+         :param name: Name to filter by  
+         :param data_source_title: Data source name to filter by  
+         :param data_source_address: Data source address to filter by  
+         :param fields: Whitelist of fields to return for each document.  
+            Can also exclude by prefixing field names with -  
+         :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+         :param expand: List of fields that should be expanded  
+         :return: All found dashboards  
+         &#34;&#34;&#34;  
         ret_arr = []
         folder_id = None
         if parent_folder_name:
@@ -136,15 +136,15 @@ class PySense:
         return ret_arr
 
     def get_dashboard_by_id(self, dashboard_id, *, fields=None, expand=None):
-        &#34;&#34;&#34;
-        Returns a specific dashboard object by ID.
-
-        :param dashboard_id: The ID of the dashboard to get
-        :param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude
-            by prefixing field names with -
-        :param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be nested
-            using the resource.subResource format
-        :return: Dashboard with id given
+        &#34;&#34;&#34;  
+        Returns a specific dashboard object by ID.  
+  
+        :param dashboard_id: The ID of the dashboard to get  
+        :param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
+            by prefixing field names with -  
+        :param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be nested  
+            using the resource.subResource format  
+        :return: Dashboard with id given  
         &#34;&#34;&#34;
         param_string = PySenseUtils.build_query_string({
             &#39;fields&#39;: fields,
@@ -156,11 +156,11 @@ class PySense:
         return PySenseDashboard.Dashboard(self._host, self._token, resp.json())
 
     def post_dashboards(self, dashboard_json):
-        &#34;&#34;&#34;
-        Import given dashboard
-
-        :param dashboard_json: The dashboard json from the dash file
-        :return: The dashboard given by the response object
+        &#34;&#34;&#34;  
+        Import given dashboard  
+  
+        :param dashboard_json: The dashboard json from the dash file  
+        :return: The dashboard given by the response object  
         &#34;&#34;&#34;
         resp = requests.post(&#39;{}/api/v1/dashboards/&#39;.format(self._host), headers=self._token,
                              json=dashboard_json)
@@ -168,11 +168,11 @@ class PySense:
         return PySenseDashboard.Dashboard(self._host, self._token, json.loads(resp.content))
 
     def delete_dashboards(self, dashboard_id):
-        &#34;&#34;&#34;
-        Delete dashboard with id
+        &#34;&#34;&#34;  
+        Delete dashboard with id  
 
-        :param dashboard_id: The ID of the dashboard to delete
-        :return: The response object
+        :param dashboard_id: The ID of the dashboard to delete  
+        :return: The response object  
         &#34;&#34;&#34;
         resp = requests.delete(&#39;{}/api/v1/dashboards/{}&#39;.format(self._host, dashboard_id),
                                headers=self._token)
@@ -184,22 +184,22 @@ class PySense:
 
     def get_folders(self, *, name=None, structure=None, ids=None, fields=None,
                     sort=None, skip=None, limit=None, expand=None):
-        &#34;&#34;&#34;
-        Provides access to a specified user’s folders in their stored format
-
-        @param name: Name to filter by
-        @param structure: Structure type of the folders
-        @param ids: Array of folder IDs to get, separated by a comma (,) and without spaces
-        @param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude
-            by prefixing field names with -
-        @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-        @param skip: Number of results to skip from the start of the data set. skip is to be used with the limit
-            parameter for paging
-        @param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-        @param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be
-            nested using the resource.subResource format
-        @return: An array of folders matching the search criteria
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
+        Provides access to a specified user’s folders in their stored format  
+  
+        @param name: Name to filter by  
+        @param structure: Structure type of the folders  
+        @param ids: Array of folder IDs to get, separated by a comma (,) and without spaces  
+        @param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
+            by prefixing field names with -  
+        @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+        @param skip: Number of results to skip from the start of the data set. skip is to be used with the limit  
+            parameter for paging  
+        @param limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+        @param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be  
+            nested using the resource.subResource format  
+        @return: An array of folders matching the search criteria  
+        &#34;&#34;&#34;  
         ret_arr = []
         param_string = PySenseUtils.build_query_string({
             &#39;name&#39;: name,
@@ -225,12 +225,12 @@ class PySense:
         return ret_arr
 
     def get_folder_by_id(self, folder_id):
-        &#34;&#34;&#34;
-        Get a specific folder by folder id
-
-        @param folder_id: The folder id of the folder
-        @return: A PySense folder object of the folder
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
+        Get a specific folder by folder id  
+  
+        @param folder_id: The folder id of the folder  
+        @return: A PySense folder object of the folder  
+        &#34;&#34;&#34;  
         resp = requests.get(&#39;{}/api/v1/folders/{}&#39;.format(self._host, folder_id), headers=self._token)
         PySenseUtils.parse_response(resp)
         return PySenseFolder.Folder(self._host, self._token, resp.json())
@@ -241,25 +241,25 @@ class PySense:
 
     def get_groups(self, *, name=None, mail=None, role=None, origin=None, ids=None, fields=None,
                    sort=None, skip=None, limit=None, expand=None):
-        &#34;&#34;&#34;
-        Returns a list of user groups with their details.
-        The results can be filtered by different parameters such as group name or origin.
-
-        :param name: Group name to filter by
-        :param mail: Group email to filter by
-        :param role: Group role to filter by
-        :param origin: Group origin to filter by (ad or sisense)
-        :param ids: Array of group IDs to filter by
-        :param fields: Whitelist of fields to return for each document.
-            Fields can also define which fields to exclude by prefixing field names with -
-        :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-        :param skip: Number of results to skip from the start of the data set.
-            Skip is to be used with the limit parameter for paging
-        :param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-        :param expand: List of fields that should be expanded (substitures their IDs with actual objects).
-            May be nested using the resource.subResource format
-        :return: Array of found groups
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
+        Returns a list of user groups with their details.  
+        The results can be filtered by different parameters such as group name or origin.  
+  
+        :param name: Group name to filter by  
+        :param mail: Group email to filter by  
+        :param role: Group role to filter by  
+        :param origin: Group origin to filter by (ad or sisense)  
+        :param ids: Array of group IDs to filter by  
+        :param fields: Whitelist of fields to return for each document.  
+            Fields can also define which fields to exclude by prefixing field names with -  
+        :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+        :param skip: Number of results to skip from the start of the data set.  
+            Skip is to be used with the limit parameter for paging  
+        :param limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+        :param expand: List of fields that should be expanded (substitures their IDs with actual objects).  
+            May be nested using the resource.subResource format  
+        :return: Array of found groups  
+        &#34;&#34;&#34;  
         param_string = PySenseUtils.build_query_string({
             &#39;name&#39;: name,
             &#39;mail&#39;: mail,
@@ -282,10 +282,11 @@ class PySense:
         return ret_arr
 
     def get_group_ids(self, groups):
-        &#34;&#34;&#34;
-        Get the ids for groups
-        @param groups: An array of group names
-        @return: An array of ids for the groups
+        &#34;&#34;&#34;  
+        Get the ids for groups  
+        
+        @param groups: An array of group names  
+        @return: An array of ids for the groups  
         &#34;&#34;&#34;
         if groups is None:
             return []
@@ -305,11 +306,12 @@ class PySense:
         return ret
 
     def add_groups(self, name_array):
-        &#34;&#34;&#34;
-        Add group with given name
-        @param name_array: Array of new group names
-        @return: Array of new groups
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
+        Add group with given name  
+          
+        @param name_array: Array of new group names  
+        @return: Array of new groups  
+        &#34;&#34;&#34;  
         ret_arr = []
         for name in name_array:
             payload = {&#39;name&#39;: name}
@@ -319,10 +321,11 @@ class PySense:
         return ret_arr
 
     def delete_groups(self, group_array):
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
         Add group with given name
-        @param group_array: Array of groups to delete
-        @return: The new group
+        
+        @param group_array: Array of groups to delete  
+        @return: The new group  
         &#34;&#34;&#34;
         for group in group_array:
             resp = requests.delete(&#39;{}/api/groups/{}&#39;.format(self._host, group.get_group_id()), headers=self._token)
@@ -335,19 +338,19 @@ class PySense:
 
     def add_user(self, email, username, role, *, first_name=None, last_name=None,
                  groups=None, preferences=None, ui_settings=None):
-        &#34;&#34;&#34;
-        Creates that user in SiSense, returning the created object.
-        If a user with the same username or email exists, it will return an error.
-
-        @param email: email address for user
-        @param username: username
-        @param role: role name
-        @param first_name: user first name
-        @param last_name: user last name
-        @param groups: The groups to add the user to
-        @param preferences: User preferences
-        @param ui_settings: User ui settings
-        @return: Newly created user object
+        &#34;&#34;&#34;  
+        Creates that user in SiSense, returning the created object.  
+        If a user with the same username or email exists, it will return an error.  
+  
+        @param email: email address for user  
+        @param username: username  
+        @param role: role name  
+        @param first_name: user first name  
+        @param last_name: user last name  
+        @param groups: The groups to add the user to  
+        @param preferences: User preferences  
+        @param ui_settings: User ui settings  
+        @return: Newly created user object  
         &#34;&#34;&#34;
         user_obj = PySenseUtils.build_json_object({
             &#39;email&#39;: email,
@@ -367,31 +370,31 @@ class PySense:
 
     def get_users(self, *, user_name=None, email=None, first_name=None, last_name=None, role_name=None, group=None, active=None,
                   origin=None, ids=None, fields=None, sort=None, skip=None, limit=None, expand=None):
-        &#34;&#34;&#34;
-        Returns a list of users with their details.
-        Results can be filtered by parameters such as username and email.
-        The expandable fields for the user object are groups, adgroups and role.
-
-        @param user_name: Username to filter by
-        @param email: Email to filter by
-        @param first_name: First name to filter by
-        @param last_name: Last name to filter by
-        @param role_name: Role filter by
-        @param group: Group to filter by
-        @param active: User state to filter by (true for active users, false for inactive users)
-        @param origin: User origin to filter by (ad for active directory or sisense)
-        @param ids: Array of user ids to get separated by comma and without spaces
-        @param fields: Whitelist of fields to return for each document.
-            Fields can also define which fields to exclude by prefixing field names with -
-        @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-        @param skip: Number of results to skip from the start of the data set.
-            Skip is to be used with the limit parameter for paging
-        @param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-        @param expand: List of fields that should be expanded (substitutes their IDs with actual objects).
-            May be nested using the resource.subResource format
-
-        @return: An array of users objects
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
+        Returns a list of users with their details.  
+        Results can be filtered by parameters such as username and email.  
+        The expandable fields for the user object are groups, adgroups and role.  
+  
+        @param user_name: Username to filter by  
+        @param email: Email to filter by  
+        @param first_name: First name to filter by  
+        @param last_name: Last name to filter by  
+        @param role_name: Role filter by  
+        @param group: Group to filter by  
+        @param active: User state to filter by (true for active users, false for inactive users)  
+        @param origin: User origin to filter by (ad for active directory or sisense)  
+        @param ids: Array of user ids to get separated by comma and without spaces  
+        @param fields: Whitelist of fields to return for each document.  
+            Fields can also define which fields to exclude by prefixing field names with -  
+        @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+        @param skip: Number of results to skip from the start of the data set.  
+            Skip is to be used with the limit parameter for paging  
+        @param limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+        @param expand: List of fields that should be expanded (substitutes their IDs with actual objects).  
+            May be nested using the resource.subResource format  
+  
+        @return: An array of users objects  
+        &#34;&#34;&#34;  
         param_string = PySenseUtils.build_query_string({
             &#39;userName&#39;: user_name,
             &#39;email&#39;: email,
@@ -416,10 +419,11 @@ class PySense:
         return ret_arr
 
     def delete_user(self, user):
-        &#34;&#34;&#34;
-        Deletes the specified user
-        @param user: User obj to delete
-        @return: Response
+        &#34;&#34;&#34;  
+        Deletes the specified user  
+          
+        @param user: User obj to delete  
+        @return: Response  
         &#34;&#34;&#34;
         resp = requests.delete(&#39;{}/api/v1/users/{}&#39;.format(self._host, user.get_user_id()), headers=self._token)
         return PySenseUtils.parse_response(resp)
@@ -429,9 +433,10 @@ class PySense:
     ############################################
 
     def get_elasticubes(self):
-        &#34;&#34;&#34;
-        Gets elasticubes
-        :return: An array of elasticubes
+        &#34;&#34;&#34;  
+        Gets elasticubes  
+          
+        :return: An array of elasticubes  
         &#34;&#34;&#34;
 
         resp = requests.get(&#39;{}/api/v1/elasticubes/getElasticubes&#39;.format(self._host), headers=self._token)
@@ -442,11 +447,11 @@ class PySense:
         return ret_arr
 
     def get_elasticube_by_name(self, name):
-        &#34;&#34;&#34;
-        Gets elasticube by name
-
-        :param name: Name of elasticube to get
-        :return: An array of elasticubes matching the query
+        &#34;&#34;&#34;  
+        Gets elasticube by name  
+  
+        :param name: Name of elasticube to get  
+        :return: An array of elasticubes matching the query  
         &#34;&#34;&#34;
         cubes = self.get_elasticubes()
         for cube in cubes:
@@ -454,12 +459,11 @@ class PySense:
                 return cube
         return None
 
-
-
     ############################################
     # Alerts                                   #
     ############################################
     # This isn&#39;t at all done
+    
     def post_alert(self, alert_obj):
         resp = requests.post(&#39;{}/api/v1/alerts&#39;.format(self._host),
                              headers=self._token, json=json.loads(alert_obj))
@@ -477,8 +481,9 @@ class PySense:
 <span>def <span class="ident">authenticate_by_file</span></span>(<span>config_file)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Creates a new PySense client with the credentials in the given config file.</p>
-<p>:param config_file: Yaml file with entries for host, username, and password
+<section class="desc"><p>Creates a new PySense client with the credentials in the given config file.
+</p>
+<p>:param config_file: Yaml file with entries for host, username, and password<br>
 :return: A new PySense client for the given credentials</p></section>
 <details class="source">
 <summary>
@@ -486,10 +491,10 @@ class PySense:
 </summary>
 <pre><code class="python">def authenticate_by_file(config_file):
     &#34;&#34;&#34;
-    Creates a new PySense client with the credentials in the given config file.
+    Creates a new PySense client with the credentials in the given config file.  
 
-    :param config_file: Yaml file with entries for host, username, and password
-    :return: A new PySense client for the given credentials
+    :param config_file: Yaml file with entries for host, username, and password  
+    :return: A new PySense client for the given credentials  
     &#34;&#34;&#34;
     with open(config_file, &#39;r&#39;) as yml_file:
         cfg = yaml.safe_load(yml_file)
@@ -524,13 +529,13 @@ class PySense:
 
     def custom_rest(self, action_type, url, *, data=None, json_payload=None):
         &#34;&#34;&#34;
-        Run an arbitrary rest command against your Sisense instance.
+        Run an arbitrary rest command against your Sisense instance.  
 
-        :param action_type: REST request type
-        :param url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding
-        :param data: The data portion of the payload
-        :param json_payload: The json portion of the payload
-        :return: The rest response object
+        :param action_type: REST request type  
+        :param url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding  
+        :param data: The data portion of the payload  
+        :param json_payload: The json portion of the payload  
+        :return: The rest response object  
         &#34;&#34;&#34;
         if action_type.lower() == &#39;get&#39;:
             return requests.get(&#39;{}/{}&#39;.format(self._host, url), headers=self._token, data=data, json=json_payload)
@@ -547,8 +552,8 @@ class PySense:
 
     def get_authentication(self):
         &#34;&#34;&#34;
-        Returns authentication parameters
-        @return: A dictionary with an entry for host and token
+        Returns authentication parameters  
+        @return: A dictionary with an entry for host and token  
         &#34;&#34;&#34;
         return {&#39;host&#39;: self._host, &#39;token&#39;: self._token}
 
@@ -559,18 +564,18 @@ class PySense:
     def get_dashboards(self, *, parent_folder_name=None, name=None, data_source_title=None,
                        data_source_address=None, fields=None, sort=None, expand=None):
         &#34;&#34;&#34;
-         Get all dashboards
-
-         :param parent_folder_name: Parent folder name to filter by
-         :param name: Name to filter by
-         :param data_source_title: Data source name to filter by
-         :param data_source_address: Data source address to filter by
-         :param fields: Whitelist of fields to return for each document.
-            Can also exclude by prefixing field names with -
-         :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-         :param expand: List of fields that should be expanded
-         :return: All found dashboards
-         &#34;&#34;&#34;
+         Get all dashboards  
+  
+         :param parent_folder_name: Parent folder name to filter by  
+         :param name: Name to filter by  
+         :param data_source_title: Data source name to filter by  
+         :param data_source_address: Data source address to filter by  
+         :param fields: Whitelist of fields to return for each document.  
+            Can also exclude by prefixing field names with -  
+         :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+         :param expand: List of fields that should be expanded  
+         :return: All found dashboards  
+         &#34;&#34;&#34;  
         ret_arr = []
         folder_id = None
         if parent_folder_name:
@@ -599,15 +604,15 @@ class PySense:
         return ret_arr
 
     def get_dashboard_by_id(self, dashboard_id, *, fields=None, expand=None):
-        &#34;&#34;&#34;
-        Returns a specific dashboard object by ID.
-
-        :param dashboard_id: The ID of the dashboard to get
-        :param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude
-            by prefixing field names with -
-        :param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be nested
-            using the resource.subResource format
-        :return: Dashboard with id given
+        &#34;&#34;&#34;  
+        Returns a specific dashboard object by ID.  
+  
+        :param dashboard_id: The ID of the dashboard to get  
+        :param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
+            by prefixing field names with -  
+        :param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be nested  
+            using the resource.subResource format  
+        :return: Dashboard with id given  
         &#34;&#34;&#34;
         param_string = PySenseUtils.build_query_string({
             &#39;fields&#39;: fields,
@@ -619,11 +624,11 @@ class PySense:
         return PySenseDashboard.Dashboard(self._host, self._token, resp.json())
 
     def post_dashboards(self, dashboard_json):
-        &#34;&#34;&#34;
-        Import given dashboard
-
-        :param dashboard_json: The dashboard json from the dash file
-        :return: The dashboard given by the response object
+        &#34;&#34;&#34;  
+        Import given dashboard  
+  
+        :param dashboard_json: The dashboard json from the dash file  
+        :return: The dashboard given by the response object  
         &#34;&#34;&#34;
         resp = requests.post(&#39;{}/api/v1/dashboards/&#39;.format(self._host), headers=self._token,
                              json=dashboard_json)
@@ -631,11 +636,11 @@ class PySense:
         return PySenseDashboard.Dashboard(self._host, self._token, json.loads(resp.content))
 
     def delete_dashboards(self, dashboard_id):
-        &#34;&#34;&#34;
-        Delete dashboard with id
+        &#34;&#34;&#34;  
+        Delete dashboard with id  
 
-        :param dashboard_id: The ID of the dashboard to delete
-        :return: The response object
+        :param dashboard_id: The ID of the dashboard to delete  
+        :return: The response object  
         &#34;&#34;&#34;
         resp = requests.delete(&#39;{}/api/v1/dashboards/{}&#39;.format(self._host, dashboard_id),
                                headers=self._token)
@@ -647,22 +652,22 @@ class PySense:
 
     def get_folders(self, *, name=None, structure=None, ids=None, fields=None,
                     sort=None, skip=None, limit=None, expand=None):
-        &#34;&#34;&#34;
-        Provides access to a specified user’s folders in their stored format
-
-        @param name: Name to filter by
-        @param structure: Structure type of the folders
-        @param ids: Array of folder IDs to get, separated by a comma (,) and without spaces
-        @param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude
-            by prefixing field names with -
-        @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-        @param skip: Number of results to skip from the start of the data set. skip is to be used with the limit
-            parameter for paging
-        @param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-        @param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be
-            nested using the resource.subResource format
-        @return: An array of folders matching the search criteria
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
+        Provides access to a specified user’s folders in their stored format  
+  
+        @param name: Name to filter by  
+        @param structure: Structure type of the folders  
+        @param ids: Array of folder IDs to get, separated by a comma (,) and without spaces  
+        @param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
+            by prefixing field names with -  
+        @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+        @param skip: Number of results to skip from the start of the data set. skip is to be used with the limit  
+            parameter for paging  
+        @param limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+        @param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be  
+            nested using the resource.subResource format  
+        @return: An array of folders matching the search criteria  
+        &#34;&#34;&#34;  
         ret_arr = []
         param_string = PySenseUtils.build_query_string({
             &#39;name&#39;: name,
@@ -688,12 +693,12 @@ class PySense:
         return ret_arr
 
     def get_folder_by_id(self, folder_id):
-        &#34;&#34;&#34;
-        Get a specific folder by folder id
-
-        @param folder_id: The folder id of the folder
-        @return: A PySense folder object of the folder
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
+        Get a specific folder by folder id  
+  
+        @param folder_id: The folder id of the folder  
+        @return: A PySense folder object of the folder  
+        &#34;&#34;&#34;  
         resp = requests.get(&#39;{}/api/v1/folders/{}&#39;.format(self._host, folder_id), headers=self._token)
         PySenseUtils.parse_response(resp)
         return PySenseFolder.Folder(self._host, self._token, resp.json())
@@ -704,25 +709,25 @@ class PySense:
 
     def get_groups(self, *, name=None, mail=None, role=None, origin=None, ids=None, fields=None,
                    sort=None, skip=None, limit=None, expand=None):
-        &#34;&#34;&#34;
-        Returns a list of user groups with their details.
-        The results can be filtered by different parameters such as group name or origin.
-
-        :param name: Group name to filter by
-        :param mail: Group email to filter by
-        :param role: Group role to filter by
-        :param origin: Group origin to filter by (ad or sisense)
-        :param ids: Array of group IDs to filter by
-        :param fields: Whitelist of fields to return for each document.
-            Fields can also define which fields to exclude by prefixing field names with -
-        :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-        :param skip: Number of results to skip from the start of the data set.
-            Skip is to be used with the limit parameter for paging
-        :param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-        :param expand: List of fields that should be expanded (substitures their IDs with actual objects).
-            May be nested using the resource.subResource format
-        :return: Array of found groups
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
+        Returns a list of user groups with their details.  
+        The results can be filtered by different parameters such as group name or origin.  
+  
+        :param name: Group name to filter by  
+        :param mail: Group email to filter by  
+        :param role: Group role to filter by  
+        :param origin: Group origin to filter by (ad or sisense)  
+        :param ids: Array of group IDs to filter by  
+        :param fields: Whitelist of fields to return for each document.  
+            Fields can also define which fields to exclude by prefixing field names with -  
+        :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+        :param skip: Number of results to skip from the start of the data set.  
+            Skip is to be used with the limit parameter for paging  
+        :param limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+        :param expand: List of fields that should be expanded (substitures their IDs with actual objects).  
+            May be nested using the resource.subResource format  
+        :return: Array of found groups  
+        &#34;&#34;&#34;  
         param_string = PySenseUtils.build_query_string({
             &#39;name&#39;: name,
             &#39;mail&#39;: mail,
@@ -745,10 +750,11 @@ class PySense:
         return ret_arr
 
     def get_group_ids(self, groups):
-        &#34;&#34;&#34;
-        Get the ids for groups
-        @param groups: An array of group names
-        @return: An array of ids for the groups
+        &#34;&#34;&#34;  
+        Get the ids for groups  
+        
+        @param groups: An array of group names  
+        @return: An array of ids for the groups  
         &#34;&#34;&#34;
         if groups is None:
             return []
@@ -768,11 +774,12 @@ class PySense:
         return ret
 
     def add_groups(self, name_array):
-        &#34;&#34;&#34;
-        Add group with given name
-        @param name_array: Array of new group names
-        @return: Array of new groups
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
+        Add group with given name  
+          
+        @param name_array: Array of new group names  
+        @return: Array of new groups  
+        &#34;&#34;&#34;  
         ret_arr = []
         for name in name_array:
             payload = {&#39;name&#39;: name}
@@ -782,10 +789,11 @@ class PySense:
         return ret_arr
 
     def delete_groups(self, group_array):
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
         Add group with given name
-        @param group_array: Array of groups to delete
-        @return: The new group
+        
+        @param group_array: Array of groups to delete  
+        @return: The new group  
         &#34;&#34;&#34;
         for group in group_array:
             resp = requests.delete(&#39;{}/api/groups/{}&#39;.format(self._host, group.get_group_id()), headers=self._token)
@@ -798,19 +806,19 @@ class PySense:
 
     def add_user(self, email, username, role, *, first_name=None, last_name=None,
                  groups=None, preferences=None, ui_settings=None):
-        &#34;&#34;&#34;
-        Creates that user in SiSense, returning the created object.
-        If a user with the same username or email exists, it will return an error.
-
-        @param email: email address for user
-        @param username: username
-        @param role: role name
-        @param first_name: user first name
-        @param last_name: user last name
-        @param groups: The groups to add the user to
-        @param preferences: User preferences
-        @param ui_settings: User ui settings
-        @return: Newly created user object
+        &#34;&#34;&#34;  
+        Creates that user in SiSense, returning the created object.  
+        If a user with the same username or email exists, it will return an error.  
+  
+        @param email: email address for user  
+        @param username: username  
+        @param role: role name  
+        @param first_name: user first name  
+        @param last_name: user last name  
+        @param groups: The groups to add the user to  
+        @param preferences: User preferences  
+        @param ui_settings: User ui settings  
+        @return: Newly created user object  
         &#34;&#34;&#34;
         user_obj = PySenseUtils.build_json_object({
             &#39;email&#39;: email,
@@ -830,31 +838,31 @@ class PySense:
 
     def get_users(self, *, user_name=None, email=None, first_name=None, last_name=None, role_name=None, group=None, active=None,
                   origin=None, ids=None, fields=None, sort=None, skip=None, limit=None, expand=None):
-        &#34;&#34;&#34;
-        Returns a list of users with their details.
-        Results can be filtered by parameters such as username and email.
-        The expandable fields for the user object are groups, adgroups and role.
-
-        @param user_name: Username to filter by
-        @param email: Email to filter by
-        @param first_name: First name to filter by
-        @param last_name: Last name to filter by
-        @param role_name: Role filter by
-        @param group: Group to filter by
-        @param active: User state to filter by (true for active users, false for inactive users)
-        @param origin: User origin to filter by (ad for active directory or sisense)
-        @param ids: Array of user ids to get separated by comma and without spaces
-        @param fields: Whitelist of fields to return for each document.
-            Fields can also define which fields to exclude by prefixing field names with -
-        @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-        @param skip: Number of results to skip from the start of the data set.
-            Skip is to be used with the limit parameter for paging
-        @param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-        @param expand: List of fields that should be expanded (substitutes their IDs with actual objects).
-            May be nested using the resource.subResource format
-
-        @return: An array of users objects
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
+        Returns a list of users with their details.  
+        Results can be filtered by parameters such as username and email.  
+        The expandable fields for the user object are groups, adgroups and role.  
+  
+        @param user_name: Username to filter by  
+        @param email: Email to filter by  
+        @param first_name: First name to filter by  
+        @param last_name: Last name to filter by  
+        @param role_name: Role filter by  
+        @param group: Group to filter by  
+        @param active: User state to filter by (true for active users, false for inactive users)  
+        @param origin: User origin to filter by (ad for active directory or sisense)  
+        @param ids: Array of user ids to get separated by comma and without spaces  
+        @param fields: Whitelist of fields to return for each document.  
+            Fields can also define which fields to exclude by prefixing field names with -  
+        @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+        @param skip: Number of results to skip from the start of the data set.  
+            Skip is to be used with the limit parameter for paging  
+        @param limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+        @param expand: List of fields that should be expanded (substitutes their IDs with actual objects).  
+            May be nested using the resource.subResource format  
+  
+        @return: An array of users objects  
+        &#34;&#34;&#34;  
         param_string = PySenseUtils.build_query_string({
             &#39;userName&#39;: user_name,
             &#39;email&#39;: email,
@@ -879,10 +887,11 @@ class PySense:
         return ret_arr
 
     def delete_user(self, user):
-        &#34;&#34;&#34;
-        Deletes the specified user
-        @param user: User obj to delete
-        @return: Response
+        &#34;&#34;&#34;  
+        Deletes the specified user  
+          
+        @param user: User obj to delete  
+        @return: Response  
         &#34;&#34;&#34;
         resp = requests.delete(&#39;{}/api/v1/users/{}&#39;.format(self._host, user.get_user_id()), headers=self._token)
         return PySenseUtils.parse_response(resp)
@@ -892,9 +901,10 @@ class PySense:
     ############################################
 
     def get_elasticubes(self):
-        &#34;&#34;&#34;
-        Gets elasticubes
-        :return: An array of elasticubes
+        &#34;&#34;&#34;  
+        Gets elasticubes  
+          
+        :return: An array of elasticubes  
         &#34;&#34;&#34;
 
         resp = requests.get(&#39;{}/api/v1/elasticubes/getElasticubes&#39;.format(self._host), headers=self._token)
@@ -905,11 +915,11 @@ class PySense:
         return ret_arr
 
     def get_elasticube_by_name(self, name):
-        &#34;&#34;&#34;
-        Gets elasticube by name
-
-        :param name: Name of elasticube to get
-        :return: An array of elasticubes matching the query
+        &#34;&#34;&#34;  
+        Gets elasticube by name  
+  
+        :param name: Name of elasticube to get  
+        :return: An array of elasticubes matching the query  
         &#34;&#34;&#34;
         cubes = self.get_elasticubes()
         for cube in cubes:
@@ -917,12 +927,11 @@ class PySense:
                 return cube
         return None
 
-
-
     ############################################
     # Alerts                                   #
     ############################################
     # This isn&#39;t at all done
+    
     def post_alert(self, alert_obj):
         resp = requests.post(&#39;{}/api/v1/alerts&#39;.format(self._host),
                              headers=self._token, json=json.loads(alert_obj))
@@ -935,18 +944,20 @@ class PySense:
 </code></dt>
 <dd>
 <section class="desc"><p>Add group with given name
-@param name_array: Array of new group names
+</p>
+<p>@param name_array: Array of new group names<br>
 @return: Array of new groups</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def add_groups(self, name_array):
-    &#34;&#34;&#34;
-    Add group with given name
-    @param name_array: Array of new group names
-    @return: Array of new groups
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;  
+    Add group with given name  
+      
+    @param name_array: Array of new group names  
+    @return: Array of new groups  
+    &#34;&#34;&#34;  
     ret_arr = []
     for name in name_array:
         payload = {&#39;name&#39;: name}
@@ -960,16 +971,17 @@ class PySense:
 <span>def <span class="ident">add_user</span></span>(<span>self, email, username, role, *, first_name=None, last_name=None, groups=None, preferences=None, ui_settings=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Creates that user in SiSense, returning the created object.
-If a user with the same username or email exists, it will return an error.</p>
-<p>@param email: email address for user
-@param username: username
-@param role: role name
-@param first_name: user first name
-@param last_name: user last name
-@param groups: The groups to add the user to
-@param preferences: User preferences
-@param ui_settings: User ui settings
+<section class="desc"><p>Creates that user in SiSense, returning the created object.<br>
+If a user with the same username or email exists, it will return an error.
+</p>
+<p>@param email: email address for user<br>
+@param username: username<br>
+@param role: role name<br>
+@param first_name: user first name<br>
+@param last_name: user last name<br>
+@param groups: The groups to add the user to<br>
+@param preferences: User preferences<br>
+@param ui_settings: User ui settings<br>
 @return: Newly created user object</p></section>
 <details class="source">
 <summary>
@@ -977,19 +989,19 @@ If a user with the same username or email exists, it will return an error.</p>
 </summary>
 <pre><code class="python">def add_user(self, email, username, role, *, first_name=None, last_name=None,
              groups=None, preferences=None, ui_settings=None):
-    &#34;&#34;&#34;
-    Creates that user in SiSense, returning the created object.
-    If a user with the same username or email exists, it will return an error.
+    &#34;&#34;&#34;  
+    Creates that user in SiSense, returning the created object.  
+    If a user with the same username or email exists, it will return an error.  
 
-    @param email: email address for user
-    @param username: username
-    @param role: role name
-    @param first_name: user first name
-    @param last_name: user last name
-    @param groups: The groups to add the user to
-    @param preferences: User preferences
-    @param ui_settings: User ui settings
-    @return: Newly created user object
+    @param email: email address for user  
+    @param username: username  
+    @param role: role name  
+    @param first_name: user first name  
+    @param last_name: user last name  
+    @param groups: The groups to add the user to  
+    @param preferences: User preferences  
+    @param ui_settings: User ui settings  
+    @return: Newly created user object  
     &#34;&#34;&#34;
     user_obj = PySenseUtils.build_json_object({
         &#39;email&#39;: email,
@@ -1012,11 +1024,12 @@ If a user with the same username or email exists, it will return an error.</p>
 <span>def <span class="ident">custom_rest</span></span>(<span>self, action_type, url, *, data=None, json_payload=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Run an arbitrary rest command against your Sisense instance.</p>
-<p>:param action_type: REST request type
-:param url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding
-:param data: The data portion of the payload
-:param json_payload: The json portion of the payload
+<section class="desc"><p>Run an arbitrary rest command against your Sisense instance.
+</p>
+<p>:param action_type: REST request type<br>
+:param url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding<br>
+:param data: The data portion of the payload<br>
+:param json_payload: The json portion of the payload<br>
 :return: The rest response object</p></section>
 <details class="source">
 <summary>
@@ -1024,13 +1037,13 @@ If a user with the same username or email exists, it will return an error.</p>
 </summary>
 <pre><code class="python">def custom_rest(self, action_type, url, *, data=None, json_payload=None):
     &#34;&#34;&#34;
-    Run an arbitrary rest command against your Sisense instance.
+    Run an arbitrary rest command against your Sisense instance.  
 
-    :param action_type: REST request type
-    :param url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding
-    :param data: The data portion of the payload
-    :param json_payload: The json portion of the payload
-    :return: The rest response object
+    :param action_type: REST request type  
+    :param url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding  
+    :param data: The data portion of the payload  
+    :param json_payload: The json portion of the payload  
+    :return: The rest response object  
     &#34;&#34;&#34;
     if action_type.lower() == &#39;get&#39;:
         return requests.get(&#39;{}/{}&#39;.format(self._host, url), headers=self._token, data=data, json=json_payload)
@@ -1050,19 +1063,20 @@ If a user with the same username or email exists, it will return an error.</p>
 <span>def <span class="ident">delete_dashboards</span></span>(<span>self, dashboard_id)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Delete dashboard with id</p>
-<p>:param dashboard_id: The ID of the dashboard to delete
+<section class="desc"><p>Delete dashboard with id
+</p>
+<p>:param dashboard_id: The ID of the dashboard to delete<br>
 :return: The response object</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def delete_dashboards(self, dashboard_id):
-    &#34;&#34;&#34;
-    Delete dashboard with id
+    &#34;&#34;&#34;  
+    Delete dashboard with id  
 
-    :param dashboard_id: The ID of the dashboard to delete
-    :return: The response object
+    :param dashboard_id: The ID of the dashboard to delete  
+    :return: The response object  
     &#34;&#34;&#34;
     resp = requests.delete(&#39;{}/api/v1/dashboards/{}&#39;.format(self._host, dashboard_id),
                            headers=self._token)
@@ -1073,18 +1087,19 @@ If a user with the same username or email exists, it will return an error.</p>
 <span>def <span class="ident">delete_groups</span></span>(<span>self, group_array)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Add group with given name
-@param group_array: Array of groups to delete
+<section class="desc"><p>Add group with given name</p>
+<p>@param group_array: Array of groups to delete<br>
 @return: The new group</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def delete_groups(self, group_array):
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;  
     Add group with given name
-    @param group_array: Array of groups to delete
-    @return: The new group
+    
+    @param group_array: Array of groups to delete  
+    @return: The new group  
     &#34;&#34;&#34;
     for group in group_array:
         resp = requests.delete(&#39;{}/api/groups/{}&#39;.format(self._host, group.get_group_id()), headers=self._token)
@@ -1097,17 +1112,19 @@ If a user with the same username or email exists, it will return an error.</p>
 </code></dt>
 <dd>
 <section class="desc"><p>Deletes the specified user
-@param user: User obj to delete
+</p>
+<p>@param user: User obj to delete<br>
 @return: Response</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def delete_user(self, user):
-    &#34;&#34;&#34;
-    Deletes the specified user
-    @param user: User obj to delete
-    @return: Response
+    &#34;&#34;&#34;  
+    Deletes the specified user  
+      
+    @param user: User obj to delete  
+    @return: Response  
     &#34;&#34;&#34;
     resp = requests.delete(&#39;{}/api/v1/users/{}&#39;.format(self._host, user.get_user_id()), headers=self._token)
     return PySenseUtils.parse_response(resp)</code></pre>
@@ -1117,7 +1134,7 @@ If a user with the same username or email exists, it will return an error.</p>
 <span>def <span class="ident">get_authentication</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns authentication parameters
+<section class="desc"><p>Returns authentication parameters<br>
 @return: A dictionary with an entry for host and token</p></section>
 <details class="source">
 <summary>
@@ -1125,8 +1142,8 @@ If a user with the same username or email exists, it will return an error.</p>
 </summary>
 <pre><code class="python">def get_authentication(self):
     &#34;&#34;&#34;
-    Returns authentication parameters
-    @return: A dictionary with an entry for host and token
+    Returns authentication parameters  
+    @return: A dictionary with an entry for host and token  
     &#34;&#34;&#34;
     return {&#39;host&#39;: self._host, &#39;token&#39;: self._token}</code></pre>
 </details>
@@ -1135,27 +1152,28 @@ If a user with the same username or email exists, it will return an error.</p>
 <span>def <span class="ident">get_dashboard_by_id</span></span>(<span>self, dashboard_id, *, fields=None, expand=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns a specific dashboard object by ID.</p>
-<p>:param dashboard_id: The ID of the dashboard to get
-:param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude
-by prefixing field names with -
-:param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be nested
-using the resource.subResource format
+<section class="desc"><p>Returns a specific dashboard object by ID.
+</p>
+<p>:param dashboard_id: The ID of the dashboard to get<br>
+:param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude<br>
+by prefixing field names with -<br>
+:param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be nested<br>
+using the resource.subResource format<br>
 :return: Dashboard with id given</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_dashboard_by_id(self, dashboard_id, *, fields=None, expand=None):
-    &#34;&#34;&#34;
-    Returns a specific dashboard object by ID.
+    &#34;&#34;&#34;  
+    Returns a specific dashboard object by ID.  
 
-    :param dashboard_id: The ID of the dashboard to get
-    :param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude
-        by prefixing field names with -
-    :param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be nested
-        using the resource.subResource format
-    :return: Dashboard with id given
+    :param dashboard_id: The ID of the dashboard to get  
+    :param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
+        by prefixing field names with -  
+    :param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be nested  
+        using the resource.subResource format  
+    :return: Dashboard with id given  
     &#34;&#34;&#34;
     param_string = PySenseUtils.build_query_string({
         &#39;fields&#39;: fields,
@@ -1171,15 +1189,16 @@ using the resource.subResource format
 <span>def <span class="ident">get_dashboards</span></span>(<span>self, *, parent_folder_name=None, name=None, data_source_title=None, data_source_address=None, fields=None, sort=None, expand=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get all dashboards</p>
-<p>:param parent_folder_name: Parent folder name to filter by
-:param name: Name to filter by
-:param data_source_title: Data source name to filter by
-:param data_source_address: Data source address to filter by
-:param fields: Whitelist of fields to return for each document.
-Can also exclude by prefixing field names with -
-:param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-:param expand: List of fields that should be expanded
+<section class="desc"><p>Get all dashboards
+</p>
+<p>:param parent_folder_name: Parent folder name to filter by<br>
+:param name: Name to filter by<br>
+:param data_source_title: Data source name to filter by<br>
+:param data_source_address: Data source address to filter by<br>
+:param fields: Whitelist of fields to return for each document.<br>
+Can also exclude by prefixing field names with -<br>
+:param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -<br>
+:param expand: List of fields that should be expanded<br>
 :return: All found dashboards</p></section>
 <details class="source">
 <summary>
@@ -1188,18 +1207,18 @@ Can also exclude by prefixing field names with -
 <pre><code class="python">def get_dashboards(self, *, parent_folder_name=None, name=None, data_source_title=None,
                    data_source_address=None, fields=None, sort=None, expand=None):
     &#34;&#34;&#34;
-     Get all dashboards
+     Get all dashboards  
 
-     :param parent_folder_name: Parent folder name to filter by
-     :param name: Name to filter by
-     :param data_source_title: Data source name to filter by
-     :param data_source_address: Data source address to filter by
-     :param fields: Whitelist of fields to return for each document.
-        Can also exclude by prefixing field names with -
-     :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-     :param expand: List of fields that should be expanded
-     :return: All found dashboards
-     &#34;&#34;&#34;
+     :param parent_folder_name: Parent folder name to filter by  
+     :param name: Name to filter by  
+     :param data_source_title: Data source name to filter by  
+     :param data_source_address: Data source address to filter by  
+     :param fields: Whitelist of fields to return for each document.  
+        Can also exclude by prefixing field names with -  
+     :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+     :param expand: List of fields that should be expanded  
+     :return: All found dashboards  
+     &#34;&#34;&#34;  
     ret_arr = []
     folder_id = None
     if parent_folder_name:
@@ -1232,19 +1251,20 @@ Can also exclude by prefixing field names with -
 <span>def <span class="ident">get_elasticube_by_name</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Gets elasticube by name</p>
-<p>:param name: Name of elasticube to get
+<section class="desc"><p>Gets elasticube by name
+</p>
+<p>:param name: Name of elasticube to get<br>
 :return: An array of elasticubes matching the query</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_elasticube_by_name(self, name):
-    &#34;&#34;&#34;
-    Gets elasticube by name
+    &#34;&#34;&#34;  
+    Gets elasticube by name  
 
-    :param name: Name of elasticube to get
-    :return: An array of elasticubes matching the query
+    :param name: Name of elasticube to get  
+    :return: An array of elasticubes matching the query  
     &#34;&#34;&#34;
     cubes = self.get_elasticubes()
     for cube in cubes:
@@ -1258,15 +1278,17 @@ Can also exclude by prefixing field names with -
 </code></dt>
 <dd>
 <section class="desc"><p>Gets elasticubes
-:return: An array of elasticubes</p></section>
+</p>
+<p>:return: An array of elasticubes</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_elasticubes(self):
-    &#34;&#34;&#34;
-    Gets elasticubes
-    :return: An array of elasticubes
+    &#34;&#34;&#34;  
+    Gets elasticubes  
+      
+    :return: An array of elasticubes  
     &#34;&#34;&#34;
 
     resp = requests.get(&#39;{}/api/v1/elasticubes/getElasticubes&#39;.format(self._host), headers=self._token)
@@ -1281,20 +1303,21 @@ Can also exclude by prefixing field names with -
 <span>def <span class="ident">get_folder_by_id</span></span>(<span>self, folder_id)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get a specific folder by folder id</p>
-<p>@param folder_id: The folder id of the folder
+<section class="desc"><p>Get a specific folder by folder id
+</p>
+<p>@param folder_id: The folder id of the folder<br>
 @return: A PySense folder object of the folder</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_folder_by_id(self, folder_id):
-    &#34;&#34;&#34;
-    Get a specific folder by folder id
+    &#34;&#34;&#34;  
+    Get a specific folder by folder id  
 
-    @param folder_id: The folder id of the folder
-    @return: A PySense folder object of the folder
-    &#34;&#34;&#34;
+    @param folder_id: The folder id of the folder  
+    @return: A PySense folder object of the folder  
+    &#34;&#34;&#34;  
     resp = requests.get(&#39;{}/api/v1/folders/{}&#39;.format(self._host, folder_id), headers=self._token)
     PySenseUtils.parse_response(resp)
     return PySenseFolder.Folder(self._host, self._token, resp.json())</code></pre>
@@ -1304,18 +1327,19 @@ Can also exclude by prefixing field names with -
 <span>def <span class="ident">get_folders</span></span>(<span>self, *, name=None, structure=None, ids=None, fields=None, sort=None, skip=None, limit=None, expand=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Provides access to a specified user’s folders in their stored format</p>
-<p>@param name: Name to filter by
-@param structure: Structure type of the folders
-@param ids: Array of folder IDs to get, separated by a comma (,) and without spaces
-@param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude
-by prefixing field names with -
-@param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-@param skip: Number of results to skip from the start of the data set. skip is to be used with the limit
-parameter for paging
-@param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-@param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be
-nested using the resource.subResource format
+<section class="desc"><p>Provides access to a specified user’s folders in their stored format
+</p>
+<p>@param name: Name to filter by<br>
+@param structure: Structure type of the folders<br>
+@param ids: Array of folder IDs to get, separated by a comma (,) and without spaces<br>
+@param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude<br>
+by prefixing field names with -<br>
+@param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -<br>
+@param skip: Number of results to skip from the start of the data set. skip is to be used with the limit<br>
+parameter for paging<br>
+@param limit: How many results should be returned. limit is to be used with the skip parameter for paging<br>
+@param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be<br>
+nested using the resource.subResource format<br>
 @return: An array of folders matching the search criteria</p></section>
 <details class="source">
 <summary>
@@ -1323,22 +1347,22 @@ nested using the resource.subResource format
 </summary>
 <pre><code class="python">def get_folders(self, *, name=None, structure=None, ids=None, fields=None,
                 sort=None, skip=None, limit=None, expand=None):
-    &#34;&#34;&#34;
-    Provides access to a specified user’s folders in their stored format
+    &#34;&#34;&#34;  
+    Provides access to a specified user’s folders in their stored format  
 
-    @param name: Name to filter by
-    @param structure: Structure type of the folders
-    @param ids: Array of folder IDs to get, separated by a comma (,) and without spaces
-    @param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude
-        by prefixing field names with -
-    @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-    @param skip: Number of results to skip from the start of the data set. skip is to be used with the limit
-        parameter for paging
-    @param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-    @param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be
-        nested using the resource.subResource format
-    @return: An array of folders matching the search criteria
-    &#34;&#34;&#34;
+    @param name: Name to filter by  
+    @param structure: Structure type of the folders  
+    @param ids: Array of folder IDs to get, separated by a comma (,) and without spaces  
+    @param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
+        by prefixing field names with -  
+    @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+    @param skip: Number of results to skip from the start of the data set. skip is to be used with the limit  
+        parameter for paging  
+    @param limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+    @param expand: List of fields that should be expanded (substitures their IDs with actual objects). May be  
+        nested using the resource.subResource format  
+    @return: An array of folders matching the search criteria  
+    &#34;&#34;&#34;  
     ret_arr = []
     param_string = PySenseUtils.build_query_string({
         &#39;name&#39;: name,
@@ -1369,17 +1393,19 @@ nested using the resource.subResource format
 </code></dt>
 <dd>
 <section class="desc"><p>Get the ids for groups
-@param groups: An array of group names
+</p>
+<p>@param groups: An array of group names<br>
 @return: An array of ids for the groups</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_group_ids(self, groups):
-    &#34;&#34;&#34;
-    Get the ids for groups
-    @param groups: An array of group names
-    @return: An array of ids for the groups
+    &#34;&#34;&#34;  
+    Get the ids for groups  
+    
+    @param groups: An array of group names  
+    @return: An array of ids for the groups  
     &#34;&#34;&#34;
     if groups is None:
         return []
@@ -1403,21 +1429,22 @@ nested using the resource.subResource format
 <span>def <span class="ident">get_groups</span></span>(<span>self, *, name=None, mail=None, role=None, origin=None, ids=None, fields=None, sort=None, skip=None, limit=None, expand=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns a list of user groups with their details.
-The results can be filtered by different parameters such as group name or origin.</p>
-<p>:param name: Group name to filter by
-:param mail: Group email to filter by
-:param role: Group role to filter by
-:param origin: Group origin to filter by (ad or sisense)
-:param ids: Array of group IDs to filter by
-:param fields: Whitelist of fields to return for each document.
-Fields can also define which fields to exclude by prefixing field names with -
-:param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-:param skip: Number of results to skip from the start of the data set.
-Skip is to be used with the limit parameter for paging
-:param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-:param expand: List of fields that should be expanded (substitures their IDs with actual objects).
-May be nested using the resource.subResource format
+<section class="desc"><p>Returns a list of user groups with their details.<br>
+The results can be filtered by different parameters such as group name or origin.
+</p>
+<p>:param name: Group name to filter by<br>
+:param mail: Group email to filter by<br>
+:param role: Group role to filter by<br>
+:param origin: Group origin to filter by (ad or sisense)<br>
+:param ids: Array of group IDs to filter by<br>
+:param fields: Whitelist of fields to return for each document.<br>
+Fields can also define which fields to exclude by prefixing field names with -<br>
+:param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -<br>
+:param skip: Number of results to skip from the start of the data set.<br>
+Skip is to be used with the limit parameter for paging<br>
+:param limit: How many results should be returned. limit is to be used with the skip parameter for paging<br>
+:param expand: List of fields that should be expanded (substitures their IDs with actual objects).<br>
+May be nested using the resource.subResource format<br>
 :return: Array of found groups</p></section>
 <details class="source">
 <summary>
@@ -1425,25 +1452,25 @@ May be nested using the resource.subResource format
 </summary>
 <pre><code class="python">def get_groups(self, *, name=None, mail=None, role=None, origin=None, ids=None, fields=None,
                sort=None, skip=None, limit=None, expand=None):
-    &#34;&#34;&#34;
-    Returns a list of user groups with their details.
-    The results can be filtered by different parameters such as group name or origin.
+    &#34;&#34;&#34;  
+    Returns a list of user groups with their details.  
+    The results can be filtered by different parameters such as group name or origin.  
 
-    :param name: Group name to filter by
-    :param mail: Group email to filter by
-    :param role: Group role to filter by
-    :param origin: Group origin to filter by (ad or sisense)
-    :param ids: Array of group IDs to filter by
-    :param fields: Whitelist of fields to return for each document.
-        Fields can also define which fields to exclude by prefixing field names with -
-    :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-    :param skip: Number of results to skip from the start of the data set.
-        Skip is to be used with the limit parameter for paging
-    :param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-    :param expand: List of fields that should be expanded (substitures their IDs with actual objects).
-        May be nested using the resource.subResource format
-    :return: Array of found groups
-    &#34;&#34;&#34;
+    :param name: Group name to filter by  
+    :param mail: Group email to filter by  
+    :param role: Group role to filter by  
+    :param origin: Group origin to filter by (ad or sisense)  
+    :param ids: Array of group IDs to filter by  
+    :param fields: Whitelist of fields to return for each document.  
+        Fields can also define which fields to exclude by prefixing field names with -  
+    :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+    :param skip: Number of results to skip from the start of the data set.  
+        Skip is to be used with the limit parameter for paging  
+    :param limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+    :param expand: List of fields that should be expanded (substitures their IDs with actual objects).  
+        May be nested using the resource.subResource format  
+    :return: Array of found groups  
+    &#34;&#34;&#34;  
     param_string = PySenseUtils.build_query_string({
         &#39;name&#39;: name,
         &#39;mail&#39;: mail,
@@ -1470,26 +1497,28 @@ May be nested using the resource.subResource format
 <span>def <span class="ident">get_users</span></span>(<span>self, *, user_name=None, email=None, first_name=None, last_name=None, role_name=None, group=None, active=None, origin=None, ids=None, fields=None, sort=None, skip=None, limit=None, expand=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns a list of users with their details.
-Results can be filtered by parameters such as username and email.
-The expandable fields for the user object are groups, adgroups and role.</p>
-<p>@param user_name: Username to filter by
-@param email: Email to filter by
-@param first_name: First name to filter by
-@param last_name: Last name to filter by
-@param role_name: Role filter by
-@param group: Group to filter by
-@param active: User state to filter by (true for active users, false for inactive users)
-@param origin: User origin to filter by (ad for active directory or sisense)
-@param ids: Array of user ids to get separated by comma and without spaces
-@param fields: Whitelist of fields to return for each document.
-Fields can also define which fields to exclude by prefixing field names with -
-@param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-@param skip: Number of results to skip from the start of the data set.
-Skip is to be used with the limit parameter for paging
-@param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-@param expand: List of fields that should be expanded (substitutes their IDs with actual objects).
-May be nested using the resource.subResource format</p>
+<section class="desc"><p>Returns a list of users with their details.<br>
+Results can be filtered by parameters such as username and email.<br>
+The expandable fields for the user object are groups, adgroups and role.
+</p>
+<p>@param user_name: Username to filter by<br>
+@param email: Email to filter by<br>
+@param first_name: First name to filter by<br>
+@param last_name: Last name to filter by<br>
+@param role_name: Role filter by<br>
+@param group: Group to filter by<br>
+@param active: User state to filter by (true for active users, false for inactive users)<br>
+@param origin: User origin to filter by (ad for active directory or sisense)<br>
+@param ids: Array of user ids to get separated by comma and without spaces<br>
+@param fields: Whitelist of fields to return for each document.<br>
+Fields can also define which fields to exclude by prefixing field names with -<br>
+@param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -<br>
+@param skip: Number of results to skip from the start of the data set.<br>
+Skip is to be used with the limit parameter for paging<br>
+@param limit: How many results should be returned. limit is to be used with the skip parameter for paging<br>
+@param expand: List of fields that should be expanded (substitutes their IDs with actual objects).<br>
+May be nested using the resource.subResource format
+</p>
 <p>@return: An array of users objects</p></section>
 <details class="source">
 <summary>
@@ -1497,31 +1526,31 @@ May be nested using the resource.subResource format</p>
 </summary>
 <pre><code class="python">def get_users(self, *, user_name=None, email=None, first_name=None, last_name=None, role_name=None, group=None, active=None,
               origin=None, ids=None, fields=None, sort=None, skip=None, limit=None, expand=None):
-    &#34;&#34;&#34;
-    Returns a list of users with their details.
-    Results can be filtered by parameters such as username and email.
-    The expandable fields for the user object are groups, adgroups and role.
+    &#34;&#34;&#34;  
+    Returns a list of users with their details.  
+    Results can be filtered by parameters such as username and email.  
+    The expandable fields for the user object are groups, adgroups and role.  
 
-    @param user_name: Username to filter by
-    @param email: Email to filter by
-    @param first_name: First name to filter by
-    @param last_name: Last name to filter by
-    @param role_name: Role filter by
-    @param group: Group to filter by
-    @param active: User state to filter by (true for active users, false for inactive users)
-    @param origin: User origin to filter by (ad for active directory or sisense)
-    @param ids: Array of user ids to get separated by comma and without spaces
-    @param fields: Whitelist of fields to return for each document.
-        Fields can also define which fields to exclude by prefixing field names with -
-    @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-    @param skip: Number of results to skip from the start of the data set.
-        Skip is to be used with the limit parameter for paging
-    @param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-    @param expand: List of fields that should be expanded (substitutes their IDs with actual objects).
-        May be nested using the resource.subResource format
+    @param user_name: Username to filter by  
+    @param email: Email to filter by  
+    @param first_name: First name to filter by  
+    @param last_name: Last name to filter by  
+    @param role_name: Role filter by  
+    @param group: Group to filter by  
+    @param active: User state to filter by (true for active users, false for inactive users)  
+    @param origin: User origin to filter by (ad for active directory or sisense)  
+    @param ids: Array of user ids to get separated by comma and without spaces  
+    @param fields: Whitelist of fields to return for each document.  
+        Fields can also define which fields to exclude by prefixing field names with -  
+    @param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+    @param skip: Number of results to skip from the start of the data set.  
+        Skip is to be used with the limit parameter for paging  
+    @param limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+    @param expand: List of fields that should be expanded (substitutes their IDs with actual objects).  
+        May be nested using the resource.subResource format  
 
-    @return: An array of users objects
-    &#34;&#34;&#34;
+    @return: An array of users objects  
+    &#34;&#34;&#34;  
     param_string = PySenseUtils.build_query_string({
         &#39;userName&#39;: user_name,
         &#39;email&#39;: email,
@@ -1565,19 +1594,20 @@ May be nested using the resource.subResource format</p>
 <span>def <span class="ident">post_dashboards</span></span>(<span>self, dashboard_json)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Import given dashboard</p>
-<p>:param dashboard_json: The dashboard json from the dash file
+<section class="desc"><p>Import given dashboard
+</p>
+<p>:param dashboard_json: The dashboard json from the dash file<br>
 :return: The dashboard given by the response object</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def post_dashboards(self, dashboard_json):
-    &#34;&#34;&#34;
-    Import given dashboard
+    &#34;&#34;&#34;  
+    Import given dashboard  
 
-    :param dashboard_json: The dashboard json from the dash file
-    :return: The dashboard given by the response object
+    :param dashboard_json: The dashboard json from the dash file  
+    :return: The dashboard given by the response object  
     &#34;&#34;&#34;
     resp = requests.post(&#39;{}/api/v1/dashboards/&#39;.format(self._host), headers=self._token,
                          json=dashboard_json)

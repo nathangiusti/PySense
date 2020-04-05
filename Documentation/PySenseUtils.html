@@ -36,10 +36,10 @@ class RestError(Exception):
 
 def parse_response(response):
     &#34;&#34;&#34;
-    Parses REST response object for errors
-
-    :param response: the REST response object
-    :return: The response object if no errors
+    Parses REST response object for errors  
+  
+    :param response: the REST response object  
+    :return: The response object if no errors  
     &#34;&#34;&#34;
 
     if response.status_code not in [200, 201, 204]:
@@ -50,10 +50,10 @@ def parse_response(response):
 
 def format_host(host):
     &#34;&#34;&#34;
-    Formats host string
-
-    :param host: host
-    :return: The formatted host string
+    Formats host string  
+  
+    :param host: host  
+    :return: The formatted host string  
     &#34;&#34;&#34;
     if not host.startswith(&#39;http&#39;):
         host = &#39;http://&#39; + host
@@ -64,9 +64,9 @@ def format_host(host):
 
 def build_query_string(dictionary):
     &#34;&#34;&#34;
-    Turns dictionary into param string
-
-    :param dictionary: The dictionary of values to transform
+    Turns dictionary into param string  
+  
+    :param dictionary: The dictionary of values to transform  
     :return: A query string
     &#34;&#34;&#34;
     ret_arr = []
@@ -157,8 +157,9 @@ def get_role_id(host, token, role_name):
 <span>def <span class="ident">build_query_string</span></span>(<span>dictionary)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Turns dictionary into param string</p>
-<p>:param dictionary: The dictionary of values to transform
+<section class="desc"><p>Turns dictionary into param string
+</p>
+<p>:param dictionary: The dictionary of values to transform<br>
 :return: A query string</p></section>
 <details class="source">
 <summary>
@@ -166,9 +167,9 @@ def get_role_id(host, token, role_name):
 </summary>
 <pre><code class="python">def build_query_string(dictionary):
     &#34;&#34;&#34;
-    Turns dictionary into param string
-
-    :param dictionary: The dictionary of values to transform
+    Turns dictionary into param string  
+  
+    :param dictionary: The dictionary of values to transform  
     :return: A query string
     &#34;&#34;&#34;
     ret_arr = []
@@ -191,8 +192,9 @@ def get_role_id(host, token, role_name):
 <span>def <span class="ident">format_host</span></span>(<span>host)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Formats host string</p>
-<p>:param host: host
+<section class="desc"><p>Formats host string
+</p>
+<p>:param host: host<br>
 :return: The formatted host string</p></section>
 <details class="source">
 <summary>
@@ -200,10 +202,10 @@ def get_role_id(host, token, role_name):
 </summary>
 <pre><code class="python">def format_host(host):
     &#34;&#34;&#34;
-    Formats host string
-
-    :param host: host
-    :return: The formatted host string
+    Formats host string  
+  
+    :param host: host  
+    :return: The formatted host string  
     &#34;&#34;&#34;
     if not host.startswith(&#39;http&#39;):
         host = &#39;http://&#39; + host
@@ -258,8 +260,9 @@ def get_role_id(host, token, role_name):
 <span>def <span class="ident">parse_response</span></span>(<span>response)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Parses REST response object for errors</p>
-<p>:param response: the REST response object
+<section class="desc"><p>Parses REST response object for errors
+</p>
+<p>:param response: the REST response object<br>
 :return: The response object if no errors</p></section>
 <details class="source">
 <summary>
@@ -267,10 +270,10 @@ def get_role_id(host, token, role_name):
 </summary>
 <pre><code class="python">def parse_response(response):
     &#34;&#34;&#34;
-    Parses REST response object for errors
-
-    :param response: the REST response object
-    :return: The response object if no errors
+    Parses REST response object for errors  
+  
+    :param response: the REST response object  
+    :return: The response object if no errors  
     &#34;&#34;&#34;
 
     if response.status_code not in [200, 201, 204]:

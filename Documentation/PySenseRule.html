@@ -44,30 +44,33 @@ class Rule:
         self._rule_json = rule_json
 
     def get_rule_id(self):
-        &#34;&#34;&#34;
-        Gets the rule id
-        :return: The rule id
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
+        Gets the rule id  
+          
+        :return: The rule id  
+        &#34;&#34;&#34;  
         return self._rule_json[&#39;_id&#39;]
 
     def get_member_values(self):
         &#34;&#34;&#34;
-        Gets the member values
-        :return: The member values
+        Gets the member values  
+          
+        :return: The member values  
         &#34;&#34;&#34;
         return self._rule_json[&#39;members&#39;]
 
     def update_rule(self, shares, table, column, data_type, members, *, exclusionary=False, all_members=None):
         &#34;&#34;&#34;
-        Updates the current rule
-        :param shares: Array of users and groups to share the rule with
-        :param table: Table of the data security rule
-        :param column: Column of the data security rule
-        :param data_type: Data security rule data type
-        :param members: The values to specify in the rule
-        :param exclusionary: Set to true to make an exclusionary rule
-        :param all_members: Set to true for a rule to allow user to see all values
-        :return: True
+        Updates the current rule  
+          
+        :param shares: Array of users and groups to share the rule with  
+        :param table: Table of the data security rule  
+        :param column: Column of the data security rule  
+        :param data_type: Data security rule data type  
+        :param members: The values to specify in the rule  
+        :param exclusionary: Set to true to make an exclusionary rule  
+        :param all_members: Set to true for a rule to allow user to see all values  
+        :return: True  
         &#34;&#34;&#34;
         rule_json = {
             &#34;column&#34;: column,
@@ -129,30 +132,33 @@ class Rule:
         self._rule_json = rule_json
 
     def get_rule_id(self):
-        &#34;&#34;&#34;
-        Gets the rule id
-        :return: The rule id
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;  
+        Gets the rule id  
+          
+        :return: The rule id  
+        &#34;&#34;&#34;  
         return self._rule_json[&#39;_id&#39;]
 
     def get_member_values(self):
         &#34;&#34;&#34;
-        Gets the member values
-        :return: The member values
+        Gets the member values  
+          
+        :return: The member values  
         &#34;&#34;&#34;
         return self._rule_json[&#39;members&#39;]
 
     def update_rule(self, shares, table, column, data_type, members, *, exclusionary=False, all_members=None):
         &#34;&#34;&#34;
-        Updates the current rule
-        :param shares: Array of users and groups to share the rule with
-        :param table: Table of the data security rule
-        :param column: Column of the data security rule
-        :param data_type: Data security rule data type
-        :param members: The values to specify in the rule
-        :param exclusionary: Set to true to make an exclusionary rule
-        :param all_members: Set to true for a rule to allow user to see all values
-        :return: True
+        Updates the current rule  
+          
+        :param shares: Array of users and groups to share the rule with  
+        :param table: Table of the data security rule  
+        :param column: Column of the data security rule  
+        :param data_type: Data security rule data type  
+        :param members: The values to specify in the rule  
+        :param exclusionary: Set to true to make an exclusionary rule  
+        :param all_members: Set to true for a rule to allow user to see all values  
+        :return: True  
         &#34;&#34;&#34;
         rule_json = {
             &#34;column&#34;: column,
@@ -188,15 +194,17 @@ class Rule:
 </code></dt>
 <dd>
 <section class="desc"><p>Gets the member values
-:return: The member values</p></section>
+</p>
+<p>:return: The member values</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_member_values(self):
     &#34;&#34;&#34;
-    Gets the member values
-    :return: The member values
+    Gets the member values  
+      
+    :return: The member values  
     &#34;&#34;&#34;
     return self._rule_json[&#39;members&#39;]</code></pre>
 </details>
@@ -206,16 +214,18 @@ class Rule:
 </code></dt>
 <dd>
 <section class="desc"><p>Gets the rule id
-:return: The rule id</p></section>
+</p>
+<p>:return: The rule id</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_rule_id(self):
-    &#34;&#34;&#34;
-    Gets the rule id
-    :return: The rule id
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;  
+    Gets the rule id  
+      
+    :return: The rule id  
+    &#34;&#34;&#34;  
     return self._rule_json[&#39;_id&#39;]</code></pre>
 </details>
 </dd>
@@ -224,13 +234,14 @@ class Rule:
 </code></dt>
 <dd>
 <section class="desc"><p>Updates the current rule
-:param shares: Array of users and groups to share the rule with
-:param table: Table of the data security rule
-:param column: Column of the data security rule
-:param data_type: Data security rule data type
-:param members: The values to specify in the rule
-:param exclusionary: Set to true to make an exclusionary rule
-:param all_members: Set to true for a rule to allow user to see all values
+</p>
+<p>:param shares: Array of users and groups to share the rule with<br>
+:param table: Table of the data security rule<br>
+:param column: Column of the data security rule<br>
+:param data_type: Data security rule data type<br>
+:param members: The values to specify in the rule<br>
+:param exclusionary: Set to true to make an exclusionary rule<br>
+:param all_members: Set to true for a rule to allow user to see all values<br>
 :return: True</p></section>
 <details class="source">
 <summary>
@@ -238,15 +249,16 @@ class Rule:
 </summary>
 <pre><code class="python">def update_rule(self, shares, table, column, data_type, members, *, exclusionary=False, all_members=None):
     &#34;&#34;&#34;
-    Updates the current rule
-    :param shares: Array of users and groups to share the rule with
-    :param table: Table of the data security rule
-    :param column: Column of the data security rule
-    :param data_type: Data security rule data type
-    :param members: The values to specify in the rule
-    :param exclusionary: Set to true to make an exclusionary rule
-    :param all_members: Set to true for a rule to allow user to see all values
-    :return: True
+    Updates the current rule  
+      
+    :param shares: Array of users and groups to share the rule with  
+    :param table: Table of the data security rule  
+    :param column: Column of the data security rule  
+    :param data_type: Data security rule data type  
+    :param members: The values to specify in the rule  
+    :param exclusionary: Set to true to make an exclusionary rule  
+    :param all_members: Set to true for a rule to allow user to see all values  
+    :return: True  
     &#34;&#34;&#34;
     rule_json = {
         &#34;column&#34;: column,
