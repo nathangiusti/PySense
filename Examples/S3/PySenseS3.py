@@ -8,6 +8,11 @@ s3_client = boto3.client('s3', verify=False)
 
 
 def get_buckets():
+    """
+    Get all s3 buckets  
+      
+    :return: An array of all s3 buckets   
+    """
     bucket_arr = []
     for bucket in s3.buckets.all():
         bucket_arr.append(bucket)
@@ -15,22 +20,32 @@ def get_buckets():
 
 
 def get_bucket(bucket_name):
+    """
+    Get an s3 bucket by name   
+      
+    :param bucket_name: The name of the bucket     
+    :return: The s3 bucket  
+    """
     return s3.Bucket(bucket_name)
 
 
 def create_bucket(bucket_name, region=None):
+    """
+    Creates a new S3 bucket  
+      
+    :param bucket_name: The bucket name  
+    :param region: The region to create the bucket in  
+    :return: True if 
+    """
     try:
         if region is None:
             s3.create_bucket(Bucket=bucket_name)
         else:
-            s3_client = boto3.client('s3', region_name=region)
             location = {'LocationConstraint': region}
             s3_client.create_bucket(Bucket=bucket_name,
                                     CreateBucketConfiguration=location)
     except ClientError as e:
         logging.error(e)
-        return None
-    return True
 
 
 def upload_file(file_name, bucket, object_name=None):

@@ -12,23 +12,26 @@ class Group:
 
     def get_group_name(self):
         """
-        Get groups name
-        :return: The name of the group
+        Get groups name  
+          
+        :return: The name of the group  
         """
         return self._group_json['name']
 
     def get_group_id(self):
         """
-        Get groups id
-        :return: The id of the group
+        Get groups id  
+          
+        :return: The id of the group  
         """
         return self._group_json['_id']
 
     def add_user_to_group(self, users):
         """
-        Adds users to group
-        :param users: List of users to add
-        :return: True
+        Adds users to group  
+          
+        :param users: List of users to add  
+        :return: True  
         """
         payload = []
         for user in users:
@@ -41,9 +44,10 @@ class Group:
 
     def delete_user_from_group(self, users):
         """
-        Remove users from group
-        :param users: Users to remove
-        :return: True
+        Remove users from group  
+          
+        :param users: Users to remove  
+        :return: True  
         """
         payload = []
         for user in users:

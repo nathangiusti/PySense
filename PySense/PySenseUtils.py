@@ -10,10 +10,10 @@ class RestError(Exception):
 
 def parse_response(response):
     """
-    Parses REST response object for errors
-
-    :param response: the REST response object
-    :return: The response object if no errors
+    Parses REST response object for errors  
+  
+    :param response: the REST response object  
+    :return: The response object if no errors  
     """
 
     if response.status_code not in [200, 201, 204]:
@@ -24,10 +24,10 @@ def parse_response(response):
 
 def format_host(host):
     """
-    Formats host string
-
-    :param host: host
-    :return: The formatted host string
+    Formats host string  
+  
+    :param host: host  
+    :return: The formatted host string  
     """
     if not host.startswith('http'):
         host = 'http://' + host
@@ -38,9 +38,9 @@ def format_host(host):
 
 def build_query_string(dictionary):
     """
-    Turns dictionary into param string
-
-    :param dictionary: The dictionary of values to transform
+    Turns dictionary into param string  
+  
+    :param dictionary: The dictionary of values to transform  
     :return: A query string
     """
     ret_arr = []
