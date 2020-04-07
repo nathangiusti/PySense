@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.5" />
-<title>PySense.PySenseGroup API documentation</title>
+<title>PySense.PySenseFormula API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,73 +17,47 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>PySense.PySenseGroup</code></h1>
+<h1 class="title">Module <code>PySense.PySenseFormula</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import requests
+<pre><code class="python">class Formula:
 
-from PySense import PySenseUtils
-
-
-class Group:
-
-    def __init__(self, host, token, group_json):
+    def __init__(self, host, token, formula_json):
         self._host = host
         self._token = token
-        self._group_json = group_json
-
-    def get_group_name(self):
+        self._formula_json = formula_json
+        
+    def get_oid(self):
         &#34;&#34;&#34;
-        Get groups name  
-          
-        :return: The name of the group  
+        Get&#39;s the formula&#39;s Oid
+        
+        :return: The formula&#39;s oid 
         &#34;&#34;&#34;
         
-        return self._group_json[&#39;name&#39;]
-
-    def get_group_id(self):
+        return self._formula_json[&#39;oid&#39;]
+    
+    def change_datasource(self, cube):
         &#34;&#34;&#34;
-        Get groups id  
-          
-        :return: The id of the group  
+        Change the data source of the formula. 
+        The formula must be re-added after a data source change for it to take effect  
+        
+        :param cube: The ElastiCube to set the formula to 
         &#34;&#34;&#34;
         
-        return self._group_json[&#39;_id&#39;]
-
-    def add_user_to_group(self, users):
-        &#34;&#34;&#34;
-        Adds users to group  
-          
-        :param users: List of users to add  
-        &#34;&#34;&#34;
+        self._formula_json[&#39;datasource&#39;] = cube.get_metadata()
         
-        payload = []
-        for user in users:
-            payload.append(user.get_user_id())
-
-        resp = requests.post(&#39;{}/api/groups/{}/users&#39;.format(self._host, self.get_group_id()),
-                             headers=self._token, json=payload)
-        PySenseUtils.parse_response(resp)
-
-    def delete_user_from_group(self, users):
-        &#34;&#34;&#34;
-        Remove users from group  
+    def get_json(self):
+        &#34;&#34;&#34;  
+        Returns the formula json  
           
-        :param users: Users to remove   
-        &#34;&#34;&#34;
+        :return: The forumla json   
+        &#34;&#34;&#34;  
         
-        payload = []
-        for user in users:
-            payload.append(user.get_user_id())
-
-        resp = requests.post(&#39;{}/api/groups/{}/users&#39;.format(self._host, self.get_group_id()),
-                             headers=self._token, json=payload)
-        PySenseUtils.parse_response(resp)
-        return True</code></pre>
+        return self._formula_json</code></pre>
 </details>
 </section>
 <section>
@@ -95,9 +69,9 @@ class Group:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="PySense.PySenseGroup.Group"><code class="flex name class">
-<span>class <span class="ident">Group</span></span>
-<span>(</span><span>host, token, group_json)</span>
+<dt id="PySense.PySenseFormula.Formula"><code class="flex name class">
+<span>class <span class="ident">Formula</span></span>
+<span>(</span><span>host, token, formula_json)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -105,159 +79,105 @@ class Group:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Group:
+<pre><code class="python">class Formula:
 
-    def __init__(self, host, token, group_json):
+    def __init__(self, host, token, formula_json):
         self._host = host
         self._token = token
-        self._group_json = group_json
-
-    def get_group_name(self):
+        self._formula_json = formula_json
+        
+    def get_oid(self):
         &#34;&#34;&#34;
-        Get groups name  
-          
-        :return: The name of the group  
+        Get&#39;s the formula&#39;s Oid
+        
+        :return: The formula&#39;s oid 
         &#34;&#34;&#34;
         
-        return self._group_json[&#39;name&#39;]
-
-    def get_group_id(self):
+        return self._formula_json[&#39;oid&#39;]
+    
+    def change_datasource(self, cube):
         &#34;&#34;&#34;
-        Get groups id  
-          
-        :return: The id of the group  
+        Change the data source of the formula. 
+        The formula must be re-added after a data source change for it to take effect  
+        
+        :param cube: The ElastiCube to set the formula to 
         &#34;&#34;&#34;
         
-        return self._group_json[&#39;_id&#39;]
-
-    def add_user_to_group(self, users):
-        &#34;&#34;&#34;
-        Adds users to group  
-          
-        :param users: List of users to add  
-        &#34;&#34;&#34;
+        self._formula_json[&#39;datasource&#39;] = cube.get_metadata()
         
-        payload = []
-        for user in users:
-            payload.append(user.get_user_id())
-
-        resp = requests.post(&#39;{}/api/groups/{}/users&#39;.format(self._host, self.get_group_id()),
-                             headers=self._token, json=payload)
-        PySenseUtils.parse_response(resp)
-
-    def delete_user_from_group(self, users):
-        &#34;&#34;&#34;
-        Remove users from group  
+    def get_json(self):
+        &#34;&#34;&#34;  
+        Returns the formula json  
           
-        :param users: Users to remove   
-        &#34;&#34;&#34;
+        :return: The forumla json   
+        &#34;&#34;&#34;  
         
-        payload = []
-        for user in users:
-            payload.append(user.get_user_id())
-
-        resp = requests.post(&#39;{}/api/groups/{}/users&#39;.format(self._host, self.get_group_id()),
-                             headers=self._token, json=payload)
-        PySenseUtils.parse_response(resp)
-        return True</code></pre>
+        return self._formula_json</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="PySense.PySenseGroup.Group.add_user_to_group"><code class="name flex">
-<span>def <span class="ident">add_user_to_group</span></span>(<span>self, users)</span>
+<dt id="PySense.PySenseFormula.Formula.change_datasource"><code class="name flex">
+<span>def <span class="ident">change_datasource</span></span>(<span>self, cube)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Adds users to group
+<section class="desc"><p>Change the data source of the formula.
+The formula must be re-added after a data source change for it to take effect
 </p>
-<p>:param users: List of users to add</p></section>
+<p>:param cube: The ElastiCube to set the formula to</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_user_to_group(self, users):
+<pre><code class="python">def change_datasource(self, cube):
     &#34;&#34;&#34;
-    Adds users to group  
-      
-    :param users: List of users to add  
+    Change the data source of the formula. 
+    The formula must be re-added after a data source change for it to take effect  
+    
+    :param cube: The ElastiCube to set the formula to 
     &#34;&#34;&#34;
     
-    payload = []
-    for user in users:
-        payload.append(user.get_user_id())
-
-    resp = requests.post(&#39;{}/api/groups/{}/users&#39;.format(self._host, self.get_group_id()),
-                         headers=self._token, json=payload)
-    PySenseUtils.parse_response(resp)</code></pre>
+    self._formula_json[&#39;datasource&#39;] = cube.get_metadata()</code></pre>
 </details>
 </dd>
-<dt id="PySense.PySenseGroup.Group.delete_user_from_group"><code class="name flex">
-<span>def <span class="ident">delete_user_from_group</span></span>(<span>self, users)</span>
+<dt id="PySense.PySenseFormula.Formula.get_json"><code class="name flex">
+<span>def <span class="ident">get_json</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Remove users from group
+<section class="desc"><p>Returns the formula json
 </p>
-<p>:param users: Users to remove</p></section>
+<p>:return: The forumla json</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def delete_user_from_group(self, users):
-    &#34;&#34;&#34;
-    Remove users from group  
+<pre><code class="python">def get_json(self):
+    &#34;&#34;&#34;  
+    Returns the formula json  
       
-    :param users: Users to remove   
-    &#34;&#34;&#34;
+    :return: The forumla json   
+    &#34;&#34;&#34;  
     
-    payload = []
-    for user in users:
-        payload.append(user.get_user_id())
-
-    resp = requests.post(&#39;{}/api/groups/{}/users&#39;.format(self._host, self.get_group_id()),
-                         headers=self._token, json=payload)
-    PySenseUtils.parse_response(resp)
-    return True</code></pre>
+    return self._formula_json</code></pre>
 </details>
 </dd>
-<dt id="PySense.PySenseGroup.Group.get_group_id"><code class="name flex">
-<span>def <span class="ident">get_group_id</span></span>(<span>self)</span>
+<dt id="PySense.PySenseFormula.Formula.get_oid"><code class="name flex">
+<span>def <span class="ident">get_oid</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get groups id
-</p>
-<p>:return: The id of the group</p></section>
+<section class="desc"><p>Get's the formula's Oid</p>
+<p>:return: The formula's oid</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_group_id(self):
+<pre><code class="python">def get_oid(self):
     &#34;&#34;&#34;
-    Get groups id  
-      
-    :return: The id of the group  
+    Get&#39;s the formula&#39;s Oid
+    
+    :return: The formula&#39;s oid 
     &#34;&#34;&#34;
     
-    return self._group_json[&#39;_id&#39;]</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseGroup.Group.get_group_name"><code class="name flex">
-<span>def <span class="ident">get_group_name</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Get groups name
-</p>
-<p>:return: The name of the group</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_group_name(self):
-    &#34;&#34;&#34;
-    Get groups name  
-      
-    :return: The name of the group  
-    &#34;&#34;&#34;
-    
-    return self._group_json[&#39;name&#39;]</code></pre>
+    return self._formula_json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
 </dl>
@@ -279,12 +199,11 @@ class Group:
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="PySense.PySenseGroup.Group" href="#PySense.PySenseGroup.Group">Group</a></code></h4>
+<h4><code><a title="PySense.PySenseFormula.Formula" href="#PySense.PySenseFormula.Formula">Formula</a></code></h4>
 <ul class="">
-<li><code><a title="PySense.PySenseGroup.Group.add_user_to_group" href="#PySense.PySenseGroup.Group.add_user_to_group">add_user_to_group</a></code></li>
-<li><code><a title="PySense.PySenseGroup.Group.delete_user_from_group" href="#PySense.PySenseGroup.Group.delete_user_from_group">delete_user_from_group</a></code></li>
-<li><code><a title="PySense.PySenseGroup.Group.get_group_id" href="#PySense.PySenseGroup.Group.get_group_id">get_group_id</a></code></li>
-<li><code><a title="PySense.PySenseGroup.Group.get_group_name" href="#PySense.PySenseGroup.Group.get_group_name">get_group_name</a></code></li>
+<li><code><a title="PySense.PySenseFormula.Formula.change_datasource" href="#PySense.PySenseFormula.Formula.change_datasource">change_datasource</a></code></li>
+<li><code><a title="PySense.PySenseFormula.Formula.get_json" href="#PySense.PySenseFormula.Formula.get_json">get_json</a></code></li>
+<li><code><a title="PySense.PySenseFormula.Formula.get_oid" href="#PySense.PySenseFormula.Formula.get_oid">get_oid</a></code></li>
 </ul>
 </li>
 </ul>

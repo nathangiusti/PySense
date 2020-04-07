@@ -17,19 +17,19 @@ class PySenseTests(unittest.TestCase):
     def test_get_dashboards(self):
         ret = self.pyClient.get_dashboards(parent_folder_name='PySense')
         assert len(ret) == 1
-        assert ret[0].get_dashboard_title() == 'PySense'
+        assert ret[0].get_name() == 'PySense'
 
     def test_get_dashboards_id(self):
         ret = self.pyClient.get_dashboards(parent_folder_name='PySense')
-        dashboard_id = ret[0].get_dashboard_id()
-        assert dashboard_id == self.pyClient.get_dashboard_by_id(dashboard_id).get_dashboard_id()
+        dashboard_id = ret[0].get_id()
+        assert dashboard_id == self.pyClient.get_dashboard_by_id(dashboard_id).get_id()
 
     def test_dashboard_import_delete(self):
         with open(self.sample_path + '\\' + 'ImportDash.dash', 'r', encoding="utf8") as file:
             data = json.loads(file.read())
         dash = self.pyClient.post_dashboards(data)
         assert dash is not None
-        assert self.pyClient.delete_dashboards(dash.get_dashboard_id()) is not None
+        assert self.pyClient.delete_dashboards(dash.get_id()) is not None
 
     def test_get_folders(self):
         temp = self.pyClient.get_folders(name='PySense')
@@ -71,7 +71,7 @@ class PySenseTests(unittest.TestCase):
             group_id_arr.append(group.get_group_id())
         groups = self.pyClient.get_groups(ids=group_id_arr)
         assert len(groups) == 2
-        assert self.pyClient.delete_groups(groups) is True
+        self.pyClient.delete_groups(groups)
 
 
 if __name__ == '__main__':

@@ -49,6 +49,7 @@ class Rule:
           
         :return: The rule id  
         &#34;&#34;&#34;  
+        
         return self._rule_json[&#39;_id&#39;]
 
     def get_member_values(self):
@@ -57,6 +58,7 @@ class Rule:
           
         :return: The member values  
         &#34;&#34;&#34;
+        
         return self._rule_json[&#39;members&#39;]
 
     def update_rule(self, shares, table, column, data_type, members, *, exclusionary=False, all_members=None):
@@ -67,11 +69,13 @@ class Rule:
         :param table: Table of the data security rule  
         :param column: Column of the data security rule  
         :param data_type: Data security rule data type  
-        :param members: The values to specify in the rule  
+        :param members: The values to specify in the rule 
+        
+        Optional:   
         :param exclusionary: Set to true to make an exclusionary rule  
         :param all_members: Set to true for a rule to allow user to see all values  
-        :return: True  
         &#34;&#34;&#34;
+        
         rule_json = {
             &#34;column&#34;: column,
             &#34;datatype&#34;: data_type,
@@ -96,8 +100,7 @@ class Rule:
         resp = requests.put(&#39;{}/api/elasticubes/datasecurity/{}&#39;.format(
             self._host, self.get_rule_id()), headers=self._token, json=rule_json)
         PySenseUtils.parse_response(resp)
-        self._reset(resp.json())
-        return True</code></pre>
+        self._reset(resp.json())</code></pre>
 </details>
 </section>
 <section>
@@ -137,6 +140,7 @@ class Rule:
           
         :return: The rule id  
         &#34;&#34;&#34;  
+        
         return self._rule_json[&#39;_id&#39;]
 
     def get_member_values(self):
@@ -145,6 +149,7 @@ class Rule:
           
         :return: The member values  
         &#34;&#34;&#34;
+        
         return self._rule_json[&#39;members&#39;]
 
     def update_rule(self, shares, table, column, data_type, members, *, exclusionary=False, all_members=None):
@@ -155,11 +160,13 @@ class Rule:
         :param table: Table of the data security rule  
         :param column: Column of the data security rule  
         :param data_type: Data security rule data type  
-        :param members: The values to specify in the rule  
+        :param members: The values to specify in the rule 
+        
+        Optional:   
         :param exclusionary: Set to true to make an exclusionary rule  
         :param all_members: Set to true for a rule to allow user to see all values  
-        :return: True  
         &#34;&#34;&#34;
+        
         rule_json = {
             &#34;column&#34;: column,
             &#34;datatype&#34;: data_type,
@@ -184,8 +191,7 @@ class Rule:
         resp = requests.put(&#39;{}/api/elasticubes/datasecurity/{}&#39;.format(
             self._host, self.get_rule_id()), headers=self._token, json=rule_json)
         PySenseUtils.parse_response(resp)
-        self._reset(resp.json())
-        return True</code></pre>
+        self._reset(resp.json())</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -206,6 +212,7 @@ class Rule:
       
     :return: The member values  
     &#34;&#34;&#34;
+    
     return self._rule_json[&#39;members&#39;]</code></pre>
 </details>
 </dd>
@@ -226,6 +233,7 @@ class Rule:
       
     :return: The rule id  
     &#34;&#34;&#34;  
+    
     return self._rule_json[&#39;_id&#39;]</code></pre>
 </details>
 </dd>
@@ -239,10 +247,10 @@ class Rule:
 :param table: Table of the data security rule<br>
 :param column: Column of the data security rule<br>
 :param data_type: Data security rule data type<br>
-:param members: The values to specify in the rule<br>
+:param members: The values to specify in the rule </p>
+<p>Optional: <br>
 :param exclusionary: Set to true to make an exclusionary rule<br>
-:param all_members: Set to true for a rule to allow user to see all values<br>
-:return: True</p></section>
+:param all_members: Set to true for a rule to allow user to see all values</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -255,11 +263,13 @@ class Rule:
     :param table: Table of the data security rule  
     :param column: Column of the data security rule  
     :param data_type: Data security rule data type  
-    :param members: The values to specify in the rule  
+    :param members: The values to specify in the rule 
+    
+    Optional:   
     :param exclusionary: Set to true to make an exclusionary rule  
     :param all_members: Set to true for a rule to allow user to see all values  
-    :return: True  
     &#34;&#34;&#34;
+    
     rule_json = {
         &#34;column&#34;: column,
         &#34;datatype&#34;: data_type,
@@ -284,8 +294,7 @@ class Rule:
     resp = requests.put(&#39;{}/api/elasticubes/datasecurity/{}&#39;.format(
         self._host, self.get_rule_id()), headers=self._token, json=rule_json)
     PySenseUtils.parse_response(resp)
-    self._reset(resp.json())
-    return True</code></pre>
+    self._reset(resp.json())</code></pre>
 </details>
 </dd>
 </dl>

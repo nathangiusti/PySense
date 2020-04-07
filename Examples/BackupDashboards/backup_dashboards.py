@@ -46,15 +46,15 @@ def export_png(format_vars, dashboard, file_folder, cropping):
     :param cropping: The cropping yaml section
     :return: Nothing
     """
-    dashboard_id = dashboard.get_dashboard_id()
+    dashboard_id = dashboard.get_id()
     if cropping and dashboard_id in cropping:
         i = 0
-        for coord_str in cropping[dashboard.get_dashboard_id()]:
+        for coord_str in cropping[dashboard.get_id()]:
             i += 1
             coord_arr = coord_str.split(',')
             if len(coord_arr) == 5:
                 file_path = build_path(file_folder, dashboard_id, format_vars['file_type'], i)
-                png_file = dashboard.get_dashboard_export_png(file_path, width=format_vars['query_params']['width'])
+                png_file = dashboard.export_to_png(path=file_path, width=format_vars['query_params']['width'])
                 image_obj = Image.open(png_file)
                 x1 = int(coord_arr[0])
                 y1 = int(coord_arr[1])
@@ -72,14 +72,12 @@ def export_png(format_vars, dashboard, file_folder, cropping):
             elif len(coord_arr) == 3:
                 width = int(coord_arr[1])
                 height = int(coord_arr[2])
-                dashboard.\
-                    post_dashboard_widget_export_png(
-                        coord_arr[0], build_path(file_folder, dashboard_id, format_vars['file_type']),
-                        width, height)
+                path = build_path(file_folder, dashboard_id, format_vars['file_type'])
+                dashboard.get_widget_by_id(coord_arr[0]).export_to_png(width, height, path=path)
 
     else:
-        return dashboard.get_dashboard_export_png(build_path(file_folder, dashboard_id, format_vars['file_type']),
-                                                width=format_vars['query_params']['width'])
+        return dashboard.export_to_png(path=build_path(file_folder, dashboard_id, format_vars['file_type']),
+                                       width=format_vars['query_params']['width'])
 
 
 def main():
@@ -114,11 +112,11 @@ def main():
             export_png(format_vars, dashboard, file_folder, cropping)
         elif format_vars['file_type'] == 'pdf':
             query_params = format_vars['query_params']
-            dashboard.get_dashboard_export_pdf(
-                file_folder + dashboard + '.pdf', query_params['paperFormat'],
-                query_params['paperOrientation'], query_params['layout'])
+            dashboard.export_to_pdf(query_params['paperFormat'],
+                                    query_params['paperOrientation'], query_params['layout'], 
+                                    path=file_folder + '\\' + dashboard.get_id() + '.pdf')
         elif format_vars['file_type'] == 'dash':
-            dashboard.get_dashboard_export_dash(file_folder + dashboard + '.dash')
+            dashboard.export_to_dash(path=file_folder + '\\' + dashboard.get_id() + '.dash')
 
     print('Backups complete')
 

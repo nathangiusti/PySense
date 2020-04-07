@@ -40,12 +40,12 @@ if __name__ == '__main__':
                     share_obj = groups_array
                 print('Group ' + security_name + ' was successfully looked up.')
             elasticube = py_client.get_elasticube_by_name(elasticube_name)
-            rules_array = elasticube.get_elasticube_datasecurity_by_table_column('localhost', table, column)
+            rules_array = elasticube.get_elasticube_datasecurity_by_table_column(table, column)
             if len(rules_array) == 0:
-                elasticube.add_default_rule('localhost', table, column, 'numeric')
+                elasticube.add_default_rule(table, column, 'numeric')
             if share_obj is not None:
                 if 'Everything' in security_values:
-                    elasticube.add_security_rule('LocalHost', share_obj, table, column, 'numeric', [],
+                    elasticube.add_security_rule(share_obj, table, column, 'numeric', [],
                                                  all_members=True)
                 else:
-                    elasticube.add_security_rule('LocalHost', share_obj, table, column, 'numeric', security_values)
+                    elasticube.add_security_rule(share_obj, table, column, 'numeric', security_values)

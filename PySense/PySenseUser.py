@@ -20,6 +20,7 @@ class User:
 
         :return: The user id  
         """
+        
         return self._user_json['_id']
 
     def get_user_user_name(self):
@@ -28,6 +29,7 @@ class User:
   
         :return: The user's    
         """
+        
         return self._user_json['userName']
 
     def update_user(self, *, email=None, user_name=None, first_name=None, last_name=None, role_name=None, groups=None,
@@ -43,6 +45,7 @@ class User:
         :param groups: Groups to put user in  
         :param preferences: Preferences to be updated for user  
         :param ui_settings: UI Settings to be updated for user  
+           
         :return: True if successful  
         """  
 

@@ -1,0 +1,11 @@
+host: http://localhost:8081
+authentication:
+  username: my.email@sisense.com
+  password: password
+globals:
+  format:
+    file_type: dash
+  folder: C:\Users\Documents\Backups
+dashboards:
+  ids:
+    - 5d0cf36b44f1ed2618f180a6

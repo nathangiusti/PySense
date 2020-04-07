@@ -16,6 +16,7 @@ class Group:
           
         :return: The name of the group  
         """
+        
         return self._group_json['name']
 
     def get_group_id(self):
@@ -24,6 +25,7 @@ class Group:
           
         :return: The id of the group  
         """
+        
         return self._group_json['_id']
 
     def add_user_to_group(self, users):
@@ -31,8 +33,8 @@ class Group:
         Adds users to group  
           
         :param users: List of users to add  
-        :return: True  
         """
+        
         payload = []
         for user in users:
             payload.append(user.get_user_id())
@@ -40,15 +42,14 @@ class Group:
         resp = requests.post('{}/api/groups/{}/users'.format(self._host, self.get_group_id()),
                              headers=self._token, json=payload)
         PySenseUtils.parse_response(resp)
-        return True
 
     def delete_user_from_group(self, users):
         """
         Remove users from group  
           
-        :param users: Users to remove  
-        :return: True  
+        :param users: Users to remove   
         """
+        
         payload = []
         for user in users:
             payload.append(user.get_user_id())
