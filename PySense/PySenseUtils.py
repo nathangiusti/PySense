@@ -9,26 +9,13 @@ class RestError(Exception):
 
 
 def parse_response(response):
-    """
-    Parses REST response object for errors  
-  
-    :param response: the REST response object  
-    :return: The response object if no errors  
-    """
-
     if response.status_code not in [200, 201, 204]:
-        raise RestError('ERROR: {}: {}'.format(response.status_code, response.content))
+        raise RestError('ERROR: {}: {}\nURL: {}'.format(response.status_code, response.content, response.url))
 
     return response
 
 
 def format_host(host):
-    """
-    Formats host string  
-  
-    :param host: host  
-    :return: The formatted host string  
-    """
     if not host.startswith('http'):
         host = 'http://' + host
     if host.endswith('/'):
@@ -37,12 +24,6 @@ def format_host(host):
 
 
 def build_query_string(dictionary):
-    """
-    Turns dictionary into param string  
-  
-    :param dictionary: The dictionary of values to transform  
-    :return: A query string
-    """
     ret_arr = []
     separator = '&'
     for key, value in dictionary.items():

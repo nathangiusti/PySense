@@ -4,9 +4,11 @@ from Test.PySenseDashboardTests import PySenseDashboardTests
 from Test.PySenseElasticubeTests import PySenseElasticubeTests
 from Test.PySenseGroupTests import PySenseGroupTests
 from Test.PySenseTests import PySenseTests
+from Test.PySenseWidgetTest import PySenseWidgetTest
 
 scale_test_suite = unittest.TestSuite([
-    unittest.TestLoader().loadTestsFromTestCase(PySenseGroupTests ),
+    unittest.TestLoader().loadTestsFromTestCase(PySenseWidgetTest),
+    unittest.TestLoader().loadTestsFromTestCase(PySenseGroupTests),
     unittest.TestLoader().loadTestsFromTestCase(PySenseElasticubeTests),
     unittest.TestLoader().loadTestsFromTestCase(PySenseDashboardTests),
     unittest.TestLoader().loadTestsFromTestCase(PySenseTests)
