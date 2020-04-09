@@ -1,3 +1,16 @@
+**V 0.1.1 Release Notes**
+- Breaking changes
+	- elasticube.get_data_source_sql now elasticbe.run_sql
+	- elasticube.get_elasticube_datasecurity now elasticube.get_datasecurity
+	- elasticube.get_elasticube_datasecurity_by_table_column now elasticube.get_datasecurity_by_table_column
+
+- Additions
+	- Get data security by user from a cube
+	- Get table and column for rules
+
+- Fixes
+	- None
+
 **V 0.1.0 Release Notes**
 - Breaking changes
 	- The following methods were renamed for clarity/brevity/uniformity

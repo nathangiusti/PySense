@@ -40,7 +40,7 @@ if __name__ == '__main__':
                     share_obj = groups_array
                 print('Group ' + security_name + ' was successfully looked up.')
             elasticube = py_client.get_elasticube_by_name(elasticube_name)
-            rules_array = elasticube.get_elasticube_datasecurity_by_table_column(table, column)
+            rules_array = elasticube.get_datasecurity_by_table_column(table, column)
             if len(rules_array) == 0:
                 elasticube.add_default_rule(table, column, 'numeric')
             if share_obj is not None:

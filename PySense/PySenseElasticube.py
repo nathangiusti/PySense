@@ -47,8 +47,8 @@ class Elasticube:
         else:
             return self._cube_json['title']
 
-    def get_data_source_sql(self, query, file_type, *, path=None, server_address=None,
-                            offset=None, count=None, include_metadata=None, is_masked_response=None):
+    def run_sql(self, query, file_type, *, path=None, server_address=None,
+                offset=None, count=None, include_metadata=None, is_masked_response=None):
         """
         Executes ElastiCube sql. This is a non public API.  
     
@@ -170,7 +170,7 @@ class Elasticube:
             return self.add_security_rule([{"type": "default"}], table_name, column_name, data_type, security_values,
                                           server_address=server_address)
 
-    def get_elasticube_datasecurity(self, *, server_address=None):
+    def get_datasecurity(self, *, server_address=None):
         """
         Return data security rules for the ElastiCube   
           
@@ -192,7 +192,7 @@ class Elasticube:
             ret_arr.append(PySenseRule.Rule(self._host, self._token, rule))
         return ret_arr
 
-    def get_elasticube_datasecurity_by_table_column(self, table, column, *, server_address=None):
+    def get_datasecurity_by_table_column(self, table, column, *, server_address=None):
         """
         Returns ElastiCube data security rules for a column in a table in the ElastiCube  
         
@@ -217,6 +217,34 @@ class Elasticube:
             ret_arr.append(PySenseRule.Rule(self._host, self._token, rule))
         return ret_arr
 
+    def get_security_for_user(self, user, *, server_address=None):
+        """
+        Returns an array of rules for the user on this cube
+        
+        :param user: The user id, username, or user obect  
+        
+        Optional:
+        :param server_address: The server address of the ElastiCube.  
+            Set this to your server ip if this method fails without it set.  
+             
+        :return: An array of PySense Rules  
+        """
+
+        server_address = server_address if server_address else self._server_address
+        
+        if isinstance(user, PySenseUser.User):
+            user_id = user.get_user_id()
+        else:
+            user_id = urllib.parse.quote(user)
+        resp = requests.get('{}/api/elasticubes/{}/{}/{}/datasecurity'.format(
+            self._host, server_address, self.get_name(url_encoded=True), user_id), headers=self._token)
+        PySenseUtils.parse_response(resp)
+        ret_arr = []
+        for rule in resp.json():
+            ret_arr.append(PySenseRule.Rule(self._host, self._token, rule))
+        return ret_arr
+        
+        
     def delete_rule(self, table, column, *, server_address=None):
         """
         Delete data security rule for a column  

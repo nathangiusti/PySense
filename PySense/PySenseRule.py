@@ -12,6 +12,7 @@ class Rule:
         self._reset(rule_json)
 
     def _reset(self, rule_json):
+        # Sisense returns partyId in the object response, but wants party for the request. So we fix that here.
         for share in rule_json['shares']:
             if 'partyId' in share:
                 share['party'] = share.pop('partyId')
@@ -20,11 +21,29 @@ class Rule:
     def get_rule_id(self):
         """  
         Gets the rule id  
-          
+
         :return: The rule id  
+        """
+
+        return self._rule_json['_id']
+    
+    def get_column(self):
+        """  
+        Gets the column for which the rule applies
+          
+        :return: The column title
         """  
         
-        return self._rule_json['_id']
+        return self._rule_json['column']
+
+    def get_table(self):
+        """  
+        Gets the table for which the rule applies
+
+        :return: The table title
+        """
+
+        return self._rule_json['table']
 
     def get_member_values(self):
         """

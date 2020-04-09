@@ -7,9 +7,9 @@ import PySense.PySense as PySense
 class PySenseDashboardTests(unittest.TestCase):
 
     def setUp(self):
-        self.pyClient = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
+        self.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
         self.sample_path = 'C:\\PySense\\'
-        self.dashboard = self.pyClient.get_dashboards(parent_folder_name='PySense')[0]
+        self.dashboard = self.py_client.get_dashboards(parent_folder_name='PySense')[0]
 
     def test_get_dashboard_export_png(self):
         path = self.sample_path + '\\' + self.dashboard.get_id() + '.png'
@@ -49,7 +49,7 @@ class PySenseDashboardTests(unittest.TestCase):
         assert len(shares['sharesTo']) == 1
 
     def test_move_to_folder(self):
-        folder = self.pyClient.get_folders(name='PySense')[0]
+        folder = self.py_client.get_folders(name='PySense')[0]
         self.dashboard.move_to_folder(None)
         assert self.dashboard.get_dashboard_folder_id() is None
         self.dashboard.move_to_folder(folder)
