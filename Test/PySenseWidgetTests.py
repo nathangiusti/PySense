@@ -3,7 +3,7 @@ import unittest
 import PySense.PySense as PySense
 
 
-class PySenseWidgetTest(unittest.TestCase):
+class PySenseWidgetTests(unittest.TestCase):
     def setUp(self):
         self.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
         self.dashboard = self.py_client.get_dashboards(parent_folder_name='PySense')[0]

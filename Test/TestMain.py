@@ -3,11 +3,13 @@ import unittest
 from Test.PySenseDashboardTests import PySenseDashboardTests
 from Test.PySenseElasticubeTests import PySenseElasticubeTests
 from Test.PySenseGroupTests import PySenseGroupTests
+from Test.PySensePluginTests import PySensePluginTests
 from Test.PySenseTests import PySenseTests
-from Test.PySenseWidgetTest import PySenseWidgetTest
+from Test.PySenseWidgetTests import PySenseWidgetTests
 
 scale_test_suite = unittest.TestSuite([
-    unittest.TestLoader().loadTestsFromTestCase(PySenseWidgetTest),
+    unittest.TestLoader().loadTestsFromTestCase(PySensePluginTests),
+    unittest.TestLoader().loadTestsFromTestCase(PySenseWidgetTests),
     unittest.TestLoader().loadTestsFromTestCase(PySenseGroupTests),
     unittest.TestLoader().loadTestsFromTestCase(PySenseElasticubeTests),
     unittest.TestLoader().loadTestsFromTestCase(PySenseDashboardTests),

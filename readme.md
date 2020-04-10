@@ -18,15 +18,12 @@ pip install PySenseSDK
 
 See provided examples
 
-**V 0.1.1 Release Notes**
+**V 0.1.2 Release Notes**
 - Breaking changes
-	- elasticube.get_data_source_sql now elasticbe.run_sql
-	- elasticube.get_elasticube_datasecurity now elasticube.get_datasecurity
-	- elasticube.get_elasticube_datasecurity_by_table_column now elasticube.get_datasecurity_by_table_column
+    - None
 
 - Additions
-	- Get data security by user from a cube
-	- Get table and column for rules
+	- Manage your plugins! Search by name and enable and disable. See plugins example script. 
 
 - Fixes
 	- None

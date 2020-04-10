@@ -32,6 +32,7 @@ from PySense import PySenseDashboard
 from PySense import PySenseElasticube
 from PySense import PySenseGroup
 from PySense import PySenseFolder
+from PySense import PySensePlugin
 from PySense import PySenseUser
 from PySense import PySenseUtils
 
@@ -459,10 +460,9 @@ class PySense:
   
         :param user: User obj to delete  
            
-        :return: Response   
         &#34;&#34;&#34;
         resp = requests.delete(&#39;{}/api/v1/users/{}&#39;.format(self._host, user.get_user_id()), headers=self._token)
-        return PySenseUtils.parse_response(resp)
+        PySenseUtils.parse_response(resp)
 
     ############################################
     # Elasticubes                              #
@@ -496,6 +496,38 @@ class PySense:
             if cube.get_name() == name:
                 return cube
         return None
+
+    ############################################
+    # Plug Ins                                 #
+    ############################################
+    
+    def get_plugins(self, *, order_by=None, desc=None, search=None, skip=None, limit=None):
+        &#34;&#34;&#34;
+        Get all plugins installed  
+          
+        Optional:  
+        :param order_by: Filter by provided field  
+        :param desc: Order by descending/ascending (boolean)  
+        :param search: Filter according to provided string  
+        :param skip: Number of results to skip from the start of the data set. 
+            Skip is to be used with the limit parameter for paging.  
+        :param limit: How many results should be returned. limit is to be used with the skip parameter for paging
+          
+        :return: An array of PySense Plugins Objects
+        &#34;&#34;&#34;
+        query_string = PySenseUtils.build_query_string({
+            &#39;orderby&#39;: order_by,
+            &#39;desc&#39;: desc,
+            &#39;search&#39;: search,
+            &#39;skip&#39;: skip,
+            &#39;limit&#39;: limit
+        })
+        resp = requests.get(&#39;{}/api/v1/plugins?{}&#39;.format(self._host, query_string), headers=self._token)
+        PySenseUtils.parse_response(resp)
+        ret_arr = []
+        for plugin in json.loads(resp.content)[&#39;plugins&#39;]:
+            ret_arr.append((PySensePlugin.Plugin(self._host, self._token, plugin)))
+        return ret_arr
 
     ############################################
     # Alerts                                   #
@@ -969,10 +1001,9 @@ class PySense:
   
         :param user: User obj to delete  
            
-        :return: Response   
         &#34;&#34;&#34;
         resp = requests.delete(&#39;{}/api/v1/users/{}&#39;.format(self._host, user.get_user_id()), headers=self._token)
-        return PySenseUtils.parse_response(resp)
+        PySenseUtils.parse_response(resp)
 
     ############################################
     # Elasticubes                              #
@@ -1006,6 +1037,38 @@ class PySense:
             if cube.get_name() == name:
                 return cube
         return None
+
+    ############################################
+    # Plug Ins                                 #
+    ############################################
+    
+    def get_plugins(self, *, order_by=None, desc=None, search=None, skip=None, limit=None):
+        &#34;&#34;&#34;
+        Get all plugins installed  
+          
+        Optional:  
+        :param order_by: Filter by provided field  
+        :param desc: Order by descending/ascending (boolean)  
+        :param search: Filter according to provided string  
+        :param skip: Number of results to skip from the start of the data set. 
+            Skip is to be used with the limit parameter for paging.  
+        :param limit: How many results should be returned. limit is to be used with the skip parameter for paging
+          
+        :return: An array of PySense Plugins Objects
+        &#34;&#34;&#34;
+        query_string = PySenseUtils.build_query_string({
+            &#39;orderby&#39;: order_by,
+            &#39;desc&#39;: desc,
+            &#39;search&#39;: search,
+            &#39;skip&#39;: skip,
+            &#39;limit&#39;: limit
+        })
+        resp = requests.get(&#39;{}/api/v1/plugins?{}&#39;.format(self._host, query_string), headers=self._token)
+        PySenseUtils.parse_response(resp)
+        ret_arr = []
+        for plugin in json.loads(resp.content)[&#39;plugins&#39;]:
+            ret_arr.append((PySensePlugin.Plugin(self._host, self._token, plugin)))
+        return ret_arr
 
     ############################################
     # Alerts                                   #
@@ -1211,9 +1274,7 @@ If a user with the same username or email exists, it will return an error.
 <dd>
 <section class="desc"><p>Deletes the specified user
 </p>
-<p>:param user: User obj to delete
-</p>
-<p>:return: Response</p></section>
+<p>:param user: User obj to delete</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1224,10 +1285,9 @@ If a user with the same username or email exists, it will return an error.
 
     :param user: User obj to delete  
        
-    :return: Response   
     &#34;&#34;&#34;
     resp = requests.delete(&#39;{}/api/v1/users/{}&#39;.format(self._host, user.get_user_id()), headers=self._token)
-    return PySenseUtils.parse_response(resp)</code></pre>
+    PySenseUtils.parse_response(resp)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySense.PySense.get_authentication"><code class="name flex">
@@ -1627,6 +1687,53 @@ May be nested using the resource.subResource format
     return ret_arr</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySense.PySense.get_plugins"><code class="name flex">
+<span>def <span class="ident">get_plugins</span></span>(<span>self, *, order_by=None, desc=None, search=None, skip=None, limit=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Get all plugins installed
+</p>
+<p>Optional:<br>
+:param order_by: Filter by provided field<br>
+:param desc: Order by descending/ascending (boolean)<br>
+:param search: Filter according to provided string<br>
+:param skip: Number of results to skip from the start of the data set.
+Skip is to be used with the limit parameter for paging.<br>
+:param limit: How many results should be returned. limit is to be used with the skip parameter for paging</p>
+<p>:return: An array of PySense Plugins Objects</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_plugins(self, *, order_by=None, desc=None, search=None, skip=None, limit=None):
+    &#34;&#34;&#34;
+    Get all plugins installed  
+      
+    Optional:  
+    :param order_by: Filter by provided field  
+    :param desc: Order by descending/ascending (boolean)  
+    :param search: Filter according to provided string  
+    :param skip: Number of results to skip from the start of the data set. 
+        Skip is to be used with the limit parameter for paging.  
+    :param limit: How many results should be returned. limit is to be used with the skip parameter for paging
+      
+    :return: An array of PySense Plugins Objects
+    &#34;&#34;&#34;
+    query_string = PySenseUtils.build_query_string({
+        &#39;orderby&#39;: order_by,
+        &#39;desc&#39;: desc,
+        &#39;search&#39;: search,
+        &#39;skip&#39;: skip,
+        &#39;limit&#39;: limit
+    })
+    resp = requests.get(&#39;{}/api/v1/plugins?{}&#39;.format(self._host, query_string), headers=self._token)
+    PySenseUtils.parse_response(resp)
+    ret_arr = []
+    for plugin in json.loads(resp.content)[&#39;plugins&#39;]:
+        ret_arr.append((PySensePlugin.Plugin(self._host, self._token, plugin)))
+    return ret_arr</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySense.PySense.get_users"><code class="name flex">
 <span>def <span class="ident">get_users</span></span>(<span>self, *, user_name=None, email=None, first_name=None, last_name=None, role_name=None, group=None, active=None, origin=None, ids=None, fields=None, sort=None, skip=None, limit=None, expand=None)</span>
 </code></dt>
@@ -1800,6 +1907,7 @@ May be nested using the resource.subResource format
 <li><code><a title="PySense.PySense.PySense.get_folders" href="#PySense.PySense.PySense.get_folders">get_folders</a></code></li>
 <li><code><a title="PySense.PySense.PySense.get_group_ids" href="#PySense.PySense.PySense.get_group_ids">get_group_ids</a></code></li>
 <li><code><a title="PySense.PySense.PySense.get_groups" href="#PySense.PySense.PySense.get_groups">get_groups</a></code></li>
+<li><code><a title="PySense.PySense.PySense.get_plugins" href="#PySense.PySense.PySense.get_plugins">get_plugins</a></code></li>
 <li><code><a title="PySense.PySense.PySense.get_users" href="#PySense.PySense.PySense.get_users">get_users</a></code></li>
 <li><code><a title="PySense.PySense.PySense.post_alert" href="#PySense.PySense.PySense.post_alert">post_alert</a></code></li>
 <li><code><a title="PySense.PySense.PySense.post_dashboards" href="#PySense.PySense.PySense.post_dashboards">post_dashboards</a></code></li>

@@ -6,6 +6,7 @@ from PySense import PySenseDashboard
 from PySense import PySenseElasticube
 from PySense import PySenseGroup
 from PySense import PySenseFolder
+from PySense import PySensePlugin
 from PySense import PySenseUser
 from PySense import PySenseUtils
 
@@ -433,10 +434,9 @@ class PySense:
   
         :param user: User obj to delete  
            
-        :return: Response   
         """
         resp = requests.delete('{}/api/v1/users/{}'.format(self._host, user.get_user_id()), headers=self._token)
-        return PySenseUtils.parse_response(resp)
+        PySenseUtils.parse_response(resp)
 
     ############################################
     # Elasticubes                              #
@@ -470,6 +470,38 @@ class PySense:
             if cube.get_name() == name:
                 return cube
         return None
+
+    ############################################
+    # Plug Ins                                 #
+    ############################################
+    
+    def get_plugins(self, *, order_by=None, desc=None, search=None, skip=None, limit=None):
+        """
+        Get all plugins installed  
+          
+        Optional:  
+        :param order_by: Filter by provided field  
+        :param desc: Order by descending/ascending (boolean)  
+        :param search: Filter according to provided string  
+        :param skip: Number of results to skip from the start of the data set. 
+            Skip is to be used with the limit parameter for paging.  
+        :param limit: How many results should be returned. limit is to be used with the skip parameter for paging
+          
+        :return: An array of PySense Plugins Objects
+        """
+        query_string = PySenseUtils.build_query_string({
+            'orderby': order_by,
+            'desc': desc,
+            'search': search,
+            'skip': skip,
+            'limit': limit
+        })
+        resp = requests.get('{}/api/v1/plugins?{}'.format(self._host, query_string), headers=self._token)
+        PySenseUtils.parse_response(resp)
+        ret_arr = []
+        for plugin in json.loads(resp.content)['plugins']:
+            ret_arr.append((PySensePlugin.Plugin(self._host, self._token, plugin)))
+        return ret_arr
 
     ############################################
     # Alerts                                   #

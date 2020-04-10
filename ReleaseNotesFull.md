@@ -1,3 +1,13 @@
+**V 0.1.2 Release Notes**
+- Breaking changes
+    - None
+
+- Additions
+	- Manage your plugins! Search by name and enable and disable. See plugins example script. 
+
+- Fixes
+	- None
+	
 **V 0.1.1 Release Notes**
 - Breaking changes
 	- elasticube.get_data_source_sql now elasticbe.run_sql
