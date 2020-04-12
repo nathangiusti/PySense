@@ -24,84 +24,15 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import json
-import requests
-
-from PySense import PySenseUser
+<pre><code class="python">from collections import Iterable
 
 
-class RestError(Exception):
-    pass
-
-
-def parse_response(response):
-    if response.status_code not in [200, 201, 204]:
-        raise RestError(&#39;ERROR: {}: {}\nURL: {}&#39;.format(response.status_code, response.content, response.url))
-
-    return response
-
-
-def format_host(host):
-    if not host.startswith(&#39;http&#39;):
-        host = &#39;http://&#39; + host
-    if host.endswith(&#39;/&#39;):
-        host = host[:-1]
-    return host
-
-
-def build_query_string(dictionary):
-    ret_arr = []
-    separator = &#39;&amp;&#39;
-    for key, value in dictionary.items():
-        if value is not None:
-            validated = value
-            if isinstance(value, bool):
-                if value is True:
-                    validated = &#39;true&#39;
-                elif value is False:
-                    validated = &#39;false&#39;
-            elif isinstance(value, list):
-                validated = &#39;,&#39;.join(value)
-            ret_arr.append(&#34;{}={}&#34;.format(key, validated))
-    return separator.join(ret_arr)
-
-
-def build_json_object(dictionary):
-    ret_json = {}
-    for key, value in dictionary.items():
-        if value is not None:
-            validated = value
-            if isinstance(value, bool):
-                if value is True:
-                    validated = &#39;true&#39;
-                elif value is False:
-                    validated = &#39;false&#39;
-            ret_json[key] = validated
-    return ret_json
-
-
-def get_user_id(host, token, email):
-    resp = requests.get(&#39;{}/api/users?email={}&#39;.format(host, email),
-                        headers=token)
-    parse_response(resp)
-    for user in resp.json():
-        if user[&#39;email&#39;] == email:
-            user = PySenseUser.User(host, token, user)
-            return user.get_user_id()
-
-
-def get_role_id(host, token, role_name):
-    if role_name is None:
-        return None
-    resp = requests.get(&#39;{}/api/roles&#39;.format(host),
-                        headers=token)
-    parse_response(resp)
-
-    json_rep = json.loads(resp.content.decode(&#39;utf8&#39;))
-    for item in json_rep:
-        if role_name == item[&#39;name&#39;] or role_name == item[&#39;displayName&#39;]:
-            return item[&#39;_id&#39;]
-    raise Exception(&#34;Role with name {} not found&#34;.format(role_name))</code></pre>
+def make_iterable(obj):
+    if obj is None: 
+        return []
+    if not isinstance(obj, Iterable):
+        return [obj]
+    return obj</code></pre>
 </details>
 </section>
 <section>
@@ -111,8 +42,8 @@ def get_role_id(host, token, role_name):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="PySense.PySenseUtils.build_json_object"><code class="name flex">
-<span>def <span class="ident">build_json_object</span></span>(<span>dictionary)</span>
+<dt id="PySense.PySenseUtils.make_iterable"><code class="name flex">
+<span>def <span class="ident">make_iterable</span></span>(<span>obj)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -120,146 +51,17 @@ def get_role_id(host, token, role_name):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def build_json_object(dictionary):
-    ret_json = {}
-    for key, value in dictionary.items():
-        if value is not None:
-            validated = value
-            if isinstance(value, bool):
-                if value is True:
-                    validated = &#39;true&#39;
-                elif value is False:
-                    validated = &#39;false&#39;
-            ret_json[key] = validated
-    return ret_json</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseUtils.build_query_string"><code class="name flex">
-<span>def <span class="ident">build_query_string</span></span>(<span>dictionary)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def build_query_string(dictionary):
-    ret_arr = []
-    separator = &#39;&amp;&#39;
-    for key, value in dictionary.items():
-        if value is not None:
-            validated = value
-            if isinstance(value, bool):
-                if value is True:
-                    validated = &#39;true&#39;
-                elif value is False:
-                    validated = &#39;false&#39;
-            elif isinstance(value, list):
-                validated = &#39;,&#39;.join(value)
-            ret_arr.append(&#34;{}={}&#34;.format(key, validated))
-    return separator.join(ret_arr)</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseUtils.format_host"><code class="name flex">
-<span>def <span class="ident">format_host</span></span>(<span>host)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def format_host(host):
-    if not host.startswith(&#39;http&#39;):
-        host = &#39;http://&#39; + host
-    if host.endswith(&#39;/&#39;):
-        host = host[:-1]
-    return host</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseUtils.get_role_id"><code class="name flex">
-<span>def <span class="ident">get_role_id</span></span>(<span>host, token, role_name)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_role_id(host, token, role_name):
-    if role_name is None:
-        return None
-    resp = requests.get(&#39;{}/api/roles&#39;.format(host),
-                        headers=token)
-    parse_response(resp)
-
-    json_rep = json.loads(resp.content.decode(&#39;utf8&#39;))
-    for item in json_rep:
-        if role_name == item[&#39;name&#39;] or role_name == item[&#39;displayName&#39;]:
-            return item[&#39;_id&#39;]
-    raise Exception(&#34;Role with name {} not found&#34;.format(role_name))</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseUtils.get_user_id"><code class="name flex">
-<span>def <span class="ident">get_user_id</span></span>(<span>host, token, email)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_user_id(host, token, email):
-    resp = requests.get(&#39;{}/api/users?email={}&#39;.format(host, email),
-                        headers=token)
-    parse_response(resp)
-    for user in resp.json():
-        if user[&#39;email&#39;] == email:
-            user = PySenseUser.User(host, token, user)
-            return user.get_user_id()</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseUtils.parse_response"><code class="name flex">
-<span>def <span class="ident">parse_response</span></span>(<span>response)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def parse_response(response):
-    if response.status_code not in [200, 201, 204]:
-        raise RestError(&#39;ERROR: {}: {}\nURL: {}&#39;.format(response.status_code, response.content, response.url))
-
-    return response</code></pre>
+<pre><code class="python">def make_iterable(obj):
+    if obj is None: 
+        return []
+    if not isinstance(obj, Iterable):
+        return [obj]
+    return obj</code></pre>
 </details>
 </dd>
 </dl>
 </section>
 <section>
-<h2 class="section-title" id="header-classes">Classes</h2>
-<dl>
-<dt id="PySense.PySenseUtils.RestError"><code class="flex name class">
-<span>class <span class="ident">RestError</span></span>
-<span>(</span><span>...)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Common base class for all non-exit exceptions.</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class RestError(Exception):
-    pass</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>builtins.Exception</li>
-<li>builtins.BaseException</li>
-</ul>
-</dd>
-</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -274,20 +76,8 @@ def get_role_id(host, token, role_name):
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="two-column">
-<li><code><a title="PySense.PySenseUtils.build_json_object" href="#PySense.PySenseUtils.build_json_object">build_json_object</a></code></li>
-<li><code><a title="PySense.PySenseUtils.build_query_string" href="#PySense.PySenseUtils.build_query_string">build_query_string</a></code></li>
-<li><code><a title="PySense.PySenseUtils.format_host" href="#PySense.PySenseUtils.format_host">format_host</a></code></li>
-<li><code><a title="PySense.PySenseUtils.get_role_id" href="#PySense.PySenseUtils.get_role_id">get_role_id</a></code></li>
-<li><code><a title="PySense.PySenseUtils.get_user_id" href="#PySense.PySenseUtils.get_user_id">get_user_id</a></code></li>
-<li><code><a title="PySense.PySenseUtils.parse_response" href="#PySense.PySenseUtils.parse_response">parse_response</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-classes">Classes</a></h3>
-<ul>
-<li>
-<h4><code><a title="PySense.PySenseUtils.RestError" href="#PySense.PySenseUtils.RestError">RestError</a></code></h4>
-</li>
+<ul class="">
+<li><code><a title="PySense.PySenseUtils.make_iterable" href="#PySense.PySenseUtils.make_iterable">make_iterable</a></code></li>
 </ul>
 </li>
 </ul>

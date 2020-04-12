@@ -1,8 +1,7 @@
 class Formula:
 
-    def __init__(self, host, token, formula_json):
-        self._host = host
-        self._token = token
+    def __init__(self, connector, formula_json):
+        self._connector = connector
         self._formula_json = formula_json
         
     def get_oid(self):

@@ -26,9 +26,8 @@
 </summary>
 <pre><code class="python">class Formula:
 
-    def __init__(self, host, token, formula_json):
-        self._host = host
-        self._token = token
+    def __init__(self, connector, formula_json):
+        self._connector = connector
         self._formula_json = formula_json
         
     def get_oid(self):
@@ -71,7 +70,7 @@
 <dl>
 <dt id="PySense.PySenseFormula.Formula"><code class="flex name class">
 <span>class <span class="ident">Formula</span></span>
-<span>(</span><span>host, token, formula_json)</span>
+<span>(</span><span>connector, formula_json)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -81,9 +80,8 @@
 </summary>
 <pre><code class="python">class Formula:
 
-    def __init__(self, host, token, formula_json):
-        self._host = host
-        self._token = token
+    def __init__(self, connector, formula_json):
+        self._connector = connector
         self._formula_json = formula_json
         
     def get_oid(self):

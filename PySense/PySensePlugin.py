@@ -1,13 +1,10 @@
 import requests
 
-from PySense import PySenseUtils
-
 
 class Plugin:
 
-    def __init__(self, host, token, plugin_json):
-        self._host = host
-        self._token = token
+    def __init__(self, connector, plugin_json):
+        self._connector = connector
         self._plugin_json = plugin_json
     
     def get_name(self):
@@ -49,6 +46,5 @@ class Plugin:
         :param enabled: True to enable, false to disable 
         """
         self._plugin_json['isEnabled'] = enabled
-        resp = requests.patch('{}/api/v1/plugins'.format(self._host), headers=self._token, json=[self._plugin_json])
-        PySenseUtils.parse_response(resp)
-        self._plugin_json = resp.json()[0]
+        resp_json = self._connector.rest_call('patch', 'api/v1/plugins', json_payload=[self._plugin_json])
+        self._plugin_json = resp_json[0]

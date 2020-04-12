@@ -26,14 +26,11 @@
 </summary>
 <pre><code class="python">import requests
 
-from PySense import PySenseUtils
-
 
 class Plugin:
 
-    def __init__(self, host, token, plugin_json):
-        self._host = host
-        self._token = token
+    def __init__(self, connector, plugin_json):
+        self._connector = connector
         self._plugin_json = plugin_json
     
     def get_name(self):
@@ -75,9 +72,8 @@ class Plugin:
         :param enabled: True to enable, false to disable 
         &#34;&#34;&#34;
         self._plugin_json[&#39;isEnabled&#39;] = enabled
-        resp = requests.patch(&#39;{}/api/v1/plugins&#39;.format(self._host), headers=self._token, json=[self._plugin_json])
-        PySenseUtils.parse_response(resp)
-        self._plugin_json = resp.json()[0]</code></pre>
+        resp_json = self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/plugins&#39;, json_payload=[self._plugin_json])
+        self._plugin_json = resp_json[0]</code></pre>
 </details>
 </section>
 <section>
@@ -91,7 +87,7 @@ class Plugin:
 <dl>
 <dt id="PySense.PySensePlugin.Plugin"><code class="flex name class">
 <span>class <span class="ident">Plugin</span></span>
-<span>(</span><span>host, token, plugin_json)</span>
+<span>(</span><span>connector, plugin_json)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -101,9 +97,8 @@ class Plugin:
 </summary>
 <pre><code class="python">class Plugin:
 
-    def __init__(self, host, token, plugin_json):
-        self._host = host
-        self._token = token
+    def __init__(self, connector, plugin_json):
+        self._connector = connector
         self._plugin_json = plugin_json
     
     def get_name(self):
@@ -145,9 +140,8 @@ class Plugin:
         :param enabled: True to enable, false to disable 
         &#34;&#34;&#34;
         self._plugin_json[&#39;isEnabled&#39;] = enabled
-        resp = requests.patch(&#39;{}/api/v1/plugins&#39;.format(self._host), headers=self._token, json=[self._plugin_json])
-        PySenseUtils.parse_response(resp)
-        self._plugin_json = resp.json()[0]</code></pre>
+        resp_json = self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/plugins&#39;, json_payload=[self._plugin_json])
+        self._plugin_json = resp_json[0]</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -248,9 +242,8 @@ class Plugin:
     :param enabled: True to enable, false to disable 
     &#34;&#34;&#34;
     self._plugin_json[&#39;isEnabled&#39;] = enabled
-    resp = requests.patch(&#39;{}/api/v1/plugins&#39;.format(self._host), headers=self._token, json=[self._plugin_json])
-    PySenseUtils.parse_response(resp)
-    self._plugin_json = resp.json()[0]</code></pre>
+    resp_json = self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/plugins&#39;, json_payload=[self._plugin_json])
+    self._plugin_json = resp_json[0]</code></pre>
 </details>
 </dd>
 </dl>

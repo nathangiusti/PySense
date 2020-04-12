@@ -1,12 +1,12 @@
-import json
-import requests
 import yaml
 
 from PySense import PySenseDashboard
 from PySense import PySenseElasticube
+from PySense import PySenseException
 from PySense import PySenseGroup
 from PySense import PySenseFolder
 from PySense import PySensePlugin
+from PySense import PySenseRestConnector
 from PySense import PySenseUser
 from PySense import PySenseUtils
 
@@ -22,53 +22,22 @@ def authenticate_by_file(config_file):
     
     with open(config_file, 'r') as yml_file:
         cfg = yaml.safe_load(yml_file)
-        return PySense(cfg['host'], cfg['username'], cfg['password'])
+        debug = cfg['debug'] if 'debug' in cfg else False
+        return PySense(cfg['host'], cfg['username'], cfg['password'], debug=debug)
 
 
 class PySense:
 
-    def __init__(self, host, username, password):
-        data = {'username': username, 'password': password}
-        host = PySenseUtils.format_host(host)
-        resp = requests.post('{}/api/v1/authentication/login'.format(host), data=data)
-        PySenseUtils.parse_response(resp)
-        access_code = "Bearer " + resp.json()['access_token']
-        self._token = {'authorization': access_code}
-        self._host = host
-
-    def custom_rest(self, action_type, url, *, data=None, json_payload=None):
-        """
-        Run an arbitrary rest command against your Sisense instance.  
-
-        :param action_type: REST request type  
-        :param url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding  
-        :param data: The data portion of the payload  
-        :param json_payload: The json portion of the payload  
+    def __init__(self, host, username, password, *, debug=False):
+        self.connector = PySenseRestConnector.RestConnector(host, username, password, debug)
         
-        :return: The rest response object  
+    def set_debug(self, debug):
         """
-        
-        if action_type.lower() == 'get':
-            return requests.get('{}/{}'.format(self._host, url), headers=self._token, data=data, json=json_payload)
-        elif action_type.lower() == 'post':
-            return requests.post('{}/{}'.format(self._host, url), headers=self._token, data=data, json=json_payload)
-        elif action_type.lower() == 'put':
-            return requests.put('{}/{}'.format(self._host, url), headers=self._token, data=data, json=json_payload)
-        elif action_type.lower() == 'patch':
-            return requests.patch('{}/{}'.format(self._host, url), headers=self._token, data=data, json=json_payload)
-        elif action_type.lower() == 'delete':
-            return requests.delete('{}/{}'.format(self._host, url), headers=self._token, data=data, json=json_payload)
-        else:
-            raise Exception('No rest action {}'.format(action_type))
-
-    def get_authentication(self):
+        Enable or disable logging of REST api calls to std out. Use for debugging. Debug is false by default.    
+          
+        :param debug:  True or False to enable or disable debug. 
         """
-        Returns authentication parameters  
-        
-        :return: A dictionary with an entry for host and token  
-        """
-        
-        return {'host': self._host, 'token': self._token}
+        self.connector.debug = debug
 
     ############################################
     # Dashboards                               #
@@ -97,11 +66,11 @@ class PySense:
         if parent_folder_name:
             folders = self.get_folders(name=parent_folder_name)
             if len(folders) == 1:
-                folder_id = folders[0].get_folder_id()
+                folder_id = folders[0].get_id()
             else:
                 raise Exception("{} folders found with name {}".format(len(folders), parent_folder_name))
 
-        param_string = PySenseUtils.build_query_string({
+        query_params = {
             'parentFolder': folder_id,
             'name': name,
             'datasourceTitle': data_source_title,
@@ -109,14 +78,10 @@ class PySense:
             'fields': fields,
             'sort': sort,
             'expand': expand
-        })
-        resp = requests.get('{}/api/v1/dashboards?{}'.format(self._host, param_string),
-                            headers=self._token)
-
-        PySenseUtils.parse_response(resp)
-        json_arr = json.loads(resp.content)
+        }
+        json_arr = self.connector.rest_call('get', 'api/v1/dashboards', query_params=query_params)
         for dash in json_arr:
-            ret_arr.append(PySenseDashboard.Dashboard(self._host, self._token, dash))
+            ret_arr.append(PySenseDashboard.Dashboard(self.connector, dash))
         return ret_arr
 
     def get_dashboard_by_id(self, dashboard_id, *, fields=None, expand=None):
@@ -134,14 +99,15 @@ class PySense:
         :return: Dashboard with id given  
         """
         
-        param_string = PySenseUtils.build_query_string({
+        query_params = {
             'fields': fields,
             'expand': expand
-        })
-        resp = requests.get('{}/api/v1/dashboards/{}?{}'.format(self._host, dashboard_id, param_string),
-                            headers=self._token)
-        PySenseUtils.parse_response(resp)
-        return PySenseDashboard.Dashboard(self._host, self._token, resp.json())
+        }
+        
+        resp_json = self.connector.rest_call('get', 'api/v1/dashboards/{}'.format(dashboard_id),
+                                             query_params=query_params)
+        
+        return PySenseDashboard.Dashboard(self.connector, resp_json)
 
     def post_dashboards(self, dashboard_json):
         """  
@@ -152,10 +118,8 @@ class PySense:
         :return: The dashboard given by the response object  
         """
         
-        resp = requests.post('{}/api/v1/dashboards/'.format(self._host), headers=self._token,
-                             json=dashboard_json)
-        PySenseUtils.parse_response(resp)
-        return PySenseDashboard.Dashboard(self._host, self._token, json.loads(resp.content))
+        resp = self.connector.rest_call('post', 'api/v1/dashboards', json_payload=dashboard_json)
+        return PySenseDashboard.Dashboard(self.connector, resp)
 
     def delete_dashboards(self, dashboard_id):
         """  
@@ -165,10 +129,7 @@ class PySense:
         
         :return: The response object  
         """
-        
-        resp = requests.delete('{}/api/v1/dashboards/{}'.format(self._host, dashboard_id),
-                               headers=self._token)
-        return PySenseUtils.parse_response(resp)
+        self.connector.rest_call('delete', 'api/v1/dashboards/{}'.format(dashboard_id))
 
     ############################################
     # Folders                                  #
@@ -196,7 +157,7 @@ class PySense:
         """
         
         ret_arr = []
-        param_string = PySenseUtils.build_query_string({
+        query_params = {
             'name': name,
             'structure': structure,
             'ids': ids,
@@ -205,32 +166,19 @@ class PySense:
             'skip': skip,
             'limit': limit,
             'expand': expand
-        })
-        resp = requests.get('{}/api/v1/folders?{}'.format(self._host, param_string),
-                            headers=self._token)
-        PySenseUtils.parse_response(resp)
+        }
+        
+        resp_json = self.connector.rest_call('get', 'api/v1/folders', query_params=query_params)
+
         # Sisense Rest API always returns the root folder, so we filter it out when looking by name
         if name:
-            for folder in resp.json():
+            for folder in resp_json:
                 if folder['name'] == name:
-                    ret_arr.append(PySenseFolder.Folder(self._host, self._token, folder))
+                    ret_arr.append(PySenseFolder.Folder(self.connector, folder))
         else:
-            for folder in resp.json():
-                ret_arr.append(PySenseFolder.Folder(self._host, self._token, folder))
+            for folder in resp_json:
+                ret_arr.append(PySenseFolder.Folder(self.connector, folder))
         return ret_arr
-
-    def get_folder_by_id(self, folder_id):
-        """  
-        Get a specific folder by folder id  
-
-        :param folder_id: The folder id of the folder  
-        
-        :return: A PySense folder object of the folder  
-        """
-        
-        resp = requests.get('{}/api/v1/folders/{}'.format(self._host, folder_id), headers=self._token)
-        PySenseUtils.parse_response(resp)
-        return PySenseFolder.Folder(self._host, self._token, resp.json())
 
     ############################################
     # Groups                                   #
@@ -260,10 +208,10 @@ class PySense:
         :return: Array of found groups  
         """
         
-        param_string = PySenseUtils.build_query_string({
+        query_params = {
             'name': name,
             'mail': mail,
-            'roleId': PySenseUtils.get_role_id(self._host, self._token, role),
+            'roleId': self.connector.get_role_id(role),
             'origin': origin,
             'ids': ids,
             'fields': fields,
@@ -271,87 +219,76 @@ class PySense:
             'skip': skip,
             'limit': limit,
             'expand': expand
-        })
-        resp = requests.get('{}/api/v1/groups?{}'.format(self._host, param_string),
-                            headers=self._token)
+        }
+        resp_json = self.connector.rest_call('get', 'api/v1/groups', query_params=query_params)
 
-        PySenseUtils.parse_response(resp)
         ret_arr = []
-        for group in resp.json():
-            ret_arr.append(PySenseGroup.Group(self._host, self._token, group))
+        for group in resp_json:
+            ret_arr.append(PySenseGroup.Group(self.connector, group))
         return ret_arr
 
-    def get_group_ids(self, groups):
+    def get_groups_by_name(self, groups):
         """  
-        Get the ids for groups  
-
-        :param groups: An array of group names  
+        :param groups: A name or list of names 
           
-        :return: An array of ids for the groups  
+        :return: An array of groups for that name
         """
         
         if groups is None:
             return []
-        resp = requests.get('{}/api/v1/groups'.format(self._host),
-                            headers=self._token)
-        PySenseUtils.parse_response(resp)
-        json_rep = json.loads(resp.content.decode('utf8'))
+        
+        resp_json = self.connector.rest_call('get', 'api/v1/groups')
         ret = []
-        for group in groups:
+        for group in PySenseUtils.make_iterable(groups):
             found = False
-            for item in json_rep:
+            for item in resp_json:
                 if group == item['name']:
-                    ret.append(item['_id'])
+                    ret.append(PySenseGroup.Group(self.connector, item))
                     found = True
             if not found:
-                print('Cannot find id for group {}'.format(group))
+                raise PySenseException.PySenseException('Cannot find group with name {}'.format(group))
         return ret
 
-    def add_groups(self, name_array):
+    def add_groups(self, names):
         """  
-        Add group with given name  
+        Add groups with given names  
 
-        :param name_array: Array of new group names  
+        :param names: One to many names 
           
         :return: Array of new groups  
         """
-        
         ret_arr = []
-        for name in name_array:
+        for name in PySenseUtils.make_iterable(names):
             payload = {'name': name}
-            resp = requests.post('{}/api/v1/groups'.format(self._host), headers=self._token, json=payload)
-            PySenseUtils.parse_response(resp)
-            ret_arr.append(PySenseGroup.Group(self._host, self._token, resp.json()))
+            resp_json = self.connector.rest_call('post', 'api/v1/groups', json_payload=payload)
+            ret_arr.append(PySenseGroup.Group(self.connector, resp_json))
         return ret_arr
 
-    def delete_groups(self, group_array):
+    def delete_groups(self, groups):
         """  
-        Add group with given name  
+        Delete groups with given names  
 
-        :param group_array: Array of groups to delete  
+        :param groups: Groups to delete
         """
-        
-        for group in group_array:
-            resp = requests.delete('{}/api/groups/{}'.format(self._host, group.get_group_id()), headers=self._token)
-            PySenseUtils.parse_response(resp)
+        for group in PySenseUtils.make_iterable(groups):
+            self.connector.rest_call('delete', 'api/groups/{}'.format(group.get_id()))
 
     ############################################
     # Users                                    #
     ############################################
 
-    def add_user(self, email, username, role, *, first_name=None, last_name=None,
-                 groups=None, preferences=None, ui_settings=None):
+    def add_user(self, email, role, *, user_name=None, first_name=None, last_name=None,
+                 groups=[], preferences={}, ui_settings={}):
         """  
         Creates that user in SiSense, returning the created object.  
-        If a user with the same username or email exists, it will return an error.  
 
         :param email: email address for user  
-        :param username: username  
-        :param role: role name  
+        :param role: role of user  
         
         Optional:  
-        :param first_name: user first name  
-        :param last_name: user last name  
+        :param user_name: User user name. Email used if None  
+        :param first_name: User first name   
+        :param last_name: User last name  
         :param groups: The groups to add the user to  
         :param preferences: User preferences  
         :param ui_settings: User ui settings  
@@ -359,25 +296,32 @@ class PySense:
         :return: Newly created user object  
         """  
         
-        user_obj = PySenseUtils.build_json_object({
+        user_obj = {
             'email': email,
-            'username': username,
-            'firstName': first_name,
-            'lastName': last_name,
-            'roleId': PySenseUtils.get_role_id(self._host, self._token, role),
-            'groups': self.get_group_ids(groups),
-            'preferences': preferences,
-            'uiSettings': ui_settings
-        })
-        resp = requests.post('{}/api/v1/users'.format(self._host), headers=self._token,
-                             json=user_obj)
+            'username': user_name if user_name is not None else email,
+            'roleId': self.connector.get_role_id(role)
+        }
 
-        PySenseUtils.parse_response(resp)
-        return PySenseUser.User(self._host, self._token, json.loads(resp.content))
+        group_ids = []
+        for group in PySenseUtils.make_iterable(groups):
+            group_ids.append(group.get_id())
+        if len(group_ids) > 0:
+            user_obj['groups'] = group_ids
+        
+        if first_name is not None:
+            user_obj['firstName'] = first_name
+        if last_name is not None:
+            user_obj['lastName'] = last_name
+        if preferences is not None:
+            user_obj['preferences'] = preferences
+        if ui_settings is not None:
+            user_obj['uiSettings'] = ui_settings
+        
+        resp_json = self.connector.rest_call('post', 'api/v1/users', json_payload=user_obj)
+        return PySenseUser.User(self.connector, resp_json)
 
     def get_users(self, *, user_name=None, email=None, first_name=None, last_name=None, role_name=None, group=None,
-                  active=None,
-                  origin=None, ids=None, fields=None, sort=None, skip=None, limit=None, expand=None):
+                  active=None, origin=None, ids=None, fields=None, sort=None, skip=None, limit=None, expand=None):
         """  
         Returns a list of users with their details.  
         Results can be filtered by parameters such as username and email.  
@@ -405,12 +349,12 @@ class PySense:
         :return: An array of users objects  
         """
         
-        param_string = PySenseUtils.build_query_string({
+        query_params = {
             'userName': user_name,
             'email': email,
             'firstName': first_name,
             'lastName': last_name,
-            'role': PySenseUtils.get_role_id(self._host, self._token, role_name),
+            'role': self.connector.get_role_id(role_name),
             'group': group,
             'active': active,
             'origin': origin,
@@ -420,23 +364,22 @@ class PySense:
             'skip': skip,
             'limit': limit,
             'expand': expand
-        })
-        resp = requests.get('{}/api/v1/users?{}'.format(self._host, param_string), headers=self._token)
+        }
         ret_arr = []
-        PySenseUtils.parse_response(resp)
-        for user in json.loads(resp.content):
-            ret_arr.append((PySenseUser.User(self._host, self._token, user)))
+        resp_json = self.connector.rest_call('get', 'api/v1/users', query_params=query_params)
+        for user in resp_json:
+            ret_arr.append((PySenseUser.User(self.connector, user)))
         return ret_arr
 
-    def delete_user(self, user):
+    def delete_users(self, users):
         """  
-        Deletes the specified user  
+        Deletes the specified user or users  
   
-        :param user: User obj to delete  
+        :param users: User obj to delete  
            
         """
-        resp = requests.delete('{}/api/v1/users/{}'.format(self._host, user.get_user_id()), headers=self._token)
-        PySenseUtils.parse_response(resp)
+        for user in PySenseUtils.make_iterable(users):
+            self.connector.rest_call('delete', 'api/v1/users/{}'.format(user.get_id()))
 
     ############################################
     # Elasticubes                              #
@@ -448,12 +391,10 @@ class PySense:
   
         :return: An array of elasticubes   
         """
-
-        resp = requests.get('{}/api/v1/elasticubes/getElasticubes'.format(self._host), headers=self._token)
-        PySenseUtils.parse_response(resp)
+        resp_json = self.connector.rest_call('get', 'api/v1/elasticubes/getElasticubes')
         ret_arr = []
-        for cube in resp.json():
-            ret_arr.append(PySenseElasticube.Elasticube(self._host, self._token, cube))
+        for cube in resp_json:
+            ret_arr.append(PySenseElasticube.Elasticube(self.connector, cube))
         return ret_arr
 
     def get_elasticube_by_name(self, name):
@@ -462,7 +403,7 @@ class PySense:
 
         :param name: Name of elasticube to get  
         
-        :return: An array of elasticubes matching the query  
+        :return: A single elasticube with the given name or None if not found  
         """
         
         cubes = self.get_elasticubes()  
@@ -489,29 +430,16 @@ class PySense:
           
         :return: An array of PySense Plugins Objects
         """
-        query_string = PySenseUtils.build_query_string({
+        
+        query_params = {
             'orderby': order_by,
             'desc': desc,
             'search': search,
             'skip': skip,
             'limit': limit
-        })
-        resp = requests.get('{}/api/v1/plugins?{}'.format(self._host, query_string), headers=self._token)
-        PySenseUtils.parse_response(resp)
+        }
+        resp_json = self.connector.rest_call('get', 'api/v1/plugins', query_params=query_params)
         ret_arr = []
-        for plugin in json.loads(resp.content)['plugins']:
-            ret_arr.append((PySensePlugin.Plugin(self._host, self._token, plugin)))
+        for plugin in resp_json['plugins']:
+            ret_arr.append((PySensePlugin.Plugin(self.connector, plugin)))
         return ret_arr
-
-    ############################################
-    # Alerts                                   #
-    ############################################
-    # This isn't at all done
-
-    def post_alert(self, alert_obj):
-        """
-        Don't use this  
-        """
-        resp = requests.post('{}/api/v1/alerts'.format(self._host),
-                             headers=self._token, json=json.loads(alert_obj))
-        PySenseUtils.parse_response(resp)

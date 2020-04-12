@@ -24,22 +24,21 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import json
-import requests
-
+<pre><code class="python">from PySense import PySenseGroup
+from PySense import PySenseException
+from PySense import PySenseUser
 from PySense import PySenseUtils
 from PySense import PySenseWidget
 
 
 class Dashboard:
 
-    def __init__(self, host, token, dashboard_json):
-        self._host = host
-        self._token = token
+    def __init__(self, connector, dashboard_json):
         self._dashboard_json = dashboard_json
-
-    def _reset(self, dashboard_json):
-        self._dashboard_json = dashboard_json
+        self._connector = connector
+        
+    def _reset(self):
+        self._dashboard_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()))
 
     def get_id(self):
         &#34;&#34;&#34;
@@ -59,14 +58,14 @@ class Dashboard:
         
         return self._dashboard_json[&#39;title&#39;]
 
-    def get_dashboard_folder_id(self):
+    def get_dashboard_folder(self):
         &#34;&#34;&#34;
-        Gets the dashboards folder id  
+        Gets the dashboards folder
   
-        :return: The folder id of the parent folder of the dashboard  
+        :return: The folder of the parent folder of the dashboard  
         &#34;&#34;&#34;
         
-        return self._dashboard_json[&#39;parentFolder&#39;]
+        return self._connector.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
 
     def get_shares(self):
         &#34;&#34;&#34;
@@ -74,70 +73,71 @@ class Dashboard:
   
         :return: The dashboard shares json  
         &#34;&#34;&#34;
-
-        resp = requests.get(
-            &#39;{}/api/shares/dashboard/{}&#39;.format(self._host, self.get_id()),
-            headers=self._token)
-        PySenseUtils.parse_response(resp)
-        return resp.json()
+        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+        return_json = {&#39;sharesTo&#39;: []}
+        for share in resp_json[&#39;sharesTo&#39;]:
+            share_json = {
+                &#39;shareId&#39;: share[&#39;shareId&#39;], 
+                &#39;type&#39;: share[&#39;type&#39;]
+            }
+            if &#39;rule&#39; in share:
+                share_json[&#39;rule&#39;] = share[&#39;rule&#39;]
+            if &#39;subscribe&#39; in share:
+                share_json[&#39;subscribe&#39;] = share[&#39;subscribe&#39;]
+            return_json[&#39;sharesTo&#39;].append(share_json)
+        return return_json
 
     def move_to_folder(self, folder):
         &#34;&#34;&#34;
         Move dashboard to given folder  
   
         :param folder: Folder object to move dashboard to, None to remove from folder  
-        
-        :return: True if successful  
         &#34;&#34;&#34;
         if folder:
-            folder_oid = folder.get_folder_id()
+            folder_oid = folder.get_id()
         else:
             folder_oid = None
-        resp = requests.patch(
-            &#39;{}/api/v1/dashboards/{}&#39;.format(self._host, self.get_id()),
-            headers=self._token, json={&#39;parentFolder&#39;: folder_oid})
-        PySenseUtils.parse_response(resp)
-        self._reset(resp.json())
-        return True
+        self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), 
+                                  json_payload={&#39;parentFolder&#39;: folder_oid})
+        self._reset()
 
-    def share_to_user(self, email, rule, subscribe):
+    def add_shares(self, share, rule, subscribe):
         &#34;&#34;&#34;
-        Share a dashboard to a user  
+        Share a dashboard to a new group or user  
   
-        :param email: The email address of the user  
+        :param share: A PySense Group or User
         :param rule: The permission of the user on the dashboard (view, edit, etc)  
-        :param subscribe: true or false, whether to subscribe the user to reports  
-          
-        :return: The updated share  
+        :param subscribe: true or false, whether to subscribe the user to reports    
         &#34;&#34;&#34;
-
-        user_id = PySenseUtils.get_user_id(self._host, self._token, email)
-        shares = self.get_shares()
-        shares[&#39;sharesTo&#39;].append({&#39;shareId&#39;: user_id, &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe})
-        resp = requests.post(
-            &#39;{}/api/shares/dashboard/{}&#39;.format(self._host, self.get_id()),
-            headers=self._token, json=shares)
-        PySenseUtils.parse_response(resp)
-        return self.get_shares()
-
-    def unshare_to_user(self, email):
+        curr_shares = self.get_shares()
+        if isinstance(share, PySenseUser.User):
+            curr_shares[&#39;sharesTo&#39;].append(
+                {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+            )
+        elif isinstance(share, PySenseGroup.Group):
+            curr_shares[&#39;sharesTo&#39;].append(
+                {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+            )
+        
+        self._connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=curr_shares)
+        
+    def remove_shares(self, shares):
         &#34;&#34;&#34;
-        Unshare a dashboard to a user  
+        Unshare a dashboard to a listed groups and users
   
-        :param email: The email address of the user  
-           
-        :return: The updated share  
+        :param shares: One to many groups and users to remove  
         &#34;&#34;&#34;
-
-        shares = self.get_shares()
-        for i, share in enumerate(shares[&#39;sharesTo&#39;]):
-            if share[&#39;email&#39;] == email:
-                del shares[&#39;sharesTo&#39;][i]
-        resp = requests.post(
-            &#39;{}/api/shares/dashboard/{}&#39;.format(self._host, self.get_id()),
-            headers=self._token, json=shares)
-        PySenseUtils.parse_response(resp)
-        return self.get_shares()
+        
+        share_ids_to_delete = []
+        for shares in PySenseUtils.make_iterable(shares):
+            share_ids_to_delete.append(shares.get_id())
+        current_shares = self.get_shares()
+        for share_id in share_ids_to_delete:
+            for i, shares in enumerate(current_shares[&#39;sharesTo&#39;]):
+                if shares[&#39;shareId&#39;] == share_id:
+                    del current_shares[&#39;sharesTo&#39;][i]
+        
+        self._connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=current_shares)
 
     def export_to_png(self, *, path=None, include_title=None, include_filters=None, include_ds=None, width=None):
         &#34;&#34;&#34;
@@ -153,22 +153,20 @@ class Dashboard:
         :return: The path of the created file if provided or else the raw response obejct  
         &#34;&#34;&#34;
         
-        param_string = PySenseUtils.build_query_string({
+        query_params = {
             &#39;includeTitle&#39;: include_title,
             &#39;includeFilters&#39;: include_filters,
             &#39;includeDs&#39;: include_ds,
             &#39;width&#39;: width
-        })
-        resp = requests.get(
-            &#39;{}/api/v1/dashboards/{}/export/png?{}&#39;.format(self._host, self.get_id(), param_string),
-            headers=self._token)
-        PySenseUtils.parse_response(resp)
+        }
+        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;.format(self.get_id()), 
+                                                 query_params=query_params, raw=True),
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
-                out_file.write(resp.content)
+                out_file.write(resp_content)
             return path
         else: 
-            return resp.content
+            return resp_content
 
     def export_to_pdf(self, paper_format, paper_orientation, layout, *, path=None,
                       include_title=None, include_filters=None, include_ds=None, widget_id=None,
@@ -198,7 +196,7 @@ class Dashboard:
         :return: The path of the created file if provided, else the raw content
         &#34;&#34;&#34;
         
-        param_string = PySenseUtils.build_query_string({
+        query_params = {
             &#39;paperFormat&#39;: paper_format,
             &#39;paperOrientation&#39;: paper_orientation,
             &#39;layout&#39;: layout,
@@ -213,36 +211,35 @@ class Dashboard:
             &#39;title&#39;: title,
             &#39;titleSize&#39;: title_size,
             &#39;titlePosition&#39;: title_position
-        })
-        resp = requests.get(&#39;{}/api/v1/dashboards/{}/export/pdf?{}&#39;
-                            .format(self._host, self.get_id(), param_string), headers=self._token)
-        PySenseUtils.parse_response(resp)
+        }
+        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/pdf&#39;.format(self.get_id()), 
+                                                 query_params=query_params)
+
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
-                out_file.write(resp.content)
+                out_file.write(resp_content)
             return path
-        else:
-            return resp.content
+        else: 
+            return resp_content
 
     def export_to_dash(self, *, path=None):
         &#34;&#34;&#34;
-        Get dashboard as dash file  
-  
-        Optional:
+        Get dashboard as dash file   
+   
+        Optional:  
         :param path: Path to save location of dash file  
         
-        :return: The path of the created file if path provided, else the raw content
+        :return: The path of the created file if path provided, else the raw content  
         &#34;&#34;&#34;
         
-        resp = requests.get(&#39;{}/api/v1/dashboards/{}/export/dash&#39;.format(self._host, self.get_id()),
-                            headers=self._token)
-        PySenseUtils.parse_response(resp)
+        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;.format(self.get_id()), 
+                                                 raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
-                out_file.write(resp.content)
+                out_file.write(resp_content)
             return path
-        else:
-            return resp.content
+        else: 
+            return resp_content
 
     def get_widgets(self, *, title=None, type=None, subtype=None,
                     fields=None, sort=None, skip=None, limit=None):
@@ -263,7 +260,7 @@ class Dashboard:
         :return: An array of widget objects  
         &#34;&#34;&#34;
         
-        param_string = PySenseUtils.build_query_string({
+        query_params = {
             &#39;title&#39;: title,
             &#39;type&#39;: type,
             &#39;subtype&#39;: subtype,
@@ -271,17 +268,13 @@ class Dashboard:
             &#39;sort&#39;: sort,
             &#39;skip&#39;: skip,
             &#39;limit&#39;: limit
-        })
-
-        resp = requests.get(
-            &#39;{}/api/v1/dashboards/{}/widgets?{}&#39;.format(self._host, self.get_id(), param_string),
-            headers=self._token)
-
-        PySenseUtils.parse_response(resp)
+        }
+        
         ret_arr = []
-        widgets_json = json.loads(resp.content)
-        for widget in widgets_json:
-            ret_arr.append(PySenseWidget.Widget(self._host, self._token, widget))
+        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
+                                              query_params=query_params)
+        for widget in resp_json:
+            ret_arr.append(PySenseWidget.Widget(self._connector, widget))
         return ret_arr
 
     def get_widget_by_id(self, widget_id, *, fields=None):
@@ -297,15 +290,13 @@ class Dashboard:
         :return: A widget object  
         &#34;&#34;&#34;
         
-        param_string = PySenseUtils.build_query_string({
+        query_params = {
             &#39;fields&#39;: fields
-        })
+        }
 
-        resp = requests.get(&#39;{}/api/v1/dashboards/{}/widgets/{}?{}&#39;.format(self._host, self.get_id(),
-                                                                           widget_id, param_string),
-                            headers=self._token)
-        PySenseUtils.parse_response(resp)
-        return PySenseWidget.Widget(self._host, self._token, json.loads(resp.content))
+        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id), 
+                                              query_params=query_params),
+        return PySenseWidget.Widget(self._connector, resp_json[0])
 
     def add_widget(self, widget):
         &#34;&#34;&#34;
@@ -316,10 +307,9 @@ class Dashboard:
         :return: The widget added to the dashboard  
         &#34;&#34;&#34;
         
-        resp = requests.post(&#39;{}/api/v1/dashboards/{}/widgets&#39;.format(self._host, self.get_id()),
-                             headers=self._token, json=widget.get_widget_json())
-        PySenseUtils.parse_response(resp)
-        return PySenseWidget.Widget(self._host, self._token, json.loads(resp.content))
+        resp_json = self._connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()), 
+                                              json_payload=widget.get_widget_json())
+        return PySenseWidget.Widget(self._connector, resp_json)
 
     def delete_widget(self, widget_id):
         &#34;&#34;&#34;  
@@ -328,30 +318,8 @@ class Dashboard:
         :param widget_id: The ID of the widget to delete  
         &#34;&#34;&#34;  
         
-        resp = requests.delete(&#39;{}/api/v1/dashboards/{}/widgets/{}&#39;
-                               .format(self._host, self.get_id(), widget_id), headers=self._token)
-        PySenseUtils.parse_response(resp)
-        # Get the updated dashboard from source and refresh object
-        resp = requests.get(&#39;{}/api/v1/dashboards/{}&#39;.format(self._host, self.get_id()),
-                            headers=self._token)
-        PySenseUtils.parse_response(resp)
-        self._reset(resp.json())
-
-    def does_widget_exist(self, widget_id):  
-        &#34;&#34;&#34;
-        Returns whether or not a widget with the given id is in the dashboard  
-          
-        :param widget_id: The widget id to look for  
-          
-        :return: True if found, false if not.  
-        &#34;&#34;&#34;
-         
-        try:
-            self.get_widget_by_id(widget_id)
-        except PySenseUtils.RestError:
-            return False
-        else:
-            return True
+        self._connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id))
+        self._reset()
 
     def remove_ghost_widgets(self):
         &#34;&#34;&#34;
@@ -362,11 +330,11 @@ class Dashboard:
         modified = True
         while modified:
             modified = False
-            for l, column in enumerate(patch_json[&#39;layout&#39;][&#39;columns&#39;]):
+            for n, column in enumerate(patch_json[&#39;layout&#39;][&#39;columns&#39;]):
                 for k, cell in enumerate(column[&#39;cells&#39;]):
                     for j, sub_cell in enumerate(cell[&#39;subcells&#39;]):
                         for i, element in enumerate(sub_cell[&#39;elements&#39;]):
-                            if not self.does_widget_exist(element[&#39;widgetid&#39;]):
+                            if not self._does_widget_exist(element[&#39;widgetid&#39;]):
                                 sub_cell[&#39;elements&#39;].pop(i)
                                 modified = True
                         if len(sub_cell[&#39;elements&#39;]) == 0:
@@ -374,11 +342,17 @@ class Dashboard:
                     if len(cell[&#39;subcells&#39;]) == 0:
                         column[&#39;cells&#39;].pop(k)
                 if len(column[&#39;cells&#39;]) == 0:
-                    patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(l)
-        resp = requests.patch(&#39;{}/api/v1/dashboards/{}&#39;.format(self._host, self.get_id()),
-                              headers=self._token, json=patch_json)
-        PySenseUtils.parse_response(resp)
-        self._reset(resp.json())</code></pre>
+                    patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(n)
+        self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
+        self._reset()
+        
+    def _does_widget_exist(self, widget_id):
+        try:
+            self.get_widget_by_id(widget_id)
+        except PySenseException.PySenseException:
+            return False
+        else:
+            return True</code></pre>
 </details>
 </section>
 <section>
@@ -392,7 +366,7 @@ class Dashboard:
 <dl>
 <dt id="PySense.PySenseDashboard.Dashboard"><code class="flex name class">
 <span>class <span class="ident">Dashboard</span></span>
-<span>(</span><span>host, token, dashboard_json)</span>
+<span>(</span><span>connector, dashboard_json)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -402,13 +376,12 @@ class Dashboard:
 </summary>
 <pre><code class="python">class Dashboard:
 
-    def __init__(self, host, token, dashboard_json):
-        self._host = host
-        self._token = token
+    def __init__(self, connector, dashboard_json):
         self._dashboard_json = dashboard_json
-
-    def _reset(self, dashboard_json):
-        self._dashboard_json = dashboard_json
+        self._connector = connector
+        
+    def _reset(self):
+        self._dashboard_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()))
 
     def get_id(self):
         &#34;&#34;&#34;
@@ -428,14 +401,14 @@ class Dashboard:
         
         return self._dashboard_json[&#39;title&#39;]
 
-    def get_dashboard_folder_id(self):
+    def get_dashboard_folder(self):
         &#34;&#34;&#34;
-        Gets the dashboards folder id  
+        Gets the dashboards folder
   
-        :return: The folder id of the parent folder of the dashboard  
+        :return: The folder of the parent folder of the dashboard  
         &#34;&#34;&#34;
         
-        return self._dashboard_json[&#39;parentFolder&#39;]
+        return self._connector.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
 
     def get_shares(self):
         &#34;&#34;&#34;
@@ -443,70 +416,71 @@ class Dashboard:
   
         :return: The dashboard shares json  
         &#34;&#34;&#34;
-
-        resp = requests.get(
-            &#39;{}/api/shares/dashboard/{}&#39;.format(self._host, self.get_id()),
-            headers=self._token)
-        PySenseUtils.parse_response(resp)
-        return resp.json()
+        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+        return_json = {&#39;sharesTo&#39;: []}
+        for share in resp_json[&#39;sharesTo&#39;]:
+            share_json = {
+                &#39;shareId&#39;: share[&#39;shareId&#39;], 
+                &#39;type&#39;: share[&#39;type&#39;]
+            }
+            if &#39;rule&#39; in share:
+                share_json[&#39;rule&#39;] = share[&#39;rule&#39;]
+            if &#39;subscribe&#39; in share:
+                share_json[&#39;subscribe&#39;] = share[&#39;subscribe&#39;]
+            return_json[&#39;sharesTo&#39;].append(share_json)
+        return return_json
 
     def move_to_folder(self, folder):
         &#34;&#34;&#34;
         Move dashboard to given folder  
   
         :param folder: Folder object to move dashboard to, None to remove from folder  
-        
-        :return: True if successful  
         &#34;&#34;&#34;
         if folder:
-            folder_oid = folder.get_folder_id()
+            folder_oid = folder.get_id()
         else:
             folder_oid = None
-        resp = requests.patch(
-            &#39;{}/api/v1/dashboards/{}&#39;.format(self._host, self.get_id()),
-            headers=self._token, json={&#39;parentFolder&#39;: folder_oid})
-        PySenseUtils.parse_response(resp)
-        self._reset(resp.json())
-        return True
+        self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), 
+                                  json_payload={&#39;parentFolder&#39;: folder_oid})
+        self._reset()
 
-    def share_to_user(self, email, rule, subscribe):
+    def add_shares(self, share, rule, subscribe):
         &#34;&#34;&#34;
-        Share a dashboard to a user  
+        Share a dashboard to a new group or user  
   
-        :param email: The email address of the user  
+        :param share: A PySense Group or User
         :param rule: The permission of the user on the dashboard (view, edit, etc)  
-        :param subscribe: true or false, whether to subscribe the user to reports  
-          
-        :return: The updated share  
+        :param subscribe: true or false, whether to subscribe the user to reports    
         &#34;&#34;&#34;
-
-        user_id = PySenseUtils.get_user_id(self._host, self._token, email)
-        shares = self.get_shares()
-        shares[&#39;sharesTo&#39;].append({&#39;shareId&#39;: user_id, &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe})
-        resp = requests.post(
-            &#39;{}/api/shares/dashboard/{}&#39;.format(self._host, self.get_id()),
-            headers=self._token, json=shares)
-        PySenseUtils.parse_response(resp)
-        return self.get_shares()
-
-    def unshare_to_user(self, email):
+        curr_shares = self.get_shares()
+        if isinstance(share, PySenseUser.User):
+            curr_shares[&#39;sharesTo&#39;].append(
+                {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+            )
+        elif isinstance(share, PySenseGroup.Group):
+            curr_shares[&#39;sharesTo&#39;].append(
+                {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+            )
+        
+        self._connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=curr_shares)
+        
+    def remove_shares(self, shares):
         &#34;&#34;&#34;
-        Unshare a dashboard to a user  
+        Unshare a dashboard to a listed groups and users
   
-        :param email: The email address of the user  
-           
-        :return: The updated share  
+        :param shares: One to many groups and users to remove  
         &#34;&#34;&#34;
-
-        shares = self.get_shares()
-        for i, share in enumerate(shares[&#39;sharesTo&#39;]):
-            if share[&#39;email&#39;] == email:
-                del shares[&#39;sharesTo&#39;][i]
-        resp = requests.post(
-            &#39;{}/api/shares/dashboard/{}&#39;.format(self._host, self.get_id()),
-            headers=self._token, json=shares)
-        PySenseUtils.parse_response(resp)
-        return self.get_shares()
+        
+        share_ids_to_delete = []
+        for shares in PySenseUtils.make_iterable(shares):
+            share_ids_to_delete.append(shares.get_id())
+        current_shares = self.get_shares()
+        for share_id in share_ids_to_delete:
+            for i, shares in enumerate(current_shares[&#39;sharesTo&#39;]):
+                if shares[&#39;shareId&#39;] == share_id:
+                    del current_shares[&#39;sharesTo&#39;][i]
+        
+        self._connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=current_shares)
 
     def export_to_png(self, *, path=None, include_title=None, include_filters=None, include_ds=None, width=None):
         &#34;&#34;&#34;
@@ -522,22 +496,20 @@ class Dashboard:
         :return: The path of the created file if provided or else the raw response obejct  
         &#34;&#34;&#34;
         
-        param_string = PySenseUtils.build_query_string({
+        query_params = {
             &#39;includeTitle&#39;: include_title,
             &#39;includeFilters&#39;: include_filters,
             &#39;includeDs&#39;: include_ds,
             &#39;width&#39;: width
-        })
-        resp = requests.get(
-            &#39;{}/api/v1/dashboards/{}/export/png?{}&#39;.format(self._host, self.get_id(), param_string),
-            headers=self._token)
-        PySenseUtils.parse_response(resp)
+        }
+        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;.format(self.get_id()), 
+                                                 query_params=query_params, raw=True),
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
-                out_file.write(resp.content)
+                out_file.write(resp_content)
             return path
         else: 
-            return resp.content
+            return resp_content
 
     def export_to_pdf(self, paper_format, paper_orientation, layout, *, path=None,
                       include_title=None, include_filters=None, include_ds=None, widget_id=None,
@@ -567,7 +539,7 @@ class Dashboard:
         :return: The path of the created file if provided, else the raw content
         &#34;&#34;&#34;
         
-        param_string = PySenseUtils.build_query_string({
+        query_params = {
             &#39;paperFormat&#39;: paper_format,
             &#39;paperOrientation&#39;: paper_orientation,
             &#39;layout&#39;: layout,
@@ -582,36 +554,35 @@ class Dashboard:
             &#39;title&#39;: title,
             &#39;titleSize&#39;: title_size,
             &#39;titlePosition&#39;: title_position
-        })
-        resp = requests.get(&#39;{}/api/v1/dashboards/{}/export/pdf?{}&#39;
-                            .format(self._host, self.get_id(), param_string), headers=self._token)
-        PySenseUtils.parse_response(resp)
+        }
+        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/pdf&#39;.format(self.get_id()), 
+                                                 query_params=query_params)
+
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
-                out_file.write(resp.content)
+                out_file.write(resp_content)
             return path
-        else:
-            return resp.content
+        else: 
+            return resp_content
 
     def export_to_dash(self, *, path=None):
         &#34;&#34;&#34;
-        Get dashboard as dash file  
-  
-        Optional:
+        Get dashboard as dash file   
+   
+        Optional:  
         :param path: Path to save location of dash file  
         
-        :return: The path of the created file if path provided, else the raw content
+        :return: The path of the created file if path provided, else the raw content  
         &#34;&#34;&#34;
         
-        resp = requests.get(&#39;{}/api/v1/dashboards/{}/export/dash&#39;.format(self._host, self.get_id()),
-                            headers=self._token)
-        PySenseUtils.parse_response(resp)
+        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;.format(self.get_id()), 
+                                                 raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
-                out_file.write(resp.content)
+                out_file.write(resp_content)
             return path
-        else:
-            return resp.content
+        else: 
+            return resp_content
 
     def get_widgets(self, *, title=None, type=None, subtype=None,
                     fields=None, sort=None, skip=None, limit=None):
@@ -632,7 +603,7 @@ class Dashboard:
         :return: An array of widget objects  
         &#34;&#34;&#34;
         
-        param_string = PySenseUtils.build_query_string({
+        query_params = {
             &#39;title&#39;: title,
             &#39;type&#39;: type,
             &#39;subtype&#39;: subtype,
@@ -640,17 +611,13 @@ class Dashboard:
             &#39;sort&#39;: sort,
             &#39;skip&#39;: skip,
             &#39;limit&#39;: limit
-        })
-
-        resp = requests.get(
-            &#39;{}/api/v1/dashboards/{}/widgets?{}&#39;.format(self._host, self.get_id(), param_string),
-            headers=self._token)
-
-        PySenseUtils.parse_response(resp)
+        }
+        
         ret_arr = []
-        widgets_json = json.loads(resp.content)
-        for widget in widgets_json:
-            ret_arr.append(PySenseWidget.Widget(self._host, self._token, widget))
+        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
+                                              query_params=query_params)
+        for widget in resp_json:
+            ret_arr.append(PySenseWidget.Widget(self._connector, widget))
         return ret_arr
 
     def get_widget_by_id(self, widget_id, *, fields=None):
@@ -666,15 +633,13 @@ class Dashboard:
         :return: A widget object  
         &#34;&#34;&#34;
         
-        param_string = PySenseUtils.build_query_string({
+        query_params = {
             &#39;fields&#39;: fields
-        })
+        }
 
-        resp = requests.get(&#39;{}/api/v1/dashboards/{}/widgets/{}?{}&#39;.format(self._host, self.get_id(),
-                                                                           widget_id, param_string),
-                            headers=self._token)
-        PySenseUtils.parse_response(resp)
-        return PySenseWidget.Widget(self._host, self._token, json.loads(resp.content))
+        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id), 
+                                              query_params=query_params),
+        return PySenseWidget.Widget(self._connector, resp_json[0])
 
     def add_widget(self, widget):
         &#34;&#34;&#34;
@@ -685,10 +650,9 @@ class Dashboard:
         :return: The widget added to the dashboard  
         &#34;&#34;&#34;
         
-        resp = requests.post(&#39;{}/api/v1/dashboards/{}/widgets&#39;.format(self._host, self.get_id()),
-                             headers=self._token, json=widget.get_widget_json())
-        PySenseUtils.parse_response(resp)
-        return PySenseWidget.Widget(self._host, self._token, json.loads(resp.content))
+        resp_json = self._connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()), 
+                                              json_payload=widget.get_widget_json())
+        return PySenseWidget.Widget(self._connector, resp_json)
 
     def delete_widget(self, widget_id):
         &#34;&#34;&#34;  
@@ -697,30 +661,8 @@ class Dashboard:
         :param widget_id: The ID of the widget to delete  
         &#34;&#34;&#34;  
         
-        resp = requests.delete(&#39;{}/api/v1/dashboards/{}/widgets/{}&#39;
-                               .format(self._host, self.get_id(), widget_id), headers=self._token)
-        PySenseUtils.parse_response(resp)
-        # Get the updated dashboard from source and refresh object
-        resp = requests.get(&#39;{}/api/v1/dashboards/{}&#39;.format(self._host, self.get_id()),
-                            headers=self._token)
-        PySenseUtils.parse_response(resp)
-        self._reset(resp.json())
-
-    def does_widget_exist(self, widget_id):  
-        &#34;&#34;&#34;
-        Returns whether or not a widget with the given id is in the dashboard  
-          
-        :param widget_id: The widget id to look for  
-          
-        :return: True if found, false if not.  
-        &#34;&#34;&#34;
-         
-        try:
-            self.get_widget_by_id(widget_id)
-        except PySenseUtils.RestError:
-            return False
-        else:
-            return True
+        self._connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id))
+        self._reset()
 
     def remove_ghost_widgets(self):
         &#34;&#34;&#34;
@@ -731,11 +673,11 @@ class Dashboard:
         modified = True
         while modified:
             modified = False
-            for l, column in enumerate(patch_json[&#39;layout&#39;][&#39;columns&#39;]):
+            for n, column in enumerate(patch_json[&#39;layout&#39;][&#39;columns&#39;]):
                 for k, cell in enumerate(column[&#39;cells&#39;]):
                     for j, sub_cell in enumerate(cell[&#39;subcells&#39;]):
                         for i, element in enumerate(sub_cell[&#39;elements&#39;]):
-                            if not self.does_widget_exist(element[&#39;widgetid&#39;]):
+                            if not self._does_widget_exist(element[&#39;widgetid&#39;]):
                                 sub_cell[&#39;elements&#39;].pop(i)
                                 modified = True
                         if len(sub_cell[&#39;elements&#39;]) == 0:
@@ -743,14 +685,54 @@ class Dashboard:
                     if len(cell[&#39;subcells&#39;]) == 0:
                         column[&#39;cells&#39;].pop(k)
                 if len(column[&#39;cells&#39;]) == 0:
-                    patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(l)
-        resp = requests.patch(&#39;{}/api/v1/dashboards/{}&#39;.format(self._host, self.get_id()),
-                              headers=self._token, json=patch_json)
-        PySenseUtils.parse_response(resp)
-        self._reset(resp.json())</code></pre>
+                    patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(n)
+        self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
+        self._reset()
+        
+    def _does_widget_exist(self, widget_id):
+        try:
+            self.get_widget_by_id(widget_id)
+        except PySenseException.PySenseException:
+            return False
+        else:
+            return True</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="PySense.PySenseDashboard.Dashboard.add_shares"><code class="name flex">
+<span>def <span class="ident">add_shares</span></span>(<span>self, share, rule, subscribe)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Share a dashboard to a new group or user
+</p>
+<p>:param share: A PySense Group or User
+:param rule: The permission of the user on the dashboard (view, edit, etc)<br>
+:param subscribe: true or false, whether to subscribe the user to reports</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_shares(self, share, rule, subscribe):
+    &#34;&#34;&#34;
+    Share a dashboard to a new group or user  
+
+    :param share: A PySense Group or User
+    :param rule: The permission of the user on the dashboard (view, edit, etc)  
+    :param subscribe: true or false, whether to subscribe the user to reports    
+    &#34;&#34;&#34;
+    curr_shares = self.get_shares()
+    if isinstance(share, PySenseUser.User):
+        curr_shares[&#39;sharesTo&#39;].append(
+            {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+        )
+    elif isinstance(share, PySenseGroup.Group):
+        curr_shares[&#39;sharesTo&#39;].append(
+            {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+        )
+    
+    self._connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=curr_shares)</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySenseDashboard.Dashboard.add_widget"><code class="name flex">
 <span>def <span class="ident">add_widget</span></span>(<span>self, widget)</span>
 </code></dt>
@@ -773,10 +755,9 @@ class Dashboard:
     :return: The widget added to the dashboard  
     &#34;&#34;&#34;
     
-    resp = requests.post(&#39;{}/api/v1/dashboards/{}/widgets&#39;.format(self._host, self.get_id()),
-                         headers=self._token, json=widget.get_widget_json())
-    PySenseUtils.parse_response(resp)
-    return PySenseWidget.Widget(self._host, self._token, json.loads(resp.content))</code></pre>
+    resp_json = self._connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()), 
+                                          json_payload=widget.get_widget_json())
+    return PySenseWidget.Widget(self._connector, resp_json)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.delete_widget"><code class="name flex">
@@ -797,44 +778,8 @@ class Dashboard:
     :param widget_id: The ID of the widget to delete  
     &#34;&#34;&#34;  
     
-    resp = requests.delete(&#39;{}/api/v1/dashboards/{}/widgets/{}&#39;
-                           .format(self._host, self.get_id(), widget_id), headers=self._token)
-    PySenseUtils.parse_response(resp)
-    # Get the updated dashboard from source and refresh object
-    resp = requests.get(&#39;{}/api/v1/dashboards/{}&#39;.format(self._host, self.get_id()),
-                        headers=self._token)
-    PySenseUtils.parse_response(resp)
-    self._reset(resp.json())</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseDashboard.Dashboard.does_widget_exist"><code class="name flex">
-<span>def <span class="ident">does_widget_exist</span></span>(<span>self, widget_id)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Returns whether or not a widget with the given id is in the dashboard
-</p>
-<p>:param widget_id: The widget id to look for
-</p>
-<p>:return: True if found, false if not.</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def does_widget_exist(self, widget_id):  
-    &#34;&#34;&#34;
-    Returns whether or not a widget with the given id is in the dashboard  
-      
-    :param widget_id: The widget id to look for  
-      
-    :return: True if found, false if not.  
-    &#34;&#34;&#34;
-     
-    try:
-        self.get_widget_by_id(widget_id)
-    except PySenseUtils.RestError:
-        return False
-    else:
-        return True</code></pre>
+    self._connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id))
+    self._reset()</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.export_to_dash"><code class="name flex">
@@ -843,7 +788,7 @@ class Dashboard:
 <dd>
 <section class="desc"><p>Get dashboard as dash file
 </p>
-<p>Optional:
+<p>Optional:<br>
 :param path: Path to save location of dash file
 </p>
 <p>:return: The path of the created file if path provided, else the raw content</p></section>
@@ -853,23 +798,22 @@ class Dashboard:
 </summary>
 <pre><code class="python">def export_to_dash(self, *, path=None):
     &#34;&#34;&#34;
-    Get dashboard as dash file  
+    Get dashboard as dash file   
 
-    Optional:
+    Optional:  
     :param path: Path to save location of dash file  
     
-    :return: The path of the created file if path provided, else the raw content
+    :return: The path of the created file if path provided, else the raw content  
     &#34;&#34;&#34;
     
-    resp = requests.get(&#39;{}/api/v1/dashboards/{}/export/dash&#39;.format(self._host, self.get_id()),
-                        headers=self._token)
-    PySenseUtils.parse_response(resp)
+    resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;.format(self.get_id()), 
+                                             raw=True)
     if path is not None:
         with open(path, &#39;wb&#39;) as out_file:
-            out_file.write(resp.content)
+            out_file.write(resp_content)
         return path
-    else:
-        return resp.content</code></pre>
+    else: 
+        return resp_content</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.export_to_pdf"><code class="name flex">
@@ -928,7 +872,7 @@ class Dashboard:
     :return: The path of the created file if provided, else the raw content
     &#34;&#34;&#34;
     
-    param_string = PySenseUtils.build_query_string({
+    query_params = {
         &#39;paperFormat&#39;: paper_format,
         &#39;paperOrientation&#39;: paper_orientation,
         &#39;layout&#39;: layout,
@@ -943,16 +887,16 @@ class Dashboard:
         &#39;title&#39;: title,
         &#39;titleSize&#39;: title_size,
         &#39;titlePosition&#39;: title_position
-    })
-    resp = requests.get(&#39;{}/api/v1/dashboards/{}/export/pdf?{}&#39;
-                        .format(self._host, self.get_id(), param_string), headers=self._token)
-    PySenseUtils.parse_response(resp)
+    }
+    resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/pdf&#39;.format(self.get_id()), 
+                                             query_params=query_params)
+
     if path is not None:
         with open(path, &#39;wb&#39;) as out_file:
-            out_file.write(resp.content)
+            out_file.write(resp_content)
         return path
-    else:
-        return resp.content</code></pre>
+    else: 
+        return resp_content</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.export_to_png"><code class="name flex">
@@ -988,43 +932,40 @@ class Dashboard:
     :return: The path of the created file if provided or else the raw response obejct  
     &#34;&#34;&#34;
     
-    param_string = PySenseUtils.build_query_string({
+    query_params = {
         &#39;includeTitle&#39;: include_title,
         &#39;includeFilters&#39;: include_filters,
         &#39;includeDs&#39;: include_ds,
         &#39;width&#39;: width
-    })
-    resp = requests.get(
-        &#39;{}/api/v1/dashboards/{}/export/png?{}&#39;.format(self._host, self.get_id(), param_string),
-        headers=self._token)
-    PySenseUtils.parse_response(resp)
+    }
+    resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;.format(self.get_id()), 
+                                             query_params=query_params, raw=True),
     if path is not None:
         with open(path, &#39;wb&#39;) as out_file:
-            out_file.write(resp.content)
+            out_file.write(resp_content)
         return path
     else: 
-        return resp.content</code></pre>
+        return resp_content</code></pre>
 </details>
 </dd>
-<dt id="PySense.PySenseDashboard.Dashboard.get_dashboard_folder_id"><code class="name flex">
-<span>def <span class="ident">get_dashboard_folder_id</span></span>(<span>self)</span>
+<dt id="PySense.PySenseDashboard.Dashboard.get_dashboard_folder"><code class="name flex">
+<span>def <span class="ident">get_dashboard_folder</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Gets the dashboards folder id
-</p>
-<p>:return: The folder id of the parent folder of the dashboard</p></section>
+<section class="desc"><p>Gets the dashboards folder</p>
+<p>:return: The folder of the parent folder of the dashboard</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_dashboard_folder_id(self):
+<pre><code class="python">def get_dashboard_folder(self):
     &#34;&#34;&#34;
-    Gets the dashboards folder id  
+    Gets the dashboards folder
 
-    :return: The folder id of the parent folder of the dashboard  
+    :return: The folder of the parent folder of the dashboard  
     &#34;&#34;&#34;
     
-    return self._dashboard_json[&#39;parentFolder&#39;]</code></pre>
+    return self._connector.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_id"><code class="name flex">
@@ -1085,12 +1026,19 @@ class Dashboard:
 
     :return: The dashboard shares json  
     &#34;&#34;&#34;
-
-    resp = requests.get(
-        &#39;{}/api/shares/dashboard/{}&#39;.format(self._host, self.get_id()),
-        headers=self._token)
-    PySenseUtils.parse_response(resp)
-    return resp.json()</code></pre>
+    resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+    return_json = {&#39;sharesTo&#39;: []}
+    for share in resp_json[&#39;sharesTo&#39;]:
+        share_json = {
+            &#39;shareId&#39;: share[&#39;shareId&#39;], 
+            &#39;type&#39;: share[&#39;type&#39;]
+        }
+        if &#39;rule&#39; in share:
+            share_json[&#39;rule&#39;] = share[&#39;rule&#39;]
+        if &#39;subscribe&#39; in share:
+            share_json[&#39;subscribe&#39;] = share[&#39;subscribe&#39;]
+        return_json[&#39;sharesTo&#39;].append(share_json)
+    return return_json</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_widget_by_id"><code class="name flex">
@@ -1123,15 +1071,13 @@ by prefixing field names with -
     :return: A widget object  
     &#34;&#34;&#34;
     
-    param_string = PySenseUtils.build_query_string({
+    query_params = {
         &#39;fields&#39;: fields
-    })
+    }
 
-    resp = requests.get(&#39;{}/api/v1/dashboards/{}/widgets/{}?{}&#39;.format(self._host, self.get_id(),
-                                                                       widget_id, param_string),
-                        headers=self._token)
-    PySenseUtils.parse_response(resp)
-    return PySenseWidget.Widget(self._host, self._token, json.loads(resp.content))</code></pre>
+    resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id), 
+                                          query_params=query_params),
+    return PySenseWidget.Widget(self._connector, resp_json[0])</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_widgets"><code class="name flex">
@@ -1175,7 +1121,7 @@ parameter for paging<br>
     :return: An array of widget objects  
     &#34;&#34;&#34;
     
-    param_string = PySenseUtils.build_query_string({
+    query_params = {
         &#39;title&#39;: title,
         &#39;type&#39;: type,
         &#39;subtype&#39;: subtype,
@@ -1183,17 +1129,13 @@ parameter for paging<br>
         &#39;sort&#39;: sort,
         &#39;skip&#39;: skip,
         &#39;limit&#39;: limit
-    })
-
-    resp = requests.get(
-        &#39;{}/api/v1/dashboards/{}/widgets?{}&#39;.format(self._host, self.get_id(), param_string),
-        headers=self._token)
-
-    PySenseUtils.parse_response(resp)
+    }
+    
     ret_arr = []
-    widgets_json = json.loads(resp.content)
-    for widget in widgets_json:
-        ret_arr.append(PySenseWidget.Widget(self._host, self._token, widget))
+    resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
+                                          query_params=query_params)
+    for widget in resp_json:
+        ret_arr.append(PySenseWidget.Widget(self._connector, widget))
     return ret_arr</code></pre>
 </details>
 </dd>
@@ -1203,9 +1145,7 @@ parameter for paging<br>
 <dd>
 <section class="desc"><p>Move dashboard to given folder
 </p>
-<p>:param folder: Folder object to move dashboard to, None to remove from folder
-</p>
-<p>:return: True if successful</p></section>
+<p>:param folder: Folder object to move dashboard to, None to remove from folder</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1215,19 +1155,14 @@ parameter for paging<br>
     Move dashboard to given folder  
 
     :param folder: Folder object to move dashboard to, None to remove from folder  
-    
-    :return: True if successful  
     &#34;&#34;&#34;
     if folder:
-        folder_oid = folder.get_folder_id()
+        folder_oid = folder.get_id()
     else:
         folder_oid = None
-    resp = requests.patch(
-        &#39;{}/api/v1/dashboards/{}&#39;.format(self._host, self.get_id()),
-        headers=self._token, json={&#39;parentFolder&#39;: folder_oid})
-    PySenseUtils.parse_response(resp)
-    self._reset(resp.json())
-    return True</code></pre>
+    self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), 
+                              json_payload={&#39;parentFolder&#39;: folder_oid})
+    self._reset()</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.remove_ghost_widgets"><code class="name flex">
@@ -1248,11 +1183,11 @@ parameter for paging<br>
     modified = True
     while modified:
         modified = False
-        for l, column in enumerate(patch_json[&#39;layout&#39;][&#39;columns&#39;]):
+        for n, column in enumerate(patch_json[&#39;layout&#39;][&#39;columns&#39;]):
             for k, cell in enumerate(column[&#39;cells&#39;]):
                 for j, sub_cell in enumerate(cell[&#39;subcells&#39;]):
                     for i, element in enumerate(sub_cell[&#39;elements&#39;]):
-                        if not self.does_widget_exist(element[&#39;widgetid&#39;]):
+                        if not self._does_widget_exist(element[&#39;widgetid&#39;]):
                             sub_cell[&#39;elements&#39;].pop(i)
                             modified = True
                     if len(sub_cell[&#39;elements&#39;]) == 0:
@@ -1260,80 +1195,38 @@ parameter for paging<br>
                 if len(cell[&#39;subcells&#39;]) == 0:
                     column[&#39;cells&#39;].pop(k)
             if len(column[&#39;cells&#39;]) == 0:
-                patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(l)
-    resp = requests.patch(&#39;{}/api/v1/dashboards/{}&#39;.format(self._host, self.get_id()),
-                          headers=self._token, json=patch_json)
-    PySenseUtils.parse_response(resp)
-    self._reset(resp.json())</code></pre>
+                patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(n)
+    self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
+    self._reset()</code></pre>
 </details>
 </dd>
-<dt id="PySense.PySenseDashboard.Dashboard.share_to_user"><code class="name flex">
-<span>def <span class="ident">share_to_user</span></span>(<span>self, email, rule, subscribe)</span>
+<dt id="PySense.PySenseDashboard.Dashboard.remove_shares"><code class="name flex">
+<span>def <span class="ident">remove_shares</span></span>(<span>self, shares)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Share a dashboard to a user
-</p>
-<p>:param email: The email address of the user<br>
-:param rule: The permission of the user on the dashboard (view, edit, etc)<br>
-:param subscribe: true or false, whether to subscribe the user to reports
-</p>
-<p>:return: The updated share</p></section>
+<section class="desc"><p>Unshare a dashboard to a listed groups and users</p>
+<p>:param shares: One to many groups and users to remove</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def share_to_user(self, email, rule, subscribe):
+<pre><code class="python">def remove_shares(self, shares):
     &#34;&#34;&#34;
-    Share a dashboard to a user  
+    Unshare a dashboard to a listed groups and users
 
-    :param email: The email address of the user  
-    :param rule: The permission of the user on the dashboard (view, edit, etc)  
-    :param subscribe: true or false, whether to subscribe the user to reports  
-      
-    :return: The updated share  
+    :param shares: One to many groups and users to remove  
     &#34;&#34;&#34;
-
-    user_id = PySenseUtils.get_user_id(self._host, self._token, email)
-    shares = self.get_shares()
-    shares[&#39;sharesTo&#39;].append({&#39;shareId&#39;: user_id, &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe})
-    resp = requests.post(
-        &#39;{}/api/shares/dashboard/{}&#39;.format(self._host, self.get_id()),
-        headers=self._token, json=shares)
-    PySenseUtils.parse_response(resp)
-    return self.get_shares()</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseDashboard.Dashboard.unshare_to_user"><code class="name flex">
-<span>def <span class="ident">unshare_to_user</span></span>(<span>self, email)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Unshare a dashboard to a user
-</p>
-<p>:param email: The email address of the user
-</p>
-<p>:return: The updated share</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def unshare_to_user(self, email):
-    &#34;&#34;&#34;
-    Unshare a dashboard to a user  
-
-    :param email: The email address of the user  
-       
-    :return: The updated share  
-    &#34;&#34;&#34;
-
-    shares = self.get_shares()
-    for i, share in enumerate(shares[&#39;sharesTo&#39;]):
-        if share[&#39;email&#39;] == email:
-            del shares[&#39;sharesTo&#39;][i]
-    resp = requests.post(
-        &#39;{}/api/shares/dashboard/{}&#39;.format(self._host, self.get_id()),
-        headers=self._token, json=shares)
-    PySenseUtils.parse_response(resp)
-    return self.get_shares()</code></pre>
+    
+    share_ids_to_delete = []
+    for shares in PySenseUtils.make_iterable(shares):
+        share_ids_to_delete.append(shares.get_id())
+    current_shares = self.get_shares()
+    for share_id in share_ids_to_delete:
+        for i, shares in enumerate(current_shares[&#39;sharesTo&#39;]):
+            if shares[&#39;shareId&#39;] == share_id:
+                del current_shares[&#39;sharesTo&#39;][i]
+    
+    self._connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=current_shares)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1357,13 +1250,13 @@ parameter for paging<br>
 <li>
 <h4><code><a title="PySense.PySenseDashboard.Dashboard" href="#PySense.PySenseDashboard.Dashboard">Dashboard</a></code></h4>
 <ul class="">
+<li><code><a title="PySense.PySenseDashboard.Dashboard.add_shares" href="#PySense.PySenseDashboard.Dashboard.add_shares">add_shares</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.add_widget" href="#PySense.PySenseDashboard.Dashboard.add_widget">add_widget</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.delete_widget" href="#PySense.PySenseDashboard.Dashboard.delete_widget">delete_widget</a></code></li>
-<li><code><a title="PySense.PySenseDashboard.Dashboard.does_widget_exist" href="#PySense.PySenseDashboard.Dashboard.does_widget_exist">does_widget_exist</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_dash" href="#PySense.PySenseDashboard.Dashboard.export_to_dash">export_to_dash</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_pdf" href="#PySense.PySenseDashboard.Dashboard.export_to_pdf">export_to_pdf</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_png" href="#PySense.PySenseDashboard.Dashboard.export_to_png">export_to_png</a></code></li>
-<li><code><a title="PySense.PySenseDashboard.Dashboard.get_dashboard_folder_id" href="#PySense.PySenseDashboard.Dashboard.get_dashboard_folder_id">get_dashboard_folder_id</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.get_dashboard_folder" href="#PySense.PySenseDashboard.Dashboard.get_dashboard_folder">get_dashboard_folder</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_id" href="#PySense.PySenseDashboard.Dashboard.get_id">get_id</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_name" href="#PySense.PySenseDashboard.Dashboard.get_name">get_name</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_shares" href="#PySense.PySenseDashboard.Dashboard.get_shares">get_shares</a></code></li>
@@ -1371,8 +1264,7 @@ parameter for paging<br>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_widgets" href="#PySense.PySenseDashboard.Dashboard.get_widgets">get_widgets</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.move_to_folder" href="#PySense.PySenseDashboard.Dashboard.move_to_folder">move_to_folder</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.remove_ghost_widgets" href="#PySense.PySenseDashboard.Dashboard.remove_ghost_widgets">remove_ghost_widgets</a></code></li>
-<li><code><a title="PySense.PySenseDashboard.Dashboard.share_to_user" href="#PySense.PySenseDashboard.Dashboard.share_to_user">share_to_user</a></code></li>
-<li><code><a title="PySense.PySenseDashboard.Dashboard.unshare_to_user" href="#PySense.PySenseDashboard.Dashboard.unshare_to_user">unshare_to_user</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.remove_shares" href="#PySense.PySenseDashboard.Dashboard.remove_shares">remove_shares</a></code></li>
 </ul>
 </li>
 </ul>

@@ -1,18 +1,16 @@
 import json
 import unittest
 
-import PySense.PySense as PySense
+from PySense import PySense
 
 
 class PySenseTests(unittest.TestCase):
 
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
         cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
         cls.sample_path = 'C:\\PySense\\'
-
-    def test_auth(self):
-        assert self.py_client.get_authentication() is not None
+        cls.group_names = ["TempGroup", "TempGroup2"]
 
     def test_get_dashboards(self):
         ret = self.py_client.get_dashboards(parent_folder_name='PySense')
@@ -29,30 +27,25 @@ class PySenseTests(unittest.TestCase):
             data = json.loads(file.read())
         dash = self.py_client.post_dashboards(data)
         assert dash is not None
-        assert self.py_client.delete_dashboards(dash.get_id()) is not None
+        self.py_client.delete_dashboards(dash.get_id())
 
     def test_get_folders(self):
         temp = self.py_client.get_folders(name='PySense')
         assert len(temp) == 1
-        assert temp[0].get_folder_name() == 'PySense'
+        assert temp[0].get_name() == 'PySense'
 
     def test_get_folder_by_name_by_id(self):
         folder = self.py_client.get_folders(name='PySense')[0]
-        assert folder.get_folder_name() == 'PySense'
-        folder2 = self.py_client.get_folder_by_id(folder.get_folder_id())
-        assert folder.get_folder_id() == folder2.get_folder_id()
+        assert folder.get_name() == 'PySense'
+        folder2 = self.py_client.connector.get_folder_by_id(folder.get_id())
+        assert folder.get_id() == folder2.get_id()
 
     def test_post_update_delete_user(self):
-        user = self.py_client.add_user('thisisfake@example.com', 'fake', 'Viewer', groups=['PySense'])
+        group = self.py_client.get_groups(name='PySense')
+        user = self.py_client.add_user('thisisfake@example.com', 'Viewer', groups=group)
         assert user is not None
-        user.update_user(user_name='new name')
-        assert user.get_user_user_name() == 'new name'
-        self.py_client.delete_user(user)
+        self.py_client.delete_users(user)
         assert len(self.py_client.get_users(user_name='new name')) == 0
-
-    def test_custom_rest(self):
-        resp = self.py_client.custom_rest('get', 'api/v1/plugins')
-        assert resp.status_code in [200, 201, 204]
 
     def test_get_elasticubes(self):
         ret = self.py_client.get_elasticubes()
@@ -61,18 +54,26 @@ class PySenseTests(unittest.TestCase):
         assert ret.get_name() == 'PySense'
 
     def test_get_add_remove_group(self):
-        group_names = ["TempGroup", "TempGroup2"]
-        groups = self.py_client.add_groups(group_names)
+        groups = self.py_client.add_groups(self.group_names)
+        assert len(self.py_client.get_groups_by_name(self.group_names)) == len(self.group_names)
         temp_group = self.py_client.get_groups(name="TempGroup2")[0]
-        assert temp_group.get_group_name() == "TempGroup2"
+        assert temp_group.get_name() == "TempGroup2"
         assert len(groups) == 2
         group_id_arr = []
         for group in groups:
-            group_id_arr.append(group.get_group_id())
+            group_id_arr.append(group.get_id())
         groups = self.py_client.get_groups(ids=group_id_arr)
         assert len(groups) == 2
         self.py_client.delete_groups(groups)
-
-
+    
+    @classmethod
+    def tearDownClass(cls):
+        groups_to_delete = []
+        for group in cls.py_client.get_groups():
+            if group.get_name() in cls.group_names:
+                groups_to_delete.append(group)
+        cls.py_client.delete_groups(groups_to_delete)
+                
+                
 if __name__ == '__main__':
     unittest.main()

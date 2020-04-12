@@ -1,5 +1,0 @@
-UserGroup,Email,Elasticube,Table,Field,SecurityValue
-user,nathan.giusti@sisense.com,PySense,DIM Security,Value,Everything
-group,PySense,PySense,DIM Security,Value,1
-user,newfakeuser@sisense.com,PySense,DIM Security,Value,"1,2,3"
-group,FakeGroup,PySense,DIM Security,Value,1

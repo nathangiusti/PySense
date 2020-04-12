@@ -1,0 +1,2 @@
+class PySenseException(Exception):
+    pass

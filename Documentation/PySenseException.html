@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.5" />
-<title>PySense.PySenseAlert API documentation</title>
+<title>PySense.PySenseException API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,21 +17,15 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>PySense.PySenseAlert</code></h1>
+<h1 class="title">Module <code>PySense.PySenseException</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def createAlert(user, name):
-    alert = {}
-    alert[&#39;enabled&#39;] = &#39;true&#39;
-    alert[&#39;name&#39;] = name
-    user = {}
-    user[&#39;type&#39;] = &#34;user&#34;
-    user[&#39;id&#39;] = &#39;temp&#39;
-    alert[&#39;parties&#39;] = &#39;temp&#39;</code></pre>
+<pre><code class="python">class PySenseException(Exception):
+    pass</code></pre>
 </details>
 </section>
 <section>
@@ -39,30 +33,30 @@
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="PySense.PySenseAlert.createAlert"><code class="name flex">
-<span>def <span class="ident">createAlert</span></span>(<span>user, name)</span>
+<dt id="PySense.PySenseException.PySenseException"><code class="flex name class">
+<span>class <span class="ident">PySenseException</span></span>
+<span>(</span><span>...)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Common base class for all non-exit exceptions.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def createAlert(user, name):
-    alert = {}
-    alert[&#39;enabled&#39;] = &#39;true&#39;
-    alert[&#39;name&#39;] = name
-    user = {}
-    user[&#39;type&#39;] = &#34;user&#34;
-    user[&#39;id&#39;] = &#39;temp&#39;
-    alert[&#39;parties&#39;] = &#39;temp&#39;</code></pre>
+<pre><code class="python">class PySenseException(Exception):
+    pass</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
 </dd>
 </dl>
-</section>
-<section>
 </section>
 </article>
 <nav id="sidebar">
@@ -76,9 +70,11 @@
 <li><code><a title="PySense" href="index.html">PySense</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="PySense.PySenseAlert.createAlert" href="#PySense.PySenseAlert.createAlert">createAlert</a></code></li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="PySense.PySenseException.PySenseException" href="#PySense.PySenseException.PySenseException">PySenseException</a></code></h4>
+</li>
 </ul>
 </li>
 </ul>

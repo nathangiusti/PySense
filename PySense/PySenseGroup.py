@@ -1,16 +1,13 @@
-import requests
-
 from PySense import PySenseUtils
 
 
 class Group:
 
-    def __init__(self, host, token, group_json):
-        self._host = host
-        self._token = token
+    def __init__(self, connector, group_json):
+        self._connector = connector
         self._group_json = group_json
 
-    def get_group_name(self):
+    def get_name(self):
         """
         Get groups name  
           
@@ -19,7 +16,7 @@ class Group:
         
         return self._group_json['name']
 
-    def get_group_id(self):
+    def get_id(self):
         """
         Get groups id  
           
@@ -27,35 +24,41 @@ class Group:
         """
         
         return self._group_json['_id']
+    
+    def get_users(self):
+        """
+        Returns the members of the group  
+          
+        :return:  An array of PySense Users 
+        """
+        resp_json = self._connector.rest_call('get', 'api/groups/{}/users'.format(self.get_id()))
+        ret_arr = []
+        for user in resp_json:
+            ret_arr.append(self._connector.get_user_by_email(user['email']))
+        return ret_arr
 
-    def add_user_to_group(self, users):
+    def add_user(self, users):
         """
         Adds users to group  
           
-        :param users: List of users to add  
+        :param users: One to many users to add 
         """
         
         payload = []
-        for user in users:
-            payload.append(user.get_user_id())
+        for user in PySenseUtils.make_iterable(users):
+            payload.append(user.get_id())
 
-        resp = requests.post('{}/api/groups/{}/users'.format(self._host, self.get_group_id()),
-                             headers=self._token, json=payload)
-        PySenseUtils.parse_response(resp)
+        self._connector.rest_call('post', 'api/groups/{}/users'.format(self.get_id()), json_payload=payload)
 
-    def delete_user_from_group(self, users):
+    def remove_user(self, users):
         """
         Remove users from group  
           
-        :param users: Users to remove   
+        :param users: One to many users to remove from group   
         """
         
         payload = []
-        for user in users:
-            payload.append(user.get_user_id())
-
-        resp = requests.post('{}/api/groups/{}/users'.format(self._host, self.get_group_id()),
-                             headers=self._token, json=payload)
-        PySenseUtils.parse_response(resp)
-        return True
-
+        for user in PySenseUtils.make_iterable(users):
+            payload.append(user.get_id())
+            
+        self._connector.rest_call('delete', 'api/groups/{}/users'.format(self.get_id()), json_payload=payload)
