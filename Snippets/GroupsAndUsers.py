@@ -25,7 +25,7 @@ py_client.add_user('user@email.com', 'Viewer')
 
 # Add user with more details. 
 # Can add multiple arguments, see documentation for full list
-py_client.add_user('user@email.com', 'Data Designer', first_name='John', last_name='Doe', groups=['Group 1', 'Group 2'])
+py_client.add_user('user@email.com', 'Data Designer', first_name='John', last_name='Doe')
 
 # Get all users
 users = py_client.get_users()
