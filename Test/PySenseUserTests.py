@@ -8,7 +8,7 @@ class PySenseUserTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
-        cls.user = cls.py_client.connector.get_user_by_email('testuser@sisense.com')
+        cls.user = cls.py_client.get_user_by_email('testuser@sisense.com')
         cls.group = cls.py_client.get_groups(name='PySense')[0]
         
     def test_getters(self):

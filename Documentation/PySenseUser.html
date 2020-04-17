@@ -29,9 +29,9 @@
 
 class User:
 
-    def __init__(self, connector, user_json):
+    def __init__(self, py_client, user_json):
         self._user_json = user_json
-        self._connector = connector
+        self._py_client = py_client
 
     def _reset(self, user_json):
         self._user_json = user_json
@@ -53,7 +53,7 @@ class User:
         &#34;&#34;&#34;
         ret_arr = []
         for group in self._user_json[&#39;groups&#39;]:
-            ret_arr.append(self._connector.get_group_by_id(group))
+            ret_arr.append(self._py_client.get_group_by_id(group))
         return ret_arr
 
     def get_email(self):
@@ -99,7 +99,7 @@ class User:
         :return: The user&#39;s role  
         &#34;&#34;&#34;
         
-        return self._connector.get_role_name(self._user_json[&#39;roleId&#39;])
+        return self._py_client.get_role_name(self._user_json[&#39;roleId&#39;])
 
     def _get_role_id(self):
         return self._user_json[&#39;roleId&#39;]
@@ -138,11 +138,11 @@ class User:
                 &#39;userName&#39;: user_name if user_name else self.get_user_name(),
                 &#39;firstName&#39;: first_name if first_name else self.get_first_name(),
                 &#39;lastName&#39;: last_name if last_name else self.get_last_name(),
-                &#39;roleId&#39;: self._connector.get_role_id(role_name) if role_name else self._get_role_id(),
+                &#39;roleId&#39;: self._py_client.get_role_id(role_name) if role_name else self._get_role_id(),
                 &#39;groups&#39;: group_arr,
                 &#39;preferences&#39;: preferences if preferences else self.get_preferences()
             }
-        resp_json = self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/users/{}&#39;.format(self.get_id()), json_payload=user_json)
+        resp_json = self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/users/{}&#39;.format(self.get_id()), json_payload=user_json)
         self._reset(resp_json)</code></pre>
 </details>
 </section>
@@ -157,7 +157,7 @@ class User:
 <dl>
 <dt id="PySense.PySenseUser.User"><code class="flex name class">
 <span>class <span class="ident">User</span></span>
-<span>(</span><span>connector, user_json)</span>
+<span>(</span><span>py_client, user_json)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -167,9 +167,9 @@ class User:
 </summary>
 <pre><code class="python">class User:
 
-    def __init__(self, connector, user_json):
+    def __init__(self, py_client, user_json):
         self._user_json = user_json
-        self._connector = connector
+        self._py_client = py_client
 
     def _reset(self, user_json):
         self._user_json = user_json
@@ -191,7 +191,7 @@ class User:
         &#34;&#34;&#34;
         ret_arr = []
         for group in self._user_json[&#39;groups&#39;]:
-            ret_arr.append(self._connector.get_group_by_id(group))
+            ret_arr.append(self._py_client.get_group_by_id(group))
         return ret_arr
 
     def get_email(self):
@@ -237,7 +237,7 @@ class User:
         :return: The user&#39;s role  
         &#34;&#34;&#34;
         
-        return self._connector.get_role_name(self._user_json[&#39;roleId&#39;])
+        return self._py_client.get_role_name(self._user_json[&#39;roleId&#39;])
 
     def _get_role_id(self):
         return self._user_json[&#39;roleId&#39;]
@@ -276,11 +276,11 @@ class User:
                 &#39;userName&#39;: user_name if user_name else self.get_user_name(),
                 &#39;firstName&#39;: first_name if first_name else self.get_first_name(),
                 &#39;lastName&#39;: last_name if last_name else self.get_last_name(),
-                &#39;roleId&#39;: self._connector.get_role_id(role_name) if role_name else self._get_role_id(),
+                &#39;roleId&#39;: self._py_client.get_role_id(role_name) if role_name else self._get_role_id(),
                 &#39;groups&#39;: group_arr,
                 &#39;preferences&#39;: preferences if preferences else self.get_preferences()
             }
-        resp_json = self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/users/{}&#39;.format(self.get_id()), json_payload=user_json)
+        resp_json = self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/users/{}&#39;.format(self.get_id()), json_payload=user_json)
         self._reset(resp_json)</code></pre>
 </details>
 <h3>Methods</h3>
@@ -345,7 +345,7 @@ class User:
     &#34;&#34;&#34;
     ret_arr = []
     for group in self._user_json[&#39;groups&#39;]:
-        ret_arr.append(self._connector.get_group_by_id(group))
+        ret_arr.append(self._py_client.get_group_by_id(group))
     return ret_arr</code></pre>
 </details>
 </dd>
@@ -429,7 +429,7 @@ class User:
     :return: The user&#39;s role  
     &#34;&#34;&#34;
     
-    return self._connector.get_role_name(self._user_json[&#39;roleId&#39;])</code></pre>
+    return self._py_client.get_role_name(self._user_json[&#39;roleId&#39;])</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseUser.User.get_user_name"><code class="name flex">
@@ -497,11 +497,11 @@ class User:
             &#39;userName&#39;: user_name if user_name else self.get_user_name(),
             &#39;firstName&#39;: first_name if first_name else self.get_first_name(),
             &#39;lastName&#39;: last_name if last_name else self.get_last_name(),
-            &#39;roleId&#39;: self._connector.get_role_id(role_name) if role_name else self._get_role_id(),
+            &#39;roleId&#39;: self._py_client.get_role_id(role_name) if role_name else self._get_role_id(),
             &#39;groups&#39;: group_arr,
             &#39;preferences&#39;: preferences if preferences else self.get_preferences()
         }
-    resp_json = self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/users/{}&#39;.format(self.get_id()), json_payload=user_json)
+    resp_json = self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/users/{}&#39;.format(self.get_id()), json_payload=user_json)
     self._reset(resp_json)</code></pre>
 </details>
 </dd>

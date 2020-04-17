@@ -30,8 +30,8 @@ from PySense import PySenseUtils
 
 
 class Rule:
-    def __init__(self, connector, rule_json):
-        self._connector = connector
+    def __init__(self, py_client, rule_json):
+        self._py_client = py_client
         self._reset(rule_json)
 
     def _reset(self, rule_json):
@@ -147,8 +147,8 @@ class Rule:
         else:
             rule_json[&#39;members&#39;] = self.get_members()
         
-        resp_json = self._connector.rest_call(&#39;put&#39;, &#39;api/elasticubes/datasecurity/{}&#39;.format(self.get_id()),
-                                              json_payload=rule_json)
+        resp_json = self._py_client.connector.rest_call(&#39;put&#39;, &#39;api/elasticubes/datasecurity/{}&#39;.format(self.get_id()),
+                                                        json_payload=rule_json)
         self._reset(resp_json)</code></pre>
 </details>
 </section>
@@ -163,7 +163,7 @@ class Rule:
 <dl>
 <dt id="PySense.PySenseRule.Rule"><code class="flex name class">
 <span>class <span class="ident">Rule</span></span>
-<span>(</span><span>connector, rule_json)</span>
+<span>(</span><span>py_client, rule_json)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -172,8 +172,8 @@ class Rule:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Rule:
-    def __init__(self, connector, rule_json):
-        self._connector = connector
+    def __init__(self, py_client, rule_json):
+        self._py_client = py_client
         self._reset(rule_json)
 
     def _reset(self, rule_json):
@@ -289,8 +289,8 @@ class Rule:
         else:
             rule_json[&#39;members&#39;] = self.get_members()
         
-        resp_json = self._connector.rest_call(&#39;put&#39;, &#39;api/elasticubes/datasecurity/{}&#39;.format(self.get_id()),
-                                              json_payload=rule_json)
+        resp_json = self._py_client.connector.rest_call(&#39;put&#39;, &#39;api/elasticubes/datasecurity/{}&#39;.format(self.get_id()),
+                                                        json_payload=rule_json)
         self._reset(resp_json)</code></pre>
 </details>
 <h3>Methods</h3>
@@ -512,8 +512,8 @@ class Rule:
     else:
         rule_json[&#39;members&#39;] = self.get_members()
     
-    resp_json = self._connector.rest_call(&#39;put&#39;, &#39;api/elasticubes/datasecurity/{}&#39;.format(self.get_id()),
-                                          json_payload=rule_json)
+    resp_json = self._py_client.connector.rest_call(&#39;put&#39;, &#39;api/elasticubes/datasecurity/{}&#39;.format(self.get_id()),
+                                                    json_payload=rule_json)
     self._reset(resp_json)</code></pre>
 </details>
 </dd>

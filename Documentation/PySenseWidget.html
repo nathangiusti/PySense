@@ -26,8 +26,8 @@
 </summary>
 <pre><code class="python">class Widget:
 
-    def __init__(self, connector, widget_json):
-        self._connector = connector
+    def __init__(self, py_client, widget_json):
+        self._py_client = py_client
         self._widget_json = widget_json
 
     def get_widget_json(self):
@@ -69,8 +69,8 @@
         :return: The path of the saved file if set, else the raw content  
         &#34;&#34;&#34;
         query_params = {&#39;width&#39;: width, &#39;height&#39;: height}
-        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
-                                                 .format(self.get_dashboard_id(), self.get_id()), 
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
+                                                 .format(self.get_dashboard_id(), self.get_id()),
                                                  query_params=query_params, raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
@@ -91,7 +91,7 @@
 <dl>
 <dt id="PySense.PySenseWidget.Widget"><code class="flex name class">
 <span>class <span class="ident">Widget</span></span>
-<span>(</span><span>connector, widget_json)</span>
+<span>(</span><span>py_client, widget_json)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -101,8 +101,8 @@
 </summary>
 <pre><code class="python">class Widget:
 
-    def __init__(self, connector, widget_json):
-        self._connector = connector
+    def __init__(self, py_client, widget_json):
+        self._py_client = py_client
         self._widget_json = widget_json
 
     def get_widget_json(self):
@@ -144,8 +144,8 @@
         :return: The path of the saved file if set, else the raw content  
         &#34;&#34;&#34;
         query_params = {&#39;width&#39;: width, &#39;height&#39;: height}
-        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
-                                                 .format(self.get_dashboard_id(), self.get_id()), 
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
+                                                 .format(self.get_dashboard_id(), self.get_id()),
                                                  query_params=query_params, raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
@@ -184,8 +184,8 @@
     :return: The path of the saved file if set, else the raw content  
     &#34;&#34;&#34;
     query_params = {&#39;width&#39;: width, &#39;height&#39;: height}
-    resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
-                                             .format(self.get_dashboard_id(), self.get_id()), 
+    resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
+                                             .format(self.get_dashboard_id(), self.get_id()),
                                              query_params=query_params, raw=True)
     if path is not None:
         with open(path, &#39;wb&#39;) as out_file:

@@ -3,8 +3,8 @@ import requests
 
 class Plugin:
 
-    def __init__(self, connector, plugin_json):
-        self._connector = connector
+    def __init__(self, py_client, plugin_json):
+        self._py_client = py_client
         self._plugin_json = plugin_json
     
     def get_name(self):
@@ -46,5 +46,5 @@ class Plugin:
         :param enabled: True to enable, false to disable 
         """
         self._plugin_json['isEnabled'] = enabled
-        resp_json = self._connector.rest_call('patch', 'api/v1/plugins', json_payload=[self._plugin_json])
+        resp_json = self._py_client.connector.rest_call('patch', 'api/v1/plugins', json_payload=[self._plugin_json])
         self._plugin_json = resp_json[0]

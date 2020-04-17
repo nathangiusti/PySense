@@ -39,5 +39,5 @@ user = py_client.connector.get_user_by_email('myuser@email.com')
 user.update(first_name='New First Name', last_name='New Last Name')
 
 # Delete user
-user = py_client.get_users(user_name='deleted_user@email.com')[0]
-py_client.delete_users(user)
+users = py_client.get_users(user_name='deleted_user@email.com')
+py_client.delete_users(users)

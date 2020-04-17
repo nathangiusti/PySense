@@ -33,12 +33,21 @@ from PySense import PySenseWidget
 
 class Dashboard:
 
-    def __init__(self, connector, dashboard_json):
+    def __init__(self, py_client, dashboard_json):
         self._dashboard_json = dashboard_json
-        self._connector = connector
+        self._py_client = py_client
         
     def _reset(self):
-        self._dashboard_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()))
+        self._dashboard_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()))
+        
+    def get_datasource(self):
+        &#34;&#34;&#34;
+        Returns the elasticube powering the dashboard.  
+            This call only returns one cube even if the dashboard has multiple cubes.  
+            
+        :return: The elasticube of the dashboard.  
+        &#34;&#34;&#34;
+        return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])
 
     def get_id(self):
         &#34;&#34;&#34;
@@ -65,7 +74,7 @@ class Dashboard:
         :return: The folder of the parent folder of the dashboard  
         &#34;&#34;&#34;
         
-        return self._connector.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
+        return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
 
     def get_shares(self):
         &#34;&#34;&#34;
@@ -73,7 +82,7 @@ class Dashboard:
   
         :return: The dashboard shares json  
         &#34;&#34;&#34;
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
         return_json = {&#39;sharesTo&#39;: []}
         for share in resp_json[&#39;sharesTo&#39;]:
             share_json = {
@@ -97,7 +106,7 @@ class Dashboard:
             folder_oid = folder.get_id()
         else:
             folder_oid = None
-        self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), 
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
                                   json_payload={&#39;parentFolder&#39;: folder_oid})
         self._reset()
 
@@ -119,7 +128,7 @@ class Dashboard:
                 {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
             )
         
-        self._connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=curr_shares)
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=curr_shares)
         
     def remove_shares(self, shares):
         &#34;&#34;&#34;
@@ -137,7 +146,7 @@ class Dashboard:
                 if shares[&#39;shareId&#39;] == share_id:
                     del current_shares[&#39;sharesTo&#39;][i]
         
-        self._connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=current_shares)
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=current_shares)
 
     def export_to_png(self, *, path=None, include_title=None, include_filters=None, include_ds=None, width=None):
         &#34;&#34;&#34;
@@ -159,7 +168,7 @@ class Dashboard:
             &#39;includeDs&#39;: include_ds,
             &#39;width&#39;: width
         }
-        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;.format(self.get_id()), 
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;.format(self.get_id()),
                                                  query_params=query_params, raw=True),
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
@@ -212,8 +221,8 @@ class Dashboard:
             &#39;titleSize&#39;: title_size,
             &#39;titlePosition&#39;: title_position
         }
-        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/pdf&#39;.format(self.get_id()), 
-                                                 query_params=query_params)
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/pdf&#39;
+                                                           .format(self.get_id()), query_params=query_params)
 
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
@@ -232,8 +241,8 @@ class Dashboard:
         :return: The path of the created file if path provided, else the raw content  
         &#34;&#34;&#34;
         
-        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;.format(self.get_id()), 
-                                                 raw=True)
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
+                                                           .format(self.get_id()), raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
@@ -271,10 +280,10 @@ class Dashboard:
         }
         
         ret_arr = []
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
                                               query_params=query_params)
         for widget in resp_json:
-            ret_arr.append(PySenseWidget.Widget(self._connector, widget))
+            ret_arr.append(PySenseWidget.Widget(self._py_client, widget))
         return ret_arr
 
     def get_widget_by_id(self, widget_id, *, fields=None):
@@ -294,9 +303,9 @@ class Dashboard:
             &#39;fields&#39;: fields
         }
 
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id), 
-                                              query_params=query_params),
-        return PySenseWidget.Widget(self._connector, resp_json[0])
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
+                                                        .format(self.get_id(), widget_id), query_params=query_params)
+        return PySenseWidget.Widget(self._py_client, resp_json)
 
     def add_widget(self, widget):
         &#34;&#34;&#34;
@@ -307,9 +316,9 @@ class Dashboard:
         :return: The widget added to the dashboard  
         &#34;&#34;&#34;
         
-        resp_json = self._connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()), 
+        resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
                                               json_payload=widget.get_widget_json())
-        return PySenseWidget.Widget(self._connector, resp_json)
+        return PySenseWidget.Widget(self._py_client, resp_json)
 
     def delete_widget(self, widget_id):
         &#34;&#34;&#34;  
@@ -318,7 +327,7 @@ class Dashboard:
         :param widget_id: The ID of the widget to delete  
         &#34;&#34;&#34;  
         
-        self._connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id))
+        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id))
         self._reset()
 
     def remove_ghost_widgets(self):
@@ -343,7 +352,7 @@ class Dashboard:
                         column[&#39;cells&#39;].pop(k)
                 if len(column[&#39;cells&#39;]) == 0:
                     patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(n)
-        self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
         self._reset()
         
     def _does_widget_exist(self, widget_id):
@@ -366,7 +375,7 @@ class Dashboard:
 <dl>
 <dt id="PySense.PySenseDashboard.Dashboard"><code class="flex name class">
 <span>class <span class="ident">Dashboard</span></span>
-<span>(</span><span>connector, dashboard_json)</span>
+<span>(</span><span>py_client, dashboard_json)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -376,12 +385,21 @@ class Dashboard:
 </summary>
 <pre><code class="python">class Dashboard:
 
-    def __init__(self, connector, dashboard_json):
+    def __init__(self, py_client, dashboard_json):
         self._dashboard_json = dashboard_json
-        self._connector = connector
+        self._py_client = py_client
         
     def _reset(self):
-        self._dashboard_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()))
+        self._dashboard_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()))
+        
+    def get_datasource(self):
+        &#34;&#34;&#34;
+        Returns the elasticube powering the dashboard.  
+            This call only returns one cube even if the dashboard has multiple cubes.  
+            
+        :return: The elasticube of the dashboard.  
+        &#34;&#34;&#34;
+        return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])
 
     def get_id(self):
         &#34;&#34;&#34;
@@ -408,7 +426,7 @@ class Dashboard:
         :return: The folder of the parent folder of the dashboard  
         &#34;&#34;&#34;
         
-        return self._connector.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
+        return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
 
     def get_shares(self):
         &#34;&#34;&#34;
@@ -416,7 +434,7 @@ class Dashboard:
   
         :return: The dashboard shares json  
         &#34;&#34;&#34;
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
         return_json = {&#39;sharesTo&#39;: []}
         for share in resp_json[&#39;sharesTo&#39;]:
             share_json = {
@@ -440,7 +458,7 @@ class Dashboard:
             folder_oid = folder.get_id()
         else:
             folder_oid = None
-        self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), 
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
                                   json_payload={&#39;parentFolder&#39;: folder_oid})
         self._reset()
 
@@ -462,7 +480,7 @@ class Dashboard:
                 {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
             )
         
-        self._connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=curr_shares)
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=curr_shares)
         
     def remove_shares(self, shares):
         &#34;&#34;&#34;
@@ -480,7 +498,7 @@ class Dashboard:
                 if shares[&#39;shareId&#39;] == share_id:
                     del current_shares[&#39;sharesTo&#39;][i]
         
-        self._connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=current_shares)
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=current_shares)
 
     def export_to_png(self, *, path=None, include_title=None, include_filters=None, include_ds=None, width=None):
         &#34;&#34;&#34;
@@ -502,7 +520,7 @@ class Dashboard:
             &#39;includeDs&#39;: include_ds,
             &#39;width&#39;: width
         }
-        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;.format(self.get_id()), 
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;.format(self.get_id()),
                                                  query_params=query_params, raw=True),
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
@@ -555,8 +573,8 @@ class Dashboard:
             &#39;titleSize&#39;: title_size,
             &#39;titlePosition&#39;: title_position
         }
-        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/pdf&#39;.format(self.get_id()), 
-                                                 query_params=query_params)
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/pdf&#39;
+                                                           .format(self.get_id()), query_params=query_params)
 
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
@@ -575,8 +593,8 @@ class Dashboard:
         :return: The path of the created file if path provided, else the raw content  
         &#34;&#34;&#34;
         
-        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;.format(self.get_id()), 
-                                                 raw=True)
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
+                                                           .format(self.get_id()), raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
@@ -614,10 +632,10 @@ class Dashboard:
         }
         
         ret_arr = []
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
                                               query_params=query_params)
         for widget in resp_json:
-            ret_arr.append(PySenseWidget.Widget(self._connector, widget))
+            ret_arr.append(PySenseWidget.Widget(self._py_client, widget))
         return ret_arr
 
     def get_widget_by_id(self, widget_id, *, fields=None):
@@ -637,9 +655,9 @@ class Dashboard:
             &#39;fields&#39;: fields
         }
 
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id), 
-                                              query_params=query_params),
-        return PySenseWidget.Widget(self._connector, resp_json[0])
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
+                                                        .format(self.get_id(), widget_id), query_params=query_params)
+        return PySenseWidget.Widget(self._py_client, resp_json)
 
     def add_widget(self, widget):
         &#34;&#34;&#34;
@@ -650,9 +668,9 @@ class Dashboard:
         :return: The widget added to the dashboard  
         &#34;&#34;&#34;
         
-        resp_json = self._connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()), 
+        resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
                                               json_payload=widget.get_widget_json())
-        return PySenseWidget.Widget(self._connector, resp_json)
+        return PySenseWidget.Widget(self._py_client, resp_json)
 
     def delete_widget(self, widget_id):
         &#34;&#34;&#34;  
@@ -661,7 +679,7 @@ class Dashboard:
         :param widget_id: The ID of the widget to delete  
         &#34;&#34;&#34;  
         
-        self._connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id))
+        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id))
         self._reset()
 
     def remove_ghost_widgets(self):
@@ -686,7 +704,7 @@ class Dashboard:
                         column[&#39;cells&#39;].pop(k)
                 if len(column[&#39;cells&#39;]) == 0:
                     patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(n)
-        self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
         self._reset()
         
     def _does_widget_exist(self, widget_id):
@@ -730,7 +748,7 @@ class Dashboard:
             {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
         )
     
-    self._connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=curr_shares)</code></pre>
+    self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=curr_shares)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.add_widget"><code class="name flex">
@@ -755,9 +773,9 @@ class Dashboard:
     :return: The widget added to the dashboard  
     &#34;&#34;&#34;
     
-    resp_json = self._connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()), 
+    resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
                                           json_payload=widget.get_widget_json())
-    return PySenseWidget.Widget(self._connector, resp_json)</code></pre>
+    return PySenseWidget.Widget(self._py_client, resp_json)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.delete_widget"><code class="name flex">
@@ -778,7 +796,7 @@ class Dashboard:
     :param widget_id: The ID of the widget to delete  
     &#34;&#34;&#34;  
     
-    self._connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id))
+    self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id))
     self._reset()</code></pre>
 </details>
 </dd>
@@ -806,8 +824,8 @@ class Dashboard:
     :return: The path of the created file if path provided, else the raw content  
     &#34;&#34;&#34;
     
-    resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;.format(self.get_id()), 
-                                             raw=True)
+    resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
+                                                       .format(self.get_id()), raw=True)
     if path is not None:
         with open(path, &#39;wb&#39;) as out_file:
             out_file.write(resp_content)
@@ -888,8 +906,8 @@ class Dashboard:
         &#39;titleSize&#39;: title_size,
         &#39;titlePosition&#39;: title_position
     }
-    resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/pdf&#39;.format(self.get_id()), 
-                                             query_params=query_params)
+    resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/pdf&#39;
+                                                       .format(self.get_id()), query_params=query_params)
 
     if path is not None:
         with open(path, &#39;wb&#39;) as out_file:
@@ -938,7 +956,7 @@ class Dashboard:
         &#39;includeDs&#39;: include_ds,
         &#39;width&#39;: width
     }
-    resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;.format(self.get_id()), 
+    resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;.format(self.get_id()),
                                              query_params=query_params, raw=True),
     if path is not None:
         with open(path, &#39;wb&#39;) as out_file:
@@ -965,7 +983,29 @@ class Dashboard:
     :return: The folder of the parent folder of the dashboard  
     &#34;&#34;&#34;
     
-    return self._connector.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])</code></pre>
+    return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDashboard.Dashboard.get_datasource"><code class="name flex">
+<span>def <span class="ident">get_datasource</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the elasticube powering the dashboard.<br>
+This call only returns one cube even if the dashboard has multiple cubes.
+</p>
+<p>:return: The elasticube of the dashboard.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_datasource(self):
+    &#34;&#34;&#34;
+    Returns the elasticube powering the dashboard.  
+        This call only returns one cube even if the dashboard has multiple cubes.  
+        
+    :return: The elasticube of the dashboard.  
+    &#34;&#34;&#34;
+    return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_id"><code class="name flex">
@@ -1026,7 +1066,7 @@ class Dashboard:
 
     :return: The dashboard shares json  
     &#34;&#34;&#34;
-    resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+    resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
     return_json = {&#39;sharesTo&#39;: []}
     for share in resp_json[&#39;sharesTo&#39;]:
         share_json = {
@@ -1075,9 +1115,9 @@ by prefixing field names with -
         &#39;fields&#39;: fields
     }
 
-    resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id), 
-                                          query_params=query_params),
-    return PySenseWidget.Widget(self._connector, resp_json[0])</code></pre>
+    resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
+                                                    .format(self.get_id(), widget_id), query_params=query_params)
+    return PySenseWidget.Widget(self._py_client, resp_json)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_widgets"><code class="name flex">
@@ -1132,10 +1172,10 @@ parameter for paging<br>
     }
     
     ret_arr = []
-    resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
+    resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
                                           query_params=query_params)
     for widget in resp_json:
-        ret_arr.append(PySenseWidget.Widget(self._connector, widget))
+        ret_arr.append(PySenseWidget.Widget(self._py_client, widget))
     return ret_arr</code></pre>
 </details>
 </dd>
@@ -1160,7 +1200,7 @@ parameter for paging<br>
         folder_oid = folder.get_id()
     else:
         folder_oid = None
-    self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), 
+    self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
                               json_payload={&#39;parentFolder&#39;: folder_oid})
     self._reset()</code></pre>
 </details>
@@ -1196,7 +1236,7 @@ parameter for paging<br>
                     column[&#39;cells&#39;].pop(k)
             if len(column[&#39;cells&#39;]) == 0:
                 patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(n)
-    self._connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
+    self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
     self._reset()</code></pre>
 </details>
 </dd>
@@ -1226,7 +1266,7 @@ parameter for paging<br>
             if shares[&#39;shareId&#39;] == share_id:
                 del current_shares[&#39;sharesTo&#39;][i]
     
-    self._connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=current_shares)</code></pre>
+    self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=current_shares)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1257,6 +1297,7 @@ parameter for paging<br>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_pdf" href="#PySense.PySenseDashboard.Dashboard.export_to_pdf">export_to_pdf</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_png" href="#PySense.PySenseDashboard.Dashboard.export_to_png">export_to_png</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_dashboard_folder" href="#PySense.PySenseDashboard.Dashboard.get_dashboard_folder">get_dashboard_folder</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.get_datasource" href="#PySense.PySenseDashboard.Dashboard.get_datasource">get_datasource</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_id" href="#PySense.PySenseDashboard.Dashboard.get_id">get_id</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_name" href="#PySense.PySenseDashboard.Dashboard.get_name">get_name</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_shares" href="#PySense.PySenseDashboard.Dashboard.get_shares">get_shares</a></code></li>

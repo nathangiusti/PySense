@@ -1,7 +1,7 @@
 class Folder:
 
-    def __init__(self, connector, folder_json):
-        self._connector = connector
+    def __init__(self, py_client, folder_json):
+        self._py_client = py_client
         self._folder_json = folder_json
 
     def get_id(self):

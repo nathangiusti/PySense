@@ -3,8 +3,8 @@ from PySense import PySenseUtils
 
 class Group:
 
-    def __init__(self, connector, group_json):
-        self._connector = connector
+    def __init__(self, py_client, group_json):
+        self._py_client = py_client
         self._group_json = group_json
 
     def get_name(self):
@@ -31,10 +31,10 @@ class Group:
           
         :return:  An array of PySense Users 
         """
-        resp_json = self._connector.rest_call('get', 'api/groups/{}/users'.format(self.get_id()))
+        resp_json = self._py_client.connector.rest_call('get', 'api/groups/{}/users'.format(self.get_id()))
         ret_arr = []
         for user in resp_json:
-            ret_arr.append(self._connector.get_user_by_email(user['email']))
+            ret_arr.append(self._py_client.get_user_by_email(user['email']))
         return ret_arr
 
     def add_user(self, users):
@@ -48,7 +48,7 @@ class Group:
         for user in PySenseUtils.make_iterable(users):
             payload.append(user.get_id())
 
-        self._connector.rest_call('post', 'api/groups/{}/users'.format(self.get_id()), json_payload=payload)
+        self._py_client.connector.rest_call('post', 'api/groups/{}/users'.format(self.get_id()), json_payload=payload)
 
     def remove_user(self, users):
         """
@@ -61,4 +61,4 @@ class Group:
         for user in PySenseUtils.make_iterable(users):
             payload.append(user.get_id())
             
-        self._connector.rest_call('delete', 'api/groups/{}/users'.format(self.get_id()), json_payload=payload)
+        self._py_client.connector.rest_call('delete', 'api/groups/{}/users'.format(self.get_id()), json_payload=payload)

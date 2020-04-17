@@ -28,9 +28,6 @@
 import urllib.parse
 
 from PySense import PySenseException
-from PySense import PySenseFolder
-from PySense import PySenseGroup
-from PySense import PySenseUser
 
 
 class RestConnector:
@@ -42,7 +39,6 @@ class RestConnector:
         resp = requests.post(&#39;{}/api/v1/authentication/login&#39;.format(self._host), data=data)
         parse_response(resp)
         self._token = {&#39;authorization&#39;:  &#34;Bearer &#34; + resp.json()[&#39;access_token&#39;]}
-        self._roles = self.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
         
     def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
         &#34;&#34;&#34;
@@ -84,70 +80,6 @@ class RestConnector:
             except ValueError as e:
                 return response.content
             
-    def get_role_id(self, role_name):
-        &#34;&#34;&#34;
-        Get the role id for the given role name  
-
-        :param role_name: The role name
-
-        :return: The role id  
-        &#34;&#34;&#34;
-        if role_name is None:
-            return None
-        for item in self._roles:
-            if role_name == item[&#39;name&#39;] or role_name == item[&#39;displayName&#39;]:
-                return item[&#39;_id&#39;]
-        raise PySenseException.PySenseException(&#39;No role with name {} found&#39;.format(role_name))
-            
-    def get_role_name(self, role_id):
-        &#34;&#34;&#34;
-        Get the role name for the given role id  
-
-        :param role_id: The role name
-
-        :return: The role name 
-        &#34;&#34;&#34;
-        
-        for item in self._roles:
-            if role_id == item[&#39;_id&#39;]:
-                return item[&#39;displayName&#39;]
-        raise PySenseException.PySenseException(&#39;No role with id {} found&#39;.format(role_id))
-    
-    def get_user_by_email(self, email):
-        query_params = {&#39;email&#39;: email}
-        resp_json = self.rest_call(&#39;get&#39;, &#39;api/v1/users&#39;, query_params=query_params)
-        if len(resp_json) == 0:
-            raise PySenseException.PySenseException(&#39;No user with email {} found&#39;.format(email))
-        elif len(resp_json) &gt; 1:
-            raise PySenseException.PySenseException(&#39;{} users with email {} found. &#39;.format(len(resp_json), email))
-        else:
-            return PySenseUser.User(self, resp_json[0])
-
-    def get_folder_by_id(self, folder_id):
-        &#34;&#34;&#34;  
-        Get a specific folder by folder id  
-
-        :param folder_id: The folder id of the folder  
-
-        :return: A PySense folder object of the folder or None if not in a folder  
-        &#34;&#34;&#34;
-        if folder_id is None:
-            return None
-        resp_json = self.rest_call(&#39;get&#39;, &#39;api/v1/folders/{}&#39;.format(folder_id))
-        return PySenseFolder.Folder(self, resp_json)
-    
-    def get_group_by_id(self, group_id):
-        &#34;&#34;&#34;
-        Get a group by id
-        
-        :param group_id: The id of the group  
-        
-        :return: The PySense group   
-        &#34;&#34;&#34;
-        
-        resp_json = self.rest_call(&#39;get&#39;, &#39;api/groups/{}&#39;.format(group_id))
-        return PySenseGroup.Group(self, resp_json)
-
 
 def parse_response(response):
     if response.status_code not in [200, 201, 204]:
@@ -279,7 +211,6 @@ def build_query_string(dictionary):
         resp = requests.post(&#39;{}/api/v1/authentication/login&#39;.format(self._host), data=data)
         parse_response(resp)
         self._token = {&#39;authorization&#39;:  &#34;Bearer &#34; + resp.json()[&#39;access_token&#39;]}
-        self._roles = self.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
         
     def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
         &#34;&#34;&#34;
@@ -319,201 +250,10 @@ def build_query_string(dictionary):
             try:
                 return response.json()
             except ValueError as e:
-                return response.content
-            
-    def get_role_id(self, role_name):
-        &#34;&#34;&#34;
-        Get the role id for the given role name  
-
-        :param role_name: The role name
-
-        :return: The role id  
-        &#34;&#34;&#34;
-        if role_name is None:
-            return None
-        for item in self._roles:
-            if role_name == item[&#39;name&#39;] or role_name == item[&#39;displayName&#39;]:
-                return item[&#39;_id&#39;]
-        raise PySenseException.PySenseException(&#39;No role with name {} found&#39;.format(role_name))
-            
-    def get_role_name(self, role_id):
-        &#34;&#34;&#34;
-        Get the role name for the given role id  
-
-        :param role_id: The role name
-
-        :return: The role name 
-        &#34;&#34;&#34;
-        
-        for item in self._roles:
-            if role_id == item[&#39;_id&#39;]:
-                return item[&#39;displayName&#39;]
-        raise PySenseException.PySenseException(&#39;No role with id {} found&#39;.format(role_id))
-    
-    def get_user_by_email(self, email):
-        query_params = {&#39;email&#39;: email}
-        resp_json = self.rest_call(&#39;get&#39;, &#39;api/v1/users&#39;, query_params=query_params)
-        if len(resp_json) == 0:
-            raise PySenseException.PySenseException(&#39;No user with email {} found&#39;.format(email))
-        elif len(resp_json) &gt; 1:
-            raise PySenseException.PySenseException(&#39;{} users with email {} found. &#39;.format(len(resp_json), email))
-        else:
-            return PySenseUser.User(self, resp_json[0])
-
-    def get_folder_by_id(self, folder_id):
-        &#34;&#34;&#34;  
-        Get a specific folder by folder id  
-
-        :param folder_id: The folder id of the folder  
-
-        :return: A PySense folder object of the folder or None if not in a folder  
-        &#34;&#34;&#34;
-        if folder_id is None:
-            return None
-        resp_json = self.rest_call(&#39;get&#39;, &#39;api/v1/folders/{}&#39;.format(folder_id))
-        return PySenseFolder.Folder(self, resp_json)
-    
-    def get_group_by_id(self, group_id):
-        &#34;&#34;&#34;
-        Get a group by id
-        
-        :param group_id: The id of the group  
-        
-        :return: The PySense group   
-        &#34;&#34;&#34;
-        
-        resp_json = self.rest_call(&#39;get&#39;, &#39;api/groups/{}&#39;.format(group_id))
-        return PySenseGroup.Group(self, resp_json)</code></pre>
+                return response.content</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="PySense.PySenseRestConnector.RestConnector.get_folder_by_id"><code class="name flex">
-<span>def <span class="ident">get_folder_by_id</span></span>(<span>self, folder_id)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Get a specific folder by folder id
-</p>
-<p>:param folder_id: The folder id of the folder
-</p>
-<p>:return: A PySense folder object of the folder or None if not in a folder</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_folder_by_id(self, folder_id):
-    &#34;&#34;&#34;  
-    Get a specific folder by folder id  
-
-    :param folder_id: The folder id of the folder  
-
-    :return: A PySense folder object of the folder or None if not in a folder  
-    &#34;&#34;&#34;
-    if folder_id is None:
-        return None
-    resp_json = self.rest_call(&#39;get&#39;, &#39;api/v1/folders/{}&#39;.format(folder_id))
-    return PySenseFolder.Folder(self, resp_json)</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseRestConnector.RestConnector.get_group_by_id"><code class="name flex">
-<span>def <span class="ident">get_group_by_id</span></span>(<span>self, group_id)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Get a group by id</p>
-<p>:param group_id: The id of the group
-</p>
-<p>:return: The PySense group</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_group_by_id(self, group_id):
-    &#34;&#34;&#34;
-    Get a group by id
-    
-    :param group_id: The id of the group  
-    
-    :return: The PySense group   
-    &#34;&#34;&#34;
-    
-    resp_json = self.rest_call(&#39;get&#39;, &#39;api/groups/{}&#39;.format(group_id))
-    return PySenseGroup.Group(self, resp_json)</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseRestConnector.RestConnector.get_role_id"><code class="name flex">
-<span>def <span class="ident">get_role_id</span></span>(<span>self, role_name)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Get the role id for the given role name
-</p>
-<p>:param role_name: The role name</p>
-<p>:return: The role id</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_role_id(self, role_name):
-    &#34;&#34;&#34;
-    Get the role id for the given role name  
-
-    :param role_name: The role name
-
-    :return: The role id  
-    &#34;&#34;&#34;
-    if role_name is None:
-        return None
-    for item in self._roles:
-        if role_name == item[&#39;name&#39;] or role_name == item[&#39;displayName&#39;]:
-            return item[&#39;_id&#39;]
-    raise PySenseException.PySenseException(&#39;No role with name {} found&#39;.format(role_name))</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseRestConnector.RestConnector.get_role_name"><code class="name flex">
-<span>def <span class="ident">get_role_name</span></span>(<span>self, role_id)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Get the role name for the given role id
-</p>
-<p>:param role_id: The role name</p>
-<p>:return: The role name</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_role_name(self, role_id):
-    &#34;&#34;&#34;
-    Get the role name for the given role id  
-
-    :param role_id: The role name
-
-    :return: The role name 
-    &#34;&#34;&#34;
-    
-    for item in self._roles:
-        if role_id == item[&#39;_id&#39;]:
-            return item[&#39;displayName&#39;]
-    raise PySenseException.PySenseException(&#39;No role with id {} found&#39;.format(role_id))</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseRestConnector.RestConnector.get_user_by_email"><code class="name flex">
-<span>def <span class="ident">get_user_by_email</span></span>(<span>self, email)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_user_by_email(self, email):
-    query_params = {&#39;email&#39;: email}
-    resp_json = self.rest_call(&#39;get&#39;, &#39;api/v1/users&#39;, query_params=query_params)
-    if len(resp_json) == 0:
-        raise PySenseException.PySenseException(&#39;No user with email {} found&#39;.format(email))
-    elif len(resp_json) &gt; 1:
-        raise PySenseException.PySenseException(&#39;{} users with email {} found. &#39;.format(len(resp_json), email))
-    else:
-        return PySenseUser.User(self, resp_json[0])</code></pre>
-</details>
-</dd>
 <dt id="PySense.PySenseRestConnector.RestConnector.rest_call"><code class="name flex">
 <span>def <span class="ident">rest_call</span></span>(<span>self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False)</span>
 </code></dt>
@@ -601,12 +341,7 @@ def build_query_string(dictionary):
 <ul>
 <li>
 <h4><code><a title="PySense.PySenseRestConnector.RestConnector" href="#PySense.PySenseRestConnector.RestConnector">RestConnector</a></code></h4>
-<ul class="two-column">
-<li><code><a title="PySense.PySenseRestConnector.RestConnector.get_folder_by_id" href="#PySense.PySenseRestConnector.RestConnector.get_folder_by_id">get_folder_by_id</a></code></li>
-<li><code><a title="PySense.PySenseRestConnector.RestConnector.get_group_by_id" href="#PySense.PySenseRestConnector.RestConnector.get_group_by_id">get_group_by_id</a></code></li>
-<li><code><a title="PySense.PySenseRestConnector.RestConnector.get_role_id" href="#PySense.PySenseRestConnector.RestConnector.get_role_id">get_role_id</a></code></li>
-<li><code><a title="PySense.PySenseRestConnector.RestConnector.get_role_name" href="#PySense.PySenseRestConnector.RestConnector.get_role_name">get_role_name</a></code></li>
-<li><code><a title="PySense.PySenseRestConnector.RestConnector.get_user_by_email" href="#PySense.PySenseRestConnector.RestConnector.get_user_by_email">get_user_by_email</a></code></li>
+<ul class="">
 <li><code><a title="PySense.PySenseRestConnector.RestConnector.rest_call" href="#PySense.PySenseRestConnector.RestConnector.rest_call">rest_call</a></code></li>
 </ul>
 </li>

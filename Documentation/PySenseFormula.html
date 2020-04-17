@@ -26,8 +26,8 @@
 </summary>
 <pre><code class="python">class Formula:
 
-    def __init__(self, connector, formula_json):
-        self._connector = connector
+    def __init__(self, py_client, formula_json):
+        self._py_client = py_client
         self._formula_json = formula_json
         
     def get_oid(self):
@@ -70,7 +70,7 @@
 <dl>
 <dt id="PySense.PySenseFormula.Formula"><code class="flex name class">
 <span>class <span class="ident">Formula</span></span>
-<span>(</span><span>connector, formula_json)</span>
+<span>(</span><span>py_client, formula_json)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -80,8 +80,8 @@
 </summary>
 <pre><code class="python">class Formula:
 
-    def __init__(self, connector, formula_json):
-        self._connector = connector
+    def __init__(self, py_client, formula_json):
+        self._py_client = py_client
         self._formula_json = formula_json
         
     def get_oid(self):

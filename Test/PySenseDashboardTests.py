@@ -14,6 +14,7 @@ class PySenseDashboardTests(unittest.TestCase):
         
     def test_getters(self):
         assert self.dashboard.get_name() is not None
+        assert self.dashboard.get_datasource().get_name() == 'PySense'
 
     def test_get_dashboard_export_png(self):
         path = self.sample_path + '\\' + self.dashboard.get_id() + '.png'
@@ -49,6 +50,7 @@ class PySenseDashboardTests(unittest.TestCase):
     def test_dashboard_shares(self):
         user = self.py_client.get_users(email='testuser@sisense.com')[0]
         group = self.py_client.get_groups(name='PySense')[0]
+        self.dashboard.remove_shares()
         self.dashboard.add_shares(user, 'view', 'false')
         self.dashboard.add_shares(group, 'view', 'false')
         assert len(self.dashboard.get_shares()['sharesTo']) == 3

@@ -1,3 +1,17 @@
+**V 0.2.1 Release Notes**
+- Additions
+    - Get a dashboards data source
+
+- Breaking changes
+    - Get dashboards parameter parent_folder_name now parent_folder and accepts the PySense folder object. 
+
+- Fixes
+    - Delete users documentation now matches function. 
+    - Some snippets updated with minor improvements.
+	
+- Known Issues
+    - Dashboard and widget export to pdf and png may cause Sisense to throw internal server errors.
+    
 **V 0.2.0 Release Notes**
 - Additions
 	- Pass a debug flag to PySense to enable logging all rest calls

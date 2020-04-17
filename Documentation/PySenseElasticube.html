@@ -36,9 +36,9 @@ from PySense import PySenseFormula
 
 class Elasticube:
 
-    def __init__(self, connector, cube_json):
+    def __init__(self, py_client, cube_json):
         self._cube_json = cube_json
-        self._connector = connector
+        self._py_client = py_client
         metadata = self.get_metadata() 
         if metadata is None:
             print(&#39;No meta data for cube {}&#39;.format(self.get_name()))
@@ -52,15 +52,16 @@ class Elasticube:
         &#34;&#34;&#34;
         query_params = {&#39;cachebuster&#39;: random.randrange(1000000000000, 9999999999999)}
         if path:
-            resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
-                                                     .format(self.get_elasticube_oid()), 
-                                                     query_params=query_params, raw=True)
+            resp_content = self._py_client.connector.rest_call(
+                &#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;.format(self.get_elasticube_oid()), 
+                query_params=query_params, raw=True)
+            
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
             return path
         else:
-            return self._connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
-                                             .format(self.get_elasticube_oid()), query_params=query_params)
+            return self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
+                                                       .format(self.get_elasticube_oid()), query_params=query_params)
         
     def get_name(self, url_encoded=False):
         &#34;&#34;&#34;
@@ -110,8 +111,8 @@ class Elasticube:
             &#39;includeMetadata&#39;: include_metadata,
             &#39;isMaskedResponse&#39;: is_masked_response
         }
-        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/datasources/{}/{}/sql&#39;
-                                                 .format(server_address, self.get_name(url_encoded=True)), 
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/datasources/{}/{}/sql&#39;
+                                                 .format(server_address, self.get_name(url_encoded=True)),
                                                  query_params=query_params, raw=True)
         output = resp_content.decode(&#39;utf-8-sig&#39;).splitlines()
         if path is not None:
@@ -169,11 +170,11 @@ class Elasticube:
             member_arr.append(str(member))
         rule_json[0][&#39;members&#39;] = member_arr
 
-        resp_json = self._connector.rest_call(&#39;post&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
-                                              .format(server_address, self.get_name(url_encoded=True)), 
-                                              json_payload=rule_json)
+        resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
+                                                        .format(server_address, self.get_name(url_encoded=True)),
+                                                        json_payload=rule_json)
 
-        return PySenseRule.Rule(self._connector, resp_json[0])
+        return PySenseRule.Rule(self._py_client, resp_json[0])
 
     def add_default_rule(self, table_name, column_name, data_type, *, members=[], server_address=None):
         &#34;&#34;&#34;  
@@ -215,11 +216,11 @@ class Elasticube:
         
         server_address = server_address if server_address else self._server_address
         
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
-                                              .format(server_address, self.get_name(url_encoded=True)))
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
+                                                        .format(server_address, self.get_name(url_encoded=True)))
         ret_arr = []
         for rule in resp_json:
-            ret_arr.append(PySenseRule.Rule(self._connector, rule))
+            ret_arr.append(PySenseRule.Rule(self._py_client, rule))
         return ret_arr
 
     def get_datasecurity_by_table_column(self, table, column, *, server_address=None):
@@ -241,11 +242,12 @@ class Elasticube:
         
         table = urllib.parse.quote(table)
         column = urllib.parse.quote(column)
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity/{}/{}&#39;
-                                              .format(server_address, self.get_name(url_encoded=True), table, column))
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity/{}/{}&#39;
+                                                        .format(server_address, self.get_name(url_encoded=True), 
+                                                                table, column))
         ret_arr = []
         for rule in resp_json:
-            ret_arr.append(PySenseRule.Rule(self._connector, rule))
+            ret_arr.append(PySenseRule.Rule(self._py_client, rule))
         return ret_arr
 
     def get_security_for_user(self, user, *, server_address=None):
@@ -267,11 +269,11 @@ class Elasticube:
             user_id = user.get_id()
         else:
             user_id = urllib.parse.quote(user)
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/{}/datasecurity&#39;
-                                              .format(server_address, self.get_name(url_encoded=True), user_id))
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/{}/datasecurity&#39;
+                                                        .format(server_address, self.get_name(url_encoded=True), user_id))
         ret_arr = []
         for rule in resp_json:
-            ret_arr.append(PySenseRule.Rule(self._connector, rule))
+            ret_arr.append(PySenseRule.Rule(self._py_client, rule))
         return ret_arr
         
     def delete_rule(self, table, column, *, server_address=None):
@@ -294,9 +296,9 @@ class Elasticube:
             &#39;table&#39;: table,
             &#39;column&#39;: column
         }
-        self._connector.rest_call(&#39;delete&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
-                                  .format(server_address, self.get_name(url_encoded=True)), 
-                                  query_params=query_params)
+        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
+                                            .format(server_address, self.get_name(url_encoded=True)),
+                                            query_params=query_params)
 
     def get_elasticube_oid(self):
         &#34;&#34;&#34;  
@@ -323,10 +325,10 @@ class Elasticube:
             &#39;datasource&#39;: self.get_name(url_encoded=True),
             &#39;server&#39;: server_address
         }
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/metadata/measures&#39;, query_params=query_params)
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/metadata/measures&#39;, query_params=query_params)
         ret_arr = []
         for formula in resp_json:
-            ret_arr.append(PySenseFormula.Formula(self._connector, formula))
+            ret_arr.append(PySenseFormula.Formula(self._py_client, formula))
         
         return ret_arr
 
@@ -338,7 +340,7 @@ class Elasticube:
         &#34;&#34;&#34;
         
         for formula in PySenseUtils.make_iterable(formulas):
-            self._connector.rest_call(&#39;delete&#39;, &#39;api/metadata/{}&#39;.format(formula.get_oid()))
+            self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/metadata/{}&#39;.format(formula.get_oid()))
     
     def get_metadata(self):
         &#34;&#34;&#34;
@@ -347,7 +349,7 @@ class Elasticube:
         :return: A json obj of ElastiCube metadata   
         &#34;&#34;&#34;
         
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/metadata/{}&#39;
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/metadata/{}&#39;
                                               .format(self.get_name(url_encoded=True)))
         if resp_json is None:
             # If we don&#39;t get a response, it means the cube was never built so we return defaults
@@ -373,7 +375,7 @@ class Elasticube:
             formula_json = formula.get_json()
             for element in elements_to_remove:
                 formula_json.pop(element, None) 
-            self._connector.rest_call(&#39;post&#39;, &#39;api/metadata&#39;, json_payload=formula_json)</code></pre>
+            self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/metadata&#39;, json_payload=formula_json)</code></pre>
 </details>
 </section>
 <section>
@@ -387,7 +389,7 @@ class Elasticube:
 <dl>
 <dt id="PySense.PySenseElasticube.Elasticube"><code class="flex name class">
 <span>class <span class="ident">Elasticube</span></span>
-<span>(</span><span>connector, cube_json)</span>
+<span>(</span><span>py_client, cube_json)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -397,9 +399,9 @@ class Elasticube:
 </summary>
 <pre><code class="python">class Elasticube:
 
-    def __init__(self, connector, cube_json):
+    def __init__(self, py_client, cube_json):
         self._cube_json = cube_json
-        self._connector = connector
+        self._py_client = py_client
         metadata = self.get_metadata() 
         if metadata is None:
             print(&#39;No meta data for cube {}&#39;.format(self.get_name()))
@@ -413,15 +415,16 @@ class Elasticube:
         &#34;&#34;&#34;
         query_params = {&#39;cachebuster&#39;: random.randrange(1000000000000, 9999999999999)}
         if path:
-            resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
-                                                     .format(self.get_elasticube_oid()), 
-                                                     query_params=query_params, raw=True)
+            resp_content = self._py_client.connector.rest_call(
+                &#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;.format(self.get_elasticube_oid()), 
+                query_params=query_params, raw=True)
+            
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
             return path
         else:
-            return self._connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
-                                             .format(self.get_elasticube_oid()), query_params=query_params)
+            return self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
+                                                       .format(self.get_elasticube_oid()), query_params=query_params)
         
     def get_name(self, url_encoded=False):
         &#34;&#34;&#34;
@@ -471,8 +474,8 @@ class Elasticube:
             &#39;includeMetadata&#39;: include_metadata,
             &#39;isMaskedResponse&#39;: is_masked_response
         }
-        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/datasources/{}/{}/sql&#39;
-                                                 .format(server_address, self.get_name(url_encoded=True)), 
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/datasources/{}/{}/sql&#39;
+                                                 .format(server_address, self.get_name(url_encoded=True)),
                                                  query_params=query_params, raw=True)
         output = resp_content.decode(&#39;utf-8-sig&#39;).splitlines()
         if path is not None:
@@ -530,11 +533,11 @@ class Elasticube:
             member_arr.append(str(member))
         rule_json[0][&#39;members&#39;] = member_arr
 
-        resp_json = self._connector.rest_call(&#39;post&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
-                                              .format(server_address, self.get_name(url_encoded=True)), 
-                                              json_payload=rule_json)
+        resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
+                                                        .format(server_address, self.get_name(url_encoded=True)),
+                                                        json_payload=rule_json)
 
-        return PySenseRule.Rule(self._connector, resp_json[0])
+        return PySenseRule.Rule(self._py_client, resp_json[0])
 
     def add_default_rule(self, table_name, column_name, data_type, *, members=[], server_address=None):
         &#34;&#34;&#34;  
@@ -576,11 +579,11 @@ class Elasticube:
         
         server_address = server_address if server_address else self._server_address
         
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
-                                              .format(server_address, self.get_name(url_encoded=True)))
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
+                                                        .format(server_address, self.get_name(url_encoded=True)))
         ret_arr = []
         for rule in resp_json:
-            ret_arr.append(PySenseRule.Rule(self._connector, rule))
+            ret_arr.append(PySenseRule.Rule(self._py_client, rule))
         return ret_arr
 
     def get_datasecurity_by_table_column(self, table, column, *, server_address=None):
@@ -602,11 +605,12 @@ class Elasticube:
         
         table = urllib.parse.quote(table)
         column = urllib.parse.quote(column)
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity/{}/{}&#39;
-                                              .format(server_address, self.get_name(url_encoded=True), table, column))
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity/{}/{}&#39;
+                                                        .format(server_address, self.get_name(url_encoded=True), 
+                                                                table, column))
         ret_arr = []
         for rule in resp_json:
-            ret_arr.append(PySenseRule.Rule(self._connector, rule))
+            ret_arr.append(PySenseRule.Rule(self._py_client, rule))
         return ret_arr
 
     def get_security_for_user(self, user, *, server_address=None):
@@ -628,11 +632,11 @@ class Elasticube:
             user_id = user.get_id()
         else:
             user_id = urllib.parse.quote(user)
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/{}/datasecurity&#39;
-                                              .format(server_address, self.get_name(url_encoded=True), user_id))
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/{}/datasecurity&#39;
+                                                        .format(server_address, self.get_name(url_encoded=True), user_id))
         ret_arr = []
         for rule in resp_json:
-            ret_arr.append(PySenseRule.Rule(self._connector, rule))
+            ret_arr.append(PySenseRule.Rule(self._py_client, rule))
         return ret_arr
         
     def delete_rule(self, table, column, *, server_address=None):
@@ -655,9 +659,9 @@ class Elasticube:
             &#39;table&#39;: table,
             &#39;column&#39;: column
         }
-        self._connector.rest_call(&#39;delete&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
-                                  .format(server_address, self.get_name(url_encoded=True)), 
-                                  query_params=query_params)
+        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
+                                            .format(server_address, self.get_name(url_encoded=True)),
+                                            query_params=query_params)
 
     def get_elasticube_oid(self):
         &#34;&#34;&#34;  
@@ -684,10 +688,10 @@ class Elasticube:
             &#39;datasource&#39;: self.get_name(url_encoded=True),
             &#39;server&#39;: server_address
         }
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/metadata/measures&#39;, query_params=query_params)
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/metadata/measures&#39;, query_params=query_params)
         ret_arr = []
         for formula in resp_json:
-            ret_arr.append(PySenseFormula.Formula(self._connector, formula))
+            ret_arr.append(PySenseFormula.Formula(self._py_client, formula))
         
         return ret_arr
 
@@ -699,7 +703,7 @@ class Elasticube:
         &#34;&#34;&#34;
         
         for formula in PySenseUtils.make_iterable(formulas):
-            self._connector.rest_call(&#39;delete&#39;, &#39;api/metadata/{}&#39;.format(formula.get_oid()))
+            self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/metadata/{}&#39;.format(formula.get_oid()))
     
     def get_metadata(self):
         &#34;&#34;&#34;
@@ -708,7 +712,7 @@ class Elasticube:
         :return: A json obj of ElastiCube metadata   
         &#34;&#34;&#34;
         
-        resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/metadata/{}&#39;
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/metadata/{}&#39;
                                               .format(self.get_name(url_encoded=True)))
         if resp_json is None:
             # If we don&#39;t get a response, it means the cube was never built so we return defaults
@@ -734,7 +738,7 @@ class Elasticube:
             formula_json = formula.get_json()
             for element in elements_to_remove:
                 formula_json.pop(element, None) 
-            self._connector.rest_call(&#39;post&#39;, &#39;api/metadata&#39;, json_payload=formula_json)</code></pre>
+            self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/metadata&#39;, json_payload=formula_json)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -810,7 +814,7 @@ Use 'Set' for Elasticube Set. Required for elasticube sets. <br>
         formula_json = formula.get_json()
         for element in elements_to_remove:
             formula_json.pop(element, None) 
-        self._connector.rest_call(&#39;post&#39;, &#39;api/metadata&#39;, json_payload=formula_json)</code></pre>
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/metadata&#39;, json_payload=formula_json)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseElasticube.Elasticube.add_security_rule"><code class="name flex">
@@ -886,11 +890,11 @@ Use 'Set' for Elasticube Set. Required for elasticube sets. <br>
         member_arr.append(str(member))
     rule_json[0][&#39;members&#39;] = member_arr
 
-    resp_json = self._connector.rest_call(&#39;post&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
-                                          .format(server_address, self.get_name(url_encoded=True)), 
-                                          json_payload=rule_json)
+    resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
+                                                    .format(server_address, self.get_name(url_encoded=True)),
+                                                    json_payload=rule_json)
 
-    return PySenseRule.Rule(self._connector, resp_json[0])</code></pre>
+    return PySenseRule.Rule(self._py_client, resp_json[0])</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseElasticube.Elasticube.delete_formulas"><code class="name flex">
@@ -912,7 +916,7 @@ Use 'Set' for Elasticube Set. Required for elasticube sets. <br>
     &#34;&#34;&#34;
     
     for formula in PySenseUtils.make_iterable(formulas):
-        self._connector.rest_call(&#39;delete&#39;, &#39;api/metadata/{}&#39;.format(formula.get_oid()))</code></pre>
+        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/metadata/{}&#39;.format(formula.get_oid()))</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseElasticube.Elasticube.delete_rule"><code class="name flex">
@@ -952,9 +956,9 @@ Use 'Set' for Elasticube Set. Required for elasticube sets.</p></section>
         &#39;table&#39;: table,
         &#39;column&#39;: column
     }
-    self._connector.rest_call(&#39;delete&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
-                              .format(server_address, self.get_name(url_encoded=True)), 
-                              query_params=query_params)</code></pre>
+    self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
+                                        .format(server_address, self.get_name(url_encoded=True)),
+                                        query_params=query_params)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseElasticube.Elasticube.get_datasecurity"><code class="name flex">
@@ -987,11 +991,11 @@ Use 'Set' for Elasticube Set. Required for elasticube sets.
     
     server_address = server_address if server_address else self._server_address
     
-    resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
-                                          .format(server_address, self.get_name(url_encoded=True)))
+    resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
+                                                    .format(server_address, self.get_name(url_encoded=True)))
     ret_arr = []
     for rule in resp_json:
-        ret_arr.append(PySenseRule.Rule(self._connector, rule))
+        ret_arr.append(PySenseRule.Rule(self._py_client, rule))
     return ret_arr</code></pre>
 </details>
 </dd>
@@ -1033,11 +1037,12 @@ Use 'Set' for Elasticube Set. Required for elasticube sets.
     
     table = urllib.parse.quote(table)
     column = urllib.parse.quote(column)
-    resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity/{}/{}&#39;
-                                          .format(server_address, self.get_name(url_encoded=True), table, column))
+    resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity/{}/{}&#39;
+                                                    .format(server_address, self.get_name(url_encoded=True), 
+                                                            table, column))
     ret_arr = []
     for rule in resp_json:
-        ret_arr.append(PySenseRule.Rule(self._connector, rule))
+        ret_arr.append(PySenseRule.Rule(self._py_client, rule))
     return ret_arr</code></pre>
 </details>
 </dd>
@@ -1080,7 +1085,7 @@ Use 'Set' for Elasticube Set. Required for elasticube sets.
     :return: A json obj of ElastiCube metadata   
     &#34;&#34;&#34;
     
-    resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/metadata/{}&#39;
+    resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/metadata/{}&#39;
                                           .format(self.get_name(url_encoded=True)))
     if resp_json is None:
         # If we don&#39;t get a response, it means the cube was never built so we return defaults
@@ -1113,15 +1118,16 @@ Use 'Set' for Elasticube Set. Required for elasticube sets.
     &#34;&#34;&#34;
     query_params = {&#39;cachebuster&#39;: random.randrange(1000000000000, 9999999999999)}
     if path:
-        resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
-                                                 .format(self.get_elasticube_oid()), 
-                                                 query_params=query_params, raw=True)
+        resp_content = self._py_client.connector.rest_call(
+            &#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;.format(self.get_elasticube_oid()), 
+            query_params=query_params, raw=True)
+        
         with open(path, &#39;wb&#39;) as out_file:
             out_file.write(resp_content)
         return path
     else:
-        return self._connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
-                                         .format(self.get_elasticube_oid()), query_params=query_params)</code></pre>
+        return self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
+                                                   .format(self.get_elasticube_oid()), query_params=query_params)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseElasticube.Elasticube.get_name"><code class="name flex">
@@ -1184,10 +1190,10 @@ Set this to your server ip if this method fails without it set.
         &#39;datasource&#39;: self.get_name(url_encoded=True),
         &#39;server&#39;: server_address
     }
-    resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/metadata/measures&#39;, query_params=query_params)
+    resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/metadata/measures&#39;, query_params=query_params)
     ret_arr = []
     for formula in resp_json:
-        ret_arr.append(PySenseFormula.Formula(self._connector, formula))
+        ret_arr.append(PySenseFormula.Formula(self._py_client, formula))
     
     return ret_arr</code></pre>
 </details>
@@ -1227,11 +1233,11 @@ Set this to your server ip if this method fails without it set.
         user_id = user.get_id()
     else:
         user_id = urllib.parse.quote(user)
-    resp_json = self._connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/{}/datasecurity&#39;
-                                          .format(server_address, self.get_name(url_encoded=True), user_id))
+    resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/{}/datasecurity&#39;
+                                                    .format(server_address, self.get_name(url_encoded=True), user_id))
     ret_arr = []
     for rule in resp_json:
-        ret_arr.append(PySenseRule.Rule(self._connector, rule))
+        ret_arr.append(PySenseRule.Rule(self._py_client, rule))
     return ret_arr</code></pre>
 </details>
 </dd>
@@ -1292,8 +1298,8 @@ For example, to return results from value #101 onward, enter a value of â€˜100â€
         &#39;includeMetadata&#39;: include_metadata,
         &#39;isMaskedResponse&#39;: is_masked_response
     }
-    resp_content = self._connector.rest_call(&#39;get&#39;, &#39;api/datasources/{}/{}/sql&#39;
-                                             .format(server_address, self.get_name(url_encoded=True)), 
+    resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/datasources/{}/{}/sql&#39;
+                                             .format(server_address, self.get_name(url_encoded=True)),
                                              query_params=query_params, raw=True)
     output = resp_content.decode(&#39;utf-8-sig&#39;).splitlines()
     if path is not None:

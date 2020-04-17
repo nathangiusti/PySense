@@ -2,9 +2,6 @@ import requests
 import urllib.parse
 
 from PySense import PySenseException
-from PySense import PySenseFolder
-from PySense import PySenseGroup
-from PySense import PySenseUser
 
 
 class RestConnector:
@@ -16,7 +13,6 @@ class RestConnector:
         resp = requests.post('{}/api/v1/authentication/login'.format(self._host), data=data)
         parse_response(resp)
         self._token = {'authorization':  "Bearer " + resp.json()['access_token']}
-        self._roles = self.rest_call('get', 'api/roles')
         
     def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
         """
@@ -58,70 +54,6 @@ class RestConnector:
             except ValueError as e:
                 return response.content
             
-    def get_role_id(self, role_name):
-        """
-        Get the role id for the given role name  
-
-        :param role_name: The role name
-
-        :return: The role id  
-        """
-        if role_name is None:
-            return None
-        for item in self._roles:
-            if role_name == item['name'] or role_name == item['displayName']:
-                return item['_id']
-        raise PySenseException.PySenseException('No role with name {} found'.format(role_name))
-            
-    def get_role_name(self, role_id):
-        """
-        Get the role name for the given role id  
-
-        :param role_id: The role name
-
-        :return: The role name 
-        """
-        
-        for item in self._roles:
-            if role_id == item['_id']:
-                return item['displayName']
-        raise PySenseException.PySenseException('No role with id {} found'.format(role_id))
-    
-    def get_user_by_email(self, email):
-        query_params = {'email': email}
-        resp_json = self.rest_call('get', 'api/v1/users', query_params=query_params)
-        if len(resp_json) == 0:
-            raise PySenseException.PySenseException('No user with email {} found'.format(email))
-        elif len(resp_json) > 1:
-            raise PySenseException.PySenseException('{} users with email {} found. '.format(len(resp_json), email))
-        else:
-            return PySenseUser.User(self, resp_json[0])
-
-    def get_folder_by_id(self, folder_id):
-        """  
-        Get a specific folder by folder id  
-
-        :param folder_id: The folder id of the folder  
-
-        :return: A PySense folder object of the folder or None if not in a folder  
-        """
-        if folder_id is None:
-            return None
-        resp_json = self.rest_call('get', 'api/v1/folders/{}'.format(folder_id))
-        return PySenseFolder.Folder(self, resp_json)
-    
-    def get_group_by_id(self, group_id):
-        """
-        Get a group by id
-        
-        :param group_id: The id of the group  
-        
-        :return: The PySense group   
-        """
-        
-        resp_json = self.rest_call('get', 'api/groups/{}'.format(group_id))
-        return PySenseGroup.Group(self, resp_json)
-
 
 def parse_response(response):
     if response.status_code not in [200, 201, 204]:

@@ -26,8 +26,8 @@
 </summary>
 <pre><code class="python">class Folder:
 
-    def __init__(self, connector, folder_json):
-        self._connector = connector
+    def __init__(self, py_client, folder_json):
+        self._py_client = py_client
         self._folder_json = folder_json
 
     def get_id(self):
@@ -60,7 +60,7 @@
 <dl>
 <dt id="PySense.PySenseFolder.Folder"><code class="flex name class">
 <span>class <span class="ident">Folder</span></span>
-<span>(</span><span>connector, folder_json)</span>
+<span>(</span><span>py_client, folder_json)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -70,8 +70,8 @@
 </summary>
 <pre><code class="python">class Folder:
 
-    def __init__(self, connector, folder_json):
-        self._connector = connector
+    def __init__(self, py_client, folder_json):
+        self._py_client = py_client
         self._folder_json = folder_json
 
     def get_id(self):

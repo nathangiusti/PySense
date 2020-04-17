@@ -4,8 +4,8 @@ from PySense import PySenseUtils
 
 
 class Rule:
-    def __init__(self, connector, rule_json):
-        self._connector = connector
+    def __init__(self, py_client, rule_json):
+        self._py_client = py_client
         self._reset(rule_json)
 
     def _reset(self, rule_json):
@@ -121,6 +121,6 @@ class Rule:
         else:
             rule_json['members'] = self.get_members()
         
-        resp_json = self._connector.rest_call('put', 'api/elasticubes/datasecurity/{}'.format(self.get_id()),
-                                              json_payload=rule_json)
+        resp_json = self._py_client.connector.rest_call('put', 'api/elasticubes/datasecurity/{}'.format(self.get_id()),
+                                                        json_payload=rule_json)
         self._reset(resp_json)

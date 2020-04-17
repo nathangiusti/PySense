@@ -15,17 +15,20 @@ class PySenseElasticubeTests(unittest.TestCase):
         assert model is not None
 
     def test_get_add_modify_delete_security_rule(self):
-        user = self.py_client.get_users(email='nathan.giusti@sisense.com')[0]
-        group = self.py_client.get_groups(name='PySense')[0]
         default_rule = self.elasticube.add_default_rule('Dim_Dates', 'BusinessDay', 'numeric')
         assert default_rule is not None
-        rule = self.elasticube.add_security_rule([user, group], 'Dim_Dates', 'BusinessDay', 'numeric', members=[1],
-                                                 exclusionary=True, all_members=False)
-        assert len(self.elasticube.get_security_for_user(user)) == 2
+        
+        users = self.py_client.get_users(email='nathan.giusti@sisense.com')
+        groups = self.py_client.get_groups(name='PySense')
+        shares = users.append(groups)
+        rule = self.elasticube.add_security_rule(shares, 'Dim_Dates', 'BusinessDay', 'numeric', members=[1],
+                                                 exclusionary=True)
+        
+        assert len(self.elasticube.get_security_for_user(users[0])) == 2
         assert len(self.elasticube.get_datasecurity()) == 2
         assert len(self.elasticube.
                    get_datasecurity_by_table_column('Dim_Dates', 'BusinessDay')) == 2
-        rule.update_rule(shares=[user, group], table='Dim_Dates', column='BusinessDay', 
+        rule.update_rule(shares=shares, table='Dim_Dates', column='BusinessDay', 
                          data_type='numeric', members=[0])
         assert rule.get_members()[0] == '0'
         self.elasticube.delete_rule('Dim_Dates', 'BusinessDay')

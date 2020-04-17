@@ -17,8 +17,11 @@ dashboard.get_name()
 # Get dashboard id
 dashboard.get_id()
 
-# Add a dashboard to a folder. 
+# Get dashboards from a folder
 my_folder = py_client.get_folders(name='MyFolder')[0]
+py_client.get_dashboards(parent_folder=my_folder)
+
+# Add a dashboard to a folder. 
 dashboard.move_to_folder(my_folder)
 
 # Remove a dashboard from a folder
@@ -26,6 +29,9 @@ dashboard.move_to_folder()
 
 # Share dashboard to user (email, permission, whether to subscribe to reports)
 dashboard.add_shares('user@email.com', 'View', True)
+
+# Get dashboard data source
+ecube = dashboard.get_datasource()
 
 # Unshare dashboard to user
 dashboard.remove_shares('user@email.com')

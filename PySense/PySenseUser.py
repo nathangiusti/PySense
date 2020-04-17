@@ -3,9 +3,9 @@ from PySense import PySenseUtils
 
 class User:
 
-    def __init__(self, connector, user_json):
+    def __init__(self, py_client, user_json):
         self._user_json = user_json
-        self._connector = connector
+        self._py_client = py_client
 
     def _reset(self, user_json):
         self._user_json = user_json
@@ -27,7 +27,7 @@ class User:
         """
         ret_arr = []
         for group in self._user_json['groups']:
-            ret_arr.append(self._connector.get_group_by_id(group))
+            ret_arr.append(self._py_client.get_group_by_id(group))
         return ret_arr
 
     def get_email(self):
@@ -73,7 +73,7 @@ class User:
         :return: The user's role  
         """
         
-        return self._connector.get_role_name(self._user_json['roleId'])
+        return self._py_client.get_role_name(self._user_json['roleId'])
 
     def _get_role_id(self):
         return self._user_json['roleId']
@@ -112,9 +112,9 @@ class User:
                 'userName': user_name if user_name else self.get_user_name(),
                 'firstName': first_name if first_name else self.get_first_name(),
                 'lastName': last_name if last_name else self.get_last_name(),
-                'roleId': self._connector.get_role_id(role_name) if role_name else self._get_role_id(),
+                'roleId': self._py_client.get_role_id(role_name) if role_name else self._get_role_id(),
                 'groups': group_arr,
                 'preferences': preferences if preferences else self.get_preferences()
             }
-        resp_json = self._connector.rest_call('patch', 'api/v1/users/{}'.format(self.get_id()), json_payload=user_json)
+        resp_json = self._py_client.connector.rest_call('patch', 'api/v1/users/{}'.format(self.get_id()), json_payload=user_json)
         self._reset(resp_json)

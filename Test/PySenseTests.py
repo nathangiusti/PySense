@@ -13,12 +13,12 @@ class PySenseTests(unittest.TestCase):
         cls.group_names = ["TempGroup", "TempGroup2"]
 
     def test_get_dashboards(self):
-        ret = self.py_client.get_dashboards(parent_folder_name='PySense')
+        ret = self.py_client.get_dashboards(name='PySense')
         assert len(ret) == 1
         assert ret[0].get_name() == 'PySense'
 
     def test_get_dashboards_id(self):
-        ret = self.py_client.get_dashboards(parent_folder_name='PySense')
+        ret = self.py_client.get_dashboards(name='PySense')
         dashboard_id = ret[0].get_id()
         assert dashboard_id == self.py_client.get_dashboard_by_id(dashboard_id).get_id()
 
@@ -37,7 +37,7 @@ class PySenseTests(unittest.TestCase):
     def test_get_folder_by_name_by_id(self):
         folder = self.py_client.get_folders(name='PySense')[0]
         assert folder.get_name() == 'PySense'
-        folder2 = self.py_client.connector.get_folder_by_id(folder.get_id())
+        folder2 = self.py_client.get_folder_by_id(folder.get_id())
         assert folder.get_id() == folder2.get_id()
 
     def test_post_update_delete_user(self):

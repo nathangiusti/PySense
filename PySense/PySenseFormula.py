@@ -1,7 +1,7 @@
 class Formula:
 
-    def __init__(self, connector, formula_json):
-        self._connector = connector
+    def __init__(self, py_client, formula_json):
+        self._py_client = py_client
         self._formula_json = formula_json
         
     def get_oid(self):

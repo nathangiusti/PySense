@@ -1,7 +1,7 @@
 class Widget:
 
-    def __init__(self, connector, widget_json):
-        self._connector = connector
+    def __init__(self, py_client, widget_json):
+        self._py_client = py_client
         self._widget_json = widget_json
 
     def get_widget_json(self):
@@ -43,8 +43,8 @@ class Widget:
         :return: The path of the saved file if set, else the raw content  
         """
         query_params = {'width': width, 'height': height}
-        resp_content = self._connector.rest_call('get', 'api/v1/dashboards/{}/widgets/{}/export/png'
-                                                 .format(self.get_dashboard_id(), self.get_id()), 
+        resp_content = self._py_client.connector.rest_call('get', 'api/v1/dashboards/{}/widgets/{}/export/png'
+                                                 .format(self.get_dashboard_id(), self.get_id()),
                                                  query_params=query_params, raw=True)
         if path is not None:
             with open(path, 'wb') as out_file:

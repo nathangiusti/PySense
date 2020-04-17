@@ -9,7 +9,7 @@ class PySenseRuleTests(unittest.TestCase):
     def setUpClass(cls):
         cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
         cls.elasticube = cls.py_client.get_elasticube_by_name('PySense')
-        cls.user = cls.py_client.connector.get_user_by_email('testuser@sisense.com')
+        cls.user = cls.py_client.get_user_by_email('testuser@sisense.com')
         cls.rule = cls.elasticube.add_security_rule(cls.user, 'Dim_Dates', 'BusinessValue', 'numeric', members=[1])
         
     def test_getters(self):
