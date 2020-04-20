@@ -5,19 +5,9 @@ class Folder:
         self._folder_json = folder_json
 
     def get_id(self):
-        """
-        Returns the folder's id  
-          
-        :return: The folder's id  
-        """
-        
+        """Returns the folder's id."""
         return self._folder_json['oid']
 
     def get_name(self):
-        """
-        Returns the folder's name  
-        
-        :return: The folder's name  
-        """
-        
+        """Returns the folder's name"""
         return self._folder_json['name']

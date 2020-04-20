@@ -25,14 +25,21 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from collections.abc import Iterable
+from datetime import datetime
 
 
 def make_iterable(obj):
+    &#34;&#34;&#34;Makes object iterable&#34;&#34;&#34;
     if obj is None: 
         return []
     if not isinstance(obj, Iterable):
         return [obj]
-    return obj</code></pre>
+    return obj
+
+
+def sisense_time_to_python(datetime_str):
+    &#34;&#34;&#34;Converts a Sisense date time to a python date time.&#34;&#34;&#34;
+    return datetime.strptime(datetime_str[: -5], &#39;%Y-%m-%dT%H:%M:%S&#39;)</code></pre>
 </details>
 </section>
 <section>
@@ -46,17 +53,32 @@ def make_iterable(obj):
 <span>def <span class="ident">make_iterable</span></span>(<span>obj)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Makes object iterable</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_iterable(obj):
+    &#34;&#34;&#34;Makes object iterable&#34;&#34;&#34;
     if obj is None: 
         return []
     if not isinstance(obj, Iterable):
         return [obj]
     return obj</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseUtils.sisense_time_to_python"><code class="name flex">
+<span>def <span class="ident">sisense_time_to_python</span></span>(<span>datetime_str)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Converts a Sisense date time to a python date time.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sisense_time_to_python(datetime_str):
+    &#34;&#34;&#34;Converts a Sisense date time to a python date time.&#34;&#34;&#34;
+    return datetime.strptime(datetime_str[: -5], &#39;%Y-%m-%dT%H:%M:%S&#39;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -78,6 +100,7 @@ def make_iterable(obj):
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="PySense.PySenseUtils.make_iterable" href="#PySense.PySenseUtils.make_iterable">make_iterable</a></code></li>
+<li><code><a title="PySense.PySenseUtils.sisense_time_to_python" href="#PySense.PySenseUtils.sisense_time_to_python">sisense_time_to_python</a></code></li>
 </ul>
 </li>
 </ul>

@@ -31,31 +31,22 @@
         self._formula_json = formula_json
         
     def get_oid(self):
-        &#34;&#34;&#34;
-        Get&#39;s the formula&#39;s Oid
-        
-        :return: The formula&#39;s oid 
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Get&#39;s the formula&#39;s Oid&#34;&#34;&#34;
         
         return self._formula_json[&#39;oid&#39;]
     
     def change_datasource(self, cube):
-        &#34;&#34;&#34;
-        Change the data source of the formula. 
-        The formula must be re-added after a data source change for it to take effect  
+        &#34;&#34;&#34;Change the data source of the formula.  
+           
+        The formula must be re-added after a data source change for it to take effect    
         
-        :param cube: The ElastiCube to set the formula to 
+        Args:
+             - cube: The ElastiCube to set the formula to   
         &#34;&#34;&#34;
-        
         self._formula_json[&#39;datasource&#39;] = cube.get_metadata()
         
     def get_json(self):
-        &#34;&#34;&#34;  
-        Returns the formula json  
-          
-        :return: The forumla json   
-        &#34;&#34;&#34;  
-        
+        &#34;&#34;&#34;Returns the formula json.&#34;&#34;&#34;  
         return self._formula_json</code></pre>
 </details>
 </section>
@@ -85,31 +76,22 @@
         self._formula_json = formula_json
         
     def get_oid(self):
-        &#34;&#34;&#34;
-        Get&#39;s the formula&#39;s Oid
-        
-        :return: The formula&#39;s oid 
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Get&#39;s the formula&#39;s Oid&#34;&#34;&#34;
         
         return self._formula_json[&#39;oid&#39;]
     
     def change_datasource(self, cube):
-        &#34;&#34;&#34;
-        Change the data source of the formula. 
-        The formula must be re-added after a data source change for it to take effect  
+        &#34;&#34;&#34;Change the data source of the formula.  
+           
+        The formula must be re-added after a data source change for it to take effect    
         
-        :param cube: The ElastiCube to set the formula to 
+        Args:
+             - cube: The ElastiCube to set the formula to   
         &#34;&#34;&#34;
-        
         self._formula_json[&#39;datasource&#39;] = cube.get_metadata()
         
     def get_json(self):
-        &#34;&#34;&#34;  
-        Returns the formula json  
-          
-        :return: The forumla json   
-        &#34;&#34;&#34;  
-        
+        &#34;&#34;&#34;Returns the formula json.&#34;&#34;&#34;  
         return self._formula_json</code></pre>
 </details>
 <h3>Methods</h3>
@@ -119,21 +101,25 @@
 </code></dt>
 <dd>
 <section class="desc"><p>Change the data source of the formula.
-The formula must be re-added after a data source change for it to take effect
 </p>
-<p>:param cube: The ElastiCube to set the formula to</p></section>
+<p>The formula must be re-added after a data source change for it to take effect
+</p>
+<h2 id="args">Args</h2>
+<ul>
+<li>cube: The ElastiCube to set the formula to</li>
+</ul></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def change_datasource(self, cube):
-    &#34;&#34;&#34;
-    Change the data source of the formula. 
-    The formula must be re-added after a data source change for it to take effect  
+    &#34;&#34;&#34;Change the data source of the formula.  
+       
+    The formula must be re-added after a data source change for it to take effect    
     
-    :param cube: The ElastiCube to set the formula to 
+    Args:
+         - cube: The ElastiCube to set the formula to   
     &#34;&#34;&#34;
-    
     self._formula_json[&#39;datasource&#39;] = cube.get_metadata()</code></pre>
 </details>
 </dd>
@@ -141,20 +127,13 @@ The formula must be re-added after a data source change for it to take effect
 <span>def <span class="ident">get_json</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the formula json
-</p>
-<p>:return: The forumla json</p></section>
+<section class="desc"><p>Returns the formula json.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_json(self):
-    &#34;&#34;&#34;  
-    Returns the formula json  
-      
-    :return: The forumla json   
-    &#34;&#34;&#34;  
-    
+    &#34;&#34;&#34;Returns the formula json.&#34;&#34;&#34;  
     return self._formula_json</code></pre>
 </details>
 </dd>
@@ -162,18 +141,13 @@ The formula must be re-added after a data source change for it to take effect
 <span>def <span class="ident">get_oid</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get's the formula's Oid</p>
-<p>:return: The formula's oid</p></section>
+<section class="desc"><p>Get's the formula's Oid</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_oid(self):
-    &#34;&#34;&#34;
-    Get&#39;s the formula&#39;s Oid
-    
-    :return: The formula&#39;s oid 
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Get&#39;s the formula&#39;s Oid&#34;&#34;&#34;
     
     return self._formula_json[&#39;oid&#39;]</code></pre>
 </details>

@@ -41,47 +41,26 @@ class Dashboard:
         self._dashboard_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()))
         
     def get_datasource(self):
-        &#34;&#34;&#34;
-        Returns the elasticube powering the dashboard.  
-            This call only returns one cube even if the dashboard has multiple cubes.  
-            
-        :return: The elasticube of the dashboard.  
+        &#34;&#34;&#34;Returns the elasticube powering the dashboard.  
+        
+        Not reliable when multiple elasticubes on dashboard.  
         &#34;&#34;&#34;
         return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])
 
     def get_id(self):
-        &#34;&#34;&#34;
-        Gets the dashboard&#39;s id 
-  
-        :return: The dashboard&#39;s id  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Gets the dashboard&#39;s id&#34;&#34;&#34;   
         return self._dashboard_json[&#39;oid&#39;]
 
     def get_name(self):
-        &#34;&#34;&#34;
-        Gets the dashboard&#39;s title  
-  
-        :return: The dashboards title   
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Gets the dashboard&#39;s title&#34;&#34;&#34;
         return self._dashboard_json[&#39;title&#39;]
 
     def get_dashboard_folder(self):
-        &#34;&#34;&#34;
-        Gets the dashboards folder
-  
-        :return: The folder of the parent folder of the dashboard  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Gets the dashboards folder&#34;&#34;&#34;
         return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
 
     def get_shares(self):
-        &#34;&#34;&#34;
-        Gets the dashboard shares json  
-  
-        :return: The dashboard shares json  
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Gets the dashboard shares json &#34;&#34;&#34;
         resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
         return_json = {&#39;sharesTo&#39;: []}
         for share in resp_json[&#39;sharesTo&#39;]:
@@ -95,48 +74,49 @@ class Dashboard:
                 share_json[&#39;subscribe&#39;] = share[&#39;subscribe&#39;]
             return_json[&#39;sharesTo&#39;].append(share_json)
         return return_json
+    
+    def get_share_users_groups(self):
+        &#34;&#34;&#34;Gets a list of users and groups the dashboard is shared with&#34;&#34;&#34;
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+        ret_arr = []
+        for share in resp_json[&#39;sharesTo&#39;]:
+            if share[&#39;type&#39;] == &#39;user&#39;:
+                ret_arr.append(self._py_client.get_user_by_id(share[&#39;shareId&#39;]))
+            elif share[&#39;type&#39;] == &#39;group&#39;:
+                ret_arr.append(self._py_client.get_group_by_id(share[&#39;shareId&#39;]))
+        return ret_arr
 
-    def move_to_folder(self, folder):
-        &#34;&#34;&#34;
-        Move dashboard to given folder  
-  
-        :param folder: Folder object to move dashboard to, None to remove from folder  
-        &#34;&#34;&#34;
-        if folder:
-            folder_oid = folder.get_id()
-        else:
-            folder_oid = None
-        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
-                                  json_payload={&#39;parentFolder&#39;: folder_oid})
-        self._reset()
-
-    def add_shares(self, share, rule, subscribe):
-        &#34;&#34;&#34;
-        Share a dashboard to a new group or user  
-  
-        :param share: A PySense Group or User
-        :param rule: The permission of the user on the dashboard (view, edit, etc)  
-        :param subscribe: true or false, whether to subscribe the user to reports    
+    def add_share(self, share, rule, subscribe):
+        &#34;&#34;&#34;Share a dashboard to a new group or user.    
+        
+        If dashboard is already shared with user or group, nothing happens  
+        
+        Args:
+            - share: A PySense Group or User  
+            - rule: The permission of the user on the dashboard (view, edit, etc)  
+            - subscribe: true or false, whether to subscribe the user to reports    
         &#34;&#34;&#34;
         curr_shares = self.get_shares()
-        if isinstance(share, PySenseUser.User):
-            curr_shares[&#39;sharesTo&#39;].append(
-                {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
-            )
-        elif isinstance(share, PySenseGroup.Group):
-            curr_shares[&#39;sharesTo&#39;].append(
-                {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
-            )
+        share_id = share.get_id()
+        for curr_share in curr_shares[&#39;sharesTo&#39;]:
+            if &#39;shareId&#39; == curr_share[&#39;shareId&#39;]:
+                share_id = None
         
-        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=curr_shares)
+        if share_id is not None:
+            if isinstance(share, PySenseUser.User):
+                curr_shares[&#39;sharesTo&#39;].append(
+                    {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+                )
+            elif isinstance(share, PySenseGroup.Group):
+                curr_shares[&#39;sharesTo&#39;].append(
+                    {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+                )
+        
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), 
+                                            json_payload=curr_shares)
         
     def remove_shares(self, shares):
-        &#34;&#34;&#34;
-        Unshare a dashboard to a listed groups and users
-  
-        :param shares: One to many groups and users to remove  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Unshare a dashboard to a list of groups and users&#34;&#34;&#34;
         share_ids_to_delete = []
         for shares in PySenseUtils.make_iterable(shares):
             share_ids_to_delete.append(shares.get_id())
@@ -145,21 +125,31 @@ class Dashboard:
             for i, shares in enumerate(current_shares[&#39;sharesTo&#39;]):
                 if shares[&#39;shareId&#39;] == share_id:
                     del current_shares[&#39;sharesTo&#39;][i]
-        
-        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=current_shares)
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), 
+                                            json_payload=current_shares)
 
+    def move_to_folder(self, folder):
+        &#34;&#34;&#34;Move dashboard to given folder&#34;&#34;&#34;
+        if folder:
+            folder_oid = folder.get_id()
+        else:
+            folder_oid = None
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
+                                            json_payload={&#39;parentFolder&#39;: folder_oid})
+        self._reset()
+    
     def export_to_png(self, *, path=None, include_title=None, include_filters=None, include_ds=None, width=None):
-        &#34;&#34;&#34;
-        Get dashboard as png    
-  
+        &#34;&#34;&#34;Get dashboard as png    
+    
         Optional:
-        :param path: Path to save location of png    
-        :param include_title: Should dashboard title be included in the exported file  
-        :param include_filters: Should dashboard filters be included in the exported file  
-        :param include_ds: Should dashboard data source info be included in the exported file  
-        :param width: Render width in pixels  
-          
-        :return: The path of the created file if provided or else the raw response obejct  
+            - path: Path to save location of png    
+            - include_title: Should dashboard title be included in the exported file  
+            - include_filters: Should dashboard filters be included in the exported file  
+            - include_ds: Should dashboard data source info be included in the exported file  
+            - width: Render width in pixels  
+            
+        Returns:
+            The path of the created file if provided or else the raw response object  
         &#34;&#34;&#34;
         
         query_params = {
@@ -168,8 +158,8 @@ class Dashboard:
             &#39;includeDs&#39;: include_ds,
             &#39;width&#39;: width
         }
-        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;.format(self.get_id()),
-                                                 query_params=query_params, raw=True),
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;
+                                                           .format(self.get_id()), query_params=query_params, raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
@@ -182,29 +172,30 @@ class Dashboard:
                       preview=None,
                       row_count=None, show_title=None, show_footer=None, title=None, title_size=None,
                       title_position=None):
-        &#34;&#34;&#34;
-        Get dashboard as pdf  
-  
-        :param paper_format: What paper format should be used while rendering the dashboard.  
-        :param paper_orientation: What paper orientation should be used while rendering the dashboard  
-        :param layout: What layout should be used while rendering the dashboard, as is or feed  
-        
+        &#34;&#34;&#34;Get dashboard as pdf   
+    
+        Args:
+            - paper_format: What paper format should be used while rendering the dashboard.  
+            - paper_orientation: What paper orientation should be used while rendering the dashboard  
+            - layout: What layout should be used while rendering the dashboard, as is or feed  
+          
         Optional:
-        :param path: Path to save location of pdf  
-        :param include_title: Should dashboard title be included in the exported file  
-        :param include_filters: Should dashboard filters be included in the exported file  
-        :param include_ds: Should dashboard datasource info be included in the exported file  
-        :param widget_id: Widget Id (Use only for Table and Pivot Widgets)  
-        :param preview: Should use a new Pixel Perfect Reporting  
-        :param row_count: Count of Table/Pivot rows to export  
-        :param show_title: Should Table/Pivot Widget title be included in the exported file  
-        :param show_footer: Should Table/Pivot Widget footer be included in the exported file  
-        :param title: Table/Pivot Widget title text in the exported file  
-        :param title_size: Table/Pivot widget title size in the exported file  
-        :param title_position: Table/Pivot widget title position in the exported file  
-        :return: The path of the created file if provided, else the raw content
+            - path: Path to save location of pdf  
+            - include_title: Should dashboard title be included in the exported file  
+            - include_filters: Should dashboard filters be included in the exported file  
+            - include_ds: Should dashboard datasource info be included in the exported file  
+            - widget_id: Widget Id (Use only for Table and Pivot Widgets)  
+            - preview: Should use a new Pixel Perfect Reporting  
+            - row_count: Count of Table/Pivot rows to export  
+            - show_title: Should Table/Pivot Widget title be included in the exported file  
+            - show_footer: Should Table/Pivot Widget footer be included in the exported file   
+            - title: Table/Pivot Widget title text in the exported file  
+            - title_size: Table/Pivot widget title size in the exported file  
+            - title_position: Table/Pivot widget title position in the exported file  
+            
+        Returns:
+             The path of the created file if provided, else the raw content  
         &#34;&#34;&#34;
-        
         query_params = {
             &#39;paperFormat&#39;: paper_format,
             &#39;paperOrientation&#39;: paper_orientation,
@@ -232,13 +223,13 @@ class Dashboard:
             return resp_content
 
     def export_to_dash(self, *, path=None):
-        &#34;&#34;&#34;
-        Get dashboard as dash file   
+        &#34;&#34;&#34;Get dashboard as dash file.   
    
-        Optional:  
-        :param path: Path to save location of dash file  
+        Optional:
+            - path: Path to save location of dash file  
         
-        :return: The path of the created file if path provided, else the raw content  
+        Returns:
+            The path of the created file if path provided, else the raw content  
         &#34;&#34;&#34;
         
         resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
@@ -252,21 +243,21 @@ class Dashboard:
 
     def get_widgets(self, *, title=None, type=None, subtype=None,
                     fields=None, sort=None, skip=None, limit=None):
-        &#34;&#34;&#34;
-        Returns an array of a dashboard’s widgets.  
+        &#34;&#34;&#34;Returns an array of a dashboard’s widgets.  
   
         Optional:
-        :param title: Widget title to filter by  
-        :param type: Widget type to filter by  
-        :param subtype: Widget sub-type to filter by  
-        :param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
-            by prefixing field names with -  
-        :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
-        :param skip: Number of results to skip from the start of the data set. skip is to be used with the limit  
-            parameter for paging  
-        :param limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+            - title: Widget title to filter by  
+            - type: Widget type to filter by  
+            - subtype: Widget sub-type to filter by  
+            - fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
+                by prefixing field names with -  
+            - sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+            - skip: Number of results to skip from the start of the data set. skip is to be used with the limit  
+                parameter for paging  
+            - limit: How many results should be returned. limit is to be used with the skip parameter for paging  
           
-        :return: An array of widget objects  
+        Returns:
+            An array of widget objects  
         &#34;&#34;&#34;
         
         query_params = {
@@ -287,16 +278,17 @@ class Dashboard:
         return ret_arr
 
     def get_widget_by_id(self, widget_id, *, fields=None):
-        &#34;&#34;&#34;
-        Returns a specific widget (by ID) from a specific dashboard.  
+        &#34;&#34;&#34;Returns a specific widget (by ID) from a specific dashboard.  
     
-        :param widget_id: The ID of the widget to get   
+        Args:
+            - widget_id: The ID of the widget to get   
            
-        Optional:  
-        :param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
-            by prefixing field names with -  
+        Optional:
+            - fields: Whitelist of fields to return for each document.  
+                Fields Can also define which fields to exclude by prefixing field names with -   
             
-        :return: A widget object  
+        Returns:
+            A widget object   
         &#34;&#34;&#34;
         
         query_params = {
@@ -308,33 +300,28 @@ class Dashboard:
         return PySenseWidget.Widget(self._py_client, resp_json)
 
     def add_widget(self, widget):
-        &#34;&#34;&#34;
-        Adds the provided widget object to the dashboard  
+        &#34;&#34;&#34;Adds the provided widget object to the dashboard.  
 
-        :param widget: widget object to add  
-        
-        :return: The widget added to the dashboard  
+        Args:
+            - widget: widget object to add   
+          
+        Returns:
+            The widget added to the dashboard    
         &#34;&#34;&#34;
         
         resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
                                               json_payload=widget.get_widget_json())
         return PySenseWidget.Widget(self._py_client, resp_json)
 
-    def delete_widget(self, widget_id):
-        &#34;&#34;&#34;  
-        Deletes a widget with the provided ID from it’s dashboard.  
-  
-        :param widget_id: The ID of the widget to delete  
-        &#34;&#34;&#34;  
-        
-        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id))
+    def delete_widget(self, widgets):
+        &#34;&#34;&#34;Deletes widgets from it’s dashboard.&#34;&#34;&#34;  
+        for widget in PySenseUtils.make_iterable(widgets):
+            self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
+                                                .format(self.get_id(), widget.get_id()))
         self._reset()
 
     def remove_ghost_widgets(self):
-        &#34;&#34;&#34;
-        Removes ghost widgets from dashboard  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Removes ghost widgets from dashboard&#34;&#34;&#34;
         patch_json = {&#34;layout&#34;: self._dashboard_json[&#39;layout&#39;]}
         modified = True
         while modified:
@@ -343,7 +330,7 @@ class Dashboard:
                 for k, cell in enumerate(column[&#39;cells&#39;]):
                     for j, sub_cell in enumerate(cell[&#39;subcells&#39;]):
                         for i, element in enumerate(sub_cell[&#39;elements&#39;]):
-                            if not self._does_widget_exist(element[&#39;widgetid&#39;]):
+                            if not self.does_widget_exist(element[&#39;widgetid&#39;]):
                                 sub_cell[&#39;elements&#39;].pop(i)
                                 modified = True
                         if len(sub_cell[&#39;elements&#39;]) == 0:
@@ -355,7 +342,8 @@ class Dashboard:
         self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
         self._reset()
         
-    def _does_widget_exist(self, widget_id):
+    def does_widget_exist(self, widget_id):
+        &#34;&#34;&#34;Returns true or false if the widget with id is in the dashboard&#34;&#34;&#34;
         try:
             self.get_widget_by_id(widget_id)
         except PySenseException.PySenseException:
@@ -393,47 +381,26 @@ class Dashboard:
         self._dashboard_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()))
         
     def get_datasource(self):
-        &#34;&#34;&#34;
-        Returns the elasticube powering the dashboard.  
-            This call only returns one cube even if the dashboard has multiple cubes.  
-            
-        :return: The elasticube of the dashboard.  
+        &#34;&#34;&#34;Returns the elasticube powering the dashboard.  
+        
+        Not reliable when multiple elasticubes on dashboard.  
         &#34;&#34;&#34;
         return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])
 
     def get_id(self):
-        &#34;&#34;&#34;
-        Gets the dashboard&#39;s id 
-  
-        :return: The dashboard&#39;s id  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Gets the dashboard&#39;s id&#34;&#34;&#34;   
         return self._dashboard_json[&#39;oid&#39;]
 
     def get_name(self):
-        &#34;&#34;&#34;
-        Gets the dashboard&#39;s title  
-  
-        :return: The dashboards title   
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Gets the dashboard&#39;s title&#34;&#34;&#34;
         return self._dashboard_json[&#39;title&#39;]
 
     def get_dashboard_folder(self):
-        &#34;&#34;&#34;
-        Gets the dashboards folder
-  
-        :return: The folder of the parent folder of the dashboard  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Gets the dashboards folder&#34;&#34;&#34;
         return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
 
     def get_shares(self):
-        &#34;&#34;&#34;
-        Gets the dashboard shares json  
-  
-        :return: The dashboard shares json  
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Gets the dashboard shares json &#34;&#34;&#34;
         resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
         return_json = {&#39;sharesTo&#39;: []}
         for share in resp_json[&#39;sharesTo&#39;]:
@@ -447,48 +414,49 @@ class Dashboard:
                 share_json[&#39;subscribe&#39;] = share[&#39;subscribe&#39;]
             return_json[&#39;sharesTo&#39;].append(share_json)
         return return_json
+    
+    def get_share_users_groups(self):
+        &#34;&#34;&#34;Gets a list of users and groups the dashboard is shared with&#34;&#34;&#34;
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+        ret_arr = []
+        for share in resp_json[&#39;sharesTo&#39;]:
+            if share[&#39;type&#39;] == &#39;user&#39;:
+                ret_arr.append(self._py_client.get_user_by_id(share[&#39;shareId&#39;]))
+            elif share[&#39;type&#39;] == &#39;group&#39;:
+                ret_arr.append(self._py_client.get_group_by_id(share[&#39;shareId&#39;]))
+        return ret_arr
 
-    def move_to_folder(self, folder):
-        &#34;&#34;&#34;
-        Move dashboard to given folder  
-  
-        :param folder: Folder object to move dashboard to, None to remove from folder  
-        &#34;&#34;&#34;
-        if folder:
-            folder_oid = folder.get_id()
-        else:
-            folder_oid = None
-        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
-                                  json_payload={&#39;parentFolder&#39;: folder_oid})
-        self._reset()
-
-    def add_shares(self, share, rule, subscribe):
-        &#34;&#34;&#34;
-        Share a dashboard to a new group or user  
-  
-        :param share: A PySense Group or User
-        :param rule: The permission of the user on the dashboard (view, edit, etc)  
-        :param subscribe: true or false, whether to subscribe the user to reports    
+    def add_share(self, share, rule, subscribe):
+        &#34;&#34;&#34;Share a dashboard to a new group or user.    
+        
+        If dashboard is already shared with user or group, nothing happens  
+        
+        Args:
+            - share: A PySense Group or User  
+            - rule: The permission of the user on the dashboard (view, edit, etc)  
+            - subscribe: true or false, whether to subscribe the user to reports    
         &#34;&#34;&#34;
         curr_shares = self.get_shares()
-        if isinstance(share, PySenseUser.User):
-            curr_shares[&#39;sharesTo&#39;].append(
-                {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
-            )
-        elif isinstance(share, PySenseGroup.Group):
-            curr_shares[&#39;sharesTo&#39;].append(
-                {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
-            )
+        share_id = share.get_id()
+        for curr_share in curr_shares[&#39;sharesTo&#39;]:
+            if &#39;shareId&#39; == curr_share[&#39;shareId&#39;]:
+                share_id = None
         
-        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=curr_shares)
+        if share_id is not None:
+            if isinstance(share, PySenseUser.User):
+                curr_shares[&#39;sharesTo&#39;].append(
+                    {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+                )
+            elif isinstance(share, PySenseGroup.Group):
+                curr_shares[&#39;sharesTo&#39;].append(
+                    {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+                )
+        
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), 
+                                            json_payload=curr_shares)
         
     def remove_shares(self, shares):
-        &#34;&#34;&#34;
-        Unshare a dashboard to a listed groups and users
-  
-        :param shares: One to many groups and users to remove  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Unshare a dashboard to a list of groups and users&#34;&#34;&#34;
         share_ids_to_delete = []
         for shares in PySenseUtils.make_iterable(shares):
             share_ids_to_delete.append(shares.get_id())
@@ -497,21 +465,31 @@ class Dashboard:
             for i, shares in enumerate(current_shares[&#39;sharesTo&#39;]):
                 if shares[&#39;shareId&#39;] == share_id:
                     del current_shares[&#39;sharesTo&#39;][i]
-        
-        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=current_shares)
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), 
+                                            json_payload=current_shares)
 
+    def move_to_folder(self, folder):
+        &#34;&#34;&#34;Move dashboard to given folder&#34;&#34;&#34;
+        if folder:
+            folder_oid = folder.get_id()
+        else:
+            folder_oid = None
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
+                                            json_payload={&#39;parentFolder&#39;: folder_oid})
+        self._reset()
+    
     def export_to_png(self, *, path=None, include_title=None, include_filters=None, include_ds=None, width=None):
-        &#34;&#34;&#34;
-        Get dashboard as png    
-  
+        &#34;&#34;&#34;Get dashboard as png    
+    
         Optional:
-        :param path: Path to save location of png    
-        :param include_title: Should dashboard title be included in the exported file  
-        :param include_filters: Should dashboard filters be included in the exported file  
-        :param include_ds: Should dashboard data source info be included in the exported file  
-        :param width: Render width in pixels  
-          
-        :return: The path of the created file if provided or else the raw response obejct  
+            - path: Path to save location of png    
+            - include_title: Should dashboard title be included in the exported file  
+            - include_filters: Should dashboard filters be included in the exported file  
+            - include_ds: Should dashboard data source info be included in the exported file  
+            - width: Render width in pixels  
+            
+        Returns:
+            The path of the created file if provided or else the raw response object  
         &#34;&#34;&#34;
         
         query_params = {
@@ -520,8 +498,8 @@ class Dashboard:
             &#39;includeDs&#39;: include_ds,
             &#39;width&#39;: width
         }
-        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;.format(self.get_id()),
-                                                 query_params=query_params, raw=True),
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;
+                                                           .format(self.get_id()), query_params=query_params, raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
@@ -534,29 +512,30 @@ class Dashboard:
                       preview=None,
                       row_count=None, show_title=None, show_footer=None, title=None, title_size=None,
                       title_position=None):
-        &#34;&#34;&#34;
-        Get dashboard as pdf  
-  
-        :param paper_format: What paper format should be used while rendering the dashboard.  
-        :param paper_orientation: What paper orientation should be used while rendering the dashboard  
-        :param layout: What layout should be used while rendering the dashboard, as is or feed  
-        
+        &#34;&#34;&#34;Get dashboard as pdf   
+    
+        Args:
+            - paper_format: What paper format should be used while rendering the dashboard.  
+            - paper_orientation: What paper orientation should be used while rendering the dashboard  
+            - layout: What layout should be used while rendering the dashboard, as is or feed  
+          
         Optional:
-        :param path: Path to save location of pdf  
-        :param include_title: Should dashboard title be included in the exported file  
-        :param include_filters: Should dashboard filters be included in the exported file  
-        :param include_ds: Should dashboard datasource info be included in the exported file  
-        :param widget_id: Widget Id (Use only for Table and Pivot Widgets)  
-        :param preview: Should use a new Pixel Perfect Reporting  
-        :param row_count: Count of Table/Pivot rows to export  
-        :param show_title: Should Table/Pivot Widget title be included in the exported file  
-        :param show_footer: Should Table/Pivot Widget footer be included in the exported file  
-        :param title: Table/Pivot Widget title text in the exported file  
-        :param title_size: Table/Pivot widget title size in the exported file  
-        :param title_position: Table/Pivot widget title position in the exported file  
-        :return: The path of the created file if provided, else the raw content
+            - path: Path to save location of pdf  
+            - include_title: Should dashboard title be included in the exported file  
+            - include_filters: Should dashboard filters be included in the exported file  
+            - include_ds: Should dashboard datasource info be included in the exported file  
+            - widget_id: Widget Id (Use only for Table and Pivot Widgets)  
+            - preview: Should use a new Pixel Perfect Reporting  
+            - row_count: Count of Table/Pivot rows to export  
+            - show_title: Should Table/Pivot Widget title be included in the exported file  
+            - show_footer: Should Table/Pivot Widget footer be included in the exported file   
+            - title: Table/Pivot Widget title text in the exported file  
+            - title_size: Table/Pivot widget title size in the exported file  
+            - title_position: Table/Pivot widget title position in the exported file  
+            
+        Returns:
+             The path of the created file if provided, else the raw content  
         &#34;&#34;&#34;
-        
         query_params = {
             &#39;paperFormat&#39;: paper_format,
             &#39;paperOrientation&#39;: paper_orientation,
@@ -584,13 +563,13 @@ class Dashboard:
             return resp_content
 
     def export_to_dash(self, *, path=None):
-        &#34;&#34;&#34;
-        Get dashboard as dash file   
+        &#34;&#34;&#34;Get dashboard as dash file.   
    
-        Optional:  
-        :param path: Path to save location of dash file  
+        Optional:
+            - path: Path to save location of dash file  
         
-        :return: The path of the created file if path provided, else the raw content  
+        Returns:
+            The path of the created file if path provided, else the raw content  
         &#34;&#34;&#34;
         
         resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
@@ -604,21 +583,21 @@ class Dashboard:
 
     def get_widgets(self, *, title=None, type=None, subtype=None,
                     fields=None, sort=None, skip=None, limit=None):
-        &#34;&#34;&#34;
-        Returns an array of a dashboard’s widgets.  
+        &#34;&#34;&#34;Returns an array of a dashboard’s widgets.  
   
         Optional:
-        :param title: Widget title to filter by  
-        :param type: Widget type to filter by  
-        :param subtype: Widget sub-type to filter by  
-        :param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
-            by prefixing field names with -  
-        :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
-        :param skip: Number of results to skip from the start of the data set. skip is to be used with the limit  
-            parameter for paging  
-        :param limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+            - title: Widget title to filter by  
+            - type: Widget type to filter by  
+            - subtype: Widget sub-type to filter by  
+            - fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
+                by prefixing field names with -  
+            - sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+            - skip: Number of results to skip from the start of the data set. skip is to be used with the limit  
+                parameter for paging  
+            - limit: How many results should be returned. limit is to be used with the skip parameter for paging  
           
-        :return: An array of widget objects  
+        Returns:
+            An array of widget objects  
         &#34;&#34;&#34;
         
         query_params = {
@@ -639,16 +618,17 @@ class Dashboard:
         return ret_arr
 
     def get_widget_by_id(self, widget_id, *, fields=None):
-        &#34;&#34;&#34;
-        Returns a specific widget (by ID) from a specific dashboard.  
+        &#34;&#34;&#34;Returns a specific widget (by ID) from a specific dashboard.  
     
-        :param widget_id: The ID of the widget to get   
+        Args:
+            - widget_id: The ID of the widget to get   
            
-        Optional:  
-        :param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
-            by prefixing field names with -  
+        Optional:
+            - fields: Whitelist of fields to return for each document.  
+                Fields Can also define which fields to exclude by prefixing field names with -   
             
-        :return: A widget object  
+        Returns:
+            A widget object   
         &#34;&#34;&#34;
         
         query_params = {
@@ -660,33 +640,28 @@ class Dashboard:
         return PySenseWidget.Widget(self._py_client, resp_json)
 
     def add_widget(self, widget):
-        &#34;&#34;&#34;
-        Adds the provided widget object to the dashboard  
+        &#34;&#34;&#34;Adds the provided widget object to the dashboard.  
 
-        :param widget: widget object to add  
-        
-        :return: The widget added to the dashboard  
+        Args:
+            - widget: widget object to add   
+          
+        Returns:
+            The widget added to the dashboard    
         &#34;&#34;&#34;
         
         resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
                                               json_payload=widget.get_widget_json())
         return PySenseWidget.Widget(self._py_client, resp_json)
 
-    def delete_widget(self, widget_id):
-        &#34;&#34;&#34;  
-        Deletes a widget with the provided ID from it’s dashboard.  
-  
-        :param widget_id: The ID of the widget to delete  
-        &#34;&#34;&#34;  
-        
-        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id))
+    def delete_widget(self, widgets):
+        &#34;&#34;&#34;Deletes widgets from it’s dashboard.&#34;&#34;&#34;  
+        for widget in PySenseUtils.make_iterable(widgets):
+            self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
+                                                .format(self.get_id(), widget.get_id()))
         self._reset()
 
     def remove_ghost_widgets(self):
-        &#34;&#34;&#34;
-        Removes ghost widgets from dashboard  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Removes ghost widgets from dashboard&#34;&#34;&#34;
         patch_json = {&#34;layout&#34;: self._dashboard_json[&#39;layout&#39;]}
         modified = True
         while modified:
@@ -695,7 +670,7 @@ class Dashboard:
                 for k, cell in enumerate(column[&#39;cells&#39;]):
                     for j, sub_cell in enumerate(cell[&#39;subcells&#39;]):
                         for i, element in enumerate(sub_cell[&#39;elements&#39;]):
-                            if not self._does_widget_exist(element[&#39;widgetid&#39;]):
+                            if not self.does_widget_exist(element[&#39;widgetid&#39;]):
                                 sub_cell[&#39;elements&#39;].pop(i)
                                 modified = True
                         if len(sub_cell[&#39;elements&#39;]) == 0:
@@ -707,7 +682,8 @@ class Dashboard:
         self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
         self._reset()
         
-    def _does_widget_exist(self, widget_id):
+    def does_widget_exist(self, widget_id):
+        &#34;&#34;&#34;Returns true or false if the widget with id is in the dashboard&#34;&#34;&#34;
         try:
             self.get_widget_by_id(widget_id)
         except PySenseException.PySenseException:
@@ -717,60 +693,84 @@ class Dashboard:
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="PySense.PySenseDashboard.Dashboard.add_shares"><code class="name flex">
-<span>def <span class="ident">add_shares</span></span>(<span>self, share, rule, subscribe)</span>
+<dt id="PySense.PySenseDashboard.Dashboard.add_share"><code class="name flex">
+<span>def <span class="ident">add_share</span></span>(<span>self, share, rule, subscribe)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Share a dashboard to a new group or user
+<section class="desc"><p>Share a dashboard to a new group or user.
 </p>
-<p>:param share: A PySense Group or User
-:param rule: The permission of the user on the dashboard (view, edit, etc)<br>
-:param subscribe: true or false, whether to subscribe the user to reports</p></section>
+<p>If dashboard is already shared with user or group, nothing happens
+</p>
+<h2 id="args">Args</h2>
+<ul>
+<li>share: A PySense Group or User
+</li>
+<li>rule: The permission of the user on the dashboard (view, edit, etc)
+</li>
+<li>subscribe: true or false, whether to subscribe the user to reports</li>
+</ul></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_shares(self, share, rule, subscribe):
-    &#34;&#34;&#34;
-    Share a dashboard to a new group or user  
-
-    :param share: A PySense Group or User
-    :param rule: The permission of the user on the dashboard (view, edit, etc)  
-    :param subscribe: true or false, whether to subscribe the user to reports    
+<pre><code class="python">def add_share(self, share, rule, subscribe):
+    &#34;&#34;&#34;Share a dashboard to a new group or user.    
+    
+    If dashboard is already shared with user or group, nothing happens  
+    
+    Args:
+        - share: A PySense Group or User  
+        - rule: The permission of the user on the dashboard (view, edit, etc)  
+        - subscribe: true or false, whether to subscribe the user to reports    
     &#34;&#34;&#34;
     curr_shares = self.get_shares()
-    if isinstance(share, PySenseUser.User):
-        curr_shares[&#39;sharesTo&#39;].append(
-            {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
-        )
-    elif isinstance(share, PySenseGroup.Group):
-        curr_shares[&#39;sharesTo&#39;].append(
-            {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
-        )
+    share_id = share.get_id()
+    for curr_share in curr_shares[&#39;sharesTo&#39;]:
+        if &#39;shareId&#39; == curr_share[&#39;shareId&#39;]:
+            share_id = None
     
-    self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=curr_shares)</code></pre>
+    if share_id is not None:
+        if isinstance(share, PySenseUser.User):
+            curr_shares[&#39;sharesTo&#39;].append(
+                {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+            )
+        elif isinstance(share, PySenseGroup.Group):
+            curr_shares[&#39;sharesTo&#39;].append(
+                {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+            )
+    
+    self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), 
+                                        json_payload=curr_shares)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.add_widget"><code class="name flex">
 <span>def <span class="ident">add_widget</span></span>(<span>self, widget)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Adds the provided widget object to the dashboard
+<section class="desc"><p>Adds the provided widget object to the dashboard.
 </p>
-<p>:param widget: widget object to add
-</p>
-<p>:return: The widget added to the dashboard</p></section>
+<h2 id="args">Args</h2>
+<ul>
+<li>widget: widget object to add
+</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>widget</code> <code>added</code> <code>to</code> <code>the</code> <code>dashboard</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def add_widget(self, widget):
-    &#34;&#34;&#34;
-    Adds the provided widget object to the dashboard  
+    &#34;&#34;&#34;Adds the provided widget object to the dashboard.  
 
-    :param widget: widget object to add  
-    
-    :return: The widget added to the dashboard  
+    Args:
+        - widget: widget object to add   
+      
+    Returns:
+        The widget added to the dashboard    
     &#34;&#34;&#34;
     
     resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
@@ -779,49 +779,69 @@ class Dashboard:
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.delete_widget"><code class="name flex">
-<span>def <span class="ident">delete_widget</span></span>(<span>self, widget_id)</span>
+<span>def <span class="ident">delete_widget</span></span>(<span>self, widgets)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Deletes a widget with the provided ID from it’s dashboard.
-</p>
-<p>:param widget_id: The ID of the widget to delete</p></section>
+<section class="desc"><p>Deletes widgets from it’s dashboard.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def delete_widget(self, widget_id):
-    &#34;&#34;&#34;  
-    Deletes a widget with the provided ID from it’s dashboard.  
-
-    :param widget_id: The ID of the widget to delete  
-    &#34;&#34;&#34;  
-    
-    self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;.format(self.get_id(), widget_id))
+<pre><code class="python">def delete_widget(self, widgets):
+    &#34;&#34;&#34;Deletes widgets from it’s dashboard.&#34;&#34;&#34;  
+    for widget in PySenseUtils.make_iterable(widgets):
+        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
+                                            .format(self.get_id(), widget.get_id()))
     self._reset()</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDashboard.Dashboard.does_widget_exist"><code class="name flex">
+<span>def <span class="ident">does_widget_exist</span></span>(<span>self, widget_id)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns true or false if the widget with id is in the dashboard</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def does_widget_exist(self, widget_id):
+    &#34;&#34;&#34;Returns true or false if the widget with id is in the dashboard&#34;&#34;&#34;
+    try:
+        self.get_widget_by_id(widget_id)
+    except PySenseException.PySenseException:
+        return False
+    else:
+        return True</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.export_to_dash"><code class="name flex">
 <span>def <span class="ident">export_to_dash</span></span>(<span>self, *, path=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get dashboard as dash file
+<section class="desc"><p>Get dashboard as dash file.
 </p>
-<p>Optional:<br>
-:param path: Path to save location of dash file
-</p>
-<p>:return: The path of the created file if path provided, else the raw content</p></section>
+<h2 id="optional">Optional</h2>
+<ul>
+<li>path: Path to save location of dash file
+</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>path</code> of <code>the</code> <code>created</code> <code>file</code> <code>if</code> <code>path</code> <code>provided</code>, <code>else</code> <code>the</code> <code>raw</code> <code>content</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def export_to_dash(self, *, path=None):
-    &#34;&#34;&#34;
-    Get dashboard as dash file   
+    &#34;&#34;&#34;Get dashboard as dash file.   
 
-    Optional:  
-    :param path: Path to save location of dash file  
+    Optional:
+        - path: Path to save location of dash file  
     
-    :return: The path of the created file if path provided, else the raw content  
+    Returns:
+        The path of the created file if path provided, else the raw content  
     &#34;&#34;&#34;
     
     resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
@@ -840,24 +860,47 @@ class Dashboard:
 <dd>
 <section class="desc"><p>Get dashboard as pdf
 </p>
-<p>:param paper_format: What paper format should be used while rendering the dashboard.<br>
-:param paper_orientation: What paper orientation should be used while rendering the dashboard<br>
-:param layout: What layout should be used while rendering the dashboard, as is or feed
-</p>
-<p>Optional:
-:param path: Path to save location of pdf<br>
-:param include_title: Should dashboard title be included in the exported file<br>
-:param include_filters: Should dashboard filters be included in the exported file<br>
-:param include_ds: Should dashboard datasource info be included in the exported file<br>
-:param widget_id: Widget Id (Use only for Table and Pivot Widgets)<br>
-:param preview: Should use a new Pixel Perfect Reporting<br>
-:param row_count: Count of Table/Pivot rows to export<br>
-:param show_title: Should Table/Pivot Widget title be included in the exported file<br>
-:param show_footer: Should Table/Pivot Widget footer be included in the exported file<br>
-:param title: Table/Pivot Widget title text in the exported file<br>
-:param title_size: Table/Pivot widget title size in the exported file<br>
-:param title_position: Table/Pivot widget title position in the exported file<br>
-:return: The path of the created file if provided, else the raw content</p></section>
+<h2 id="args">Args</h2>
+<ul>
+<li>paper_format: What paper format should be used while rendering the dashboard.
+</li>
+<li>paper_orientation: What paper orientation should be used while rendering the dashboard
+</li>
+<li>layout: What layout should be used while rendering the dashboard, as is or feed
+</li>
+</ul>
+<h2 id="optional">Optional</h2>
+<ul>
+<li>path: Path to save location of pdf
+</li>
+<li>include_title: Should dashboard title be included in the exported file
+</li>
+<li>include_filters: Should dashboard filters be included in the exported file
+</li>
+<li>include_ds: Should dashboard datasource info be included in the exported file
+</li>
+<li>widget_id: Widget Id (Use only for Table and Pivot Widgets)
+</li>
+<li>preview: Should use a new Pixel Perfect Reporting
+</li>
+<li>row_count: Count of Table/Pivot rows to export
+</li>
+<li>show_title: Should Table/Pivot Widget title be included in the exported file
+</li>
+<li>show_footer: Should Table/Pivot Widget footer be included in the exported file
+</li>
+<li>title: Table/Pivot Widget title text in the exported file
+</li>
+<li>title_size: Table/Pivot widget title size in the exported file
+</li>
+<li>title_position: Table/Pivot widget title position in the exported file
+</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>path</code> of <code>the</code> <code>created</code> <code>file</code> <code>if</code> <code>provided</code>, <code>else</code> <code>the</code> <code>raw</code> <code>content</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -867,29 +910,30 @@ class Dashboard:
                   preview=None,
                   row_count=None, show_title=None, show_footer=None, title=None, title_size=None,
                   title_position=None):
-    &#34;&#34;&#34;
-    Get dashboard as pdf  
+    &#34;&#34;&#34;Get dashboard as pdf   
 
-    :param paper_format: What paper format should be used while rendering the dashboard.  
-    :param paper_orientation: What paper orientation should be used while rendering the dashboard  
-    :param layout: What layout should be used while rendering the dashboard, as is or feed  
-    
+    Args:
+        - paper_format: What paper format should be used while rendering the dashboard.  
+        - paper_orientation: What paper orientation should be used while rendering the dashboard  
+        - layout: What layout should be used while rendering the dashboard, as is or feed  
+      
     Optional:
-    :param path: Path to save location of pdf  
-    :param include_title: Should dashboard title be included in the exported file  
-    :param include_filters: Should dashboard filters be included in the exported file  
-    :param include_ds: Should dashboard datasource info be included in the exported file  
-    :param widget_id: Widget Id (Use only for Table and Pivot Widgets)  
-    :param preview: Should use a new Pixel Perfect Reporting  
-    :param row_count: Count of Table/Pivot rows to export  
-    :param show_title: Should Table/Pivot Widget title be included in the exported file  
-    :param show_footer: Should Table/Pivot Widget footer be included in the exported file  
-    :param title: Table/Pivot Widget title text in the exported file  
-    :param title_size: Table/Pivot widget title size in the exported file  
-    :param title_position: Table/Pivot widget title position in the exported file  
-    :return: The path of the created file if provided, else the raw content
+        - path: Path to save location of pdf  
+        - include_title: Should dashboard title be included in the exported file  
+        - include_filters: Should dashboard filters be included in the exported file  
+        - include_ds: Should dashboard datasource info be included in the exported file  
+        - widget_id: Widget Id (Use only for Table and Pivot Widgets)  
+        - preview: Should use a new Pixel Perfect Reporting  
+        - row_count: Count of Table/Pivot rows to export  
+        - show_title: Should Table/Pivot Widget title be included in the exported file  
+        - show_footer: Should Table/Pivot Widget footer be included in the exported file   
+        - title: Table/Pivot Widget title text in the exported file  
+        - title_size: Table/Pivot widget title size in the exported file  
+        - title_position: Table/Pivot widget title position in the exported file  
+        
+    Returns:
+         The path of the created file if provided, else the raw content  
     &#34;&#34;&#34;
-    
     query_params = {
         &#39;paperFormat&#39;: paper_format,
         &#39;paperOrientation&#39;: paper_orientation,
@@ -923,31 +967,40 @@ class Dashboard:
 <dd>
 <section class="desc"><p>Get dashboard as png
 </p>
-<p>Optional:
-:param path: Path to save location of png
-<br>
-:param include_title: Should dashboard title be included in the exported file<br>
-:param include_filters: Should dashboard filters be included in the exported file<br>
-:param include_ds: Should dashboard data source info be included in the exported file<br>
-:param width: Render width in pixels
-</p>
-<p>:return: The path of the created file if provided or else the raw response obejct</p></section>
+<h2 id="optional">Optional</h2>
+<ul>
+<li>path: Path to save location of png
+</li>
+<li>include_title: Should dashboard title be included in the exported file
+</li>
+<li>include_filters: Should dashboard filters be included in the exported file
+</li>
+<li>include_ds: Should dashboard data source info be included in the exported file
+</li>
+<li>width: Render width in pixels
+</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>path</code> of <code>the</code> <code>created</code> <code>file</code> <code>if</code> <code>provided</code> or <code>else</code> <code>the</code> <code>raw</code> <code>response</code> <code>object</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def export_to_png(self, *, path=None, include_title=None, include_filters=None, include_ds=None, width=None):
-    &#34;&#34;&#34;
-    Get dashboard as png    
+    &#34;&#34;&#34;Get dashboard as png    
 
     Optional:
-    :param path: Path to save location of png    
-    :param include_title: Should dashboard title be included in the exported file  
-    :param include_filters: Should dashboard filters be included in the exported file  
-    :param include_ds: Should dashboard data source info be included in the exported file  
-    :param width: Render width in pixels  
-      
-    :return: The path of the created file if provided or else the raw response obejct  
+        - path: Path to save location of png    
+        - include_title: Should dashboard title be included in the exported file  
+        - include_filters: Should dashboard filters be included in the exported file  
+        - include_ds: Should dashboard data source info be included in the exported file  
+        - width: Render width in pixels  
+        
+    Returns:
+        The path of the created file if provided or else the raw response object  
     &#34;&#34;&#34;
     
     query_params = {
@@ -956,8 +1009,8 @@ class Dashboard:
         &#39;includeDs&#39;: include_ds,
         &#39;width&#39;: width
     }
-    resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;.format(self.get_id()),
-                                             query_params=query_params, raw=True),
+    resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/png&#39;
+                                                       .format(self.get_id()), query_params=query_params, raw=True)
     if path is not None:
         with open(path, &#39;wb&#39;) as out_file:
             out_file.write(resp_content)
@@ -970,19 +1023,13 @@ class Dashboard:
 <span>def <span class="ident">get_dashboard_folder</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Gets the dashboards folder</p>
-<p>:return: The folder of the parent folder of the dashboard</p></section>
+<section class="desc"><p>Gets the dashboards folder</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_dashboard_folder(self):
-    &#34;&#34;&#34;
-    Gets the dashboards folder
-
-    :return: The folder of the parent folder of the dashboard  
-    &#34;&#34;&#34;
-    
+    &#34;&#34;&#34;Gets the dashboards folder&#34;&#34;&#34;
     return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])</code></pre>
 </details>
 </dd>
@@ -990,20 +1037,17 @@ class Dashboard:
 <span>def <span class="ident">get_datasource</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the elasticube powering the dashboard.<br>
-This call only returns one cube even if the dashboard has multiple cubes.
+<section class="desc"><p>Returns the elasticube powering the dashboard.
 </p>
-<p>:return: The elasticube of the dashboard.</p></section>
+<p>Not reliable when multiple elasticubes on dashboard.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_datasource(self):
-    &#34;&#34;&#34;
-    Returns the elasticube powering the dashboard.  
-        This call only returns one cube even if the dashboard has multiple cubes.  
-        
-    :return: The elasticube of the dashboard.  
+    &#34;&#34;&#34;Returns the elasticube powering the dashboard.  
+    
+    Not reliable when multiple elasticubes on dashboard.  
     &#34;&#34;&#34;
     return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])</code></pre>
 </details>
@@ -1012,19 +1056,13 @@ This call only returns one cube even if the dashboard has multiple cubes.
 <span>def <span class="ident">get_id</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Gets the dashboard's id </p>
-<p>:return: The dashboard's id</p></section>
+<section class="desc"><p>Gets the dashboard's id</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_id(self):
-    &#34;&#34;&#34;
-    Gets the dashboard&#39;s id 
-
-    :return: The dashboard&#39;s id  
-    &#34;&#34;&#34;
-    
+    &#34;&#34;&#34;Gets the dashboard&#39;s id&#34;&#34;&#34;   
     return self._dashboard_json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
@@ -1032,40 +1070,48 @@ This call only returns one cube even if the dashboard has multiple cubes.
 <span>def <span class="ident">get_name</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Gets the dashboard's title
-</p>
-<p>:return: The dashboards title</p></section>
+<section class="desc"><p>Gets the dashboard's title</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_name(self):
-    &#34;&#34;&#34;
-    Gets the dashboard&#39;s title  
-
-    :return: The dashboards title   
-    &#34;&#34;&#34;
-    
+    &#34;&#34;&#34;Gets the dashboard&#39;s title&#34;&#34;&#34;
     return self._dashboard_json[&#39;title&#39;]</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDashboard.Dashboard.get_share_users_groups"><code class="name flex">
+<span>def <span class="ident">get_share_users_groups</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Gets a list of users and groups the dashboard is shared with</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_share_users_groups(self):
+    &#34;&#34;&#34;Gets a list of users and groups the dashboard is shared with&#34;&#34;&#34;
+    resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+    ret_arr = []
+    for share in resp_json[&#39;sharesTo&#39;]:
+        if share[&#39;type&#39;] == &#39;user&#39;:
+            ret_arr.append(self._py_client.get_user_by_id(share[&#39;shareId&#39;]))
+        elif share[&#39;type&#39;] == &#39;group&#39;:
+            ret_arr.append(self._py_client.get_group_by_id(share[&#39;shareId&#39;]))
+    return ret_arr</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_shares"><code class="name flex">
 <span>def <span class="ident">get_shares</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Gets the dashboard shares json
-</p>
-<p>:return: The dashboard shares json</p></section>
+<section class="desc"><p>Gets the dashboard shares json</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_shares(self):
-    &#34;&#34;&#34;
-    Gets the dashboard shares json  
-
-    :return: The dashboard shares json  
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Gets the dashboard shares json &#34;&#34;&#34;
     resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
     return_json = {&#39;sharesTo&#39;: []}
     for share in resp_json[&#39;sharesTo&#39;]:
@@ -1087,28 +1133,38 @@ This call only returns one cube even if the dashboard has multiple cubes.
 <dd>
 <section class="desc"><p>Returns a specific widget (by ID) from a specific dashboard.
 </p>
-<p>:param widget_id: The ID of the widget to get
-</p>
-<p>Optional:<br>
-:param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude<br>
-by prefixing field names with -
-</p>
-<p>:return: A widget object</p></section>
+<h2 id="args">Args</h2>
+<ul>
+<li>widget_id: The ID of the widget to get
+</li>
+</ul>
+<h2 id="optional">Optional</h2>
+<ul>
+<li>fields: Whitelist of fields to return for each document.<br>
+Fields Can also define which fields to exclude by prefixing field names with -
+</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A</code> <code>widget</code> <code>object</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_widget_by_id(self, widget_id, *, fields=None):
-    &#34;&#34;&#34;
-    Returns a specific widget (by ID) from a specific dashboard.  
+    &#34;&#34;&#34;Returns a specific widget (by ID) from a specific dashboard.  
 
-    :param widget_id: The ID of the widget to get   
+    Args:
+        - widget_id: The ID of the widget to get   
        
-    Optional:  
-    :param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
-        by prefixing field names with -  
+    Optional:
+        - fields: Whitelist of fields to return for each document.  
+            Fields Can also define which fields to exclude by prefixing field names with -   
         
-    :return: A widget object  
+    Returns:
+        A widget object   
     &#34;&#34;&#34;
     
     query_params = {
@@ -1126,39 +1182,51 @@ by prefixing field names with -
 <dd>
 <section class="desc"><p>Returns an array of a dashboard’s widgets.
 </p>
-<p>Optional:
-:param title: Widget title to filter by<br>
-:param type: Widget type to filter by<br>
-:param subtype: Widget sub-type to filter by<br>
-:param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude<br>
-by prefixing field names with -<br>
-:param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -<br>
-:param skip: Number of results to skip from the start of the data set. skip is to be used with the limit<br>
-parameter for paging<br>
-:param limit: How many results should be returned. limit is to be used with the skip parameter for paging
-</p>
-<p>:return: An array of widget objects</p></section>
+<h2 id="optional">Optional</h2>
+<ul>
+<li>title: Widget title to filter by
+</li>
+<li>type: Widget type to filter by
+</li>
+<li>subtype: Widget sub-type to filter by
+</li>
+<li>fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude<br>
+by prefixing field names with -
+</li>
+<li>sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+</li>
+<li>skip: Number of results to skip from the start of the data set. skip is to be used with the limit<br>
+parameter for paging
+</li>
+<li>limit: How many results should be returned. limit is to be used with the skip parameter for paging
+</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>An</code> <code>array</code> of <code>widget</code> <code>objects</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_widgets(self, *, title=None, type=None, subtype=None,
                 fields=None, sort=None, skip=None, limit=None):
-    &#34;&#34;&#34;
-    Returns an array of a dashboard’s widgets.  
+    &#34;&#34;&#34;Returns an array of a dashboard’s widgets.  
 
     Optional:
-    :param title: Widget title to filter by  
-    :param type: Widget type to filter by  
-    :param subtype: Widget sub-type to filter by  
-    :param fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
-        by prefixing field names with -  
-    :param sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
-    :param skip: Number of results to skip from the start of the data set. skip is to be used with the limit  
-        parameter for paging  
-    :param limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+        - title: Widget title to filter by  
+        - type: Widget type to filter by  
+        - subtype: Widget sub-type to filter by  
+        - fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
+            by prefixing field names with -  
+        - sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+        - skip: Number of results to skip from the start of the data set. skip is to be used with the limit  
+            parameter for paging  
+        - limit: How many results should be returned. limit is to be used with the skip parameter for paging  
       
-    :return: An array of widget objects  
+    Returns:
+        An array of widget objects  
     &#34;&#34;&#34;
     
     query_params = {
@@ -1183,25 +1251,19 @@ parameter for paging<br>
 <span>def <span class="ident">move_to_folder</span></span>(<span>self, folder)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Move dashboard to given folder
-</p>
-<p>:param folder: Folder object to move dashboard to, None to remove from folder</p></section>
+<section class="desc"><p>Move dashboard to given folder</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def move_to_folder(self, folder):
-    &#34;&#34;&#34;
-    Move dashboard to given folder  
-
-    :param folder: Folder object to move dashboard to, None to remove from folder  
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Move dashboard to given folder&#34;&#34;&#34;
     if folder:
         folder_oid = folder.get_id()
     else:
         folder_oid = None
     self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
-                              json_payload={&#39;parentFolder&#39;: folder_oid})
+                                        json_payload={&#39;parentFolder&#39;: folder_oid})
     self._reset()</code></pre>
 </details>
 </dd>
@@ -1215,10 +1277,7 @@ parameter for paging<br>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def remove_ghost_widgets(self):
-    &#34;&#34;&#34;
-    Removes ghost widgets from dashboard  
-    &#34;&#34;&#34;
-    
+    &#34;&#34;&#34;Removes ghost widgets from dashboard&#34;&#34;&#34;
     patch_json = {&#34;layout&#34;: self._dashboard_json[&#39;layout&#39;]}
     modified = True
     while modified:
@@ -1227,7 +1286,7 @@ parameter for paging<br>
             for k, cell in enumerate(column[&#39;cells&#39;]):
                 for j, sub_cell in enumerate(cell[&#39;subcells&#39;]):
                     for i, element in enumerate(sub_cell[&#39;elements&#39;]):
-                        if not self._does_widget_exist(element[&#39;widgetid&#39;]):
+                        if not self.does_widget_exist(element[&#39;widgetid&#39;]):
                             sub_cell[&#39;elements&#39;].pop(i)
                             modified = True
                     if len(sub_cell[&#39;elements&#39;]) == 0:
@@ -1244,19 +1303,13 @@ parameter for paging<br>
 <span>def <span class="ident">remove_shares</span></span>(<span>self, shares)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Unshare a dashboard to a listed groups and users</p>
-<p>:param shares: One to many groups and users to remove</p></section>
+<section class="desc"><p>Unshare a dashboard to a list of groups and users</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def remove_shares(self, shares):
-    &#34;&#34;&#34;
-    Unshare a dashboard to a listed groups and users
-
-    :param shares: One to many groups and users to remove  
-    &#34;&#34;&#34;
-    
+    &#34;&#34;&#34;Unshare a dashboard to a list of groups and users&#34;&#34;&#34;
     share_ids_to_delete = []
     for shares in PySenseUtils.make_iterable(shares):
         share_ids_to_delete.append(shares.get_id())
@@ -1265,8 +1318,8 @@ parameter for paging<br>
         for i, shares in enumerate(current_shares[&#39;sharesTo&#39;]):
             if shares[&#39;shareId&#39;] == share_id:
                 del current_shares[&#39;sharesTo&#39;][i]
-    
-    self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), json_payload=current_shares)</code></pre>
+    self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), 
+                                        json_payload=current_shares)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1290,9 +1343,10 @@ parameter for paging<br>
 <li>
 <h4><code><a title="PySense.PySenseDashboard.Dashboard" href="#PySense.PySenseDashboard.Dashboard">Dashboard</a></code></h4>
 <ul class="">
-<li><code><a title="PySense.PySenseDashboard.Dashboard.add_shares" href="#PySense.PySenseDashboard.Dashboard.add_shares">add_shares</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.add_share" href="#PySense.PySenseDashboard.Dashboard.add_share">add_share</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.add_widget" href="#PySense.PySenseDashboard.Dashboard.add_widget">add_widget</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.delete_widget" href="#PySense.PySenseDashboard.Dashboard.delete_widget">delete_widget</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.does_widget_exist" href="#PySense.PySenseDashboard.Dashboard.does_widget_exist">does_widget_exist</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_dash" href="#PySense.PySenseDashboard.Dashboard.export_to_dash">export_to_dash</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_pdf" href="#PySense.PySenseDashboard.Dashboard.export_to_pdf">export_to_pdf</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_png" href="#PySense.PySenseDashboard.Dashboard.export_to_png">export_to_png</a></code></li>
@@ -1300,6 +1354,7 @@ parameter for paging<br>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_datasource" href="#PySense.PySenseDashboard.Dashboard.get_datasource">get_datasource</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_id" href="#PySense.PySenseDashboard.Dashboard.get_id">get_id</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_name" href="#PySense.PySenseDashboard.Dashboard.get_name">get_name</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.get_share_users_groups" href="#PySense.PySenseDashboard.Dashboard.get_share_users_groups">get_share_users_groups</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_shares" href="#PySense.PySenseDashboard.Dashboard.get_shares">get_shares</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_widget_by_id" href="#PySense.PySenseDashboard.Dashboard.get_widget_by_id">get_widget_by_id</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_widgets" href="#PySense.PySenseDashboard.Dashboard.get_widgets">get_widgets</a></code></li>

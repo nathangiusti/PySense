@@ -15,18 +15,20 @@ class RestConnector:
         self._token = {'authorization':  "Bearer " + resp.json()['access_token']}
         
     def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
-        """
-        Run an arbitrary rest command against your Sisense instance and returns the JSON response    
+        """Run an arbitrary rest command against your Sisense instance and returns the JSON response    
     
-        :param action_type: REST request type  
-        :param url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding  
+        Args:
+            - action_type: REST request type  
+            - url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding  
+              
+        Optional:
+            - data: The data portion of the payload  
+            - json_payload: The json portion of the payload  
+            - query_params: a dictionary of query values to be added to the end of the url  
+            - raw: True if raw content response wanted  
         
-        Optional:  
-        :param data: The data portion of the payload  
-        :param json_payload: The json portion of the payload  
-        :param query_params: a dictionary of query values to be added to the end of the url  
-        :param raw: True if raw content response wanted, 
-        :return: The rest response object  
+        Returns:
+            Returns the json content blob. If raw is set to true, returns the raw bytes of the content. 
         """
         
         action_type = action_type.lower()
@@ -56,12 +58,14 @@ class RestConnector:
             
 
 def parse_response(response):
+    """Parses response and throw exception if not successful."""
     if response.status_code not in [200, 201, 204]:
         raise PySenseException.PySenseException('ERROR: {}: {}\nURL: {}'
                                                 .format(response.status_code, response.content, response.url))
 
 
 def format_host(host):
+    """Formats host for PySense"""
     if not host.startswith('http'):
         host = 'http://' + host
     if host.endswith('/'):
@@ -70,6 +74,7 @@ def format_host(host):
 
 
 def build_query_string(dictionary):
+    """Builds a query string based on the dictionary passed in"""
     ret_arr = []
     separator = '&'
     for key, value in dictionary.items():

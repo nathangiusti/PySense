@@ -16,84 +16,51 @@ class Rule:
         self._rule_json = rule_json
 
     def get_shares(self):
+        """Returns the rules shares"""
         return self._rule_json['shares']
     
     def get_id(self):
-        """  
-        Gets the rule id  
-
-        :return: The rule id  
-        """
-
+        """Gets the rule id."""
         return self._rule_json['_id']
     
     def get_column(self):
-        """  
-        Gets the column for which the rule applies  
-          
-        :return: The column title  
-        """  
-        
+        """Gets the column for which the rule applies"""  
         return self._rule_json['column']
 
     def get_table(self):
-        """  
-        Gets the table for which the rule applies  
-
-        :return: The table title  
-        """
-
+        """ Gets the table for which the rule applies."""
         return self._rule_json['table']
 
     def get_members(self):
-        """
-        Gets the member values  
-          
-        :return: The member values  
-        """
-        
+        """Gets the member values."""
         return self._rule_json['members']
     
     def get_data_type(self):
-        """  
-        Gets the data type for which the rule applies  
-
-        :return: The rule data type
-        """
-
+        """Gets the data type for which the rule applies."""
         return self._rule_json['datatype']
     
     def get_exclusionary(self):
-        """  
-        Returns whether or not the rule is exclusionary  
-
-        :return: True if exclusionary, None or false otherwise  
-        """
-
+        """Returns whether or not the rule is exclusionary"""
         return self._rule_json['exclusionary']
     
     def get_all_members(self):
-        """  
-        Returns whether or not the rule is for all members
-
-        :return: True if for all_members, None or false otherwise
-        """
-
+        """Returns whether or not the rule is for all members."""
         return self._rule_json['exclusionary']
         
     def update_rule(self, *, shares=None, table=None, column=None, data_type=None, members=None, 
                     exclusionary=None, all_members=None):
-        """
-        Updates the current rule. Any arguments given will replace the current value and update the rule  
+        """Updates the current rule.  
         
-        Optional: 
-        :param shares: Array of users and groups to share the rule with  
-        :param table: Table of the data security rule  
-        :param column: Column of the data security rule  
-        :param data_type: Data security rule data type  
-        :param members: The values to specify in the rule. If blank, will use nothing
-        :param exclusionary: Set to true to make an exclusionary rule  
-        :param all_members: Set to true for a rule to allow user to see all values  
+        Any arguments given will replace the current value and update the rule   
+        
+        Optional:
+            - shares: Array of users and groups to share the rule with  
+            - table: Table of the data security rule  
+            - column: Column of the data security rule  
+            - data_type: Data security rule data type  
+            - members: The values to specify in the rule. If blank, will use nothing  
+            - exclusionary: Set to true to make an exclusionary rule   
+            - all_members: Set to true for a rule to allow user to see all values  
         """
         rule_json = {
             "column": column if column is not None else self.get_column(),

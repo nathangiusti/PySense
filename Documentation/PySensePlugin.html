@@ -24,7 +24,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import requests
+<pre><code class="python">from PySense import PySenseUtils
 
 
 class Plugin:
@@ -34,43 +34,23 @@ class Plugin:
         self._plugin_json = plugin_json
     
     def get_name(self):
-        &#34;&#34;&#34;
-        Get the plugins name  
-          
-        :return: The plugins name  
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Get the plugins name.&#34;&#34;&#34;
         return self._plugin_json[&#39;name&#39;]
 
     def get_last_update(self):
-        &#34;&#34;&#34;
-        Get the plugins last update  
-  
-        :return: The plugins last update  
-        &#34;&#34;&#34;
-        return self._plugin_json[&#39;lastUpdate&#39;]
+        &#34;&#34;&#34;Get the plugins last update time.&#34;&#34;&#34;
+        return PySenseUtils.sisense_time_to_python(self._plugin_json[&#39;lastUpdate&#39;])
     
     def get_version(self):
-        &#34;&#34;&#34;
-        Get the plugins version  
-
-        :return: The plugins version  
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Get the plugins version.&#34;&#34;&#34;
         return self._plugin_json[&#39;version&#39;]
 
     def get_is_enabled(self):
-        &#34;&#34;&#34;
-        Returns whether the plugin is enabled    
-  
-        :return: True or false as to whether plugin is enabled
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Returns whether the plugin is enabled.&#34;&#34;&#34;
         return self._plugin_json[&#39;isEnabled&#39;]
 
     def set_plugin_enabled(self, enabled):
-        &#34;&#34;&#34;
-        Enable/disable the plugin
-        
-        :param enabled: True to enable, false to disable 
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Enable/disable the plugin&#34;&#34;&#34;
         self._plugin_json[&#39;isEnabled&#39;] = enabled
         resp_json = self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/plugins&#39;, json_payload=[self._plugin_json])
         self._plugin_json = resp_json[0]</code></pre>
@@ -102,43 +82,23 @@ class Plugin:
         self._plugin_json = plugin_json
     
     def get_name(self):
-        &#34;&#34;&#34;
-        Get the plugins name  
-          
-        :return: The plugins name  
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Get the plugins name.&#34;&#34;&#34;
         return self._plugin_json[&#39;name&#39;]
 
     def get_last_update(self):
-        &#34;&#34;&#34;
-        Get the plugins last update  
-  
-        :return: The plugins last update  
-        &#34;&#34;&#34;
-        return self._plugin_json[&#39;lastUpdate&#39;]
+        &#34;&#34;&#34;Get the plugins last update time.&#34;&#34;&#34;
+        return PySenseUtils.sisense_time_to_python(self._plugin_json[&#39;lastUpdate&#39;])
     
     def get_version(self):
-        &#34;&#34;&#34;
-        Get the plugins version  
-
-        :return: The plugins version  
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Get the plugins version.&#34;&#34;&#34;
         return self._plugin_json[&#39;version&#39;]
 
     def get_is_enabled(self):
-        &#34;&#34;&#34;
-        Returns whether the plugin is enabled    
-  
-        :return: True or false as to whether plugin is enabled
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Returns whether the plugin is enabled.&#34;&#34;&#34;
         return self._plugin_json[&#39;isEnabled&#39;]
 
     def set_plugin_enabled(self, enabled):
-        &#34;&#34;&#34;
-        Enable/disable the plugin
-        
-        :param enabled: True to enable, false to disable 
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Enable/disable the plugin&#34;&#34;&#34;
         self._plugin_json[&#39;isEnabled&#39;] = enabled
         resp_json = self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/plugins&#39;, json_payload=[self._plugin_json])
         self._plugin_json = resp_json[0]</code></pre>
@@ -149,19 +109,13 @@ class Plugin:
 <span>def <span class="ident">get_is_enabled</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns whether the plugin is enabled
-</p>
-<p>:return: True or false as to whether plugin is enabled</p></section>
+<section class="desc"><p>Returns whether the plugin is enabled.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_is_enabled(self):
-    &#34;&#34;&#34;
-    Returns whether the plugin is enabled    
-
-    :return: True or false as to whether plugin is enabled
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Returns whether the plugin is enabled.&#34;&#34;&#34;
     return self._plugin_json[&#39;isEnabled&#39;]</code></pre>
 </details>
 </dd>
@@ -169,39 +123,27 @@ class Plugin:
 <span>def <span class="ident">get_last_update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get the plugins last update
-</p>
-<p>:return: The plugins last update</p></section>
+<section class="desc"><p>Get the plugins last update time.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_last_update(self):
-    &#34;&#34;&#34;
-    Get the plugins last update  
-
-    :return: The plugins last update  
-    &#34;&#34;&#34;
-    return self._plugin_json[&#39;lastUpdate&#39;]</code></pre>
+    &#34;&#34;&#34;Get the plugins last update time.&#34;&#34;&#34;
+    return PySenseUtils.sisense_time_to_python(self._plugin_json[&#39;lastUpdate&#39;])</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySensePlugin.Plugin.get_name"><code class="name flex">
 <span>def <span class="ident">get_name</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get the plugins name
-</p>
-<p>:return: The plugins name</p></section>
+<section class="desc"><p>Get the plugins name.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_name(self):
-    &#34;&#34;&#34;
-    Get the plugins name  
-      
-    :return: The plugins name  
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Get the plugins name.&#34;&#34;&#34;
     return self._plugin_json[&#39;name&#39;]</code></pre>
 </details>
 </dd>
@@ -209,19 +151,13 @@ class Plugin:
 <span>def <span class="ident">get_version</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get the plugins version
-</p>
-<p>:return: The plugins version</p></section>
+<section class="desc"><p>Get the plugins version.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_version(self):
-    &#34;&#34;&#34;
-    Get the plugins version  
-
-    :return: The plugins version  
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Get the plugins version.&#34;&#34;&#34;
     return self._plugin_json[&#39;version&#39;]</code></pre>
 </details>
 </dd>
@@ -229,18 +165,13 @@ class Plugin:
 <span>def <span class="ident">set_plugin_enabled</span></span>(<span>self, enabled)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Enable/disable the plugin</p>
-<p>:param enabled: True to enable, false to disable</p></section>
+<section class="desc"><p>Enable/disable the plugin</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_plugin_enabled(self, enabled):
-    &#34;&#34;&#34;
-    Enable/disable the plugin
-    
-    :param enabled: True to enable, false to disable 
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Enable/disable the plugin&#34;&#34;&#34;
     self._plugin_json[&#39;isEnabled&#39;] = enabled
     resp_json = self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/plugins&#39;, json_payload=[self._plugin_json])
     self._plugin_json = resp_json[0]</code></pre>

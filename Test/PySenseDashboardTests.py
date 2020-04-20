@@ -44,15 +44,15 @@ class PySenseDashboardTests(unittest.TestCase):
         assert widget.get_id() == widget_array[0].get_id()
         added_widget = self.dashboard.add_widget(widget)
         assert len(self.dashboard.get_widgets()) == 3
-        self.dashboard.delete_widget(added_widget.get_id())
+        self.dashboard.delete_widget(added_widget)
         assert len(self.dashboard.get_widgets()) == 2
 
     def test_dashboard_shares(self):
         user = self.py_client.get_users(email='testuser@sisense.com')[0]
         group = self.py_client.get_groups(name='PySense')[0]
-        self.dashboard.remove_shares()
-        self.dashboard.add_shares(user, 'view', 'false')
-        self.dashboard.add_shares(group, 'view', 'false')
+        self.dashboard.add_share(user, 'view', 'false')
+        self.dashboard.add_share(group, 'view', 'false')
+        assert len(self.dashboard.get_share_users_groups()) == 3
         assert len(self.dashboard.get_shares()['sharesTo']) == 3
         self.dashboard.remove_shares([user, group])
         assert len(self.dashboard.get_shares()['sharesTo']) == 1
@@ -66,6 +66,13 @@ class PySenseDashboardTests(unittest.TestCase):
 
     def test_remove_ghost_widgets(self):
         self.dashboard.remove_ghost_widgets()
+        
+    @classmethod
+    def tearDownClass(cls): 
+        cls.dashboard.remove_shares(cls.dashboard.get_share_users_groups())
+    
+        
+            
 
 
 

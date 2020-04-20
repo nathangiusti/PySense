@@ -1,6 +1,7 @@
 import unittest
 
 import PySense.PySense as PySense
+import PySense.PySenseException as PySenseException
 
 
 class PySenseElasticubeTests(unittest.TestCase):
@@ -18,13 +19,11 @@ class PySenseElasticubeTests(unittest.TestCase):
         default_rule = self.elasticube.add_default_rule('Dim_Dates', 'BusinessDay', 'numeric')
         assert default_rule is not None
         
-        users = self.py_client.get_users(email='nathan.giusti@sisense.com')
-        groups = self.py_client.get_groups(name='PySense')
-        shares = users.append(groups)
-        rule = self.elasticube.add_security_rule(shares, 'Dim_Dates', 'BusinessDay', 'numeric', members=[1],
-                                                 exclusionary=True)
+        shares = self.py_client.get_users(email='testuser@sisense.com')
+        shares.extend(self.py_client.get_groups(name='PySense'))
         
-        assert len(self.elasticube.get_security_for_user(users[0])) == 2
+        rule = self.elasticube.add_security_rule(shares, 'Dim_Dates', 'BusinessDay', 'numeric', members=["1"])
+        assert len(self.elasticube.get_security_for_user(shares[0])) == 2
         assert len(self.elasticube.get_datasecurity()) == 2
         assert len(self.elasticube.
                    get_datasecurity_by_table_column('Dim_Dates', 'BusinessDay')) == 2
@@ -43,6 +42,13 @@ class PySenseElasticubeTests(unittest.TestCase):
         formula.change_datasource(self.elasticube)
         self.elasticube.add_formula_to_cube(formula)
         assert formula_len == len(self.elasticube.get_saved_formulas())
+
+    @classmethod
+    def tearDownClass(cls):
+        try: 
+            cls.elasticube.delete_rule('Dim_Dates', 'BusinessDay')
+        except PySenseException.PySenseException:
+            None
         
         
 if __name__ == '__main__':

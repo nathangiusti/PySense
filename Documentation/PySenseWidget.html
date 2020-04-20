@@ -31,47 +31,34 @@
         self._widget_json = widget_json
 
     def get_widget_json(self):
-        &#34;&#34;&#34;  
-        Returns the widget&#39;s JSON  
-          
-        :return: The widget&#39;s JSON  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Returns the widget&#39;s JSON.&#34;&#34;&#34;
         return self._widget_json
     
     def get_dashboard_id(self):
-        &#34;&#34;&#34;
-        Returns the dashboard id of the widget  
-         
-        :return: The parent dashboard&#39;s dashboard id 
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Returns the dashboard id of the widget.&#34;&#34;&#34;
         return self._widget_json[&#39;dashboardid&#39;]
 
     def get_id(self):
-        &#34;&#34;&#34;
-        Gets the widget&#39;s id  
-          
-        :return: The widget&#39;s id  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Gets the widget&#39;s id&#34;&#34;&#34;
         return self._widget_json[&#39;oid&#39;]
 
     def export_to_png(self, width, height, *, path=None):
-        &#34;&#34;&#34;
-        Export&#39;s widget to png  
-        :param width: Render width in pixels  
-        :param height: Render height in pixels   
+        &#34;&#34;&#34;Export&#39;s widget to png.  
           
-        Optional:  
-        :param path: Path to save the file  
+        Args:
+            - width: Render width in pixels  
+            - height: Render height in pixels   
            
-        :return: The path of the saved file if set, else the raw content  
+        Optional:
+            - path: Path to save the file  
+           
+        Returns:
+             The path of the saved file if set, else the raw content    
         &#34;&#34;&#34;
         query_params = {&#39;width&#39;: width, &#39;height&#39;: height}
         resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
-                                                 .format(self.get_dashboard_id(), self.get_id()),
-                                                 query_params=query_params, raw=True)
+                                                           .format(self.get_dashboard_id(), self.get_id()),
+                                                           query_params=query_params, raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
@@ -106,47 +93,34 @@
         self._widget_json = widget_json
 
     def get_widget_json(self):
-        &#34;&#34;&#34;  
-        Returns the widget&#39;s JSON  
-          
-        :return: The widget&#39;s JSON  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Returns the widget&#39;s JSON.&#34;&#34;&#34;
         return self._widget_json
     
     def get_dashboard_id(self):
-        &#34;&#34;&#34;
-        Returns the dashboard id of the widget  
-         
-        :return: The parent dashboard&#39;s dashboard id 
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Returns the dashboard id of the widget.&#34;&#34;&#34;
         return self._widget_json[&#39;dashboardid&#39;]
 
     def get_id(self):
-        &#34;&#34;&#34;
-        Gets the widget&#39;s id  
-          
-        :return: The widget&#39;s id  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Gets the widget&#39;s id&#34;&#34;&#34;
         return self._widget_json[&#39;oid&#39;]
 
     def export_to_png(self, width, height, *, path=None):
-        &#34;&#34;&#34;
-        Export&#39;s widget to png  
-        :param width: Render width in pixels  
-        :param height: Render height in pixels   
+        &#34;&#34;&#34;Export&#39;s widget to png.  
           
-        Optional:  
-        :param path: Path to save the file  
+        Args:
+            - width: Render width in pixels  
+            - height: Render height in pixels   
            
-        :return: The path of the saved file if set, else the raw content  
+        Optional:
+            - path: Path to save the file  
+           
+        Returns:
+             The path of the saved file if set, else the raw content    
         &#34;&#34;&#34;
         query_params = {&#39;width&#39;: width, &#39;height&#39;: height}
         resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
-                                                 .format(self.get_dashboard_id(), self.get_id()),
-                                                 query_params=query_params, raw=True)
+                                                           .format(self.get_dashboard_id(), self.get_id()),
+                                                           query_params=query_params, raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
@@ -160,33 +134,46 @@
 <span>def <span class="ident">export_to_png</span></span>(<span>self, width, height, *, path=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Export's widget to png<br>
-:param width: Render width in pixels<br>
-:param height: Render height in pixels
+<section class="desc"><p>Export's widget to png.
 </p>
-<p>Optional:<br>
-:param path: Path to save the file
-</p>
-<p>:return: The path of the saved file if set, else the raw content</p></section>
+<h2 id="args">Args</h2>
+<ul>
+<li>width: Render width in pixels
+</li>
+<li>height: Render height in pixels
+</li>
+</ul>
+<h2 id="optional">Optional</h2>
+<ul>
+<li>path: Path to save the file
+</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>path</code> of <code>the</code> <code>saved</code> <code>file</code> <code>if</code> <code>set</code>, <code>else</code> <code>the</code> <code>raw</code> <code>content</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def export_to_png(self, width, height, *, path=None):
-    &#34;&#34;&#34;
-    Export&#39;s widget to png  
-    :param width: Render width in pixels  
-    :param height: Render height in pixels   
+    &#34;&#34;&#34;Export&#39;s widget to png.  
       
-    Optional:  
-    :param path: Path to save the file  
+    Args:
+        - width: Render width in pixels  
+        - height: Render height in pixels   
        
-    :return: The path of the saved file if set, else the raw content  
+    Optional:
+        - path: Path to save the file  
+       
+    Returns:
+         The path of the saved file if set, else the raw content    
     &#34;&#34;&#34;
     query_params = {&#39;width&#39;: width, &#39;height&#39;: height}
     resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
-                                             .format(self.get_dashboard_id(), self.get_id()),
-                                             query_params=query_params, raw=True)
+                                                       .format(self.get_dashboard_id(), self.get_id()),
+                                                       query_params=query_params, raw=True)
     if path is not None:
         with open(path, &#39;wb&#39;) as out_file:
             out_file.write(resp_content)
@@ -199,20 +186,13 @@
 <span>def <span class="ident">get_dashboard_id</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the dashboard id of the widget
-</p>
-<p>:return: The parent dashboard's dashboard id</p></section>
+<section class="desc"><p>Returns the dashboard id of the widget.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_dashboard_id(self):
-    &#34;&#34;&#34;
-    Returns the dashboard id of the widget  
-     
-    :return: The parent dashboard&#39;s dashboard id 
-    &#34;&#34;&#34;
-    
+    &#34;&#34;&#34;Returns the dashboard id of the widget.&#34;&#34;&#34;
     return self._widget_json[&#39;dashboardid&#39;]</code></pre>
 </details>
 </dd>
@@ -220,20 +200,13 @@
 <span>def <span class="ident">get_id</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Gets the widget's id
-</p>
-<p>:return: The widget's id</p></section>
+<section class="desc"><p>Gets the widget's id</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_id(self):
-    &#34;&#34;&#34;
-    Gets the widget&#39;s id  
-      
-    :return: The widget&#39;s id  
-    &#34;&#34;&#34;
-    
+    &#34;&#34;&#34;Gets the widget&#39;s id&#34;&#34;&#34;
     return self._widget_json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
@@ -241,20 +214,13 @@
 <span>def <span class="ident">get_widget_json</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the widget's JSON
-</p>
-<p>:return: The widget's JSON</p></section>
+<section class="desc"><p>Returns the widget's JSON.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_widget_json(self):
-    &#34;&#34;&#34;  
-    Returns the widget&#39;s JSON  
-      
-    :return: The widget&#39;s JSON  
-    &#34;&#34;&#34;
-    
+    &#34;&#34;&#34;Returns the widget&#39;s JSON.&#34;&#34;&#34;
     return self._widget_json</code></pre>
 </details>
 </dd>

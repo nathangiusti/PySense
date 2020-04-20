@@ -27,7 +27,7 @@ class PySenseTests(unittest.TestCase):
             data = json.loads(file.read())
         dash = self.py_client.post_dashboards(data)
         assert dash is not None
-        self.py_client.delete_dashboards(dash.get_id())
+        self.py_client.delete_dashboards(dash)
 
     def test_get_folders(self):
         temp = self.py_client.get_folders(name='PySense')

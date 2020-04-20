@@ -37,97 +37,62 @@ class User:
         self._user_json = user_json
 
     def get_id(self):
-        &#34;&#34;&#34;
-        Returns the user&#39;s id  
-
-        :return: The user id  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Returns the user&#39;s id.&#34;&#34;&#34;
         return self._user_json[&#39;_id&#39;]
     
     def get_groups(self):
-        &#34;&#34;&#34;
-        Returns the groups a user is in
-        
-        :return: An array of groups 
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Returns the groups a user is in.&#34;&#34;&#34;
         ret_arr = []
         for group in self._user_json[&#39;groups&#39;]:
             ret_arr.append(self._py_client.get_group_by_id(group))
         return ret_arr
 
     def get_email(self):
-        &#34;&#34;&#34;
-        Returns the user&#39;s email  
-
-        :return: The user&#39;s    
-        &#34;&#34;&#34;
-
+        &#34;&#34;&#34;Returns the user&#39;s email&#34;&#34;&#34;
         return self._user_json[&#39;email&#39;]
     
     def get_user_name(self):
-        &#34;&#34;&#34;
-        Returns the user&#39;s username  
-  
-        :return: The user&#39;s username  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Returns the user&#39;s username.&#34;&#34;&#34;
         return self._user_json[&#39;userName&#39;]
 
     def get_first_name(self):
-        &#34;&#34;&#34;
-        Returns the user&#39;s first name  
-  
-        :return: The user&#39;s first name  
-        &#34;&#34;&#34;
-
+        &#34;&#34;&#34;Returns the user&#39;s first name.&#34;&#34;&#34;
         return self._user_json[&#39;firstName&#39;]
 
     def get_last_name(self):
-        &#34;&#34;&#34;
-        Returns the user&#39;s last name  
-
-        :return: The user&#39;s last name  
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Returns the user&#39;s last name.&#34;&#34;&#34;
 
         return self._user_json[&#39;lastName&#39;]
     
+    def get_last_login(self):
+        &#34;&#34;&#34;Returns the time the user last logged in.&#34;&#34;&#34;
+        return PySenseUtils.sisense_time_to_python(self._user_json[&#39;lastLogin&#39;])
+    
     def get_role(self):
-        &#34;&#34;&#34;
-        Returns the user&#39;s role  
-
-        :return: The user&#39;s role  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Returns the user&#39;s role.&#34;&#34;&#34;
         return self._py_client.get_role_name(self._user_json[&#39;roleId&#39;])
 
-    def _get_role_id(self):
+    def get_role_id(self):
+        &#34;&#34;&#34;Returns the role id.&#34;&#34;&#34;
         return self._user_json[&#39;roleId&#39;]
     
     def get_preferences(self):
-        &#34;&#34;&#34;
-        Get&#39;s the user&#39;s preferences  
-            
-        :return: A json blob of preferences  
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Get&#39;s the user&#39;s preferences.&#34;&#34;&#34;
         return self._user_json[&#39;preferences&#39;]
 
     def update(self, *, email=None, user_name=None, first_name=None, last_name=None, role_name=None, groups=None,
                preferences=None):
-        &#34;&#34;&#34;
-        Updates given fields for user object. Returns true if successful, None if error   
+        &#34;&#34;&#34;Updates given fields for user object.  
   
         Optional:
-        
-        :param email: Value to update email to  
-        :param user_name: Value to update username to  
-        :param first_name: Value to update firstName to  
-        :param last_name: Value to update lastName to  
-        :param role_name: New role for user  
-        :param groups: New set of groups for user  
-        :param preferences: Preferences to be updated for user    
+            - email: Value to update email to  
+            - user_name: Value to update username to  
+            - first_name: Value to update firstName to  
+            - last_name: Value to update lastName to  
+            - role_name: New role for user  
+            - groups: New set of groups for user  
+            - preferences: Preferences to be updated for user    
         &#34;&#34;&#34; 
-        
         user_groups = groups if groups is not None else self.get_groups()
         group_arr = []
         for group in PySenseUtils.make_iterable(user_groups):
@@ -138,7 +103,7 @@ class User:
                 &#39;userName&#39;: user_name if user_name else self.get_user_name(),
                 &#39;firstName&#39;: first_name if first_name else self.get_first_name(),
                 &#39;lastName&#39;: last_name if last_name else self.get_last_name(),
-                &#39;roleId&#39;: self._py_client.get_role_id(role_name) if role_name else self._get_role_id(),
+                &#39;roleId&#39;: self._py_client.get_role_id(role_name) if role_name else self.get_role_id(),
                 &#39;groups&#39;: group_arr,
                 &#39;preferences&#39;: preferences if preferences else self.get_preferences()
             }
@@ -175,97 +140,62 @@ class User:
         self._user_json = user_json
 
     def get_id(self):
-        &#34;&#34;&#34;
-        Returns the user&#39;s id  
-
-        :return: The user id  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Returns the user&#39;s id.&#34;&#34;&#34;
         return self._user_json[&#39;_id&#39;]
     
     def get_groups(self):
-        &#34;&#34;&#34;
-        Returns the groups a user is in
-        
-        :return: An array of groups 
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Returns the groups a user is in.&#34;&#34;&#34;
         ret_arr = []
         for group in self._user_json[&#39;groups&#39;]:
             ret_arr.append(self._py_client.get_group_by_id(group))
         return ret_arr
 
     def get_email(self):
-        &#34;&#34;&#34;
-        Returns the user&#39;s email  
-
-        :return: The user&#39;s    
-        &#34;&#34;&#34;
-
+        &#34;&#34;&#34;Returns the user&#39;s email&#34;&#34;&#34;
         return self._user_json[&#39;email&#39;]
     
     def get_user_name(self):
-        &#34;&#34;&#34;
-        Returns the user&#39;s username  
-  
-        :return: The user&#39;s username  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Returns the user&#39;s username.&#34;&#34;&#34;
         return self._user_json[&#39;userName&#39;]
 
     def get_first_name(self):
-        &#34;&#34;&#34;
-        Returns the user&#39;s first name  
-  
-        :return: The user&#39;s first name  
-        &#34;&#34;&#34;
-
+        &#34;&#34;&#34;Returns the user&#39;s first name.&#34;&#34;&#34;
         return self._user_json[&#39;firstName&#39;]
 
     def get_last_name(self):
-        &#34;&#34;&#34;
-        Returns the user&#39;s last name  
-
-        :return: The user&#39;s last name  
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Returns the user&#39;s last name.&#34;&#34;&#34;
 
         return self._user_json[&#39;lastName&#39;]
     
+    def get_last_login(self):
+        &#34;&#34;&#34;Returns the time the user last logged in.&#34;&#34;&#34;
+        return PySenseUtils.sisense_time_to_python(self._user_json[&#39;lastLogin&#39;])
+    
     def get_role(self):
-        &#34;&#34;&#34;
-        Returns the user&#39;s role  
-
-        :return: The user&#39;s role  
-        &#34;&#34;&#34;
-        
+        &#34;&#34;&#34;Returns the user&#39;s role.&#34;&#34;&#34;
         return self._py_client.get_role_name(self._user_json[&#39;roleId&#39;])
 
-    def _get_role_id(self):
+    def get_role_id(self):
+        &#34;&#34;&#34;Returns the role id.&#34;&#34;&#34;
         return self._user_json[&#39;roleId&#39;]
     
     def get_preferences(self):
-        &#34;&#34;&#34;
-        Get&#39;s the user&#39;s preferences  
-            
-        :return: A json blob of preferences  
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Get&#39;s the user&#39;s preferences.&#34;&#34;&#34;
         return self._user_json[&#39;preferences&#39;]
 
     def update(self, *, email=None, user_name=None, first_name=None, last_name=None, role_name=None, groups=None,
                preferences=None):
-        &#34;&#34;&#34;
-        Updates given fields for user object. Returns true if successful, None if error   
+        &#34;&#34;&#34;Updates given fields for user object.  
   
         Optional:
-        
-        :param email: Value to update email to  
-        :param user_name: Value to update username to  
-        :param first_name: Value to update firstName to  
-        :param last_name: Value to update lastName to  
-        :param role_name: New role for user  
-        :param groups: New set of groups for user  
-        :param preferences: Preferences to be updated for user    
+            - email: Value to update email to  
+            - user_name: Value to update username to  
+            - first_name: Value to update firstName to  
+            - last_name: Value to update lastName to  
+            - role_name: New role for user  
+            - groups: New set of groups for user  
+            - preferences: Preferences to be updated for user    
         &#34;&#34;&#34; 
-        
         user_groups = groups if groups is not None else self.get_groups()
         group_arr = []
         for group in PySenseUtils.make_iterable(user_groups):
@@ -276,7 +206,7 @@ class User:
                 &#39;userName&#39;: user_name if user_name else self.get_user_name(),
                 &#39;firstName&#39;: first_name if first_name else self.get_first_name(),
                 &#39;lastName&#39;: last_name if last_name else self.get_last_name(),
-                &#39;roleId&#39;: self._py_client.get_role_id(role_name) if role_name else self._get_role_id(),
+                &#39;roleId&#39;: self._py_client.get_role_id(role_name) if role_name else self.get_role_id(),
                 &#39;groups&#39;: group_arr,
                 &#39;preferences&#39;: preferences if preferences else self.get_preferences()
             }
@@ -289,20 +219,13 @@ class User:
 <span>def <span class="ident">get_email</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the user's email
-</p>
-<p>:return: The user's</p></section>
+<section class="desc"><p>Returns the user's email</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_email(self):
-    &#34;&#34;&#34;
-    Returns the user&#39;s email  
-
-    :return: The user&#39;s    
-    &#34;&#34;&#34;
-
+    &#34;&#34;&#34;Returns the user&#39;s email&#34;&#34;&#34;
     return self._user_json[&#39;email&#39;]</code></pre>
 </details>
 </dd>
@@ -310,20 +233,13 @@ class User:
 <span>def <span class="ident">get_first_name</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the user's first name
-</p>
-<p>:return: The user's first name</p></section>
+<section class="desc"><p>Returns the user's first name.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_first_name(self):
-    &#34;&#34;&#34;
-    Returns the user&#39;s first name  
-
-    :return: The user&#39;s first name  
-    &#34;&#34;&#34;
-
+    &#34;&#34;&#34;Returns the user&#39;s first name.&#34;&#34;&#34;
     return self._user_json[&#39;firstName&#39;]</code></pre>
 </details>
 </dd>
@@ -331,18 +247,13 @@ class User:
 <span>def <span class="ident">get_groups</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the groups a user is in</p>
-<p>:return: An array of groups</p></section>
+<section class="desc"><p>Returns the groups a user is in.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_groups(self):
-    &#34;&#34;&#34;
-    Returns the groups a user is in
-    
-    :return: An array of groups 
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Returns the groups a user is in.&#34;&#34;&#34;
     ret_arr = []
     for group in self._user_json[&#39;groups&#39;]:
         ret_arr.append(self._py_client.get_group_by_id(group))
@@ -353,40 +264,41 @@ class User:
 <span>def <span class="ident">get_id</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the user's id
-</p>
-<p>:return: The user id</p></section>
+<section class="desc"><p>Returns the user's id.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_id(self):
-    &#34;&#34;&#34;
-    Returns the user&#39;s id  
-
-    :return: The user id  
-    &#34;&#34;&#34;
-    
+    &#34;&#34;&#34;Returns the user&#39;s id.&#34;&#34;&#34;
     return self._user_json[&#39;_id&#39;]</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseUser.User.get_last_login"><code class="name flex">
+<span>def <span class="ident">get_last_login</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the time the user last logged in.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_last_login(self):
+    &#34;&#34;&#34;Returns the time the user last logged in.&#34;&#34;&#34;
+    return PySenseUtils.sisense_time_to_python(self._user_json[&#39;lastLogin&#39;])</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseUser.User.get_last_name"><code class="name flex">
 <span>def <span class="ident">get_last_name</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the user's last name
-</p>
-<p>:return: The user's last name</p></section>
+<section class="desc"><p>Returns the user's last name.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_last_name(self):
-    &#34;&#34;&#34;
-    Returns the user&#39;s last name  
-
-    :return: The user&#39;s last name  
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Returns the user&#39;s last name.&#34;&#34;&#34;
 
     return self._user_json[&#39;lastName&#39;]</code></pre>
 </details>
@@ -395,19 +307,13 @@ class User:
 <span>def <span class="ident">get_preferences</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get's the user's preferences
-</p>
-<p>:return: A json blob of preferences</p></section>
+<section class="desc"><p>Get's the user's preferences.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_preferences(self):
-    &#34;&#34;&#34;
-    Get&#39;s the user&#39;s preferences  
-        
-    :return: A json blob of preferences  
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Get&#39;s the user&#39;s preferences.&#34;&#34;&#34;
     return self._user_json[&#39;preferences&#39;]</code></pre>
 </details>
 </dd>
@@ -415,41 +321,41 @@ class User:
 <span>def <span class="ident">get_role</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the user's role
-</p>
-<p>:return: The user's role</p></section>
+<section class="desc"><p>Returns the user's role.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_role(self):
-    &#34;&#34;&#34;
-    Returns the user&#39;s role  
-
-    :return: The user&#39;s role  
-    &#34;&#34;&#34;
-    
+    &#34;&#34;&#34;Returns the user&#39;s role.&#34;&#34;&#34;
     return self._py_client.get_role_name(self._user_json[&#39;roleId&#39;])</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseUser.User.get_role_id"><code class="name flex">
+<span>def <span class="ident">get_role_id</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the role id.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_role_id(self):
+    &#34;&#34;&#34;Returns the role id.&#34;&#34;&#34;
+    return self._user_json[&#39;roleId&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseUser.User.get_user_name"><code class="name flex">
 <span>def <span class="ident">get_user_name</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the user's username
-</p>
-<p>:return: The user's username</p></section>
+<section class="desc"><p>Returns the user's username.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_user_name(self):
-    &#34;&#34;&#34;
-    Returns the user&#39;s username  
-
-    :return: The user&#39;s username  
-    &#34;&#34;&#34;
-    
+    &#34;&#34;&#34;Returns the user&#39;s username.&#34;&#34;&#34;
     return self._user_json[&#39;userName&#39;]</code></pre>
 </details>
 </dd>
@@ -457,36 +363,41 @@ class User:
 <span>def <span class="ident">update</span></span>(<span>self, *, email=None, user_name=None, first_name=None, last_name=None, role_name=None, groups=None, preferences=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Updates given fields for user object. Returns true if successful, None if error
+<section class="desc"><p>Updates given fields for user object.
 </p>
-<p>Optional:</p>
-<p>:param email: Value to update email to<br>
-:param user_name: Value to update username to<br>
-:param first_name: Value to update firstName to<br>
-:param last_name: Value to update lastName to<br>
-:param role_name: New role for user<br>
-:param groups: New set of groups for user<br>
-:param preferences: Preferences to be updated for user</p></section>
+<h2 id="optional">Optional</h2>
+<ul>
+<li>email: Value to update email to
+</li>
+<li>user_name: Value to update username to
+</li>
+<li>first_name: Value to update firstName to
+</li>
+<li>last_name: Value to update lastName to
+</li>
+<li>role_name: New role for user
+</li>
+<li>groups: New set of groups for user
+</li>
+<li>preferences: Preferences to be updated for user</li>
+</ul></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def update(self, *, email=None, user_name=None, first_name=None, last_name=None, role_name=None, groups=None,
            preferences=None):
-    &#34;&#34;&#34;
-    Updates given fields for user object. Returns true if successful, None if error   
+    &#34;&#34;&#34;Updates given fields for user object.  
 
     Optional:
-    
-    :param email: Value to update email to  
-    :param user_name: Value to update username to  
-    :param first_name: Value to update firstName to  
-    :param last_name: Value to update lastName to  
-    :param role_name: New role for user  
-    :param groups: New set of groups for user  
-    :param preferences: Preferences to be updated for user    
+        - email: Value to update email to  
+        - user_name: Value to update username to  
+        - first_name: Value to update firstName to  
+        - last_name: Value to update lastName to  
+        - role_name: New role for user  
+        - groups: New set of groups for user  
+        - preferences: Preferences to be updated for user    
     &#34;&#34;&#34; 
-    
     user_groups = groups if groups is not None else self.get_groups()
     group_arr = []
     for group in PySenseUtils.make_iterable(user_groups):
@@ -497,7 +408,7 @@ class User:
             &#39;userName&#39;: user_name if user_name else self.get_user_name(),
             &#39;firstName&#39;: first_name if first_name else self.get_first_name(),
             &#39;lastName&#39;: last_name if last_name else self.get_last_name(),
-            &#39;roleId&#39;: self._py_client.get_role_id(role_name) if role_name else self._get_role_id(),
+            &#39;roleId&#39;: self._py_client.get_role_id(role_name) if role_name else self.get_role_id(),
             &#39;groups&#39;: group_arr,
             &#39;preferences&#39;: preferences if preferences else self.get_preferences()
         }
@@ -530,9 +441,11 @@ class User:
 <li><code><a title="PySense.PySenseUser.User.get_first_name" href="#PySense.PySenseUser.User.get_first_name">get_first_name</a></code></li>
 <li><code><a title="PySense.PySenseUser.User.get_groups" href="#PySense.PySenseUser.User.get_groups">get_groups</a></code></li>
 <li><code><a title="PySense.PySenseUser.User.get_id" href="#PySense.PySenseUser.User.get_id">get_id</a></code></li>
+<li><code><a title="PySense.PySenseUser.User.get_last_login" href="#PySense.PySenseUser.User.get_last_login">get_last_login</a></code></li>
 <li><code><a title="PySense.PySenseUser.User.get_last_name" href="#PySense.PySenseUser.User.get_last_name">get_last_name</a></code></li>
 <li><code><a title="PySense.PySenseUser.User.get_preferences" href="#PySense.PySenseUser.User.get_preferences">get_preferences</a></code></li>
 <li><code><a title="PySense.PySenseUser.User.get_role" href="#PySense.PySenseUser.User.get_role">get_role</a></code></li>
+<li><code><a title="PySense.PySenseUser.User.get_role_id" href="#PySense.PySenseUser.User.get_role_id">get_role_id</a></code></li>
 <li><code><a title="PySense.PySenseUser.User.get_user_name" href="#PySense.PySenseUser.User.get_user_name">get_user_name</a></code></li>
 <li><code><a title="PySense.PySenseUser.User.update" href="#PySense.PySenseUser.User.update">update</a></code></li>
 </ul>

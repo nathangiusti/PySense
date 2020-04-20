@@ -17,7 +17,8 @@ class PySenseUserTests(unittest.TestCase):
         assert self.user.get_email() is not None
         assert self.user.get_first_name() is not None
         assert self.user.get_last_name() is not None
-        assert self.user.get_role() == 'Viewer'
+        assert self.user.get_role() is not None
+        assert self.user.get_last_login() is not None
 
     def test_update_user(self):
         self.user.update(first_name='Nathan', last_name='Giusti', groups=self.group)
