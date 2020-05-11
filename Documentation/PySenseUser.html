@@ -43,26 +43,39 @@ class User:
     def get_groups(self):
         &#34;&#34;&#34;Returns the groups a user is in.&#34;&#34;&#34;
         ret_arr = []
+        if &#39;groups&#39; not in self._user_json:
+            return []
         for group in self._user_json[&#39;groups&#39;]:
             ret_arr.append(self._py_client.get_group_by_id(group))
         return ret_arr
 
     def get_email(self):
         &#34;&#34;&#34;Returns the user&#39;s email&#34;&#34;&#34;
-        return self._user_json[&#39;email&#39;]
+        if &#39;email&#39; in self._user_json:
+            return self._user_json[&#39;email&#39;]
+        else: 
+            return &#34;&#34;
     
     def get_user_name(self):
         &#34;&#34;&#34;Returns the user&#39;s username.&#34;&#34;&#34;
-        return self._user_json[&#39;userName&#39;]
+        if &#39;userName&#39; in self._user_json:
+            return self._user_json[&#39;userName&#39;]
+        else: 
+            return &#34;&#34;
 
     def get_first_name(self):
         &#34;&#34;&#34;Returns the user&#39;s first name.&#34;&#34;&#34;
-        return self._user_json[&#39;firstName&#39;]
+        if &#39;firstName&#39; in self._user_json:
+            return self._user_json[&#39;firstName&#39;]
+        else: 
+            return &#34;&#34;
 
     def get_last_name(self):
         &#34;&#34;&#34;Returns the user&#39;s last name.&#34;&#34;&#34;
-
-        return self._user_json[&#39;lastName&#39;]
+        if &#39;lastName&#39; in self._user_json:
+            return self._user_json[&#39;lastName&#39;]
+        else: 
+            return &#34;&#34;
     
     def get_last_login(self):
         &#34;&#34;&#34;Returns the time the user last logged in.&#34;&#34;&#34;
@@ -146,26 +159,39 @@ class User:
     def get_groups(self):
         &#34;&#34;&#34;Returns the groups a user is in.&#34;&#34;&#34;
         ret_arr = []
+        if &#39;groups&#39; not in self._user_json:
+            return []
         for group in self._user_json[&#39;groups&#39;]:
             ret_arr.append(self._py_client.get_group_by_id(group))
         return ret_arr
 
     def get_email(self):
         &#34;&#34;&#34;Returns the user&#39;s email&#34;&#34;&#34;
-        return self._user_json[&#39;email&#39;]
+        if &#39;email&#39; in self._user_json:
+            return self._user_json[&#39;email&#39;]
+        else: 
+            return &#34;&#34;
     
     def get_user_name(self):
         &#34;&#34;&#34;Returns the user&#39;s username.&#34;&#34;&#34;
-        return self._user_json[&#39;userName&#39;]
+        if &#39;userName&#39; in self._user_json:
+            return self._user_json[&#39;userName&#39;]
+        else: 
+            return &#34;&#34;
 
     def get_first_name(self):
         &#34;&#34;&#34;Returns the user&#39;s first name.&#34;&#34;&#34;
-        return self._user_json[&#39;firstName&#39;]
+        if &#39;firstName&#39; in self._user_json:
+            return self._user_json[&#39;firstName&#39;]
+        else: 
+            return &#34;&#34;
 
     def get_last_name(self):
         &#34;&#34;&#34;Returns the user&#39;s last name.&#34;&#34;&#34;
-
-        return self._user_json[&#39;lastName&#39;]
+        if &#39;lastName&#39; in self._user_json:
+            return self._user_json[&#39;lastName&#39;]
+        else: 
+            return &#34;&#34;
     
     def get_last_login(self):
         &#34;&#34;&#34;Returns the time the user last logged in.&#34;&#34;&#34;
@@ -226,7 +252,10 @@ class User:
 </summary>
 <pre><code class="python">def get_email(self):
     &#34;&#34;&#34;Returns the user&#39;s email&#34;&#34;&#34;
-    return self._user_json[&#39;email&#39;]</code></pre>
+    if &#39;email&#39; in self._user_json:
+        return self._user_json[&#39;email&#39;]
+    else: 
+        return &#34;&#34;</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseUser.User.get_first_name"><code class="name flex">
@@ -240,7 +269,10 @@ class User:
 </summary>
 <pre><code class="python">def get_first_name(self):
     &#34;&#34;&#34;Returns the user&#39;s first name.&#34;&#34;&#34;
-    return self._user_json[&#39;firstName&#39;]</code></pre>
+    if &#39;firstName&#39; in self._user_json:
+        return self._user_json[&#39;firstName&#39;]
+    else: 
+        return &#34;&#34;</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseUser.User.get_groups"><code class="name flex">
@@ -255,6 +287,8 @@ class User:
 <pre><code class="python">def get_groups(self):
     &#34;&#34;&#34;Returns the groups a user is in.&#34;&#34;&#34;
     ret_arr = []
+    if &#39;groups&#39; not in self._user_json:
+        return []
     for group in self._user_json[&#39;groups&#39;]:
         ret_arr.append(self._py_client.get_group_by_id(group))
     return ret_arr</code></pre>
@@ -299,8 +333,10 @@ class User:
 </summary>
 <pre><code class="python">def get_last_name(self):
     &#34;&#34;&#34;Returns the user&#39;s last name.&#34;&#34;&#34;
-
-    return self._user_json[&#39;lastName&#39;]</code></pre>
+    if &#39;lastName&#39; in self._user_json:
+        return self._user_json[&#39;lastName&#39;]
+    else: 
+        return &#34;&#34;</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseUser.User.get_preferences"><code class="name flex">
@@ -356,7 +392,10 @@ class User:
 </summary>
 <pre><code class="python">def get_user_name(self):
     &#34;&#34;&#34;Returns the user&#39;s username.&#34;&#34;&#34;
-    return self._user_json[&#39;userName&#39;]</code></pre>
+    if &#39;userName&#39; in self._user_json:
+        return self._user_json[&#39;userName&#39;]
+    else: 
+        return &#34;&#34;</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseUser.User.update"><code class="name flex">

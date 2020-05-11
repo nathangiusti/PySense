@@ -10,7 +10,8 @@ class PySenseRuleTests(unittest.TestCase):
         cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
         cls.elasticube = cls.py_client.get_elasticube_by_name('PySense')
         cls.user = cls.py_client.get_user_by_email('testuser@sisense.com')
-        cls.rule = cls.elasticube.add_security_rule(cls.user, 'Dim_Dates', 'BusinessValue', 'numeric', members=[1])
+        cls.rule = cls.elasticube.add_security_rule('Dim_Dates', 'BusinessValue', 'numeric', 
+                                                    members=[1], shares=cls.user)
         
     def test_getters(self):
         assert self.rule.get_column() is not None

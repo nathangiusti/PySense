@@ -25,7 +25,8 @@ def authenticate_by_file(config_file):
     with open(config_file, 'r') as yml_file:
         cfg = yaml.safe_load(yml_file)
         debug = cfg['debug'] if 'debug' in cfg else False
-        return PySense(cfg['host'], cfg['username'], cfg['password'], debug=debug)
+        verify = cfg['verify'] if 'verify' in cfg else True
+        return PySense(cfg['host'], cfg['username'], cfg['password'], debug=debug, verify=verify)
 
 
 class PySense:
@@ -37,8 +38,8 @@ class PySense:
         connector: The PySenseRestConnector which runs the rest command.        
     """
 
-    def __init__(self, host, username, password, *, debug=False):
-        self.connector = PySenseRestConnector.RestConnector(host, username, password, debug)
+    def __init__(self, host, username, password, *, debug=False, verify=True):
+        self.connector = PySenseRestConnector.RestConnector(host, username, password, debug, verify)
         self._roles = self.connector.rest_call('get', 'api/roles')
 
     def set_debug(self, debug):

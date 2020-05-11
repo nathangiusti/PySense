@@ -6,9 +6,10 @@ from PySense import PySenseException
 
 class RestConnector:
     
-    def __init__(self, host, username, password, debug):
+    def __init__(self, host, username, password, debug, verify):
         self._host = format_host(host)
         self.debug = debug
+        self.verify = verify
         data = {'username': username, 'password': password}
         resp = requests.post('{}/api/v1/authentication/login'.format(self._host), data=data)
         parse_response(resp)
@@ -44,7 +45,8 @@ class RestConnector:
                 print('Data: {}'.format(data))
             if json_payload is not None:
                 print('JSON: {}'.format(json_payload))
-        response = requests.request(action_type, full_url, headers=self._token, data=data, json=json_payload)
+        response = requests.request(action_type, full_url, 
+                                    headers=self._token, data=data, json=json_payload, verify=self.verify)
         parse_response(response)
         if len(response.content) == 0:
             return None

@@ -16,13 +16,17 @@ class PySenseElasticubeTests(unittest.TestCase):
         assert model is not None
 
     def test_get_add_modify_delete_security_rule(self):
-        default_rule = self.elasticube.add_default_rule('Dim_Dates', 'BusinessDay', 'numeric')
+        default_rule = self.elasticube.add_security_rule('Dim_Dates', 'BusinessDay', 'numeric', members=['1'])
         assert default_rule is not None
+        assert default_rule.get_members() == ['1']
+        
+        with self.assertRaises(PySense.PySenseException.PySenseException): 
+            self.elasticube.add_security_rule('Dim_Dates', 'BusinessDay', 'numeric', shares=['Some user'])
         
         shares = self.py_client.get_users(email='testuser@sisense.com')
         shares.extend(self.py_client.get_groups(name='PySense'))
         
-        rule = self.elasticube.add_security_rule(shares, 'Dim_Dates', 'BusinessDay', 'numeric', members=["1"])
+        rule = self.elasticube.add_security_rule('Dim_Dates', 'BusinessDay', 'numeric', shares=shares, members=["1"])
         assert len(self.elasticube.get_security_for_user(shares[0])) == 2
         assert len(self.elasticube.get_datasecurity()) == 2
         assert len(self.elasticube.

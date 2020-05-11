@@ -1,3 +1,23 @@
+**V 0.2.4 Release Notes**
+
+- Additions
+    - Option to set verify SSL to false. See snippets and documentation.
+
+- Breaking changes
+    - Add default rule method removed. 
+    - Add security rule now has shares as optional. To make a default rule, leave shares blank.
+    - New get user report script available
+    
+- Fixes
+    - Fixed default rule not loading correctly. 
+    - Some getter methods on user were throwing exceptions. 
+	
+- Known Issues
+    - PowerPoint tutorial uses old syntax for adding security. A note has been added.
+
+**V 0.2.3 Release Notes**
+- Updated package to automatically install required dependencies
+
 **V 0.2.2 Release Notes**
 - Additions
     - Manage your connections!

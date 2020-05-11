@@ -1,6 +1,7 @@
 import random
 import urllib.parse
 
+from PySense import PySenseException
 from PySense import PySenseGroup
 from PySense import PySenseRule
 from PySense import PySenseUser
@@ -99,17 +100,17 @@ class Elasticube:
         else:
             return resp_content
 
-    def add_security_rule(self, shares, table, column, data_type, *, members=[], 
+    def add_security_rule(self, table, column, data_type, *, shares=None, members=[], 
                           server_address=None, exclusionary=False, all_members=None, ):
         """Defines data security rules for a column on a specific server and ElastiCube   
   
         Args:
-            - shares: The users or groups to assign the security rule to  
             - table: The table to apply security on  
             - column: The column to apply security on  
             - data_type: The data type of the column  
         
         Optional:
+            - shares: The users or groups to assign the security rule to. If none, will be default rule.  
             - members: An array of values which users should have access to  
                 If left blank, user will get none.  
             - server_address: The server address of the ElastiCube.  
@@ -134,12 +135,18 @@ class Elasticube:
                     }]
 
         shares_json = []
-        for party in PySenseUtils.make_iterable(shares):
-            if isinstance(party, PySenseUser.User):
-                shares_json.append({'party': party.get_id(), 'type': 'user'})
-            elif isinstance(party, PySenseGroup.Group):
-                shares_json.append({'party': party.get_id(), 'type': 'group'})
-        rule_json[0]['shares'] = shares_json
+        if shares is None:
+            # Default rule
+            rule_json[0]['shares'] = [{"type": "default"}]
+        else:
+            for party in PySenseUtils.make_iterable(shares):
+                if isinstance(party, PySenseUser.User):
+                    shares_json.append({'party': party.get_id(), 'type': 'user'})
+                elif isinstance(party, PySenseGroup.Group):
+                    shares_json.append({'party': party.get_id(), 'type': 'group'})
+                else:
+                    raise PySenseException.PySenseException('{} is not a user or a group object'.format(party))
+            rule_json[0]['shares'] = shares_json
 
         member_arr = []
         for member in members:
@@ -151,33 +158,6 @@ class Elasticube:
                                                         json_payload=rule_json)
 
         return PySenseRule.Rule(self._py_client, resp_json[0])
-
-    def add_default_rule(self, table_name, column_name, data_type, *, members=[], server_address=None):
-        """Add a rule for the default group    
-          
-        Args:
-            - table_name: Table to apply data security to  
-            - column_name: Column to apply data security to  
-            - data_type: The data type  
-          
-        Optional:
-            - server_address: The server address of the ElastiCube.  
-                Set this to your server ip if this method fails without it set.  
-                Use 'Set' for Elasticube Set. Required for elasticube sets.   
-            - members: Default security values. Leave out for "Nothing." (Recommended)  
-          
-        Returns:
-             A PySenseRule.Rule object   
-        """
-        
-        server_address = server_address if server_address else self._server_address
-        members = PySenseUtils.make_iterable(members)
-        if 'Everything' in members:
-            return self.add_security_rule([{"type": "default"}], table_name, column_name, data_type, 
-                                          all_members=True, server_address=server_address)
-        else:
-            return self.add_security_rule([{"type": "default"}], table_name, column_name, data_type,
-                                          members=members, server_address=server_address)
 
     def get_datasecurity(self, *, server_address=None):
         """Return data security rules for the ElastiCube.     

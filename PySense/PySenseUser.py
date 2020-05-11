@@ -17,26 +17,39 @@ class User:
     def get_groups(self):
         """Returns the groups a user is in."""
         ret_arr = []
+        if 'groups' not in self._user_json:
+            return []
         for group in self._user_json['groups']:
             ret_arr.append(self._py_client.get_group_by_id(group))
         return ret_arr
 
     def get_email(self):
         """Returns the user's email"""
-        return self._user_json['email']
+        if 'email' in self._user_json:
+            return self._user_json['email']
+        else: 
+            return ""
     
     def get_user_name(self):
         """Returns the user's username."""
-        return self._user_json['userName']
+        if 'userName' in self._user_json:
+            return self._user_json['userName']
+        else: 
+            return ""
 
     def get_first_name(self):
         """Returns the user's first name."""
-        return self._user_json['firstName']
+        if 'firstName' in self._user_json:
+            return self._user_json['firstName']
+        else: 
+            return ""
 
     def get_last_name(self):
         """Returns the user's last name."""
-
-        return self._user_json['lastName']
+        if 'lastName' in self._user_json:
+            return self._user_json['lastName']
+        else: 
+            return ""
     
     def get_last_login(self):
         """Returns the time the user last logged in."""

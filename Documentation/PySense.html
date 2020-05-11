@@ -51,7 +51,8 @@ def authenticate_by_file(config_file):
     with open(config_file, &#39;r&#39;) as yml_file:
         cfg = yaml.safe_load(yml_file)
         debug = cfg[&#39;debug&#39;] if &#39;debug&#39; in cfg else False
-        return PySense(cfg[&#39;host&#39;], cfg[&#39;username&#39;], cfg[&#39;password&#39;], debug=debug)
+        verify = cfg[&#39;verify&#39;] if &#39;verify&#39; in cfg else True
+        return PySense(cfg[&#39;host&#39;], cfg[&#39;username&#39;], cfg[&#39;password&#39;], debug=debug, verify=verify)
 
 
 class PySense:
@@ -63,8 +64,8 @@ class PySense:
         connector: The PySenseRestConnector which runs the rest command.        
     &#34;&#34;&#34;
 
-    def __init__(self, host, username, password, *, debug=False):
-        self.connector = PySenseRestConnector.RestConnector(host, username, password, debug)
+    def __init__(self, host, username, password, *, debug=False, verify=True):
+        self.connector = PySenseRestConnector.RestConnector(host, username, password, debug, verify)
         self._roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
 
     def set_debug(self, debug):
@@ -603,7 +604,8 @@ class PySense:
     with open(config_file, &#39;r&#39;) as yml_file:
         cfg = yaml.safe_load(yml_file)
         debug = cfg[&#39;debug&#39;] if &#39;debug&#39; in cfg else False
-        return PySense(cfg[&#39;host&#39;], cfg[&#39;username&#39;], cfg[&#39;password&#39;], debug=debug)</code></pre>
+        verify = cfg[&#39;verify&#39;] if &#39;verify&#39; in cfg else True
+        return PySense(cfg[&#39;host&#39;], cfg[&#39;username&#39;], cfg[&#39;password&#39;], debug=debug, verify=verify)</code></pre>
 </details>
 </dd>
 </dl>
@@ -613,7 +615,7 @@ class PySense:
 <dl>
 <dt id="PySense.PySense.PySense"><code class="flex name class">
 <span>class <span class="ident">PySense</span></span>
-<span>(</span><span>host, username, password, *, debug=False)</span>
+<span>(</span><span>host, username, password, *, debug=False, verify=True)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>The manager of connections to the PySense server
@@ -637,8 +639,8 @@ class PySense:
         connector: The PySenseRestConnector which runs the rest command.        
     &#34;&#34;&#34;
 
-    def __init__(self, host, username, password, *, debug=False):
-        self.connector = PySenseRestConnector.RestConnector(host, username, password, debug)
+    def __init__(self, host, username, password, *, debug=False, verify=True):
+        self.connector = PySenseRestConnector.RestConnector(host, username, password, debug, verify)
         self._roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
 
     def set_debug(self, debug):

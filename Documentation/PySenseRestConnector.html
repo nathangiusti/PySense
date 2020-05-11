@@ -32,9 +32,10 @@ from PySense import PySenseException
 
 class RestConnector:
     
-    def __init__(self, host, username, password, debug):
+    def __init__(self, host, username, password, debug, verify):
         self._host = format_host(host)
         self.debug = debug
+        self.verify = verify
         data = {&#39;username&#39;: username, &#39;password&#39;: password}
         resp = requests.post(&#39;{}/api/v1/authentication/login&#39;.format(self._host), data=data)
         parse_response(resp)
@@ -70,7 +71,8 @@ class RestConnector:
                 print(&#39;Data: {}&#39;.format(data))
             if json_payload is not None:
                 print(&#39;JSON: {}&#39;.format(json_payload))
-        response = requests.request(action_type, full_url, headers=self._token, data=data, json=json_payload)
+        response = requests.request(action_type, full_url, 
+                                    headers=self._token, data=data, json=json_payload, verify=self.verify)
         parse_response(response)
         if len(response.content) == 0:
             return None
@@ -202,7 +204,7 @@ def build_query_string(dictionary):
 <dl>
 <dt id="PySense.PySenseRestConnector.RestConnector"><code class="flex name class">
 <span>class <span class="ident">RestConnector</span></span>
-<span>(</span><span>host, username, password, debug)</span>
+<span>(</span><span>host, username, password, debug, verify)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -212,9 +214,10 @@ def build_query_string(dictionary):
 </summary>
 <pre><code class="python">class RestConnector:
     
-    def __init__(self, host, username, password, debug):
+    def __init__(self, host, username, password, debug, verify):
         self._host = format_host(host)
         self.debug = debug
+        self.verify = verify
         data = {&#39;username&#39;: username, &#39;password&#39;: password}
         resp = requests.post(&#39;{}/api/v1/authentication/login&#39;.format(self._host), data=data)
         parse_response(resp)
@@ -250,7 +253,8 @@ def build_query_string(dictionary):
                 print(&#39;Data: {}&#39;.format(data))
             if json_payload is not None:
                 print(&#39;JSON: {}&#39;.format(json_payload))
-        response = requests.request(action_type, full_url, headers=self._token, data=data, json=json_payload)
+        response = requests.request(action_type, full_url, 
+                                    headers=self._token, data=data, json=json_payload, verify=self.verify)
         parse_response(response)
         if len(response.content) == 0:
             return None
@@ -324,7 +328,8 @@ def build_query_string(dictionary):
             print(&#39;Data: {}&#39;.format(data))
         if json_payload is not None:
             print(&#39;JSON: {}&#39;.format(json_payload))
-    response = requests.request(action_type, full_url, headers=self._token, data=data, json=json_payload)
+    response = requests.request(action_type, full_url, 
+                                headers=self._token, data=data, json=json_payload, verify=self.verify)
     parse_response(response)
     if len(response.content) == 0:
         return None

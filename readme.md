@@ -27,32 +27,24 @@ See snippets folder for common usage snippets
 
 - Increased control over elasticube schemas
 
-**V 0.2.2 Release Notes**
-- Additions
-    - Manage your connections!
-        - Get, update, add, and delete connections
-        - All connections supported an extent
-        - Full support for PostgreSQL, ODBC, CSV, Excel, and sql
-        - See the Connections snippets for more details
-    - Users
-        - Get user last login
-        - Get user by user id
-    - Dashboard
-        - Get groups and users dashboard is shared with
-        - Check if widget with id exists in dashboard
-    
-- Breaking changes
-    - PySense.delete_dashboards now takes one to many dashboards instead of a single dashboard id
-    - Delete widgets now takes one to many PySense widget objects instead of widget ids
-    - Dashboard.add_shares now Dashboard.add_share for clarity. Method now takes on user or group object
-    - Dashboard.remove_shares now takes a list of users and/or groups
-    - Dashboard.delete_dashboard now takes a dashboard object instead of a dashboard id
+**V 0.2.4 Release Notes**
 
+- Additions
+    - Option to set verify SSL to false. See snippets and documentation.
+
+- Breaking changes
+    - Add default rule method removed. 
+    - Add security rule now has shares as optional. To make a default rule, leave shares blank.
+    - New get user report script available
+    
 - Fixes
-    - Documentation redone for clarity
-    - Dashboard will not share to user/groups already shared to
+    - Fixed default rule not loading correctly. 
+    - Some getter methods on user were throwing exceptions. 
 	
 - Known Issues
-    - Dashboard and widget export to pdf and png may cause Sisense to throw internal server errors. 
+    - PowerPoint tutorial uses old syntax for adding security. A note has been added.
+
+
+
     
    
