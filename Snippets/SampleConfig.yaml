@@ -1,4 +1,12 @@
 host: 'your_host'
 username: 'your_username@sample.com'
 password: 'your_password'
+
+# Windows or Linux
+version: 'Windows' 
+
+# Optional. False by default. Set to true to turn on more detailed debugging
 debug: False
+
+# Optional. True by default. Set to false to turn off SSL Certificate Verification
+verify: True

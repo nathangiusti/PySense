@@ -18,13 +18,13 @@ class Rule:
     def get_shares(self):
         """Returns the rules shares"""
         return self._rule_json['shares']
-    
+
     def get_id(self):
         """Gets the rule id."""
         return self._rule_json['_id']
-    
+
     def get_column(self):
-        """Gets the column for which the rule applies"""  
+        """Gets the column for which the rule applies"""
         return self._rule_json['column']
 
     def get_table(self):
@@ -34,33 +34,33 @@ class Rule:
     def get_members(self):
         """Gets the member values."""
         return self._rule_json['members']
-    
+
     def get_data_type(self):
         """Gets the data type for which the rule applies."""
         return self._rule_json['datatype']
-    
+
     def get_exclusionary(self):
         """Returns whether or not the rule is exclusionary"""
         return self._rule_json['exclusionary']
-    
+
     def get_all_members(self):
         """Returns whether or not the rule is for all members."""
         return self._rule_json['exclusionary']
-        
-    def update_rule(self, *, shares=None, table=None, column=None, data_type=None, members=None, 
+
+    def update_rule(self, *, shares=None, table=None, column=None, data_type=None, members=None,
                     exclusionary=None, all_members=None):
-        """Updates the current rule.  
-        
-        Any arguments given will replace the current value and update the rule   
-        
-        Optional:
-            - shares: Array of users and groups to share the rule with  
-            - table: Table of the data security rule  
-            - column: Column of the data security rule  
-            - data_type: Data security rule data type  
-            - members: The values to specify in the rule. If blank, will use nothing  
-            - exclusionary: Set to true to make an exclusionary rule   
-            - all_members: Set to true for a rule to allow user to see all values  
+        """Updates the current rule.
+
+        Any arguments given will replace the current value and update the rule in place
+
+        Args:
+            shares: (optional) Array of users and groups to share the rule with
+            table: (optional) Table of the data security rule
+            column: (optional) Column of the data security rule
+            data_type: (optional) Data security rule data type
+            members: (optional) The values to specify in the rule. If blank, will use nothing
+            exclusionary: (optional) Set to true to make an exclusionary rule
+            all_members: (optional) Set to true for a rule to allow user to see all values
         """
         rule_json = {
             "column": column if column is not None else self.get_column(),
@@ -87,7 +87,7 @@ class Rule:
             rule_json['members'] = member_arr
         else:
             rule_json['members'] = self.get_members()
-        
+
         resp_json = self._py_client.connector.rest_call('put', 'api/elasticubes/datasecurity/{}'.format(self.get_id()),
                                                         json_payload=rule_json)
         self._reset(resp_json)

@@ -13,9 +13,9 @@ class Group:
 
     def get_id(self):
         """Get groups id."""
-        
+
         return self._group_json['_id']
-    
+
     def get_users(self):
         """Returns the members of the group."""
         resp_json = self._py_client.connector.rest_call('get', 'api/groups/{}/users'.format(self.get_id()))
@@ -37,5 +37,5 @@ class Group:
         payload = []
         for user in PySenseUtils.make_iterable(users):
             payload.append(user.get_id())
-            
+
         self._py_client.connector.rest_call('delete', 'api/groups/{}/users'.format(self.get_id()), json_payload=payload)

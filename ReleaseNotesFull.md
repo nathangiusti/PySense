@@ -1,3 +1,22 @@
+**V 0.2.5 Release Notes**
+
+- Additions
+    - Now with additional linux support
+    - In Linux export and import models
+    - Scripts folder contains migrate schemas script for migrating schemas between instances
+    - DataModel snippets available for reference
+
+- Breaking changes
+    - Required attribute version (either windows or linux) needed to instantiate PySense
+    - Elasticube.getModel now returns a data model object 
+    
+- Fixes
+    - Get elasticubes no longer crashes on linux
+    - Documentation formatting fixes
+	
+- Known Issues
+    - PowerPoint tutorial uses out of date syntax. 
+
 **V 0.2.4 Release Notes**
 
 - Additions

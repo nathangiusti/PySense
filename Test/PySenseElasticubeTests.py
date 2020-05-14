@@ -11,9 +11,10 @@ class PySenseElasticubeTests(unittest.TestCase):
         cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
         cls.elasticube = cls.py_client.get_elasticube_by_name('PySense')
 
-    def test_get_model(self):
+    def test_getters(self):
         model = self.elasticube.get_model()
         assert model is not None
+        assert self.elasticube.get_name() is not None
 
     def test_get_add_modify_delete_security_rule(self):
         default_rule = self.elasticube.add_security_rule('Dim_Dates', 'BusinessDay', 'numeric', members=['1'])

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.5" />
-<title>PySense.PySenseFormula API documentation</title>
+<title>PySense.PySenseDataModel API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,37 +17,48 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>PySense.PySenseFormula</code></h1>
+<h1 class="title">Module <code>PySense.PySenseDataModel</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Formula:
+<pre><code class="python">from PySense import PySenseException
+from PySense import SisenseVersion
 
-    def __init__(self, py_client, formula_json):
+
+class DataModel:
+
+    def __init__(self, py_client, data_model_json):
         self._py_client = py_client
-        self._formula_json = formula_json
-
-    def get_oid(self):
-        &#34;&#34;&#34;Get&#39;s the formula&#39;s Oid&#34;&#34;&#34;
-
-        return self._formula_json[&#39;oid&#39;]
-
-    def change_datasource(self, cube):
-        &#34;&#34;&#34;Change the data source of the formula.
-
-        The formula must be re-added after a data source change for it to take effect
-
-        Args:
-             cube: The ElastiCube to set the formula to
-        &#34;&#34;&#34;
-        self._formula_json[&#39;datasource&#39;] = cube.get_metadata()
+        self._data_model_json = data_model_json
+        self._schema_json = None
+        if py_client.version == SisenseVersion.Version.LINUX:
+            self._schema_json = self.get_schema_json()
 
     def get_json(self):
-        &#34;&#34;&#34;Returns the formula json.&#34;&#34;&#34;
-        return self._formula_json</code></pre>
+        &#34;&#34;&#34;Returns the data model&#39;s JSON&#34;&#34;&#34;
+        return self._data_model_json
+    
+    def get_title(self):
+        &#34;&#34;&#34;Returns the data models title&#34;&#34;&#34;
+        return self._data_model_json[&#39;title&#39;]
+    
+    def get_oid(self):
+        &#34;&#34;&#34;Returns the data models oid&#34;&#34;&#34;
+        return self._data_model_json[&#39;oid&#39;]
+    
+    def get_schema_json(self):
+        if self._schema_json is None:
+            query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
+            schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;, 
+                                                              query_params=query_params)
+            if schema_json is None:
+                raise PySenseException.PySenseException(&#39;Schema JSON not found for data model {}&#39;
+                                                        .format(self.get_oid()))
+            self._schema_json = schema_json
+        return self._schema_json</code></pre>
 </details>
 </section>
 <section>
@@ -59,9 +70,9 @@
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="PySense.PySenseFormula.Formula"><code class="flex name class">
-<span>class <span class="ident">Formula</span></span>
-<span>(</span><span>py_client, formula_json)</span>
+<dt id="PySense.PySenseDataModel.DataModel"><code class="flex name class">
+<span>class <span class="ident">DataModel</span></span>
+<span>(</span><span>py_client, data_model_json)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -69,86 +80,101 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Formula:
+<pre><code class="python">class DataModel:
 
-    def __init__(self, py_client, formula_json):
+    def __init__(self, py_client, data_model_json):
         self._py_client = py_client
-        self._formula_json = formula_json
-
-    def get_oid(self):
-        &#34;&#34;&#34;Get&#39;s the formula&#39;s Oid&#34;&#34;&#34;
-
-        return self._formula_json[&#39;oid&#39;]
-
-    def change_datasource(self, cube):
-        &#34;&#34;&#34;Change the data source of the formula.
-
-        The formula must be re-added after a data source change for it to take effect
-
-        Args:
-             cube: The ElastiCube to set the formula to
-        &#34;&#34;&#34;
-        self._formula_json[&#39;datasource&#39;] = cube.get_metadata()
+        self._data_model_json = data_model_json
+        self._schema_json = None
+        if py_client.version == SisenseVersion.Version.LINUX:
+            self._schema_json = self.get_schema_json()
 
     def get_json(self):
-        &#34;&#34;&#34;Returns the formula json.&#34;&#34;&#34;
-        return self._formula_json</code></pre>
+        &#34;&#34;&#34;Returns the data model&#39;s JSON&#34;&#34;&#34;
+        return self._data_model_json
+    
+    def get_title(self):
+        &#34;&#34;&#34;Returns the data models title&#34;&#34;&#34;
+        return self._data_model_json[&#39;title&#39;]
+    
+    def get_oid(self):
+        &#34;&#34;&#34;Returns the data models oid&#34;&#34;&#34;
+        return self._data_model_json[&#39;oid&#39;]
+    
+    def get_schema_json(self):
+        if self._schema_json is None:
+            query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
+            schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;, 
+                                                              query_params=query_params)
+            if schema_json is None:
+                raise PySenseException.PySenseException(&#39;Schema JSON not found for data model {}&#39;
+                                                        .format(self.get_oid()))
+            self._schema_json = schema_json
+        return self._schema_json</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="PySense.PySenseFormula.Formula.change_datasource"><code class="name flex">
-<span>def <span class="ident">change_datasource</span></span>(<span>self, cube)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Change the data source of the formula.</p>
-<p>The formula must be re-added after a data source change for it to take effect</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>cube</code></strong></dt>
-<dd>The ElastiCube to set the formula to</dd>
-</dl></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def change_datasource(self, cube):
-    &#34;&#34;&#34;Change the data source of the formula.
-
-    The formula must be re-added after a data source change for it to take effect
-
-    Args:
-         cube: The ElastiCube to set the formula to
-    &#34;&#34;&#34;
-    self._formula_json[&#39;datasource&#39;] = cube.get_metadata()</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseFormula.Formula.get_json"><code class="name flex">
+<dt id="PySense.PySenseDataModel.DataModel.get_json"><code class="name flex">
 <span>def <span class="ident">get_json</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the formula json.</p></section>
+<section class="desc"><p>Returns the data model's JSON</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_json(self):
-    &#34;&#34;&#34;Returns the formula json.&#34;&#34;&#34;
-    return self._formula_json</code></pre>
+    &#34;&#34;&#34;Returns the data model&#39;s JSON&#34;&#34;&#34;
+    return self._data_model_json</code></pre>
 </details>
 </dd>
-<dt id="PySense.PySenseFormula.Formula.get_oid"><code class="name flex">
+<dt id="PySense.PySenseDataModel.DataModel.get_oid"><code class="name flex">
 <span>def <span class="ident">get_oid</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get's the formula's Oid</p></section>
+<section class="desc"><p>Returns the data models oid</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_oid(self):
-    &#34;&#34;&#34;Get&#39;s the formula&#39;s Oid&#34;&#34;&#34;
-
-    return self._formula_json[&#39;oid&#39;]</code></pre>
+    &#34;&#34;&#34;Returns the data models oid&#34;&#34;&#34;
+    return self._data_model_json[&#39;oid&#39;]</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDataModel.DataModel.get_schema_json"><code class="name flex">
+<span>def <span class="ident">get_schema_json</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_schema_json(self):
+    if self._schema_json is None:
+        query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
+        schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;, 
+                                                          query_params=query_params)
+        if schema_json is None:
+            raise PySenseException.PySenseException(&#39;Schema JSON not found for data model {}&#39;
+                                                    .format(self.get_oid()))
+        self._schema_json = schema_json
+    return self._schema_json</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDataModel.DataModel.get_title"><code class="name flex">
+<span>def <span class="ident">get_title</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the data models title</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_title(self):
+    &#34;&#34;&#34;Returns the data models title&#34;&#34;&#34;
+    return self._data_model_json[&#39;title&#39;]</code></pre>
 </details>
 </dd>
 </dl>
@@ -170,11 +196,12 @@
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="PySense.PySenseFormula.Formula" href="#PySense.PySenseFormula.Formula">Formula</a></code></h4>
+<h4><code><a title="PySense.PySenseDataModel.DataModel" href="#PySense.PySenseDataModel.DataModel">DataModel</a></code></h4>
 <ul class="">
-<li><code><a title="PySense.PySenseFormula.Formula.change_datasource" href="#PySense.PySenseFormula.Formula.change_datasource">change_datasource</a></code></li>
-<li><code><a title="PySense.PySenseFormula.Formula.get_json" href="#PySense.PySenseFormula.Formula.get_json">get_json</a></code></li>
-<li><code><a title="PySense.PySenseFormula.Formula.get_oid" href="#PySense.PySenseFormula.Formula.get_oid">get_oid</a></code></li>
+<li><code><a title="PySense.PySenseDataModel.DataModel.get_json" href="#PySense.PySenseDataModel.DataModel.get_json">get_json</a></code></li>
+<li><code><a title="PySense.PySenseDataModel.DataModel.get_oid" href="#PySense.PySenseDataModel.DataModel.get_oid">get_oid</a></code></li>
+<li><code><a title="PySense.PySenseDataModel.DataModel.get_schema_json" href="#PySense.PySenseDataModel.DataModel.get_schema_json">get_schema_json</a></code></li>
+<li><code><a title="PySense.PySenseDataModel.DataModel.get_title" href="#PySense.PySenseDataModel.DataModel.get_title">get_title</a></code></li>
 </ul>
 </li>
 </ul>

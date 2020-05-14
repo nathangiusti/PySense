@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.5" />
-<title>PySense.PySenseFormula API documentation</title>
+<title>PySense.SisenseVersion API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,37 +17,19 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>PySense.PySenseFormula</code></h1>
+<h1 class="title">Module <code>PySense.SisenseVersion</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Formula:
+<pre><code class="python">from enum import Enum
 
-    def __init__(self, py_client, formula_json):
-        self._py_client = py_client
-        self._formula_json = formula_json
 
-    def get_oid(self):
-        &#34;&#34;&#34;Get&#39;s the formula&#39;s Oid&#34;&#34;&#34;
-
-        return self._formula_json[&#39;oid&#39;]
-
-    def change_datasource(self, cube):
-        &#34;&#34;&#34;Change the data source of the formula.
-
-        The formula must be re-added after a data source change for it to take effect
-
-        Args:
-             cube: The ElastiCube to set the formula to
-        &#34;&#34;&#34;
-        self._formula_json[&#39;datasource&#39;] = cube.get_metadata()
-
-    def get_json(self):
-        &#34;&#34;&#34;Returns the formula json.&#34;&#34;&#34;
-        return self._formula_json</code></pre>
+class Version(Enum): 
+    WINDOWS = 1
+    LINUX = 2</code></pre>
 </details>
 </section>
 <section>
@@ -59,97 +41,33 @@
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="PySense.PySenseFormula.Formula"><code class="flex name class">
-<span>class <span class="ident">Formula</span></span>
-<span>(</span><span>py_client, formula_json)</span>
+<dt id="PySense.SisenseVersion.Version"><code class="flex name class">
+<span>class <span class="ident">Version</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
 </code></dt>
+<dd>
+<section class="desc"><p>An enumeration.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Version(Enum): 
+    WINDOWS = 1
+    LINUX = 2</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="PySense.SisenseVersion.Version.LINUX"><code class="name">var <span class="ident">LINUX</span></code></dt>
 <dd>
 <section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Formula:
-
-    def __init__(self, py_client, formula_json):
-        self._py_client = py_client
-        self._formula_json = formula_json
-
-    def get_oid(self):
-        &#34;&#34;&#34;Get&#39;s the formula&#39;s Oid&#34;&#34;&#34;
-
-        return self._formula_json[&#39;oid&#39;]
-
-    def change_datasource(self, cube):
-        &#34;&#34;&#34;Change the data source of the formula.
-
-        The formula must be re-added after a data source change for it to take effect
-
-        Args:
-             cube: The ElastiCube to set the formula to
-        &#34;&#34;&#34;
-        self._formula_json[&#39;datasource&#39;] = cube.get_metadata()
-
-    def get_json(self):
-        &#34;&#34;&#34;Returns the formula json.&#34;&#34;&#34;
-        return self._formula_json</code></pre>
-</details>
-<h3>Methods</h3>
-<dl>
-<dt id="PySense.PySenseFormula.Formula.change_datasource"><code class="name flex">
-<span>def <span class="ident">change_datasource</span></span>(<span>self, cube)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Change the data source of the formula.</p>
-<p>The formula must be re-added after a data source change for it to take effect</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>cube</code></strong></dt>
-<dd>The ElastiCube to set the formula to</dd>
-</dl></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def change_datasource(self, cube):
-    &#34;&#34;&#34;Change the data source of the formula.
-
-    The formula must be re-added after a data source change for it to take effect
-
-    Args:
-         cube: The ElastiCube to set the formula to
-    &#34;&#34;&#34;
-    self._formula_json[&#39;datasource&#39;] = cube.get_metadata()</code></pre>
-</details>
 </dd>
-<dt id="PySense.PySenseFormula.Formula.get_json"><code class="name flex">
-<span>def <span class="ident">get_json</span></span>(<span>self)</span>
-</code></dt>
+<dt id="PySense.SisenseVersion.Version.WINDOWS"><code class="name">var <span class="ident">WINDOWS</span></code></dt>
 <dd>
-<section class="desc"><p>Returns the formula json.</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_json(self):
-    &#34;&#34;&#34;Returns the formula json.&#34;&#34;&#34;
-    return self._formula_json</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseFormula.Formula.get_oid"><code class="name flex">
-<span>def <span class="ident">get_oid</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Get's the formula's Oid</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_oid(self):
-    &#34;&#34;&#34;Get&#39;s the formula&#39;s Oid&#34;&#34;&#34;
-
-    return self._formula_json[&#39;oid&#39;]</code></pre>
-</details>
+<section class="desc"></section>
 </dd>
 </dl>
 </dd>
@@ -170,11 +88,10 @@
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="PySense.PySenseFormula.Formula" href="#PySense.PySenseFormula.Formula">Formula</a></code></h4>
+<h4><code><a title="PySense.SisenseVersion.Version" href="#PySense.SisenseVersion.Version">Version</a></code></h4>
 <ul class="">
-<li><code><a title="PySense.PySenseFormula.Formula.change_datasource" href="#PySense.PySenseFormula.Formula.change_datasource">change_datasource</a></code></li>
-<li><code><a title="PySense.PySenseFormula.Formula.get_json" href="#PySense.PySenseFormula.Formula.get_json">get_json</a></code></li>
-<li><code><a title="PySense.PySenseFormula.Formula.get_oid" href="#PySense.PySenseFormula.Formula.get_oid">get_oid</a></code></li>
+<li><code><a title="PySense.SisenseVersion.Version.LINUX" href="#PySense.SisenseVersion.Version.LINUX">LINUX</a></code></li>
+<li><code><a title="PySense.SisenseVersion.Version.WINDOWS" href="#PySense.SisenseVersion.Version.WINDOWS">WINDOWS</a></code></li>
 </ul>
 </li>
 </ul>

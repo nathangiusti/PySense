@@ -2,6 +2,7 @@ import yaml
 
 from PySense import PySenseConnection
 from PySense import PySenseDashboard
+from PySense import PySenseDataModel
 from PySense import PySenseElasticube
 from PySense import PySenseException
 from PySense import PySenseGroup
@@ -10,42 +11,70 @@ from PySense import PySensePlugin
 from PySense import PySenseRestConnector
 from PySense import PySenseUser
 from PySense import PySenseUtils
+from PySense import SisenseVersion
 
 
 def authenticate_by_file(config_file):
-    """Creates a new PySense client with the credentials in the given config file.    
+    """Creates a new PySense client with the credentials in the given config file.
+
+    py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
+
+    Sample yaml
+    host: 'your_host'
+    username: 'your_username@sample.com'
+    password: 'your_password'
+    version: 'your platform'
 
     Args:
-        - config_file: Yaml file with entries for host, username, and password    
+        config_file: Yaml file with entries for host, username, and password
 
     Returns:
-        A new PySense client for the given credentials  
+        A new PySense client for the given credentials
     """
 
     with open(config_file, 'r') as yml_file:
         cfg = yaml.safe_load(yml_file)
+
         debug = cfg['debug'] if 'debug' in cfg else False
         verify = cfg['verify'] if 'verify' in cfg else True
-        return PySense(cfg['host'], cfg['username'], cfg['password'], debug=debug, verify=verify)
+
+        return PySense(cfg['host'], cfg['username'], cfg['password'], cfg['version'], debug=debug, verify=verify)
 
 
 class PySense:
-    """The manager of connections to the PySense server  
+    """The manager of connections to the PySense server
 
     This class is for sever level changes like getting, adding, and removing dashboards, elasticubes, users, etc
 
     Attributes:
-        connector: The PySenseRestConnector which runs the rest command.        
+        connector: The PySenseRestConnector which runs the rest command.
     """
 
-    def __init__(self, host, username, password, *, debug=False, verify=True):
+    def __init__(self, host, username, password, version, *, debug=False, verify=True):
+        """ Initializes a PySense instance
+
+        Args:
+            host: host address
+            username: username
+            password: password
+            version: version (either 'Windows' or 'Linux')
+            debug: If true, prints detailed REST API logs to console. False by default.
+            verify: If false, disables SSL Certification. True by default.
+        """
+        if version.lower() == 'windows':
+            self.version = SisenseVersion.Version.WINDOWS
+        elif version.lower() == 'linux':
+            self.version = SisenseVersion.Version.LINUX
+        else:
+            raise PySenseException.PySenseException('{} not a valid OS. Please select Linux or Windows'.format(version))
+
         self.connector = PySenseRestConnector.RestConnector(host, username, password, debug, verify)
         self._roles = self.connector.rest_call('get', 'api/roles')
 
     def set_debug(self, debug):
-        """Enable or disable logging of REST api calls to std out.  
-        
-        Use for debugging. Debug is false by default.  
+        """Enable or disable logging of REST api calls to std out.
+
+        Use for debugging. Debug is false by default.
         """
         self.connector.debug = debug
 
@@ -55,20 +84,20 @@ class PySense:
 
     def get_dashboards(self, *, parent_folder=None, name=None, data_source_title=None,
                        data_source_address=None, fields=None, sort=None, expand=None):
-        """Get all dashboards.   
+        """Get all dashboards.
 
         Args:
-            - parent_folder: Parent folder to filter by  
-            - name: Name to filter by  
-            - data_source_title: Data source name to filter by  
-            - data_source_address: Data source address to filter by  
-            - fields: Whitelist of fields to return for each document.  
-               Can also exclude by prefixing field names with -  
-            - sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
-            - expand: List of fields that should be expanded  
+            parent_folder: Parent folder to filter by
+            name: Name to filter by
+            data_source_title: Data source name to filter by
+            data_source_address: Data source address to filter by
+            fields: Whitelist of fields to return for each document.
+               Can also exclude by prefixing field names with -
+            sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+            expand: List of fields that should be expanded
 
         Returns:
-            An array of all found dashboards  
+            An array of all found dashboards
         """
 
         folder_id = None
@@ -92,19 +121,17 @@ class PySense:
         return ret_arr
 
     def get_dashboard_by_id(self, dashboard_id, *, fields=None, expand=None):
-        """Returns a specific dashboard object by ID.  
+        """Returns a specific dashboard object by ID.
 
         Args:
-            - dashboard_id: The ID of the dashboard to get
-              
-        Optional:
-            - fields: Whitelist of fields to return for each document. 
-                Fields Can also define which fields to exclude by prefixing field names with -   
-            - expand: List of fields that should be expanded (substitues their IDs with actual objects). 
-                May be nested using the resource.subResource format  
+            dashboard_id: The ID of the dashboard to get
+            fields: (optional) Whitelist of fields to return for each document.
+                Fields Can also define which fields to exclude by prefixing field names with -
+            expand: (optional) List of fields that should be expanded (substitues their IDs with actual objects).
+                May be nested using the resource.subResource format
 
         Returns:
-             Dashboard with the given id.  
+             Dashboard with the given id.
         """
 
         query_params = {
@@ -118,23 +145,23 @@ class PySense:
         return PySenseDashboard.Dashboard(self, resp_json)
 
     def post_dashboards(self, dashboard_json):
-        """Import given dashboard.  
+        """Import given dashboard.
 
         Args:
-            - dashboard_json: The dashboard json from the dash file  
+            dashboard_json: The dashboard json from the dash file
 
         Returns:
-            The new dashboard  
+            The new dashboard
         """
 
         resp = self.connector.rest_call('post', 'api/v1/dashboards', json_payload=dashboard_json)
         return PySenseDashboard.Dashboard(self, resp)
 
     def delete_dashboards(self, dashboards):
-        """Delete dashboards.  
+        """Delete dashboards.
 
         Args:
-            - dashboards: Dashboards to delete   
+            dashboards: Dashboards to delete
         """
         for dashboard in PySenseUtils.make_iterable(dashboards):
             self.connector.rest_call('delete', 'api/v1/dashboards/{}'.format(dashboard.get_id()))
@@ -145,23 +172,25 @@ class PySense:
 
     def get_folders(self, *, name=None, structure=None, ids=None, fields=None,
                     sort=None, skip=None, limit=None, expand=None):
-        """Provides access to a specified user’s folders in their stored format.  
+        """Provides access to a specified user’s folders in their stored format.
 
-        Optional:
-            - name: Name to filter by   
-            - structure: Structure type of the folders   
-            - ids: Array of folder IDs to get, separated by a comma (,) and without spaces   
-            - fields: Whitelist of fields to return for each document.  
-                Fields Can also define which fields to exclude by prefixing field names with -   
-            - sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
-            - skip: Number of results to skip from the start of the data set.  
-                Skip is to be used with the limit parameter for paging   
-            - limit: How many results should be returned. limit is to be used with the skip parameter for paging  
-            - expand: List of fields that should be expanded (substitue their IDs with actual objects). 
-                May be nested using the resource.subResource format   
+        Args:
+            name: (optional) Name to filter by
+            structure: (optional) Structure type of the folders
+            ids: (optional) Array of folder IDs to get, separated by a comma (,) and without spaces
+            fields: (optional) Whitelist of fields to return for each document.
+                Fields Can also define which fields to exclude by prefixing field names with -
+            sort: (optional) Field by which the results should be sorted.
+                Ascending by default, descending if prefixed by -
+            skip: (optional) Number of results to skip from the start of the data set.
+                Skip is to be used with the limit parameter for paging
+            limit: (optional) How many results should be returned.
+                limit is to be used with the skip parameter for paging
+            expand: (optional) List of fields that should be expanded (substitue their IDs with actual objects).
+                May be nested using the resource.subResource format
 
         Returns:
-             An array of folders matching the search criteria  
+             An array of folders matching the search criteria
         """
         ret_arr = []
         query_params = {
@@ -200,26 +229,28 @@ class PySense:
 
     def get_groups(self, *, name=None, mail=None, role=None, origin=None, ids=None, fields=None,
                    sort=None, skip=None, limit=None, expand=None):
-        """Returns a list of user groups with their details.  
-        The results can be filtered by different parameters such as group name or origin.  
+        """Returns a list of user groups with their details.
+        The results can be filtered by different parameters such as group name or origin.
 
-        Optional:
-            - name: Group name to filter by  
-            - mail: Group email to filter by  
-            - role: Group role to filter by  
-            - origin: Group origin to filter by (ad or sisense)  
-            - ids: Array of group IDs to filter by  
-            - fields: Whitelist of fields to return for each document.  
-                Fields can also define which fields to exclude by prefixing field names with -  
-            - sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
-            - skip: Number of results to skip from the start of the data set.  
-                Skip is to be used with the limit parameter for paging  
-            - limit: How many results should be returned. limit is to be used with the skip parameter for paging  
-            - expand: List of fields that should be expanded (substitures their IDs with actual objects).  
-                May be nested using the resource.subResource format  
+        Args:
+            name: (optional) Group name to filter by
+            mail: (optional) Group email to filter by
+            role: (optional) Group role to filter by
+            origin: (optional) Group origin to filter by (ad or sisense)
+            ids: (optional) Array of group IDs to filter by
+            fields: (optional) Whitelist of fields to return for each document.
+                Fields can also define which fields to exclude by prefixing field names with -
+            sort: (optional) Field by which the results should be sorted.
+                Ascending by default, descending if prefixed by -
+            skip: (optional) Number of results to skip from the start of the data set.
+                Skip is to be used with the limit parameter for paging
+            limit: (optional) How many results should be returned.
+                limit is to be used with the skip parameter for paging
+            expand: (optional) List of fields that should be expanded (substitures their IDs with actual objects).
+                May be nested using the resource.subResource format
 
         Returns:
-            Array of found groups   
+            Array of found groups
         """
 
         query_params = {
@@ -247,12 +278,12 @@ class PySense:
             return None
         resp_json = self.connector.rest_call('get', 'api/groups/{}'.format(group_id))
         return PySenseGroup.Group(self, resp_json)
-    
-    def get_groups_by_name(self, group_names):
-        """Returns an array of groups matching the given names  
 
-        Optional:
-            - groups: One to many group names  
+    def get_groups_by_name(self, group_names):
+        """Returns an array of groups matching the given names
+
+        Args:
+            group_names: One to many group names
         """
         if group_names is None:
             return []
@@ -266,13 +297,13 @@ class PySense:
         return ret
 
     def add_groups(self, names):
-        """Add groups with given names.   
+        """Add groups with given names.
 
         Args:
-            - names: One to many names   
+            names: One to many names
 
         Returns:
-            Array of new groups    
+            Array of new groups
         """
         ret_arr = []
         for name in PySenseUtils.make_iterable(names):
@@ -282,10 +313,10 @@ class PySense:
         return ret_arr
 
     def delete_groups(self, groups):
-        """Delete groups.  
+        """Delete groups.
 
         Args:
-            - groups: One to many groups to delete   
+            groups: One to many groups to delete
         """
         for group in PySenseUtils.make_iterable(groups):
             self.connector.rest_call('delete', 'api/groups/{}'.format(group.get_id()))
@@ -296,22 +327,20 @@ class PySense:
 
     def add_user(self, email, role, *, user_name=None, first_name=None, last_name=None,
                  groups=[], preferences={}, ui_settings={}):
-        """Creates a user in Sisense.  
+        """Creates a user in Sisense.
 
         Args:
-            - email: email address for user  
-            - role: role of user   
-         
-        Optional:
-            - user_name: User user name. Email used if None  
-            - first_name: User first name   
-            - last_name: User last name  
-            - groups: The groups to add the user to  
-            - preferences: User preferences  
-            - ui_settings: User ui settings  
+            email: email address for user
+            role: role of user
+            user_name: (optional) User user name. Email used if None
+            first_name: (optional) User first name
+            last_name: (optional) User last name
+            groups: (optional) The groups to add the user to
+            preferences: (optional) User preferences
+            ui_settings: (optional) User ui settings
 
         Returns:
-             Newly created user object    
+             Newly created user object
         """
         user_obj = {
             'email': email,
@@ -339,32 +368,34 @@ class PySense:
 
     def get_users(self, *, user_name=None, email=None, first_name=None, last_name=None, role_name=None, group=None,
                   active=None, origin=None, ids=None, fields=[], sort=None, skip=None, limit=None, expand=None):
-        """Returns a list of users.  
+        """Returns a list of users.
 
-        Results can be filtered by parameters such as username and email.  
-        The expandable fields for the user object are groups, adgroups and role.  
-          
-        Optional:
-            - user_name: Username to filter by  
-            - email: Email to filter by  
-            - first_name: First name to filter by  
-            - last_name: Last name to filter by  
-            - role_name: Role filter by  
-            - group: Group to filter by  
-            - active: User state to filter by (true for active users, false for inactive users)  
-            - origin: User origin to filter by (ad for active directory or sisense)  
-            - ids: Array of user ids to get
-            - fields: An array of fields to return for each document.  
-                Fields can also define which fields to exclude by prefixing field names with -  
-            - sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
-            - skip: Number of results to skip from the start of the data set.  
-                Skip is to be used with the limit parameter for paging  
-            - limit: How many results should be returned. limit is to be used with the skip parameter for paging  
-            - expand: List of fields that should be expanded (substitutes their IDs with actual objects).  
-                May be nested using the resource.subResource format  
+        Results can be filtered by parameters such as username and email.
+        The expandable fields for the user object are groups, adgroups and role.
+
+        Args:
+            user_name: (optional) Username to filter by
+            email: (optional) Email to filter by
+            first_name: (optional) First name to filter by
+            last_name: (optional) Last name to filter by
+            role_name: (optional) Role filter by
+            group: (optional) Group to filter by
+            active: (optional) User state to filter by (true for active users, false for inactive users)
+            origin: (optional) User origin to filter by (ad for active directory or sisense)
+            ids: (optional) Array of user ids to get
+            fields: (optional) An array of fields to return for each document.
+                Fields can also define which fields to exclude by prefixing field names with -
+            sort: (optional) Field by which the results should be sorted.
+                Ascending by default, descending if prefixed by -
+            skip: (optional) Number of results to skip from the start of the data set.
+                Skip is to be used with the limit parameter for paging
+            limit: (optional) How many results should be returned.
+                limit is to be used with the skip parameter for paging
+            expand: (optional) List of fields that should be expanded (substitutes their IDs with actual objects).
+                May be nested using the resource.subResource format
 
         Returns:
-             An array of PySenseUser.User objects    
+             An array of PySenseUser.User objects
         """
 
         fields = PySenseUtils.make_iterable(fields)
@@ -393,7 +424,7 @@ class PySense:
         for user in resp_json:
             ret_arr.append((PySenseUser.User(self, user)))
         return ret_arr
-    
+
     def get_user_by_email(self, email):
         """Returns a single user based on email"""
         users = self.get_users(email=email)
@@ -403,17 +434,17 @@ class PySense:
             raise PySenseException.PySenseException('{} users with email {} found. '.format(len(users), email))
         else:
             return users[0]
-        
+
     def get_user_by_id(self, user_id):
         """Returns a single user based on id"""
         resp_json = self.connector.rest_call('get', 'api/v1/users/{}'.format(user_id))
         return PySenseUser.User(self, resp_json)
 
     def delete_users(self, users):
-        """Deletes the specified user or users    
+        """Deletes the specified user or users
 
         Args:
-            - users: One to many users to delete  
+            users: One to many users to delete
         """
         for user in PySenseUtils.make_iterable(users):
             self.connector.rest_call('delete', 'api/v1/users/{}'.format(user.get_id()))
@@ -443,18 +474,18 @@ class PySense:
     ############################################
 
     def get_plugins(self, *, order_by=None, desc=None, search=None, skip=None, limit=None):
-        """Get all plugins installed.     
+        """Get all plugins installed.
 
-        Optional:
-            - order_by: Filter by provided field  
-            - desc: Order by descending/ascending (boolean)  
-            - search: Filter according to provided string  
-            - skip: Number of results to skip from the start of the data set.  
-                Skip is to be used with the limit parameter for paging.  
-            - limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+        Args:
+            order_by: (optional) Filter by provided field
+            desc: (optional) Order by descending/ascending (boolean)
+            search: (optional) Filter according to provided string
+            skip: (optional) Number of results to skip from the start of the data set.
+                Skip is to be used with the limit parameter for paging.
+            limit: (optional) How many results should be returned. limit is to be used with the skip parameter for paging
 
         Returns:
-            An array of plugins  
+            An array of plugins
         """
         query_params = {
             'orderby': order_by,
@@ -472,7 +503,7 @@ class PySense:
     ############################################
     # Roles                                    #
     ############################################
-    
+
     def get_role_id(self, role_name):
         """Get the role id for the given role name"""
         if role_name is None:
@@ -493,16 +524,16 @@ class PySense:
     ############################################
     # Connections                              #
     ############################################
-    
+
     def get_connections(self, *, provider=None, sort=None, skip=None, limit=None):
-        """Returns all the connections  
+        """Returns all the connections
 
         Args:
-            - provider: Type or list of types to filter for  
-            - sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -   
-            - skip: Number of results to skip from the start of the data set.  
-                Skip is to be used with the limit parameter for paging     
-            - limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+            provider: Type or list of types to filter for
+            sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+            skip: Number of results to skip from the start of the data set.
+                Skip is to be used with the limit parameter for paging
+            limit: How many results should be returned. limit is to be used with the skip parameter for paging
         """
         query_params = {
             'sort': sort,
@@ -536,3 +567,105 @@ class PySense:
         """Deletes the given PySense connections"""
         for connection in PySenseUtils.make_iterable(connections):
             self.connector.rest_call('delete', 'api/v1/connection/{}'.format(connection.get_id()))
+
+    ############################################
+    # Data Models                              #
+    ############################################
+
+    def add_data_model(self, data_model, *, title=None, target_data_model=None):
+        """Adds a new data model to the instance.
+
+        Sisense does not support this in Windows
+
+        Can be used to update an existing data model by adding it to target data model.
+
+        To add a new model with a new title
+        add_data_model(model_to_add, title='New Title')
+
+        To update an existing model
+        add_data_model(new_data_model, target_data_model=old_data_model)
+
+        If updating an existing data model, no modifications to title will happen.
+
+        Args:
+            data_model: The PySense DataModel object to import
+            title: (optional) Title to give the data model
+            target_data_model: (optional) The data model to update.
+        """
+        if self.version == SisenseVersion.Version.WINDOWS:
+            raise PySenseException("Import data model not supported on windows")
+
+        target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
+
+        query_params = {'title': title, 'datamodelId': target_data_model_id}
+        data_model_json = self.connector.rest_call('post', 'api/v2/datamodel-imports/schema',
+                                                   query_params=query_params, json_payload=data_model.get_schema_json())
+
+        return PySenseDataModel.DataModel(self, data_model_json)
+
+    def get_data_models(self, *, title=None, fields=None, sort=None, limit=None, skip=None):
+        """Gets data model schemas
+
+        Sisense does not support this in Windows
+
+        If fields is specified, PySense may experience issues.
+
+        To get all data models:
+        get_data_models()
+
+        To get a data model called PySense:
+        get_data_models(title='PySense')
+
+        Args:
+            title: (optional) Datamodel Title to search for
+            fields: (optional) A whitelist of fields to return for each object in the response.
+            sort: (optional) A field by which the results should be sorted.
+                Results will be sorted in ascending order by default, or descending if the field name is prefixed by -.
+            limit: (optional) Number of results to be returned from the data set.
+                This field must be used with the skip parameter, and is intended for paging.
+            skip: (optional) Number of results to skip from the start of the data set.
+                This parameter must be used with the limit parameter, and is intended for paging.
+
+        Returns:
+            If title is specified, a single data model will be returned if a matching data model is found.
+            Otherwise PySense will throw an exception.
+            If title is not specified an array will be returned.
+
+        """
+        if self.version == SisenseVersion.Version.WINDOWS:
+            raise PySenseException("Get data model not supported on windows")
+
+        query_params = {
+            'title': title,
+            'fields': fields,
+            'sort': sort,
+            'limit': limit,
+            'skip': skip
+        }
+
+        data_models = self.connector.rest_call('get', 'api/v2/datamodels/schema', query_params=query_params)
+        if title is not None:
+            if data_models is not None:
+                return PySenseDataModel.DataModel(self, data_models)
+            else:
+                raise PySenseException('No data model with name {} found'.format(title))
+        else:
+            ret_arr = []
+            for data_model in data_models:
+                ret_arr.append(PySenseDataModel.DataModel(self, data_model))
+            return ret_arr
+
+    def delete_data_model(self, data_models):
+        """Deletes the given data models
+
+        Args:
+            data_models: One to many data models to delete
+        """
+        if self.version == SisenseVersion.Version.WINDOWS:
+            raise PySenseException("Delete data model not supported on windows")
+
+        for data_model in PySenseUtils.make_iterable(data_models):
+            self.connector.rest_call('delete', 'api/v2/datamodels/{}'.format(data_model.get_oid()))
+
+
+

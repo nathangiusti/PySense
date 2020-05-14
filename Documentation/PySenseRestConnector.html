@@ -31,7 +31,7 @@ from PySense import PySenseException
 
 
 class RestConnector:
-    
+
     def __init__(self, host, username, password, debug, verify):
         self._host = format_host(host)
         self.debug = debug
@@ -40,24 +40,22 @@ class RestConnector:
         resp = requests.post(&#39;{}/api/v1/authentication/login&#39;.format(self._host), data=data)
         parse_response(resp)
         self._token = {&#39;authorization&#39;:  &#34;Bearer &#34; + resp.json()[&#39;access_token&#39;]}
-        
+
     def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
-        &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response    
-    
+        &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response
+
         Args:
-            - action_type: REST request type  
-            - url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding  
-              
-        Optional:
-            - data: The data portion of the payload  
-            - json_payload: The json portion of the payload  
-            - query_params: a dictionary of query values to be added to the end of the url  
-            - raw: True if raw content response wanted  
-        
+            action_type: REST request type
+            url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding
+            data: (optional) The data portion of the payload
+            json_payload: (optional) The json portion of the payload
+            query_params: (optional) A dictionary of query values to be added to the end of the url
+            raw: (optional) True if raw content response wanted
+
         Returns:
-            Returns the json content blob. If raw is set to true, returns the raw bytes of the content. 
+            Returns the json content blob. If raw is set to true, returns the raw bytes of the content.
         &#34;&#34;&#34;
-        
+
         action_type = action_type.lower()
         if query_params is not None:
             query_string = build_query_string(query_params)
@@ -71,7 +69,7 @@ class RestConnector:
                 print(&#39;Data: {}&#39;.format(data))
             if json_payload is not None:
                 print(&#39;JSON: {}&#39;.format(json_payload))
-        response = requests.request(action_type, full_url, 
+        response = requests.request(action_type, full_url,
                                     headers=self._token, data=data, json=json_payload, verify=self.verify)
         parse_response(response)
         if len(response.content) == 0:
@@ -83,7 +81,7 @@ class RestConnector:
                 return response.json()
             except ValueError as e:
                 return response.content
-            
+
 
 def parse_response(response):
     &#34;&#34;&#34;Parses response and throw exception if not successful.&#34;&#34;&#34;
@@ -213,7 +211,7 @@ def build_query_string(dictionary):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class RestConnector:
-    
+
     def __init__(self, host, username, password, debug, verify):
         self._host = format_host(host)
         self.debug = debug
@@ -222,24 +220,22 @@ def build_query_string(dictionary):
         resp = requests.post(&#39;{}/api/v1/authentication/login&#39;.format(self._host), data=data)
         parse_response(resp)
         self._token = {&#39;authorization&#39;:  &#34;Bearer &#34; + resp.json()[&#39;access_token&#39;]}
-        
+
     def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
-        &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response    
-    
+        &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response
+
         Args:
-            - action_type: REST request type  
-            - url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding  
-              
-        Optional:
-            - data: The data portion of the payload  
-            - json_payload: The json portion of the payload  
-            - query_params: a dictionary of query values to be added to the end of the url  
-            - raw: True if raw content response wanted  
-        
+            action_type: REST request type
+            url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding
+            data: (optional) The data portion of the payload
+            json_payload: (optional) The json portion of the payload
+            query_params: (optional) A dictionary of query values to be added to the end of the url
+            raw: (optional) True if raw content response wanted
+
         Returns:
-            Returns the json content blob. If raw is set to true, returns the raw bytes of the content. 
+            Returns the json content blob. If raw is set to true, returns the raw bytes of the content.
         &#34;&#34;&#34;
-        
+
         action_type = action_type.lower()
         if query_params is not None:
             query_string = build_query_string(query_params)
@@ -253,7 +249,7 @@ def build_query_string(dictionary):
                 print(&#39;Data: {}&#39;.format(data))
             if json_payload is not None:
                 print(&#39;JSON: {}&#39;.format(json_payload))
-        response = requests.request(action_type, full_url, 
+        response = requests.request(action_type, full_url,
                                     headers=self._token, data=data, json=json_payload, verify=self.verify)
         parse_response(response)
         if len(response.content) == 0:
@@ -272,26 +268,22 @@ def build_query_string(dictionary):
 <span>def <span class="ident">rest_call</span></span>(<span>self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Run an arbitrary rest command against your Sisense instance and returns the JSON response
-</p>
+<section class="desc"><p>Run an arbitrary rest command against your Sisense instance and returns the JSON response</p>
 <h2 id="args">Args</h2>
-<ul>
-<li>action_type: REST request type
-</li>
-<li>url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding
-</li>
-</ul>
-<h2 id="optional">Optional</h2>
-<ul>
-<li>data: The data portion of the payload
-</li>
-<li>json_payload: The json portion of the payload
-</li>
-<li>query_params: a dictionary of query values to be added to the end of the url
-</li>
-<li>raw: True if raw content response wanted
-</li>
-</ul>
+<dl>
+<dt><strong><code>action_type</code></strong></dt>
+<dd>REST request type</dd>
+<dt><strong><code>url</code></strong></dt>
+<dd>url to hit, example api/v1/app_database/encrypt_database_password or api/branding</dd>
+<dt><strong><code>data</code></strong></dt>
+<dd>(optional) The data portion of the payload</dd>
+<dt><strong><code>json_payload</code></strong></dt>
+<dd>(optional) The json portion of the payload</dd>
+<dt><strong><code>query_params</code></strong></dt>
+<dd>(optional) A dictionary of query values to be added to the end of the url</dd>
+<dt><strong><code>raw</code></strong></dt>
+<dd>(optional) True if raw content response wanted</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <p>Returns the json content blob. If raw is set to true, returns the raw bytes of the content.</p></section>
 <details class="source">
@@ -299,22 +291,20 @@ def build_query_string(dictionary):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
-    &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response    
+    &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response
 
     Args:
-        - action_type: REST request type  
-        - url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding  
-          
-    Optional:
-        - data: The data portion of the payload  
-        - json_payload: The json portion of the payload  
-        - query_params: a dictionary of query values to be added to the end of the url  
-        - raw: True if raw content response wanted  
-    
+        action_type: REST request type
+        url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding
+        data: (optional) The data portion of the payload
+        json_payload: (optional) The json portion of the payload
+        query_params: (optional) A dictionary of query values to be added to the end of the url
+        raw: (optional) True if raw content response wanted
+
     Returns:
-        Returns the json content blob. If raw is set to true, returns the raw bytes of the content. 
+        Returns the json content blob. If raw is set to true, returns the raw bytes of the content.
     &#34;&#34;&#34;
-    
+
     action_type = action_type.lower()
     if query_params is not None:
         query_string = build_query_string(query_params)
@@ -328,7 +318,7 @@ def build_query_string(dictionary):
             print(&#39;Data: {}&#39;.format(data))
         if json_payload is not None:
             print(&#39;JSON: {}&#39;.format(json_payload))
-    response = requests.request(action_type, full_url, 
+    response = requests.request(action_type, full_url,
                                 headers=self._token, data=data, json=json_payload, verify=self.verify)
     parse_response(response)
     if len(response.content) == 0:

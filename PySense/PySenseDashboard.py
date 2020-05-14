@@ -66,9 +66,9 @@ class Dashboard:
         If dashboard is already shared with user or group, nothing happens  
         
         Args:
-            - share: A PySense Group or User  
-            - rule: The permission of the user on the dashboard (view, edit, etc)  
-            - subscribe: true or false, whether to subscribe the user to reports    
+            share: A PySense Group or User  
+            rule: The permission of the user on the dashboard (view, edit, etc)  
+            subscribe: true or false, whether to subscribe the user to reports    
         """
         curr_shares = self.get_shares()
         share_id = share.get_id()
@@ -115,12 +115,12 @@ class Dashboard:
     def export_to_png(self, *, path=None, include_title=None, include_filters=None, include_ds=None, width=None):
         """Get dashboard as png    
     
-        Optional:
-            - path: Path to save location of png    
-            - include_title: Should dashboard title be included in the exported file  
-            - include_filters: Should dashboard filters be included in the exported file  
-            - include_ds: Should dashboard data source info be included in the exported file  
-            - width: Render width in pixels  
+        Args:
+            path: (optional) Path to save location of png    
+            include_title: (optional) Should dashboard title be included in the exported file  
+            include_filters: (optional) Should dashboard filters be included in the exported file  
+            include_ds: (optional) Should dashboard data source info be included in the exported file  
+            width: (optional) Render width in pixels  
             
         Returns:
             The path of the created file if provided or else the raw response object  
@@ -149,23 +149,21 @@ class Dashboard:
         """Get dashboard as pdf   
     
         Args:
-            - paper_format: What paper format should be used while rendering the dashboard.  
-            - paper_orientation: What paper orientation should be used while rendering the dashboard  
-            - layout: What layout should be used while rendering the dashboard, as is or feed  
-          
-        Optional:
-            - path: Path to save location of pdf  
-            - include_title: Should dashboard title be included in the exported file  
-            - include_filters: Should dashboard filters be included in the exported file  
-            - include_ds: Should dashboard datasource info be included in the exported file  
-            - widget_id: Widget Id (Use only for Table and Pivot Widgets)  
-            - preview: Should use a new Pixel Perfect Reporting  
-            - row_count: Count of Table/Pivot rows to export  
-            - show_title: Should Table/Pivot Widget title be included in the exported file  
-            - show_footer: Should Table/Pivot Widget footer be included in the exported file   
-            - title: Table/Pivot Widget title text in the exported file  
-            - title_size: Table/Pivot widget title size in the exported file  
-            - title_position: Table/Pivot widget title position in the exported file  
+            paper_format: What paper format should be used while rendering the dashboard.  
+            paper_orientation: What paper orientation should be used while rendering the dashboard  
+            layout: What layout should be used while rendering the dashboard, as is or feed  
+            path: (optional) Path to save location of pdf  
+            include_title: (optional) Should dashboard title be included in the exported file  
+            include_filters: (optional) Should dashboard filters be included in the exported file  
+            include_ds: (optional) Should dashboard datasource info be included in the exported file  
+            widget_id: (optional) Widget Id (Use only for Table and Pivot Widgets)  
+            preview: (optional) Should use a new Pixel Perfect Reporting  
+            row_count: (optional) Count of Table/Pivot rows to export  
+            show_title: (optional) Should Table/Pivot Widget title be included in the exported file  
+            show_footer: (optional) Should Table/Pivot Widget footer be included in the exported file   
+            title: (optional) Table/Pivot Widget title text in the exported file  
+            title_size: (optional) Table/Pivot widget title size in the exported file  
+            title_position: (optional) Table/Pivot widget title position in the exported file  
             
         Returns:
              The path of the created file if provided, else the raw content  
@@ -199,8 +197,8 @@ class Dashboard:
     def export_to_dash(self, *, path=None):
         """Get dashboard as dash file.   
    
-        Optional:
-            - path: Path to save location of dash file  
+        Args:
+            path: (optional) Path to save location of dash file  
         
         Returns:
             The path of the created file if path provided, else the raw content  
@@ -219,16 +217,16 @@ class Dashboard:
                     fields=None, sort=None, skip=None, limit=None):
         """Returns an array of a dashboard’s widgets.  
   
-        Optional:
-            - title: Widget title to filter by  
-            - type: Widget type to filter by  
-            - subtype: Widget sub-type to filter by  
-            - fields: Whitelist of fields to return for each document. fields Can also define which fields to exclude  
+        Args:
+            title: (optional) Widget title to filter by  
+            type: (optional) Widget type to filter by  
+            subtype: (optional) Widget sub-type to filter by  
+            fields: (optional) Whitelist of fields to return for each document. fields Can also define which fields to exclude  
                 by prefixing field names with -  
-            - sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
-            - skip: Number of results to skip from the start of the data set. skip is to be used with the limit  
+            sort: (optional) Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
+            skip: (optional) Number of results to skip from the start of the data set. skip is to be used with the limit  
                 parameter for paging  
-            - limit: How many results should be returned. limit is to be used with the skip parameter for paging  
+            limit: (optional) How many results should be returned. limit is to be used with the skip parameter for paging  
           
         Returns:
             An array of widget objects  
@@ -255,10 +253,8 @@ class Dashboard:
         """Returns a specific widget (by ID) from a specific dashboard.  
     
         Args:
-            - widget_id: The ID of the widget to get   
-           
-        Optional:
-            - fields: Whitelist of fields to return for each document.  
+            widget_id: The ID of the widget to get   
+            fields: (optional) Whitelist of fields to return for each document.  
                 Fields Can also define which fields to exclude by prefixing field names with -   
             
         Returns:
@@ -277,7 +273,7 @@ class Dashboard:
         """Adds the provided widget object to the dashboard.  
 
         Args:
-            - widget: widget object to add   
+            widget: PySenseWidget.Widget object to add   
           
         Returns:
             The widget added to the dashboard    

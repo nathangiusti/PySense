@@ -27,6 +27,8 @@
 <pre><code class="python">import random
 import urllib.parse
 
+from PySense import SisenseVersion
+from PySense import PySenseDataModel
 from PySense import PySenseException
 from PySense import PySenseGroup
 from PySense import PySenseRule
@@ -40,10 +42,16 @@ class Elasticube:
     def __init__(self, py_client, cube_json):
         self._cube_json = cube_json
         self._py_client = py_client
-        metadata = self.get_metadata() 
-        if metadata is None:
-            print(&#39;No meta data for cube {}&#39;.format(self.get_name()))
-        self._server_address = metadata[&#39;address&#39;]
+        self._server_address = &#39;localhost&#39;
+        if py_client.version == SisenseVersion.Version.WINDOWS:
+            metadata = self.get_metadata() 
+            if metadata is None:
+                print(&#39;No meta data for cube {}&#39;.format(self.get_name()))
+                self._server_address = metadata[&#39;address&#39;]
+        
+    def get_oid(self):
+        &#34;&#34;&#34;Returns the datamodel id&#34;&#34;&#34;
+        return self._cube_json[&#39;oid&#39;]
 
     def get_model(self, path=None):
         &#34;&#34;&#34;Returns the ElastiCube model as a json blob.    
@@ -54,18 +62,40 @@ class Elasticube:
         Returns:
             A json blob or the file path if the file path is set.      
         &#34;&#34;&#34;
-        query_params = {&#39;cachebuster&#39;: random.randrange(1000000000000, 9999999999999)}
-        if path:
-            resp_content = self._py_client.connector.rest_call(
-                &#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;.format(self.get_elasticube_oid()), 
-                query_params=query_params, raw=True)
-            
+        if self._py_client.version == SisenseVersion.Version.WINDOWS:
+            return self._get_model_windows(path=path)
+        elif self._py_client.version == SisenseVersion.Version.LINUX:
+            return self._get_model_linux(path=path)
+    
+    def _get_model_linux(self, path=None):
+        
+        query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
+        if path is not None:
+            resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;, 
+                                                               query_params=query_params, raw=True)
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
             return path
         else:
-            return self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
-                                                       .format(self.get_elasticube_oid()), query_params=query_params)
+            data_model_json = self._py_client.connector.rest_call(
+                &#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;, query_params=query_params)
+            return PySenseDataModel.DataModel(self._py_client, data_model_json)                                            
+        
+    def _get_model_windows(self, path=None):
+        query_params = {&#39;cachebuster&#39;: random.randrange(1000000000000, 9999999999999)}
+        if path is not None:
+            resp_content = self._py_client.connector.rest_call(
+                &#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;.format(self.get_elasticube_oid()),
+                query_params=query_params, raw=True)
+
+            with open(path, &#39;wb&#39;) as out_file:
+                out_file.write(resp_content)
+            return path
+        else:
+            data_model_json = self._py_client.connector.rest_call(
+                &#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
+                .format(self.get_elasticube_oid()), query_params=query_params)
+            return PySenseDataModel.DataModel(self._py_client, data_model_json)    
         
     def get_name(self, url_encoded=False):
         &#34;&#34;&#34;Returns the ElastiCube&#39;s name.    
@@ -364,10 +394,16 @@ class Elasticube:
     def __init__(self, py_client, cube_json):
         self._cube_json = cube_json
         self._py_client = py_client
-        metadata = self.get_metadata() 
-        if metadata is None:
-            print(&#39;No meta data for cube {}&#39;.format(self.get_name()))
-        self._server_address = metadata[&#39;address&#39;]
+        self._server_address = &#39;localhost&#39;
+        if py_client.version == SisenseVersion.Version.WINDOWS:
+            metadata = self.get_metadata() 
+            if metadata is None:
+                print(&#39;No meta data for cube {}&#39;.format(self.get_name()))
+                self._server_address = metadata[&#39;address&#39;]
+        
+    def get_oid(self):
+        &#34;&#34;&#34;Returns the datamodel id&#34;&#34;&#34;
+        return self._cube_json[&#39;oid&#39;]
 
     def get_model(self, path=None):
         &#34;&#34;&#34;Returns the ElastiCube model as a json blob.    
@@ -378,18 +414,40 @@ class Elasticube:
         Returns:
             A json blob or the file path if the file path is set.      
         &#34;&#34;&#34;
-        query_params = {&#39;cachebuster&#39;: random.randrange(1000000000000, 9999999999999)}
-        if path:
-            resp_content = self._py_client.connector.rest_call(
-                &#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;.format(self.get_elasticube_oid()), 
-                query_params=query_params, raw=True)
-            
+        if self._py_client.version == SisenseVersion.Version.WINDOWS:
+            return self._get_model_windows(path=path)
+        elif self._py_client.version == SisenseVersion.Version.LINUX:
+            return self._get_model_linux(path=path)
+    
+    def _get_model_linux(self, path=None):
+        
+        query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
+        if path is not None:
+            resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;, 
+                                                               query_params=query_params, raw=True)
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
             return path
         else:
-            return self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
-                                                       .format(self.get_elasticube_oid()), query_params=query_params)
+            data_model_json = self._py_client.connector.rest_call(
+                &#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;, query_params=query_params)
+            return PySenseDataModel.DataModel(self._py_client, data_model_json)                                            
+        
+    def _get_model_windows(self, path=None):
+        query_params = {&#39;cachebuster&#39;: random.randrange(1000000000000, 9999999999999)}
+        if path is not None:
+            resp_content = self._py_client.connector.rest_call(
+                &#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;.format(self.get_elasticube_oid()),
+                query_params=query_params, raw=True)
+
+            with open(path, &#39;wb&#39;) as out_file:
+                out_file.write(resp_content)
+            return path
+        else:
+            data_model_json = self._py_client.connector.rest_call(
+                &#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
+                .format(self.get_elasticube_oid()), query_params=query_params)
+            return PySenseDataModel.DataModel(self._py_client, data_model_json)    
         
     def get_name(self, url_encoded=False):
         &#34;&#34;&#34;Returns the ElastiCube&#39;s name.    
@@ -1010,18 +1068,10 @@ Use 'Set' for Elasticube Set. Required for elasticube sets.
     Returns:
         A json blob or the file path if the file path is set.      
     &#34;&#34;&#34;
-    query_params = {&#39;cachebuster&#39;: random.randrange(1000000000000, 9999999999999)}
-    if path:
-        resp_content = self._py_client.connector.rest_call(
-            &#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;.format(self.get_elasticube_oid()), 
-            query_params=query_params, raw=True)
-        
-        with open(path, &#39;wb&#39;) as out_file:
-            out_file.write(resp_content)
-        return path
-    else:
-        return self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/{}/datamodel-exports/stream/schema&#39;
-                                                   .format(self.get_elasticube_oid()), query_params=query_params)</code></pre>
+    if self._py_client.version == SisenseVersion.Version.WINDOWS:
+        return self._get_model_windows(path=path)
+    elif self._py_client.version == SisenseVersion.Version.LINUX:
+        return self._get_model_linux(path=path)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseElasticube.Elasticube.get_name"><code class="name flex">
@@ -1054,6 +1104,20 @@ Use 'Set' for Elasticube Set. Required for elasticube sets.
         return urllib.parse.quote(self._cube_json[&#39;title&#39;])
     else:
         return self._cube_json[&#39;title&#39;]</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseElasticube.Elasticube.get_oid"><code class="name flex">
+<span>def <span class="ident">get_oid</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the datamodel id</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_oid(self):
+    &#34;&#34;&#34;Returns the datamodel id&#34;&#34;&#34;
+    return self._cube_json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseElasticube.Elasticube.get_saved_formulas"><code class="name flex">
@@ -1270,6 +1334,7 @@ For example, to return results from value #101 onward, enter a value of â€˜100â€
 <li><code><a title="PySense.PySenseElasticube.Elasticube.get_metadata" href="#PySense.PySenseElasticube.Elasticube.get_metadata">get_metadata</a></code></li>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.get_model" href="#PySense.PySenseElasticube.Elasticube.get_model">get_model</a></code></li>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.get_name" href="#PySense.PySenseElasticube.Elasticube.get_name">get_name</a></code></li>
+<li><code><a title="PySense.PySenseElasticube.Elasticube.get_oid" href="#PySense.PySenseElasticube.Elasticube.get_oid">get_oid</a></code></li>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.get_saved_formulas" href="#PySense.PySenseElasticube.Elasticube.get_saved_formulas">get_saved_formulas</a></code></li>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.get_security_for_user" href="#PySense.PySenseElasticube.Elasticube.get_security_for_user">get_security_for_user</a></code></li>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.run_sql" href="#PySense.PySenseElasticube.Elasticube.run_sql">run_sql</a></code></li>

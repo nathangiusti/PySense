@@ -1,14 +1,8 @@
-**Disclaimer**
-
-1. This is not in anyway supported by Sisense. This is a hobby project of mine. 
-2. Neither myself nor Sisense offer any warranty, implied or explicit. 
-3. This is a work in progress. Not all calls are currently supported. 
-
-[Documentation](https://htmlpreview.github.io/?https://github.com/nathangiusti/PySense/blob/master/Documentation/index.html)
-
 **Overview**
 
 PySense is a python wrapper for the Sisense REST API. The goal of this project is to make the Sisense REST API more accessible to less technical users as well as decrease the development time needed to automate tasks with the Sisense REST API.
+
+[Documentation](https://htmlpreview.github.io/?https://github.com/nathangiusti/PySense/blob/master/Documentation/index.html)
 
 **How to install**
 
@@ -23,26 +17,24 @@ Download the PySense Tutorial Power Point for a hands on introduction.
 
 See snippets folder for common usage snippets
 
-**Planned Future Capabilities**
-
-- Increased control over elasticube schemas
-
-**V 0.2.4 Release Notes**
+**V 0.2.5 Release Notes**
 
 - Additions
-    - Option to set verify SSL to false. See snippets and documentation.
+    - Now with additional linux support
+    - In Linux export and import models
+    - Scripts folder contains migrate schemas script for migrating schemas between instances
+    - DataModel snippets available for reference
 
 - Breaking changes
-    - Add default rule method removed. 
-    - Add security rule now has shares as optional. To make a default rule, leave shares blank.
-    - New get user report script available
+    - Required attribute version (either windows or linux) needed to instantiate PySense
+    - Elasticube.getModel now returns a data model object 
     
 - Fixes
-    - Fixed default rule not loading correctly. 
-    - Some getter methods on user were throwing exceptions. 
+    - Get elasticubes no longer crashes on linux
+    - Documentation formatting fixes
 	
 - Known Issues
-    - PowerPoint tutorial uses old syntax for adding security. A note has been added.
+    - PowerPoint tutorial uses out of date syntax. 
 
 
 

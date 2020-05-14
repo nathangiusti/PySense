@@ -32,7 +32,7 @@ class Plugin:
     def __init__(self, py_client, plugin_json):
         self._py_client = py_client
         self._plugin_json = plugin_json
-    
+
     def get_name(self):
         &#34;&#34;&#34;Get the plugins name.&#34;&#34;&#34;
         return self._plugin_json[&#39;name&#39;]
@@ -40,7 +40,7 @@ class Plugin:
     def get_last_update(self):
         &#34;&#34;&#34;Get the plugins last update time.&#34;&#34;&#34;
         return PySenseUtils.sisense_time_to_python(self._plugin_json[&#39;lastUpdate&#39;])
-    
+
     def get_version(self):
         &#34;&#34;&#34;Get the plugins version.&#34;&#34;&#34;
         return self._plugin_json[&#39;version&#39;]
@@ -80,7 +80,7 @@ class Plugin:
     def __init__(self, py_client, plugin_json):
         self._py_client = py_client
         self._plugin_json = plugin_json
-    
+
     def get_name(self):
         &#34;&#34;&#34;Get the plugins name.&#34;&#34;&#34;
         return self._plugin_json[&#39;name&#39;]
@@ -88,7 +88,7 @@ class Plugin:
     def get_last_update(self):
         &#34;&#34;&#34;Get the plugins last update time.&#34;&#34;&#34;
         return PySenseUtils.sisense_time_to_python(self._plugin_json[&#39;lastUpdate&#39;])
-    
+
     def get_version(self):
         &#34;&#34;&#34;Get the plugins version.&#34;&#34;&#34;
         return self._plugin_json[&#39;version&#39;]

@@ -7,7 +7,7 @@ class Widget:
     def get_widget_json(self):
         """Returns the widget's JSON."""
         return self._widget_json
-    
+
     def get_dashboard_id(self):
         """Returns the dashboard id of the widget."""
         return self._widget_json['dashboardid']
@@ -17,17 +17,15 @@ class Widget:
         return self._widget_json['oid']
 
     def export_to_png(self, width, height, *, path=None):
-        """Export's widget to png.  
-          
+        """Export's widget to png.
+
         Args:
-            - width: Render width in pixels  
-            - height: Render height in pixels   
-           
-        Optional:
-            - path: Path to save the file  
-           
+            width: Render width in pixels
+            height: Render height in pixels
+            path: (optional) Path to save the file
+
         Returns:
-             The path of the saved file if set, else the raw content    
+            The path of the saved file if set, else the raw content
         """
         query_params = {'width': width, 'height': height}
         resp_content = self._py_client.connector.rest_call('get', 'api/v1/dashboards/{}/widgets/{}/export/png'

@@ -2,6 +2,8 @@ import json
 import unittest
 
 from PySense import PySense
+from PySense import PySenseDataModel
+from PySense import PySenseException
 
 
 class PySenseTests(unittest.TestCase):
@@ -9,6 +11,7 @@ class PySenseTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
+        cls.py_client_linux = PySense.authenticate_by_file('C:\\PySense\\PySenseLinux.yaml')
         cls.sample_path = 'C:\\PySense\\'
         cls.group_names = ["TempGroup", "TempGroup2"]
 
@@ -65,6 +68,18 @@ class PySenseTests(unittest.TestCase):
         groups = self.py_client.get_groups(ids=group_id_arr)
         assert len(groups) == 2
         self.py_client.delete_groups(groups)
+        
+    def test_get_import_export_delete_data_model(self):
+        data_model = self.py_client_linux.get_data_models(title='PySense')
+        assert isinstance(data_model, PySenseDataModel.DataModel)
+        
+        self.py_client_linux.delete_data_model(data_model)
+        with self.assertRaises(PySenseException.PySenseException):
+            data_model = self.py_client_linux.get_data_models(title='PySense')
+        
+        self.py_client_linux.add_data_model(data_model)
+        data_model = self.py_client_linux.get_data_models(title='PySense')
+        assert isinstance(data_model, PySenseDataModel.DataModel)
     
     @classmethod
     def tearDownClass(cls):

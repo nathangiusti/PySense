@@ -6,7 +6,7 @@ class Plugin:
     def __init__(self, py_client, plugin_json):
         self._py_client = py_client
         self._plugin_json = plugin_json
-    
+
     def get_name(self):
         """Get the plugins name."""
         return self._plugin_json['name']
@@ -14,7 +14,7 @@ class Plugin:
     def get_last_update(self):
         """Get the plugins last update time."""
         return PySenseUtils.sisense_time_to_python(self._plugin_json['lastUpdate'])
-    
+
     def get_version(self):
         """Get the plugins version."""
         return self._plugin_json['version']
