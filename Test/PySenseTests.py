@@ -2,6 +2,7 @@ import json
 import unittest
 
 from PySense import PySense
+from PySense import PySenseDashboard
 from PySense import PySenseDataModel
 from PySense import PySenseException
 
@@ -28,9 +29,11 @@ class PySenseTests(unittest.TestCase):
     def test_dashboard_import_delete(self):
         with open(self.sample_path + '\\' + 'ImportDash.dash', 'r', encoding="utf8") as file:
             data = json.loads(file.read())
-        dash = self.py_client.post_dashboards(data)
+        dash_file = PySenseDashboard.Dashboard(self.py_client, data)
+        dash = self.py_client.add_dashboards(dash_file)
         assert dash is not None
         self.py_client.delete_dashboards(dash)
+        self.py_client.add_dashboards(dash)
 
     def test_get_folders(self):
         temp = self.py_client.get_folders(name='PySense')
@@ -68,19 +71,19 @@ class PySenseTests(unittest.TestCase):
         groups = self.py_client.get_groups(ids=group_id_arr)
         assert len(groups) == 2
         self.py_client.delete_groups(groups)
-        
+
     def test_get_import_export_delete_data_model(self):
         data_model = self.py_client_linux.get_data_models(title='PySense')
         assert isinstance(data_model, PySenseDataModel.DataModel)
-        
+
         self.py_client_linux.delete_data_model(data_model)
         with self.assertRaises(PySenseException.PySenseException):
             data_model = self.py_client_linux.get_data_models(title='PySense')
-        
+
         self.py_client_linux.add_data_model(data_model)
         data_model = self.py_client_linux.get_data_models(title='PySense')
         assert isinstance(data_model, PySenseDataModel.DataModel)
-    
+
     @classmethod
     def tearDownClass(cls):
         groups_to_delete = []
@@ -88,7 +91,7 @@ class PySenseTests(unittest.TestCase):
             if group.get_name() in cls.group_names:
                 groups_to_delete.append(group)
         cls.py_client.delete_groups(groups_to_delete)
-                
-                
+
+
 if __name__ == '__main__':
     unittest.main()

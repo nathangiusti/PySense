@@ -1,6 +1,6 @@
 from PySense import PySense
 
-py_client = PySense.PySense('host', 'username', 'password')
+py_client = PySense.PySense('host', 'username', 'password', 'version')
 
 # Get all groups
 groups = py_client.get_groups()
@@ -9,7 +9,7 @@ groups = py_client.get_groups()
 # Can add multiple arguments, see documentation for full list
 groups = py_client.get_groups(name='MyGroupName')
 
-# Create groups by name. 
+# Create groups by name.
 group_names = ['Group 1', 'Group 2']
 new_groups = py_client.add_groups(groups)
 
@@ -23,7 +23,7 @@ py_client.delete_groups(groups_to_delete)
 # Add user
 py_client.add_user('user@email.com', 'Viewer')
 
-# Add user with more details. 
+# Add user with more details.
 # Can add multiple arguments, see documentation for full list
 py_client.add_user('user@email.com', 'Data Designer', first_name='John', last_name='Doe')
 

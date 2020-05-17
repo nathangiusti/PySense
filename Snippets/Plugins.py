@@ -1,6 +1,6 @@
 from PySense import PySense
 
-py_client = PySense.PySense('host', 'username', 'password')
+py_client = PySense.PySense('host', 'username', 'password', 'version')
 
 # Get all plugins
 my_plugins = py_client.get_plugins()

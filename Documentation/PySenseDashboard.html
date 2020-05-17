@@ -36,19 +36,23 @@ class Dashboard:
     def __init__(self, py_client, dashboard_json):
         self._dashboard_json = dashboard_json
         self._py_client = py_client
-        
+
     def _reset(self):
         self._dashboard_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()))
-        
+
+    def get_json(self):
+        &#34;&#34;&#34;Returns dashboard json&#34;&#34;&#34;
+        return self._dashboard_json
+
     def get_datasource(self):
-        &#34;&#34;&#34;Returns the elasticube powering the dashboard.  
-        
-        Not reliable when multiple elasticubes on dashboard.  
+        &#34;&#34;&#34;Returns the elasticube powering the dashboard.
+
+        Not reliable when multiple elasticubes on dashboard.
         &#34;&#34;&#34;
         return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])
 
     def get_id(self):
-        &#34;&#34;&#34;Gets the dashboard&#39;s id&#34;&#34;&#34;   
+        &#34;&#34;&#34;Gets the dashboard&#39;s id&#34;&#34;&#34;
         return self._dashboard_json[&#39;oid&#39;]
 
     def get_name(self):
@@ -65,7 +69,7 @@ class Dashboard:
         return_json = {&#39;sharesTo&#39;: []}
         for share in resp_json[&#39;sharesTo&#39;]:
             share_json = {
-                &#39;shareId&#39;: share[&#39;shareId&#39;], 
+                &#39;shareId&#39;: share[&#39;shareId&#39;],
                 &#39;type&#39;: share[&#39;type&#39;]
             }
             if &#39;rule&#39; in share:
@@ -74,7 +78,7 @@ class Dashboard:
                 share_json[&#39;subscribe&#39;] = share[&#39;subscribe&#39;]
             return_json[&#39;sharesTo&#39;].append(share_json)
         return return_json
-    
+
     def get_share_users_groups(self):
         &#34;&#34;&#34;Gets a list of users and groups the dashboard is shared with&#34;&#34;&#34;
         resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
@@ -87,21 +91,21 @@ class Dashboard:
         return ret_arr
 
     def add_share(self, share, rule, subscribe):
-        &#34;&#34;&#34;Share a dashboard to a new group or user.    
-        
-        If dashboard is already shared with user or group, nothing happens  
-        
+        &#34;&#34;&#34;Share a dashboard to a new group or user.
+
+        If dashboard is already shared with user or group, nothing happens
+
         Args:
-            share: A PySense Group or User  
-            rule: The permission of the user on the dashboard (view, edit, etc)  
-            subscribe: true or false, whether to subscribe the user to reports    
+            share: A PySense Group or User
+            rule: The permission of the user on the dashboard (view, edit, etc)
+            subscribe: true or false, whether to subscribe the user to reports
         &#34;&#34;&#34;
         curr_shares = self.get_shares()
         share_id = share.get_id()
         for curr_share in curr_shares[&#39;sharesTo&#39;]:
             if &#39;shareId&#39; == curr_share[&#39;shareId&#39;]:
                 share_id = None
-        
+
         if share_id is not None:
             if isinstance(share, PySenseUser.User):
                 curr_shares[&#39;sharesTo&#39;].append(
@@ -111,10 +115,10 @@ class Dashboard:
                 curr_shares[&#39;sharesTo&#39;].append(
                     {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
                 )
-        
-        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), 
+
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
                                             json_payload=curr_shares)
-        
+
     def remove_shares(self, shares):
         &#34;&#34;&#34;Unshare a dashboard to a list of groups and users&#34;&#34;&#34;
         share_ids_to_delete = []
@@ -125,7 +129,7 @@ class Dashboard:
             for i, shares in enumerate(current_shares[&#39;sharesTo&#39;]):
                 if shares[&#39;shareId&#39;] == share_id:
                     del current_shares[&#39;sharesTo&#39;][i]
-        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), 
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
                                             json_payload=current_shares)
 
     def move_to_folder(self, folder):
@@ -137,21 +141,21 @@ class Dashboard:
         self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
                                             json_payload={&#39;parentFolder&#39;: folder_oid})
         self._reset()
-    
+
     def export_to_png(self, *, path=None, include_title=None, include_filters=None, include_ds=None, width=None):
-        &#34;&#34;&#34;Get dashboard as png    
-    
+        &#34;&#34;&#34;Get dashboard as png
+
         Args:
-            path: (optional) Path to save location of png    
-            include_title: (optional) Should dashboard title be included in the exported file  
-            include_filters: (optional) Should dashboard filters be included in the exported file  
-            include_ds: (optional) Should dashboard data source info be included in the exported file  
-            width: (optional) Render width in pixels  
-            
+            path: (optional) Path to save location of png
+            include_title: (optional) Should dashboard title be included in the exported file
+            include_filters: (optional) Should dashboard filters be included in the exported file
+            include_ds: (optional) Should dashboard data source info be included in the exported file
+            width: (optional) Render width in pixels
+
         Returns:
-            The path of the created file if provided or else the raw response object  
+            The path of the created file if provided or else the raw response object
         &#34;&#34;&#34;
-        
+
         query_params = {
             &#39;includeTitle&#39;: include_title,
             &#39;includeFilters&#39;: include_filters,
@@ -164,7 +168,7 @@ class Dashboard:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
             return path
-        else: 
+        else:
             return resp_content
 
     def export_to_pdf(self, paper_format, paper_orientation, layout, *, path=None,
@@ -172,27 +176,27 @@ class Dashboard:
                       preview=None,
                       row_count=None, show_title=None, show_footer=None, title=None, title_size=None,
                       title_position=None):
-        &#34;&#34;&#34;Get dashboard as pdf   
-    
+        &#34;&#34;&#34;Get dashboard as pdf
+
         Args:
-            paper_format: What paper format should be used while rendering the dashboard.  
-            paper_orientation: What paper orientation should be used while rendering the dashboard  
-            layout: What layout should be used while rendering the dashboard, as is or feed  
-            path: (optional) Path to save location of pdf  
-            include_title: (optional) Should dashboard title be included in the exported file  
-            include_filters: (optional) Should dashboard filters be included in the exported file  
-            include_ds: (optional) Should dashboard datasource info be included in the exported file  
-            widget_id: (optional) Widget Id (Use only for Table and Pivot Widgets)  
-            preview: (optional) Should use a new Pixel Perfect Reporting  
-            row_count: (optional) Count of Table/Pivot rows to export  
-            show_title: (optional) Should Table/Pivot Widget title be included in the exported file  
-            show_footer: (optional) Should Table/Pivot Widget footer be included in the exported file   
-            title: (optional) Table/Pivot Widget title text in the exported file  
-            title_size: (optional) Table/Pivot widget title size in the exported file  
-            title_position: (optional) Table/Pivot widget title position in the exported file  
-            
+            paper_format: What paper format should be used while rendering the dashboard.
+            paper_orientation: What paper orientation should be used while rendering the dashboard
+            layout: What layout should be used while rendering the dashboard, as is or feed
+            path: (optional) Path to save location of pdf
+            include_title: (optional) Should dashboard title be included in the exported file
+            include_filters: (optional) Should dashboard filters be included in the exported file
+            include_ds: (optional) Should dashboard datasource info be included in the exported file
+            widget_id: (optional) Widget Id (Use only for Table and Pivot Widgets)
+            preview: (optional) Should use a new Pixel Perfect Reporting
+            row_count: (optional) Count of Table/Pivot rows to export
+            show_title: (optional) Should Table/Pivot Widget title be included in the exported file
+            show_footer: (optional) Should Table/Pivot Widget footer be included in the exported file
+            title: (optional) Table/Pivot Widget title text in the exported file
+            title_size: (optional) Table/Pivot widget title size in the exported file
+            title_position: (optional) Table/Pivot widget title position in the exported file
+
         Returns:
-             The path of the created file if provided, else the raw content  
+             The path of the created file if provided, else the raw content
         &#34;&#34;&#34;
         query_params = {
             &#39;paperFormat&#39;: paper_format,
@@ -217,47 +221,47 @@ class Dashboard:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
             return path
-        else: 
+        else:
             return resp_content
 
     def export_to_dash(self, *, path=None):
-        &#34;&#34;&#34;Get dashboard as dash file.   
-   
+        &#34;&#34;&#34;Get dashboard as dash file.
+
         Args:
-            path: (optional) Path to save location of dash file  
-        
+            path: (optional) Path to save location of dash file
+
         Returns:
-            The path of the created file if path provided, else the raw content  
+            The path of the created file if path provided, else the raw content
         &#34;&#34;&#34;
-        
+
         resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
                                                            .format(self.get_id()), raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
             return path
-        else: 
+        else:
             return resp_content
 
     def get_widgets(self, *, title=None, type=None, subtype=None,
                     fields=None, sort=None, skip=None, limit=None):
-        &#34;&#34;&#34;Returns an array of a dashboard’s widgets.  
-  
+        &#34;&#34;&#34;Returns an array of a dashboard’s widgets.
+
         Args:
-            title: (optional) Widget title to filter by  
-            type: (optional) Widget type to filter by  
-            subtype: (optional) Widget sub-type to filter by  
-            fields: (optional) Whitelist of fields to return for each document. fields Can also define which fields to exclude  
-                by prefixing field names with -  
-            sort: (optional) Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
-            skip: (optional) Number of results to skip from the start of the data set. skip is to be used with the limit  
-                parameter for paging  
-            limit: (optional) How many results should be returned. limit is to be used with the skip parameter for paging  
-          
+            title: (optional) Widget title to filter by
+            type: (optional) Widget type to filter by
+            subtype: (optional) Widget sub-type to filter by
+            fields: (optional) Whitelist of fields to return for each document. fields Can also define which fields to exclude
+                by prefixing field names with -
+            sort: (optional) Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+            skip: (optional) Number of results to skip from the start of the data set. skip is to be used with the limit
+                parameter for paging
+            limit: (optional) How many results should be returned. limit is to be used with the skip parameter for paging
+
         Returns:
-            An array of widget objects  
+            An array of widget objects
         &#34;&#34;&#34;
-        
+
         query_params = {
             &#39;title&#39;: title,
             &#39;type&#39;: type,
@@ -267,7 +271,7 @@ class Dashboard:
             &#39;skip&#39;: skip,
             &#39;limit&#39;: limit
         }
-        
+
         ret_arr = []
         resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
                                               query_params=query_params)
@@ -276,17 +280,17 @@ class Dashboard:
         return ret_arr
 
     def get_widget_by_id(self, widget_id, *, fields=None):
-        &#34;&#34;&#34;Returns a specific widget (by ID) from a specific dashboard.  
-    
+        &#34;&#34;&#34;Returns a specific widget (by ID) from a specific dashboard.
+
         Args:
-            widget_id: The ID of the widget to get   
-            fields: (optional) Whitelist of fields to return for each document.  
-                Fields Can also define which fields to exclude by prefixing field names with -   
-            
+            widget_id: The ID of the widget to get
+            fields: (optional) Whitelist of fields to return for each document.
+                Fields Can also define which fields to exclude by prefixing field names with -
+
         Returns:
-            A widget object   
+            A widget object
         &#34;&#34;&#34;
-        
+
         query_params = {
             &#39;fields&#39;: fields
         }
@@ -296,21 +300,21 @@ class Dashboard:
         return PySenseWidget.Widget(self._py_client, resp_json)
 
     def add_widget(self, widget):
-        &#34;&#34;&#34;Adds the provided widget object to the dashboard.  
+        &#34;&#34;&#34;Adds the provided widget object to the dashboard.
 
         Args:
-            widget: PySenseWidget.Widget object to add   
-          
+            widget: PySenseWidget.Widget object to add
+
         Returns:
-            The widget added to the dashboard    
+            The widget added to the dashboard
         &#34;&#34;&#34;
-        
+
         resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
-                                              json_payload=widget.get_widget_json())
+                                                        json_payload=widget.get_json())
         return PySenseWidget.Widget(self._py_client, resp_json)
 
     def delete_widget(self, widgets):
-        &#34;&#34;&#34;Deletes widgets from it’s dashboard.&#34;&#34;&#34;  
+        &#34;&#34;&#34;Deletes widgets from it’s dashboard.&#34;&#34;&#34;
         for widget in PySenseUtils.make_iterable(widgets):
             self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
                                                 .format(self.get_id(), widget.get_id()))
@@ -337,7 +341,7 @@ class Dashboard:
                     patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(n)
         self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
         self._reset()
-        
+
     def does_widget_exist(self, widget_id):
         &#34;&#34;&#34;Returns true or false if the widget with id is in the dashboard&#34;&#34;&#34;
         try:
@@ -372,19 +376,23 @@ class Dashboard:
     def __init__(self, py_client, dashboard_json):
         self._dashboard_json = dashboard_json
         self._py_client = py_client
-        
+
     def _reset(self):
         self._dashboard_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()))
-        
+
+    def get_json(self):
+        &#34;&#34;&#34;Returns dashboard json&#34;&#34;&#34;
+        return self._dashboard_json
+
     def get_datasource(self):
-        &#34;&#34;&#34;Returns the elasticube powering the dashboard.  
-        
-        Not reliable when multiple elasticubes on dashboard.  
+        &#34;&#34;&#34;Returns the elasticube powering the dashboard.
+
+        Not reliable when multiple elasticubes on dashboard.
         &#34;&#34;&#34;
         return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])
 
     def get_id(self):
-        &#34;&#34;&#34;Gets the dashboard&#39;s id&#34;&#34;&#34;   
+        &#34;&#34;&#34;Gets the dashboard&#39;s id&#34;&#34;&#34;
         return self._dashboard_json[&#39;oid&#39;]
 
     def get_name(self):
@@ -401,7 +409,7 @@ class Dashboard:
         return_json = {&#39;sharesTo&#39;: []}
         for share in resp_json[&#39;sharesTo&#39;]:
             share_json = {
-                &#39;shareId&#39;: share[&#39;shareId&#39;], 
+                &#39;shareId&#39;: share[&#39;shareId&#39;],
                 &#39;type&#39;: share[&#39;type&#39;]
             }
             if &#39;rule&#39; in share:
@@ -410,7 +418,7 @@ class Dashboard:
                 share_json[&#39;subscribe&#39;] = share[&#39;subscribe&#39;]
             return_json[&#39;sharesTo&#39;].append(share_json)
         return return_json
-    
+
     def get_share_users_groups(self):
         &#34;&#34;&#34;Gets a list of users and groups the dashboard is shared with&#34;&#34;&#34;
         resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
@@ -423,21 +431,21 @@ class Dashboard:
         return ret_arr
 
     def add_share(self, share, rule, subscribe):
-        &#34;&#34;&#34;Share a dashboard to a new group or user.    
-        
-        If dashboard is already shared with user or group, nothing happens  
-        
+        &#34;&#34;&#34;Share a dashboard to a new group or user.
+
+        If dashboard is already shared with user or group, nothing happens
+
         Args:
-            share: A PySense Group or User  
-            rule: The permission of the user on the dashboard (view, edit, etc)  
-            subscribe: true or false, whether to subscribe the user to reports    
+            share: A PySense Group or User
+            rule: The permission of the user on the dashboard (view, edit, etc)
+            subscribe: true or false, whether to subscribe the user to reports
         &#34;&#34;&#34;
         curr_shares = self.get_shares()
         share_id = share.get_id()
         for curr_share in curr_shares[&#39;sharesTo&#39;]:
             if &#39;shareId&#39; == curr_share[&#39;shareId&#39;]:
                 share_id = None
-        
+
         if share_id is not None:
             if isinstance(share, PySenseUser.User):
                 curr_shares[&#39;sharesTo&#39;].append(
@@ -447,10 +455,10 @@ class Dashboard:
                 curr_shares[&#39;sharesTo&#39;].append(
                     {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
                 )
-        
-        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), 
+
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
                                             json_payload=curr_shares)
-        
+
     def remove_shares(self, shares):
         &#34;&#34;&#34;Unshare a dashboard to a list of groups and users&#34;&#34;&#34;
         share_ids_to_delete = []
@@ -461,7 +469,7 @@ class Dashboard:
             for i, shares in enumerate(current_shares[&#39;sharesTo&#39;]):
                 if shares[&#39;shareId&#39;] == share_id:
                     del current_shares[&#39;sharesTo&#39;][i]
-        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), 
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
                                             json_payload=current_shares)
 
     def move_to_folder(self, folder):
@@ -473,21 +481,21 @@ class Dashboard:
         self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
                                             json_payload={&#39;parentFolder&#39;: folder_oid})
         self._reset()
-    
+
     def export_to_png(self, *, path=None, include_title=None, include_filters=None, include_ds=None, width=None):
-        &#34;&#34;&#34;Get dashboard as png    
-    
+        &#34;&#34;&#34;Get dashboard as png
+
         Args:
-            path: (optional) Path to save location of png    
-            include_title: (optional) Should dashboard title be included in the exported file  
-            include_filters: (optional) Should dashboard filters be included in the exported file  
-            include_ds: (optional) Should dashboard data source info be included in the exported file  
-            width: (optional) Render width in pixels  
-            
+            path: (optional) Path to save location of png
+            include_title: (optional) Should dashboard title be included in the exported file
+            include_filters: (optional) Should dashboard filters be included in the exported file
+            include_ds: (optional) Should dashboard data source info be included in the exported file
+            width: (optional) Render width in pixels
+
         Returns:
-            The path of the created file if provided or else the raw response object  
+            The path of the created file if provided or else the raw response object
         &#34;&#34;&#34;
-        
+
         query_params = {
             &#39;includeTitle&#39;: include_title,
             &#39;includeFilters&#39;: include_filters,
@@ -500,7 +508,7 @@ class Dashboard:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
             return path
-        else: 
+        else:
             return resp_content
 
     def export_to_pdf(self, paper_format, paper_orientation, layout, *, path=None,
@@ -508,27 +516,27 @@ class Dashboard:
                       preview=None,
                       row_count=None, show_title=None, show_footer=None, title=None, title_size=None,
                       title_position=None):
-        &#34;&#34;&#34;Get dashboard as pdf   
-    
+        &#34;&#34;&#34;Get dashboard as pdf
+
         Args:
-            paper_format: What paper format should be used while rendering the dashboard.  
-            paper_orientation: What paper orientation should be used while rendering the dashboard  
-            layout: What layout should be used while rendering the dashboard, as is or feed  
-            path: (optional) Path to save location of pdf  
-            include_title: (optional) Should dashboard title be included in the exported file  
-            include_filters: (optional) Should dashboard filters be included in the exported file  
-            include_ds: (optional) Should dashboard datasource info be included in the exported file  
-            widget_id: (optional) Widget Id (Use only for Table and Pivot Widgets)  
-            preview: (optional) Should use a new Pixel Perfect Reporting  
-            row_count: (optional) Count of Table/Pivot rows to export  
-            show_title: (optional) Should Table/Pivot Widget title be included in the exported file  
-            show_footer: (optional) Should Table/Pivot Widget footer be included in the exported file   
-            title: (optional) Table/Pivot Widget title text in the exported file  
-            title_size: (optional) Table/Pivot widget title size in the exported file  
-            title_position: (optional) Table/Pivot widget title position in the exported file  
-            
+            paper_format: What paper format should be used while rendering the dashboard.
+            paper_orientation: What paper orientation should be used while rendering the dashboard
+            layout: What layout should be used while rendering the dashboard, as is or feed
+            path: (optional) Path to save location of pdf
+            include_title: (optional) Should dashboard title be included in the exported file
+            include_filters: (optional) Should dashboard filters be included in the exported file
+            include_ds: (optional) Should dashboard datasource info be included in the exported file
+            widget_id: (optional) Widget Id (Use only for Table and Pivot Widgets)
+            preview: (optional) Should use a new Pixel Perfect Reporting
+            row_count: (optional) Count of Table/Pivot rows to export
+            show_title: (optional) Should Table/Pivot Widget title be included in the exported file
+            show_footer: (optional) Should Table/Pivot Widget footer be included in the exported file
+            title: (optional) Table/Pivot Widget title text in the exported file
+            title_size: (optional) Table/Pivot widget title size in the exported file
+            title_position: (optional) Table/Pivot widget title position in the exported file
+
         Returns:
-             The path of the created file if provided, else the raw content  
+             The path of the created file if provided, else the raw content
         &#34;&#34;&#34;
         query_params = {
             &#39;paperFormat&#39;: paper_format,
@@ -553,47 +561,47 @@ class Dashboard:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
             return path
-        else: 
+        else:
             return resp_content
 
     def export_to_dash(self, *, path=None):
-        &#34;&#34;&#34;Get dashboard as dash file.   
-   
+        &#34;&#34;&#34;Get dashboard as dash file.
+
         Args:
-            path: (optional) Path to save location of dash file  
-        
+            path: (optional) Path to save location of dash file
+
         Returns:
-            The path of the created file if path provided, else the raw content  
+            The path of the created file if path provided, else the raw content
         &#34;&#34;&#34;
-        
+
         resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
                                                            .format(self.get_id()), raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
             return path
-        else: 
+        else:
             return resp_content
 
     def get_widgets(self, *, title=None, type=None, subtype=None,
                     fields=None, sort=None, skip=None, limit=None):
-        &#34;&#34;&#34;Returns an array of a dashboard’s widgets.  
-  
+        &#34;&#34;&#34;Returns an array of a dashboard’s widgets.
+
         Args:
-            title: (optional) Widget title to filter by  
-            type: (optional) Widget type to filter by  
-            subtype: (optional) Widget sub-type to filter by  
-            fields: (optional) Whitelist of fields to return for each document. fields Can also define which fields to exclude  
-                by prefixing field names with -  
-            sort: (optional) Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
-            skip: (optional) Number of results to skip from the start of the data set. skip is to be used with the limit  
-                parameter for paging  
-            limit: (optional) How many results should be returned. limit is to be used with the skip parameter for paging  
-          
+            title: (optional) Widget title to filter by
+            type: (optional) Widget type to filter by
+            subtype: (optional) Widget sub-type to filter by
+            fields: (optional) Whitelist of fields to return for each document. fields Can also define which fields to exclude
+                by prefixing field names with -
+            sort: (optional) Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+            skip: (optional) Number of results to skip from the start of the data set. skip is to be used with the limit
+                parameter for paging
+            limit: (optional) How many results should be returned. limit is to be used with the skip parameter for paging
+
         Returns:
-            An array of widget objects  
+            An array of widget objects
         &#34;&#34;&#34;
-        
+
         query_params = {
             &#39;title&#39;: title,
             &#39;type&#39;: type,
@@ -603,7 +611,7 @@ class Dashboard:
             &#39;skip&#39;: skip,
             &#39;limit&#39;: limit
         }
-        
+
         ret_arr = []
         resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
                                               query_params=query_params)
@@ -612,17 +620,17 @@ class Dashboard:
         return ret_arr
 
     def get_widget_by_id(self, widget_id, *, fields=None):
-        &#34;&#34;&#34;Returns a specific widget (by ID) from a specific dashboard.  
-    
+        &#34;&#34;&#34;Returns a specific widget (by ID) from a specific dashboard.
+
         Args:
-            widget_id: The ID of the widget to get   
-            fields: (optional) Whitelist of fields to return for each document.  
-                Fields Can also define which fields to exclude by prefixing field names with -   
-            
+            widget_id: The ID of the widget to get
+            fields: (optional) Whitelist of fields to return for each document.
+                Fields Can also define which fields to exclude by prefixing field names with -
+
         Returns:
-            A widget object   
+            A widget object
         &#34;&#34;&#34;
-        
+
         query_params = {
             &#39;fields&#39;: fields
         }
@@ -632,21 +640,21 @@ class Dashboard:
         return PySenseWidget.Widget(self._py_client, resp_json)
 
     def add_widget(self, widget):
-        &#34;&#34;&#34;Adds the provided widget object to the dashboard.  
+        &#34;&#34;&#34;Adds the provided widget object to the dashboard.
 
         Args:
-            widget: PySenseWidget.Widget object to add   
-          
+            widget: PySenseWidget.Widget object to add
+
         Returns:
-            The widget added to the dashboard    
+            The widget added to the dashboard
         &#34;&#34;&#34;
-        
+
         resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
-                                              json_payload=widget.get_widget_json())
+                                                        json_payload=widget.get_json())
         return PySenseWidget.Widget(self._py_client, resp_json)
 
     def delete_widget(self, widgets):
-        &#34;&#34;&#34;Deletes widgets from it’s dashboard.&#34;&#34;&#34;  
+        &#34;&#34;&#34;Deletes widgets from it’s dashboard.&#34;&#34;&#34;
         for widget in PySenseUtils.make_iterable(widgets):
             self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
                                                 .format(self.get_id(), widget.get_id()))
@@ -673,7 +681,7 @@ class Dashboard:
                     patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(n)
         self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
         self._reset()
-        
+
     def does_widget_exist(self, widget_id):
         &#34;&#34;&#34;Returns true or false if the widget with id is in the dashboard&#34;&#34;&#34;
         try:
@@ -689,18 +697,14 @@ class Dashboard:
 <span>def <span class="ident">add_share</span></span>(<span>self, share, rule, subscribe)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Share a dashboard to a new group or user.
-</p>
-<p>If dashboard is already shared with user or group, nothing happens
-</p>
+<section class="desc"><p>Share a dashboard to a new group or user.</p>
+<p>If dashboard is already shared with user or group, nothing happens</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>share</code></strong></dt>
-<dd>A PySense Group or User
-</dd>
+<dd>A PySense Group or User</dd>
 <dt><strong><code>rule</code></strong></dt>
-<dd>The permission of the user on the dashboard (view, edit, etc)
-</dd>
+<dd>The permission of the user on the dashboard (view, edit, etc)</dd>
 <dt><strong><code>subscribe</code></strong></dt>
 <dd>true or false, whether to subscribe the user to reports</dd>
 </dl></section>
@@ -709,21 +713,21 @@ class Dashboard:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def add_share(self, share, rule, subscribe):
-    &#34;&#34;&#34;Share a dashboard to a new group or user.    
-    
-    If dashboard is already shared with user or group, nothing happens  
-    
+    &#34;&#34;&#34;Share a dashboard to a new group or user.
+
+    If dashboard is already shared with user or group, nothing happens
+
     Args:
-        share: A PySense Group or User  
-        rule: The permission of the user on the dashboard (view, edit, etc)  
-        subscribe: true or false, whether to subscribe the user to reports    
+        share: A PySense Group or User
+        rule: The permission of the user on the dashboard (view, edit, etc)
+        subscribe: true or false, whether to subscribe the user to reports
     &#34;&#34;&#34;
     curr_shares = self.get_shares()
     share_id = share.get_id()
     for curr_share in curr_shares[&#39;sharesTo&#39;]:
         if &#39;shareId&#39; == curr_share[&#39;shareId&#39;]:
             share_id = None
-    
+
     if share_id is not None:
         if isinstance(share, PySenseUser.User):
             curr_shares[&#39;sharesTo&#39;].append(
@@ -733,8 +737,8 @@ class Dashboard:
             curr_shares[&#39;sharesTo&#39;].append(
                 {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
             )
-    
-    self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), 
+
+    self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
                                         json_payload=curr_shares)</code></pre>
 </details>
 </dd>
@@ -742,13 +746,11 @@ class Dashboard:
 <span>def <span class="ident">add_widget</span></span>(<span>self, widget)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Adds the provided widget object to the dashboard.
-</p>
+<section class="desc"><p>Adds the provided widget object to the dashboard.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>widget</code></strong></dt>
-<dd>PySenseWidget.Widget object to add
-</dd>
+<dd>PySenseWidget.Widget object to add</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -760,17 +762,17 @@ class Dashboard:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def add_widget(self, widget):
-    &#34;&#34;&#34;Adds the provided widget object to the dashboard.  
+    &#34;&#34;&#34;Adds the provided widget object to the dashboard.
 
     Args:
-        widget: PySenseWidget.Widget object to add   
-      
+        widget: PySenseWidget.Widget object to add
+
     Returns:
-        The widget added to the dashboard    
+        The widget added to the dashboard
     &#34;&#34;&#34;
-    
+
     resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
-                                          json_payload=widget.get_widget_json())
+                                                    json_payload=widget.get_json())
     return PySenseWidget.Widget(self._py_client, resp_json)</code></pre>
 </details>
 </dd>
@@ -784,7 +786,7 @@ class Dashboard:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def delete_widget(self, widgets):
-    &#34;&#34;&#34;Deletes widgets from it’s dashboard.&#34;&#34;&#34;  
+    &#34;&#34;&#34;Deletes widgets from it’s dashboard.&#34;&#34;&#34;
     for widget in PySenseUtils.make_iterable(widgets):
         self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
                                             .format(self.get_id(), widget.get_id()))
@@ -814,13 +816,11 @@ class Dashboard:
 <span>def <span class="ident">export_to_dash</span></span>(<span>self, *, path=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get dashboard as dash file.
-</p>
+<section class="desc"><p>Get dashboard as dash file.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>path</code></strong></dt>
-<dd>(optional) Path to save location of dash file
-</dd>
+<dd>(optional) Path to save location of dash file</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -832,22 +832,22 @@ class Dashboard:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def export_to_dash(self, *, path=None):
-    &#34;&#34;&#34;Get dashboard as dash file.   
+    &#34;&#34;&#34;Get dashboard as dash file.
 
     Args:
-        path: (optional) Path to save location of dash file  
-    
+        path: (optional) Path to save location of dash file
+
     Returns:
-        The path of the created file if path provided, else the raw content  
+        The path of the created file if path provided, else the raw content
     &#34;&#34;&#34;
-    
+
     resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
                                                        .format(self.get_id()), raw=True)
     if path is not None:
         with open(path, &#39;wb&#39;) as out_file:
             out_file.write(resp_content)
         return path
-    else: 
+    else:
         return resp_content</code></pre>
 </details>
 </dd>
@@ -855,55 +855,39 @@ class Dashboard:
 <span>def <span class="ident">export_to_pdf</span></span>(<span>self, paper_format, paper_orientation, layout, *, path=None, include_title=None, include_filters=None, include_ds=None, widget_id=None, preview=None, row_count=None, show_title=None, show_footer=None, title=None, title_size=None, title_position=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get dashboard as pdf
-</p>
+<section class="desc"><p>Get dashboard as pdf</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>paper_format</code></strong></dt>
-<dd>What paper format should be used while rendering the dashboard.
-</dd>
+<dd>What paper format should be used while rendering the dashboard.</dd>
 <dt><strong><code>paper_orientation</code></strong></dt>
-<dd>What paper orientation should be used while rendering the dashboard
-</dd>
+<dd>What paper orientation should be used while rendering the dashboard</dd>
 <dt><strong><code>layout</code></strong></dt>
-<dd>What layout should be used while rendering the dashboard, as is or feed
-</dd>
+<dd>What layout should be used while rendering the dashboard, as is or feed</dd>
 <dt><strong><code>path</code></strong></dt>
-<dd>(optional) Path to save location of pdf
-</dd>
+<dd>(optional) Path to save location of pdf</dd>
 <dt><strong><code>include_title</code></strong></dt>
-<dd>(optional) Should dashboard title be included in the exported file
-</dd>
+<dd>(optional) Should dashboard title be included in the exported file</dd>
 <dt><strong><code>include_filters</code></strong></dt>
-<dd>(optional) Should dashboard filters be included in the exported file
-</dd>
+<dd>(optional) Should dashboard filters be included in the exported file</dd>
 <dt><strong><code>include_ds</code></strong></dt>
-<dd>(optional) Should dashboard datasource info be included in the exported file
-</dd>
+<dd>(optional) Should dashboard datasource info be included in the exported file</dd>
 <dt><strong><code>widget_id</code></strong></dt>
-<dd>(optional) Widget Id (Use only for Table and Pivot Widgets)
-</dd>
+<dd>(optional) Widget Id (Use only for Table and Pivot Widgets)</dd>
 <dt><strong><code>preview</code></strong></dt>
-<dd>(optional) Should use a new Pixel Perfect Reporting
-</dd>
+<dd>(optional) Should use a new Pixel Perfect Reporting</dd>
 <dt><strong><code>row_count</code></strong></dt>
-<dd>(optional) Count of Table/Pivot rows to export
-</dd>
+<dd>(optional) Count of Table/Pivot rows to export</dd>
 <dt><strong><code>show_title</code></strong></dt>
-<dd>(optional) Should Table/Pivot Widget title be included in the exported file
-</dd>
+<dd>(optional) Should Table/Pivot Widget title be included in the exported file</dd>
 <dt><strong><code>show_footer</code></strong></dt>
-<dd>(optional) Should Table/Pivot Widget footer be included in the exported file
-</dd>
+<dd>(optional) Should Table/Pivot Widget footer be included in the exported file</dd>
 <dt><strong><code>title</code></strong></dt>
-<dd>(optional) Table/Pivot Widget title text in the exported file
-</dd>
+<dd>(optional) Table/Pivot Widget title text in the exported file</dd>
 <dt><strong><code>title_size</code></strong></dt>
-<dd>(optional) Table/Pivot widget title size in the exported file
-</dd>
+<dd>(optional) Table/Pivot widget title size in the exported file</dd>
 <dt><strong><code>title_position</code></strong></dt>
-<dd>(optional) Table/Pivot widget title position in the exported file
-</dd>
+<dd>(optional) Table/Pivot widget title position in the exported file</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -919,27 +903,27 @@ class Dashboard:
                   preview=None,
                   row_count=None, show_title=None, show_footer=None, title=None, title_size=None,
                   title_position=None):
-    &#34;&#34;&#34;Get dashboard as pdf   
+    &#34;&#34;&#34;Get dashboard as pdf
 
     Args:
-        paper_format: What paper format should be used while rendering the dashboard.  
-        paper_orientation: What paper orientation should be used while rendering the dashboard  
-        layout: What layout should be used while rendering the dashboard, as is or feed  
-        path: (optional) Path to save location of pdf  
-        include_title: (optional) Should dashboard title be included in the exported file  
-        include_filters: (optional) Should dashboard filters be included in the exported file  
-        include_ds: (optional) Should dashboard datasource info be included in the exported file  
-        widget_id: (optional) Widget Id (Use only for Table and Pivot Widgets)  
-        preview: (optional) Should use a new Pixel Perfect Reporting  
-        row_count: (optional) Count of Table/Pivot rows to export  
-        show_title: (optional) Should Table/Pivot Widget title be included in the exported file  
-        show_footer: (optional) Should Table/Pivot Widget footer be included in the exported file   
-        title: (optional) Table/Pivot Widget title text in the exported file  
-        title_size: (optional) Table/Pivot widget title size in the exported file  
-        title_position: (optional) Table/Pivot widget title position in the exported file  
-        
+        paper_format: What paper format should be used while rendering the dashboard.
+        paper_orientation: What paper orientation should be used while rendering the dashboard
+        layout: What layout should be used while rendering the dashboard, as is or feed
+        path: (optional) Path to save location of pdf
+        include_title: (optional) Should dashboard title be included in the exported file
+        include_filters: (optional) Should dashboard filters be included in the exported file
+        include_ds: (optional) Should dashboard datasource info be included in the exported file
+        widget_id: (optional) Widget Id (Use only for Table and Pivot Widgets)
+        preview: (optional) Should use a new Pixel Perfect Reporting
+        row_count: (optional) Count of Table/Pivot rows to export
+        show_title: (optional) Should Table/Pivot Widget title be included in the exported file
+        show_footer: (optional) Should Table/Pivot Widget footer be included in the exported file
+        title: (optional) Table/Pivot Widget title text in the exported file
+        title_size: (optional) Table/Pivot widget title size in the exported file
+        title_position: (optional) Table/Pivot widget title position in the exported file
+
     Returns:
-         The path of the created file if provided, else the raw content  
+         The path of the created file if provided, else the raw content
     &#34;&#34;&#34;
     query_params = {
         &#39;paperFormat&#39;: paper_format,
@@ -964,7 +948,7 @@ class Dashboard:
         with open(path, &#39;wb&#39;) as out_file:
             out_file.write(resp_content)
         return path
-    else: 
+    else:
         return resp_content</code></pre>
 </details>
 </dd>
@@ -972,25 +956,19 @@ class Dashboard:
 <span>def <span class="ident">export_to_png</span></span>(<span>self, *, path=None, include_title=None, include_filters=None, include_ds=None, width=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get dashboard as png
-</p>
+<section class="desc"><p>Get dashboard as png</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>path</code></strong></dt>
-<dd>(optional) Path to save location of png
-</dd>
+<dd>(optional) Path to save location of png</dd>
 <dt><strong><code>include_title</code></strong></dt>
-<dd>(optional) Should dashboard title be included in the exported file
-</dd>
+<dd>(optional) Should dashboard title be included in the exported file</dd>
 <dt><strong><code>include_filters</code></strong></dt>
-<dd>(optional) Should dashboard filters be included in the exported file
-</dd>
+<dd>(optional) Should dashboard filters be included in the exported file</dd>
 <dt><strong><code>include_ds</code></strong></dt>
-<dd>(optional) Should dashboard data source info be included in the exported file
-</dd>
+<dd>(optional) Should dashboard data source info be included in the exported file</dd>
 <dt><strong><code>width</code></strong></dt>
-<dd>(optional) Render width in pixels
-</dd>
+<dd>(optional) Render width in pixels</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1002,19 +980,19 @@ class Dashboard:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def export_to_png(self, *, path=None, include_title=None, include_filters=None, include_ds=None, width=None):
-    &#34;&#34;&#34;Get dashboard as png    
+    &#34;&#34;&#34;Get dashboard as png
 
     Args:
-        path: (optional) Path to save location of png    
-        include_title: (optional) Should dashboard title be included in the exported file  
-        include_filters: (optional) Should dashboard filters be included in the exported file  
-        include_ds: (optional) Should dashboard data source info be included in the exported file  
-        width: (optional) Render width in pixels  
-        
+        path: (optional) Path to save location of png
+        include_title: (optional) Should dashboard title be included in the exported file
+        include_filters: (optional) Should dashboard filters be included in the exported file
+        include_ds: (optional) Should dashboard data source info be included in the exported file
+        width: (optional) Render width in pixels
+
     Returns:
-        The path of the created file if provided or else the raw response object  
+        The path of the created file if provided or else the raw response object
     &#34;&#34;&#34;
-    
+
     query_params = {
         &#39;includeTitle&#39;: include_title,
         &#39;includeFilters&#39;: include_filters,
@@ -1027,7 +1005,7 @@ class Dashboard:
         with open(path, &#39;wb&#39;) as out_file:
             out_file.write(resp_content)
         return path
-    else: 
+    else:
         return resp_content</code></pre>
 </details>
 </dd>
@@ -1049,17 +1027,16 @@ class Dashboard:
 <span>def <span class="ident">get_datasource</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the elasticube powering the dashboard.
-</p>
+<section class="desc"><p>Returns the elasticube powering the dashboard.</p>
 <p>Not reliable when multiple elasticubes on dashboard.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_datasource(self):
-    &#34;&#34;&#34;Returns the elasticube powering the dashboard.  
-    
-    Not reliable when multiple elasticubes on dashboard.  
+    &#34;&#34;&#34;Returns the elasticube powering the dashboard.
+
+    Not reliable when multiple elasticubes on dashboard.
     &#34;&#34;&#34;
     return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])</code></pre>
 </details>
@@ -1074,8 +1051,22 @@ class Dashboard:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_id(self):
-    &#34;&#34;&#34;Gets the dashboard&#39;s id&#34;&#34;&#34;   
+    &#34;&#34;&#34;Gets the dashboard&#39;s id&#34;&#34;&#34;
     return self._dashboard_json[&#39;oid&#39;]</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDashboard.Dashboard.get_json"><code class="name flex">
+<span>def <span class="ident">get_json</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns dashboard json</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_json(self):
+    &#34;&#34;&#34;Returns dashboard json&#34;&#34;&#34;
+    return self._dashboard_json</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_name"><code class="name flex">
@@ -1128,7 +1119,7 @@ class Dashboard:
     return_json = {&#39;sharesTo&#39;: []}
     for share in resp_json[&#39;sharesTo&#39;]:
         share_json = {
-            &#39;shareId&#39;: share[&#39;shareId&#39;], 
+            &#39;shareId&#39;: share[&#39;shareId&#39;],
             &#39;type&#39;: share[&#39;type&#39;]
         }
         if &#39;rule&#39; in share:
@@ -1143,17 +1134,14 @@ class Dashboard:
 <span>def <span class="ident">get_widget_by_id</span></span>(<span>self, widget_id, *, fields=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns a specific widget (by ID) from a specific dashboard.
-</p>
+<section class="desc"><p>Returns a specific widget (by ID) from a specific dashboard.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>widget_id</code></strong></dt>
-<dd>The ID of the widget to get
-</dd>
+<dd>The ID of the widget to get</dd>
 <dt><strong><code>fields</code></strong></dt>
-<dd>(optional) Whitelist of fields to return for each document.<br>
-Fields Can also define which fields to exclude by prefixing field names with -
-</dd>
+<dd>(optional) Whitelist of fields to return for each document.
+Fields Can also define which fields to exclude by prefixing field names with -</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1165,17 +1153,17 @@ Fields Can also define which fields to exclude by prefixing field names with -
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_widget_by_id(self, widget_id, *, fields=None):
-    &#34;&#34;&#34;Returns a specific widget (by ID) from a specific dashboard.  
+    &#34;&#34;&#34;Returns a specific widget (by ID) from a specific dashboard.
 
     Args:
-        widget_id: The ID of the widget to get   
-        fields: (optional) Whitelist of fields to return for each document.  
-            Fields Can also define which fields to exclude by prefixing field names with -   
-        
+        widget_id: The ID of the widget to get
+        fields: (optional) Whitelist of fields to return for each document.
+            Fields Can also define which fields to exclude by prefixing field names with -
+
     Returns:
-        A widget object   
+        A widget object
     &#34;&#34;&#34;
-    
+
     query_params = {
         &#39;fields&#39;: fields
     }
@@ -1189,33 +1177,25 @@ Fields Can also define which fields to exclude by prefixing field names with -
 <span>def <span class="ident">get_widgets</span></span>(<span>self, *, title=None, type=None, subtype=None, fields=None, sort=None, skip=None, limit=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns an array of a dashboard’s widgets.
-</p>
+<section class="desc"><p>Returns an array of a dashboard’s widgets.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>title</code></strong></dt>
-<dd>(optional) Widget title to filter by
-</dd>
+<dd>(optional) Widget title to filter by</dd>
 <dt><strong><code>type</code></strong></dt>
-<dd>(optional) Widget type to filter by
-</dd>
+<dd>(optional) Widget type to filter by</dd>
 <dt><strong><code>subtype</code></strong></dt>
-<dd>(optional) Widget sub-type to filter by
-</dd>
+<dd>(optional) Widget sub-type to filter by</dd>
 <dt><strong><code>fields</code></strong></dt>
-<dd>(optional) Whitelist of fields to return for each document. fields Can also define which fields to exclude<br>
-by prefixing field names with -
-</dd>
+<dd>(optional) Whitelist of fields to return for each document. fields Can also define which fields to exclude
+by prefixing field names with -</dd>
 <dt><strong><code>sort</code></strong></dt>
-<dd>(optional) Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-</dd>
+<dd>(optional) Field by which the results should be sorted. Ascending by default, descending if prefixed by -</dd>
 <dt><strong><code>skip</code></strong></dt>
-<dd>(optional) Number of results to skip from the start of the data set. skip is to be used with the limit<br>
-parameter for paging
-</dd>
+<dd>(optional) Number of results to skip from the start of the data set. skip is to be used with the limit
+parameter for paging</dd>
 <dt><strong><code>limit</code></strong></dt>
-<dd>(optional) How many results should be returned. limit is to be used with the skip parameter for paging
-</dd>
+<dd>(optional) How many results should be returned. limit is to be used with the skip parameter for paging</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1228,23 +1208,23 @@ parameter for paging
 </summary>
 <pre><code class="python">def get_widgets(self, *, title=None, type=None, subtype=None,
                 fields=None, sort=None, skip=None, limit=None):
-    &#34;&#34;&#34;Returns an array of a dashboard’s widgets.  
+    &#34;&#34;&#34;Returns an array of a dashboard’s widgets.
 
     Args:
-        title: (optional) Widget title to filter by  
-        type: (optional) Widget type to filter by  
-        subtype: (optional) Widget sub-type to filter by  
-        fields: (optional) Whitelist of fields to return for each document. fields Can also define which fields to exclude  
-            by prefixing field names with -  
-        sort: (optional) Field by which the results should be sorted. Ascending by default, descending if prefixed by -  
-        skip: (optional) Number of results to skip from the start of the data set. skip is to be used with the limit  
-            parameter for paging  
-        limit: (optional) How many results should be returned. limit is to be used with the skip parameter for paging  
-      
+        title: (optional) Widget title to filter by
+        type: (optional) Widget type to filter by
+        subtype: (optional) Widget sub-type to filter by
+        fields: (optional) Whitelist of fields to return for each document. fields Can also define which fields to exclude
+            by prefixing field names with -
+        sort: (optional) Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+        skip: (optional) Number of results to skip from the start of the data set. skip is to be used with the limit
+            parameter for paging
+        limit: (optional) How many results should be returned. limit is to be used with the skip parameter for paging
+
     Returns:
-        An array of widget objects  
+        An array of widget objects
     &#34;&#34;&#34;
-    
+
     query_params = {
         &#39;title&#39;: title,
         &#39;type&#39;: type,
@@ -1254,7 +1234,7 @@ parameter for paging
         &#39;skip&#39;: skip,
         &#39;limit&#39;: limit
     }
-    
+
     ret_arr = []
     resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets&#39;.format(self.get_id()),
                                           query_params=query_params)
@@ -1334,7 +1314,7 @@ parameter for paging
         for i, shares in enumerate(current_shares[&#39;sharesTo&#39;]):
             if shares[&#39;shareId&#39;] == share_id:
                 del current_shares[&#39;sharesTo&#39;][i]
-    self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()), 
+    self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
                                         json_payload=current_shares)</code></pre>
 </details>
 </dd>
@@ -1369,6 +1349,7 @@ parameter for paging
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_dashboard_folder" href="#PySense.PySenseDashboard.Dashboard.get_dashboard_folder">get_dashboard_folder</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_datasource" href="#PySense.PySenseDashboard.Dashboard.get_datasource">get_datasource</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_id" href="#PySense.PySenseDashboard.Dashboard.get_id">get_id</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.get_json" href="#PySense.PySenseDashboard.Dashboard.get_json">get_json</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_name" href="#PySense.PySenseDashboard.Dashboard.get_name">get_name</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_share_users_groups" href="#PySense.PySenseDashboard.Dashboard.get_share_users_groups">get_share_users_groups</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_shares" href="#PySense.PySenseDashboard.Dashboard.get_shares">get_shares</a></code></li>

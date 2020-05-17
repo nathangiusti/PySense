@@ -1,6 +1,6 @@
 from PySense import PySense
 
-py_client = PySense.PySense('host', 'username', 'password', 'os')
+py_client = PySense.PySense('host', 'username', 'password', 'version')
 
 # Get a data model called PySense
 data_model = py_client.get_data_models(title='PySense Dev')
@@ -11,7 +11,7 @@ data_model.get_oid()
 # Delete a data model
 py_client.delete_data_model(data_model)
 
-# Add a model from one client to a new client. 
+# Add a model from one client to a new client.
 new_client = PySense.PySense('newhost', 'username', 'password', 'os')
 new_client.add_data_model(data_model)
 

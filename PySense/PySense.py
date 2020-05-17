@@ -144,18 +144,20 @@ class PySense:
 
         return PySenseDashboard.Dashboard(self, resp_json)
 
-    def post_dashboards(self, dashboard_json):
-        """Import given dashboard.
+    def add_dashboards(self, dashboards):
+        """Import given dashboards.
 
         Args:
-            dashboard_json: The dashboard json from the dash file
+            dashboards: One to many PySense dashboard to import
 
         Returns:
-            The new dashboard
+            An array of new dashboards
         """
-
-        resp = self.connector.rest_call('post', 'api/v1/dashboards', json_payload=dashboard_json)
-        return PySenseDashboard.Dashboard(self, resp)
+        ret_arr = []
+        for dashboard in PySenseUtils.make_iterable(dashboards):
+            resp = self.connector.rest_call('post', 'api/v1/dashboards', json_payload=dashboard.get_json())
+            ret_arr.append(PySenseDashboard.Dashboard(self, resp))
+        return ret_arr
 
     def delete_dashboards(self, dashboards):
         """Delete dashboards.
@@ -429,7 +431,7 @@ class PySense:
         """Returns a single user based on email"""
         users = self.get_users(email=email)
         if len(users) == 0:
-            raise PySenseException.PySenseException('No user with email {} found'.format(email))
+            None
         elif len(users) > 1:
             raise PySenseException.PySenseException('{} users with email {} found. '.format(len(users), email))
         else:

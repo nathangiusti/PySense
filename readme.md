@@ -17,21 +17,21 @@ Download the PySense Tutorial Power Point for a hands on introduction.
 
 See snippets folder for common usage snippets
 
-**V 0.2.5 Release Notes**
+**V 0.2.6 Release Notes**
 
 - Additions
-    - Now with additional linux support
-    - In Linux export and import models
-    - Scripts folder contains migrate schemas script for migrating schemas between instances
-    - DataModel snippets available for reference
+    - New script for moving dashboards between instances
+    - New script for creating users
 
 - Breaking changes
-    - Required attribute version (either windows or linux) needed to instantiate PySense
-    - Elasticube.getModel now returns a data model object 
-    
+    - post_dashboard now add_dashboards
+        - Can now accept one to many dashboards
+        - Takes a dashboard object instead of raw JSON
+    - Widget.get_widget_json now Widget.get_json for consistency
+    - PySense.get_user_by_email will now return None instead of throwing an exception if the user is not found
+
 - Fixes
-    - Get elasticubes no longer crashes on linux
-    - Documentation formatting fixes
+    - Snippets authentication strings now include required version argument
 	
 - Known Issues
     - PowerPoint tutorial uses out of date syntax. 

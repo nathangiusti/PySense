@@ -1,19 +1,19 @@
 """
 Sample script for migrating schemas between servers.
 
-Schema migration by API is only support on Linux. 
+Schema migration by API is only support on Linux.
 
 In this example dev_client will be the source of the migration and prod_client will be the target of the migration
 
 Sample configs:
 
-PySenseDev:
+PySenseDev.yaml
 host: 'dev.mycomapny.com'
 username: 'username'
 password: 'password'
 os: 'Linux'
 
-PySenseProd:
+PySenseProd.yaml
 host: 'prod.mycomapny.com'
 username: 'username'
 password: 'password'
@@ -21,11 +21,11 @@ os: 'Linux'
 
 To use this script update the following values:
 - dev_client
-    - Authenticate with your dev server by file or inline. See authentication snippet for more examples. 
+    - Authenticate with your dev server by file or inline. See authentication snippet for more examples.
 - prod_client
-    - Authenticate with your prod server by file or inline. See authentication snippet for more examples. 
+    - Authenticate with your prod server by file or inline. See authentication snippet for more examples.
 - data_model_to_migrate
-    - The name of the data model in your development environment that you want to migrate. 
+    - The name of the data model in your development environment that you want to migrate.
 - overwrite
     - If true, will replace an existing data model named by data_model_to_overwrite
     - If false, will create a new data model on the server

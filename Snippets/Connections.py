@@ -1,7 +1,7 @@
 from PySense import PySense
 
 
-py_client = PySense.PySense('host', 'username', 'password')
+py_client = PySense.PySense('host', 'username', 'password', 'version')
 
 # Get all connections
 connections = py_client.get_connections()

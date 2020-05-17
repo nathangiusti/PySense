@@ -4,7 +4,7 @@ class Widget:
         self._py_client = py_client
         self._widget_json = widget_json
 
-    def get_widget_json(self):
+    def get_json(self):
         """Returns the widget's JSON."""
         return self._widget_json
 

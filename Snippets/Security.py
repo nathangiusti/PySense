@@ -1,6 +1,6 @@
 from PySense import PySense
 
-py_client = PySense.PySense('host', 'username', 'password')
+py_client = PySense.PySense('host', 'username', 'password', 'version')
 elasticube = py_client.get_elasticube_by_name('CubeTitle')
 
 # Add default Nothing rule for column
@@ -23,6 +23,6 @@ rules = elasticube.get_datasecurity()
 # Get all rules for a table/column
 rules = elasticube.get_datasecurity_by_table_column('table_name', 'column_name')
 
-# Delete all the rules for a table/column 
+# Delete all the rules for a table/column
 elasticube.delete_rule('table_name', 'column_name')
 

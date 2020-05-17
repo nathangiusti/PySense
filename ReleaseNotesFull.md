@@ -1,3 +1,22 @@
+**V 0.2.6 Release Notes**
+
+- Additions
+    - New script for moving dashboards between instances
+    - New script for creating users
+
+- Breaking changes
+    - post_dashboard now add_dashboards
+        - Can now accept one to many dashboards
+        - Takes a dashboard object instead of raw JSON
+    - Widget.get_widget_json now Widget.get_json for consistency
+    - PySense.get_user_by_email will now return None instead of throwing an exception if the user is not found
+
+- Fixes
+    - Snippets authentication strings now include required version argument
+	
+- Known Issues
+    - PowerPoint tutorial uses out of date syntax. 
+    
 **V 0.2.5 Release Notes**
 
 - Additions
