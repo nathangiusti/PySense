@@ -34,7 +34,7 @@ See snippets folder for common usage snippets
     - Snippets authentication strings now include required version argument
 	
 - Known Issues
-    - PowerPoint tutorial uses out of date syntax. 
+    - None
 
 
 
