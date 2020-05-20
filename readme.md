@@ -17,21 +17,17 @@ Download the PySense Tutorial Power Point for a hands on introduction.
 
 See snippets folder for common usage snippets
 
-**V 0.2.6 Release Notes**
+**V 0.2.7 Release Notes**
 
 - Additions
-    - New script for moving dashboards between instances
-    - New script for creating users
+    - None
 
 - Breaking changes
-    - post_dashboard now add_dashboards
-        - Can now accept one to many dashboards
-        - Takes a dashboard object instead of raw JSON
-    - Widget.get_widget_json now Widget.get_json for consistency
-    - PySense.get_user_by_email will now return None instead of throwing an exception if the user is not found
+    - None
 
 - Fixes
-    - Snippets authentication strings now include required version argument
+    - Verify passed correctly to login
+    - Dashboard file out of sync with pip
 	
 - Known Issues
     - None

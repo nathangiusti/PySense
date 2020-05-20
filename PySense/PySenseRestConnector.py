@@ -11,7 +11,7 @@ class RestConnector:
         self.debug = debug
         self.verify = verify
         data = {'username': username, 'password': password}
-        resp = requests.post('{}/api/v1/authentication/login'.format(self._host), data=data)
+        resp = requests.post('{}/api/v1/authentication/login'.format(self._host), verify=verify, data=data)
         parse_response(resp)
         self._token = {'authorization':  "Bearer " + resp.json()['access_token']}
 

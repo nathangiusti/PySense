@@ -1,3 +1,18 @@
+**V 0.2.7 Release Notes**
+
+- Additions
+    - None
+
+- Breaking changes
+    - None
+
+- Fixes
+    - Verify passed correctly to login
+    - Dashboard file out of sync with pip
+	
+- Known Issues
+    - None
+    
 **V 0.2.6 Release Notes**
 
 - Additions
