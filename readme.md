@@ -17,22 +17,21 @@ Download the PySense Tutorial Power Point for a hands on introduction.
 
 See snippets folder for common usage snippets
 
-**V 0.2.7 Release Notes**
+**V 0.2.8 Release Notes**
 
 - Additions
-    - None
+    - Build, start, and stop elasticubes
+    - Build data models and track their build progress
+    - Get detailed information about your model like the data sets, tables, and underlying model settings (like import queries)
+    - New Script: Builds all data models waiting for the previous to finish
+    - New Script: Get all table information from a cube/model
 
 - Breaking changes
     - None
 
 - Fixes
-    - Verify passed correctly to login
-    - Dashboard file out of sync with pip
+    - Elasticube comments reformatted
+    - Exceptions called correctly
 	
 - Known Issues
-    - None
-
-
-
-    
-   
+    - REST API sometimes becomes responsive on Linux builds

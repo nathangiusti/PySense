@@ -313,7 +313,8 @@ class Dashboard:
                         column['cells'].pop(k)
                 if len(column['cells']) == 0:
                     patch_json['layout']['columns'].pop(n)
-        self._py_client.connector.rest_call('patch', 'api/v1/dashboards/{}'.format(self.get_id()), json_payload=patch_json)
+        self._py_client.connector.rest_call('patch', 'api/v1/dashboards/{}'.format(self.get_id()),
+                                            json_payload=patch_json)
         self._reset()
 
     def does_widget_exist(self, widget_id):

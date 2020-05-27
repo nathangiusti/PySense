@@ -37,7 +37,7 @@ class RestConnector:
         self.debug = debug
         self.verify = verify
         data = {&#39;username&#39;: username, &#39;password&#39;: password}
-        resp = requests.post(&#39;{}/api/v1/authentication/login&#39;.format(self._host), data=data)
+        resp = requests.post(&#39;{}/api/v1/authentication/login&#39;.format(self._host), verify=verify, data=data)
         parse_response(resp)
         self._token = {&#39;authorization&#39;:  &#34;Bearer &#34; + resp.json()[&#39;access_token&#39;]}
 
@@ -217,7 +217,7 @@ def build_query_string(dictionary):
         self.debug = debug
         self.verify = verify
         data = {&#39;username&#39;: username, &#39;password&#39;: password}
-        resp = requests.post(&#39;{}/api/v1/authentication/login&#39;.format(self._host), data=data)
+        resp = requests.post(&#39;{}/api/v1/authentication/login&#39;.format(self._host), verify=verify, data=data)
         parse_response(resp)
         self._token = {&#39;authorization&#39;:  &#34;Bearer &#34; + resp.json()[&#39;access_token&#39;]}
 

@@ -1,3 +1,22 @@
+**V 0.2.8 Release Notes**
+
+- Additions
+    - Build, start, and stop elasticubes
+    - Build data models and track their build progress
+    - Get detailed information about your model like the data sets, tables, and underlying model settings (like import queries)
+    - New Script: Builds all data models waiting for the previous to finish
+    - New Script: Get all table information from a cube/model
+
+- Breaking changes
+    - None
+
+- Fixes
+    - Elasticube comments reformatted
+    - Exceptions called correctly
+	
+- Known Issues
+    - REST API sometimes becomes responsive on Linux builds
+
 **V 0.2.7 Release Notes**
 
 - Additions

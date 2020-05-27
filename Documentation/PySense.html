@@ -621,7 +621,7 @@ class PySense:
             target_data_model: (optional) The data model to update.
         &#34;&#34;&#34;
         if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException(&#34;Import data model not supported on windows&#34;)
+            raise PySenseException.PySenseException(&#34;Import data model not supported on windows&#34;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -661,7 +661,7 @@ class PySense:
 
         &#34;&#34;&#34;
         if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException(&#34;Get data model not supported on windows&#34;)
+            raise PySenseException.PySenseException(&#34;Get data model not supported on windows&#34;)
 
         query_params = {
             &#39;title&#39;: title,
@@ -676,7 +676,7 @@ class PySense:
             if data_models is not None:
                 return PySenseDataModel.DataModel(self, data_models)
             else:
-                raise PySenseException(&#39;No data model with name {} found&#39;.format(title))
+                raise PySenseException.PySenseException(&#39;No data model with name {} found&#39;.format(title))
         else:
             ret_arr = []
             for data_model in data_models:
@@ -690,7 +690,7 @@ class PySense:
             data_models: One to many data models to delete
         &#34;&#34;&#34;
         if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException(&#34;Delete data model not supported on windows&#34;)
+            raise PySenseException.PySenseException(&#34;Delete data model not supported on windows&#34;)
 
         for data_model in PySenseUtils.make_iterable(data_models):
             self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))</code></pre>
@@ -1346,7 +1346,7 @@ version: 'your platform'</p>
             target_data_model: (optional) The data model to update.
         &#34;&#34;&#34;
         if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException(&#34;Import data model not supported on windows&#34;)
+            raise PySenseException.PySenseException(&#34;Import data model not supported on windows&#34;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -1386,7 +1386,7 @@ version: 'your platform'</p>
 
         &#34;&#34;&#34;
         if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException(&#34;Get data model not supported on windows&#34;)
+            raise PySenseException.PySenseException(&#34;Get data model not supported on windows&#34;)
 
         query_params = {
             &#39;title&#39;: title,
@@ -1401,7 +1401,7 @@ version: 'your platform'</p>
             if data_models is not None:
                 return PySenseDataModel.DataModel(self, data_models)
             else:
-                raise PySenseException(&#39;No data model with name {} found&#39;.format(title))
+                raise PySenseException.PySenseException(&#39;No data model with name {} found&#39;.format(title))
         else:
             ret_arr = []
             for data_model in data_models:
@@ -1415,7 +1415,7 @@ version: 'your platform'</p>
             data_models: One to many data models to delete
         &#34;&#34;&#34;
         if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException(&#34;Delete data model not supported on windows&#34;)
+            raise PySenseException.PySenseException(&#34;Delete data model not supported on windows&#34;)
 
         for data_model in PySenseUtils.make_iterable(data_models):
             self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))</code></pre>
@@ -1518,7 +1518,7 @@ add_data_model(new_data_model, target_data_model=old_data_model)</p>
         target_data_model: (optional) The data model to update.
     &#34;&#34;&#34;
     if self.version == SisenseVersion.Version.WINDOWS:
-        raise PySenseException(&#34;Import data model not supported on windows&#34;)
+        raise PySenseException.PySenseException(&#34;Import data model not supported on windows&#34;)
 
     target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -1700,7 +1700,7 @@ add_data_model(new_data_model, target_data_model=old_data_model)</p>
         data_models: One to many data models to delete
     &#34;&#34;&#34;
     if self.version == SisenseVersion.Version.WINDOWS:
-        raise PySenseException(&#34;Delete data model not supported on windows&#34;)
+        raise PySenseException.PySenseException(&#34;Delete data model not supported on windows&#34;)
 
     for data_model in PySenseUtils.make_iterable(data_models):
         self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))</code></pre>
@@ -2002,7 +2002,7 @@ If title is not specified an array will be returned.</p></section>
 
     &#34;&#34;&#34;
     if self.version == SisenseVersion.Version.WINDOWS:
-        raise PySenseException(&#34;Get data model not supported on windows&#34;)
+        raise PySenseException.PySenseException(&#34;Get data model not supported on windows&#34;)
 
     query_params = {
         &#39;title&#39;: title,
@@ -2017,7 +2017,7 @@ If title is not specified an array will be returned.</p></section>
         if data_models is not None:
             return PySenseDataModel.DataModel(self, data_models)
         else:
-            raise PySenseException(&#39;No data model with name {} found&#39;.format(title))
+            raise PySenseException.PySenseException(&#39;No data model with name {} found&#39;.format(title))
     else:
         ret_arr = []
         for data_model in data_models:
