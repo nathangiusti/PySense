@@ -78,7 +78,7 @@ class PySenseTests(unittest.TestCase):
 
         self.py_client_linux.delete_data_model(data_model)
         with self.assertRaises(PySenseException.PySenseException):
-            data_model = self.py_client_linux.get_data_models(title='PySense')
+            data_model = self.py_client.get_data_models(title='PySense')
 
         self.py_client_linux.add_data_model(data_model)
         data_model = self.py_client_linux.get_data_models(title='PySense')

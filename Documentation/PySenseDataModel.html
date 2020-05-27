@@ -24,7 +24,9 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PySense import PySenseException
+<pre><code class="python">from PySense import PySenseBuildTask
+from PySense import PySenseDataSet
+from PySense import PySenseException
 from PySense import SisenseVersion
 
 
@@ -40,25 +42,94 @@ class DataModel:
     def get_json(self):
         &#34;&#34;&#34;Returns the data model&#39;s JSON&#34;&#34;&#34;
         return self._data_model_json
-    
+
     def get_title(self):
         &#34;&#34;&#34;Returns the data models title&#34;&#34;&#34;
         return self._data_model_json[&#39;title&#39;]
-    
+
     def get_oid(self):
         &#34;&#34;&#34;Returns the data models oid&#34;&#34;&#34;
         return self._data_model_json[&#39;oid&#39;]
-    
+
+    def get_data_sets(self, *, source=None):
+        &#34;&#34;&#34;Returns the data sets for the model
+
+        Args:
+            - (Optional) source: The source of the dataset to filter by (Examples: CSV, SQL)
+        &#34;&#34;&#34;
+        ret_arr = []
+        for data_set_json in self._data_model_json[&#39;datasets&#39;]:
+            data_set = PySenseDataSet.DataSet(self._py_client, data_set_json)
+            if source is not None:
+                if source.lower() == data_set.get_source():
+                    ret_arr.append(data_set)
+            else:
+                ret_arr.append(data_set)
+        return ret_arr
+
     def get_schema_json(self):
+        if self._py_client.version == SisenseVersion.Version.WINDOWS:
+            raise PySenseException.PySenseException(&#39;Get schema json not supported on windows&#39;)
+
         if self._schema_json is None:
             query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
-            schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;, 
+            schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;,
                                                               query_params=query_params)
             if schema_json is None:
                 raise PySenseException.PySenseException(&#39;Schema JSON not found for data model {}&#39;
                                                         .format(self.get_oid()))
             self._schema_json = schema_json
-        return self._schema_json</code></pre>
+        return self._schema_json
+
+    def start_build(self, build_type, *, row_limit=None):
+        &#34;&#34;&#34; Initiates a build of the data model
+
+        Only supported on Linux
+
+        Args:
+            - build_type: Type of build (schema_changes, by_table, full, publish)
+            - (Optional) row_limit: Number of rows to build
+        Returns:
+            A BuildTask object
+        &#34;&#34;&#34;
+        if self._py_client.version != SisenseVersion.Version.LINUX:
+            raise PySenseException.PySenseException(&#39;Build from API not supported in Windows&#39;)
+
+        build_type = build_type.lower()
+        if build_type not in [&#39;schema_changes&#39;, &#39;by_table&#39;, &#39;full&#39;, &#39;publish&#39;]:
+            raise PySenseException.PySenseException(&#39;Unsupported build type {}&#39;.format(build_type))
+
+        json_payload = {
+            &#39;datamodelId&#39;: self.get_oid(),
+            &#39;buildType&#39;: build_type
+        }
+        if row_limit is not None:
+            json_payload[&#39;rowLimit&#39;] = row_limit
+
+        resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v2/builds&#39;,
+                                                        json_payload=json_payload)
+
+        return PySenseBuildTask.BuildTask(self._py_client, resp_json)
+
+    def cancel_build(self):
+        &#34;&#34;&#34; Cancels all builds for datamodel
+
+        Only supported on Linux
+
+        Args:
+            - build_type: Type of build (schema_changes, by_table, full, publish)
+            - (Optional) row_limit: Number of rows to build
+        Returns:
+            A BuildTask object
+        &#34;&#34;&#34;
+        if self._py_client.version != SisenseVersion.Version.LINUX:
+            raise PySenseException.PySenseException(&#39;Cancel build from API not supported in Windows&#39;)
+
+        query_params = {
+            &#39;datamodelId&#39;: self.get_oid()
+        }
+
+        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)</code></pre>
 </details>
 </section>
 <section>
@@ -92,28 +163,168 @@ class DataModel:
     def get_json(self):
         &#34;&#34;&#34;Returns the data model&#39;s JSON&#34;&#34;&#34;
         return self._data_model_json
-    
+
     def get_title(self):
         &#34;&#34;&#34;Returns the data models title&#34;&#34;&#34;
         return self._data_model_json[&#39;title&#39;]
-    
+
     def get_oid(self):
         &#34;&#34;&#34;Returns the data models oid&#34;&#34;&#34;
         return self._data_model_json[&#39;oid&#39;]
-    
+
+    def get_data_sets(self, *, source=None):
+        &#34;&#34;&#34;Returns the data sets for the model
+
+        Args:
+            - (Optional) source: The source of the dataset to filter by (Examples: CSV, SQL)
+        &#34;&#34;&#34;
+        ret_arr = []
+        for data_set_json in self._data_model_json[&#39;datasets&#39;]:
+            data_set = PySenseDataSet.DataSet(self._py_client, data_set_json)
+            if source is not None:
+                if source.lower() == data_set.get_source():
+                    ret_arr.append(data_set)
+            else:
+                ret_arr.append(data_set)
+        return ret_arr
+
     def get_schema_json(self):
+        if self._py_client.version == SisenseVersion.Version.WINDOWS:
+            raise PySenseException.PySenseException(&#39;Get schema json not supported on windows&#39;)
+
         if self._schema_json is None:
             query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
-            schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;, 
+            schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;,
                                                               query_params=query_params)
             if schema_json is None:
                 raise PySenseException.PySenseException(&#39;Schema JSON not found for data model {}&#39;
                                                         .format(self.get_oid()))
             self._schema_json = schema_json
-        return self._schema_json</code></pre>
+        return self._schema_json
+
+    def start_build(self, build_type, *, row_limit=None):
+        &#34;&#34;&#34; Initiates a build of the data model
+
+        Only supported on Linux
+
+        Args:
+            - build_type: Type of build (schema_changes, by_table, full, publish)
+            - (Optional) row_limit: Number of rows to build
+        Returns:
+            A BuildTask object
+        &#34;&#34;&#34;
+        if self._py_client.version != SisenseVersion.Version.LINUX:
+            raise PySenseException.PySenseException(&#39;Build from API not supported in Windows&#39;)
+
+        build_type = build_type.lower()
+        if build_type not in [&#39;schema_changes&#39;, &#39;by_table&#39;, &#39;full&#39;, &#39;publish&#39;]:
+            raise PySenseException.PySenseException(&#39;Unsupported build type {}&#39;.format(build_type))
+
+        json_payload = {
+            &#39;datamodelId&#39;: self.get_oid(),
+            &#39;buildType&#39;: build_type
+        }
+        if row_limit is not None:
+            json_payload[&#39;rowLimit&#39;] = row_limit
+
+        resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v2/builds&#39;,
+                                                        json_payload=json_payload)
+
+        return PySenseBuildTask.BuildTask(self._py_client, resp_json)
+
+    def cancel_build(self):
+        &#34;&#34;&#34; Cancels all builds for datamodel
+
+        Only supported on Linux
+
+        Args:
+            - build_type: Type of build (schema_changes, by_table, full, publish)
+            - (Optional) row_limit: Number of rows to build
+        Returns:
+            A BuildTask object
+        &#34;&#34;&#34;
+        if self._py_client.version != SisenseVersion.Version.LINUX:
+            raise PySenseException.PySenseException(&#39;Cancel build from API not supported in Windows&#39;)
+
+        query_params = {
+            &#39;datamodelId&#39;: self.get_oid()
+        }
+
+        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="PySense.PySenseDataModel.DataModel.cancel_build"><code class="name flex">
+<span>def <span class="ident">cancel_build</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Cancels all builds for datamodel</p>
+<p>Only supported on Linux</p>
+<h2 id="args">Args</h2>
+<ul>
+<li>build_type: Type of build (schema_changes, by_table, full, publish)</li>
+<li>(Optional) row_limit: Number of rows to build</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A</code> <code>BuildTask</code> <code>object</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cancel_build(self):
+    &#34;&#34;&#34; Cancels all builds for datamodel
+
+    Only supported on Linux
+
+    Args:
+        - build_type: Type of build (schema_changes, by_table, full, publish)
+        - (Optional) row_limit: Number of rows to build
+    Returns:
+        A BuildTask object
+    &#34;&#34;&#34;
+    if self._py_client.version != SisenseVersion.Version.LINUX:
+        raise PySenseException.PySenseException(&#39;Cancel build from API not supported in Windows&#39;)
+
+    query_params = {
+        &#39;datamodelId&#39;: self.get_oid()
+    }
+
+    self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDataModel.DataModel.get_data_sets"><code class="name flex">
+<span>def <span class="ident">get_data_sets</span></span>(<span>self, *, source=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the data sets for the model</p>
+<h2 id="args">Args</h2>
+<ul>
+<li>(Optional) source: The source of the dataset to filter by (Examples: CSV, SQL)</li>
+</ul></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_data_sets(self, *, source=None):
+    &#34;&#34;&#34;Returns the data sets for the model
+
+    Args:
+        - (Optional) source: The source of the dataset to filter by (Examples: CSV, SQL)
+    &#34;&#34;&#34;
+    ret_arr = []
+    for data_set_json in self._data_model_json[&#39;datasets&#39;]:
+        data_set = PySenseDataSet.DataSet(self._py_client, data_set_json)
+        if source is not None:
+            if source.lower() == data_set.get_source():
+                ret_arr.append(data_set)
+        else:
+            ret_arr.append(data_set)
+    return ret_arr</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySenseDataModel.DataModel.get_json"><code class="name flex">
 <span>def <span class="ident">get_json</span></span>(<span>self)</span>
 </code></dt>
@@ -152,9 +363,12 @@ class DataModel:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_schema_json(self):
+    if self._py_client.version == SisenseVersion.Version.WINDOWS:
+        raise PySenseException.PySenseException(&#39;Get schema json not supported on windows&#39;)
+
     if self._schema_json is None:
         query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
-        schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;, 
+        schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;,
                                                           query_params=query_params)
         if schema_json is None:
             raise PySenseException.PySenseException(&#39;Schema JSON not found for data model {}&#39;
@@ -177,6 +391,57 @@ class DataModel:
     return self._data_model_json[&#39;title&#39;]</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseDataModel.DataModel.start_build"><code class="name flex">
+<span>def <span class="ident">start_build</span></span>(<span>self, build_type, *, row_limit=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Initiates a build of the data model</p>
+<p>Only supported on Linux</p>
+<h2 id="args">Args</h2>
+<ul>
+<li>build_type: Type of build (schema_changes, by_table, full, publish)</li>
+<li>(Optional) row_limit: Number of rows to build</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A</code> <code>BuildTask</code> <code>object</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def start_build(self, build_type, *, row_limit=None):
+    &#34;&#34;&#34; Initiates a build of the data model
+
+    Only supported on Linux
+
+    Args:
+        - build_type: Type of build (schema_changes, by_table, full, publish)
+        - (Optional) row_limit: Number of rows to build
+    Returns:
+        A BuildTask object
+    &#34;&#34;&#34;
+    if self._py_client.version != SisenseVersion.Version.LINUX:
+        raise PySenseException.PySenseException(&#39;Build from API not supported in Windows&#39;)
+
+    build_type = build_type.lower()
+    if build_type not in [&#39;schema_changes&#39;, &#39;by_table&#39;, &#39;full&#39;, &#39;publish&#39;]:
+        raise PySenseException.PySenseException(&#39;Unsupported build type {}&#39;.format(build_type))
+
+    json_payload = {
+        &#39;datamodelId&#39;: self.get_oid(),
+        &#39;buildType&#39;: build_type
+    }
+    if row_limit is not None:
+        json_payload[&#39;rowLimit&#39;] = row_limit
+
+    resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v2/builds&#39;,
+                                                    json_payload=json_payload)
+
+    return PySenseBuildTask.BuildTask(self._py_client, resp_json)</code></pre>
+</details>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -197,11 +462,14 @@ class DataModel:
 <ul>
 <li>
 <h4><code><a title="PySense.PySenseDataModel.DataModel" href="#PySense.PySenseDataModel.DataModel">DataModel</a></code></h4>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="PySense.PySenseDataModel.DataModel.cancel_build" href="#PySense.PySenseDataModel.DataModel.cancel_build">cancel_build</a></code></li>
+<li><code><a title="PySense.PySenseDataModel.DataModel.get_data_sets" href="#PySense.PySenseDataModel.DataModel.get_data_sets">get_data_sets</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_json" href="#PySense.PySenseDataModel.DataModel.get_json">get_json</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_oid" href="#PySense.PySenseDataModel.DataModel.get_oid">get_oid</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_schema_json" href="#PySense.PySenseDataModel.DataModel.get_schema_json">get_schema_json</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_title" href="#PySense.PySenseDataModel.DataModel.get_title">get_title</a></code></li>
+<li><code><a title="PySense.PySenseDataModel.DataModel.start_build" href="#PySense.PySenseDataModel.DataModel.start_build">start_build</a></code></li>
 </ul>
 </li>
 </ul>

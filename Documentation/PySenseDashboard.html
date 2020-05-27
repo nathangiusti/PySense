@@ -339,7 +339,8 @@ class Dashboard:
                         column[&#39;cells&#39;].pop(k)
                 if len(column[&#39;cells&#39;]) == 0:
                     patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(n)
-        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
+                                            json_payload=patch_json)
         self._reset()
 
     def does_widget_exist(self, widget_id):
@@ -679,7 +680,8 @@ class Dashboard:
                         column[&#39;cells&#39;].pop(k)
                 if len(column[&#39;cells&#39;]) == 0:
                     patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(n)
-        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
+                                            json_payload=patch_json)
         self._reset()
 
     def does_widget_exist(self, widget_id):
@@ -1291,7 +1293,8 @@ parameter for paging</dd>
                     column[&#39;cells&#39;].pop(k)
             if len(column[&#39;cells&#39;]) == 0:
                 patch_json[&#39;layout&#39;][&#39;columns&#39;].pop(n)
-    self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()), json_payload=patch_json)
+    self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
+                                        json_payload=patch_json)
     self._reset()</code></pre>
 </details>
 </dd>
