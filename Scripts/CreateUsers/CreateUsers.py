@@ -19,6 +19,8 @@ Ensure:
 - There are not trailing or leading white space in your csv
 
 PySense does not currently support Active Directory
+
+Sample Config: https://github.com/nathangiusti/PySense/blob/master/Snippets/SampleConfig.yaml
 """
 
 import csv

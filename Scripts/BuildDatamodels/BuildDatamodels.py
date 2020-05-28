@@ -7,6 +7,7 @@ To use this script update the following values:
 - wait_time_seconds: How often to poll for the current build status
 - build_type: The build type to perform (schema_changes, by_table, full, publish)
 
+Sample Config: https://github.com/nathangiusti/PySense/blob/master/Snippets/SampleConfig.yaml
 """
 import time
 
