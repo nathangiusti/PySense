@@ -17,6 +17,13 @@ Download the PySense Tutorial Power Point for a hands on introduction.
 
 See snippets folder for common usage snippets
 
+If you are encountering issues with your Sisense server timing out or not responding download and run this script:
+https://github.com/nathangiusti/PySense/blob/master/Scripts/Troubleshooting/TestSisenseConnection.py
+
+If this script fails, there is an issue with your network/server set up. You will need to resolve this before continuing. 
+
+If this script succeeds and you encounter issues, please file an issue. 
+
 **V 0.2.8 Release Notes**
 
 - Additions
