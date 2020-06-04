@@ -24,8 +24,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import yaml
-
+<pre><code class="python">from PySense import PySenseAuthentication
 from PySense import PySenseConnection
 from PySense import PySenseDashboard
 from PySense import PySenseDataModel
@@ -40,31 +39,73 @@ from PySense import PySenseUtils
 from PySense import SisenseVersion
 
 
+def authenticate_by_token(host, token, version, debug=False, verify=True):
+    &#34;&#34;&#34;Creates a new PySense client with the token
+
+    Args:
+        - host: The Sisense server address
+        - token: A Sisense user token
+        - version: &#39;Windows&#39; or &#39;Linux&#39;
+        - debug: (Optional) True to enable debugging. False by default.
+        - verify: (Optional) False to disable SSL certificate verification. True by default.
+
+
+    Returns:
+        A new PySense client for the given credentials
+    &#34;&#34;&#34;
+    return PySenseAuthentication.authenticate_by_token(host, token, version, debug, verify)
+
+
+def authenticate_by_password(host, username, password, version, debug=False, verify=True):
+    &#34;&#34;&#34;Creates a new PySense client with the token
+
+    Args:
+        - host: The Sisense server address
+        - username: Sisense username
+        - password: Sisense password
+        - debug: (Optional) True to enable debugging. False by default.
+        - verify: (Optional) False to disable SSL certificate verification. True by default.
+
+
+    Returns:
+        A new PySense client for the given credentials
+    &#34;&#34;&#34;
+    return PySenseAuthentication.authenticate_by_password(host, username, password, version, debug, verify)
+
+
 def authenticate_by_file(config_file):
     &#34;&#34;&#34;Creates a new PySense client with the credentials in the given config file.
 
     py_client = PySense.authenticate_by_file(&#39;C:\\PySense\\PySenseConfig.yaml&#39;)
 
-    Sample yaml
-    host: &#39;your_host&#39;
+    Yaml must include
+        - host
+        - version
+
+    Yaml must include either
+        - Password, Username
+        - Token
+
+    Yaml can include
+        - Debug (false by default)
+        - Verify (true by default)
+
+
+    host: &#39;localhost:8081&#39;
     username: &#39;your_username@sample.com&#39;
     password: &#39;your_password&#39;
-    version: &#39;your platform&#39;
+    version: &#39;Windows&#39;
+    token: &#39;somelongaccesstokenthatisnotneededifyouhaveapasswordandusername&#39;
+    verify = True
+    debug = False
 
     Args:
-        config_file: Yaml file with entries for host, username, and password
+        config_file: Yaml file with credentials
 
     Returns:
         A new PySense client for the given credentials
     &#34;&#34;&#34;
-
-    with open(config_file, &#39;r&#39;) as yml_file:
-        cfg = yaml.safe_load(yml_file)
-
-        debug = cfg[&#39;debug&#39;] if &#39;debug&#39; in cfg else False
-        verify = cfg[&#39;verify&#39;] if &#39;verify&#39; in cfg else True
-
-        return PySense(cfg[&#39;host&#39;], cfg[&#39;username&#39;], cfg[&#39;password&#39;], cfg[&#39;version&#39;], debug=debug, verify=verify)
+    return PySenseAuthentication.authenticate_by_file(config_file)
 
 
 class PySense:
@@ -73,16 +114,16 @@ class PySense:
     This class is for sever level changes like getting, adding, and removing dashboards, elasticubes, users, etc
 
     Attributes:
-        connector: The PySenseRestConnector which runs the rest command.
+        connector: The PySenseRestConnector which runs the rest commands.
     &#34;&#34;&#34;
 
-    def __init__(self, host, username, password, version, *, debug=False, verify=True):
+    def __init__(self, host, token, version, *, debug=False, verify=True):
         &#34;&#34;&#34; Initializes a PySense instance
 
         Args:
             host: host address
-            username: username
-            password: password
+            token: a json bearer token with format
+                {&#39;authorization&#39;:  &#34;Bearer yourlongaccesstokenstringthatyougotfromapreviouslogin&#34;}
             version: version (either &#39;Windows&#39; or &#39;Linux&#39;)
             debug: If true, prints detailed REST API logs to console. False by default.
             verify: If false, disables SSL Certification. True by default.
@@ -94,7 +135,7 @@ class PySense:
         else:
             raise PySenseException.PySenseException(&#39;{} not a valid OS. Please select Linux or Windows&#39;.format(version))
 
-        self.connector = PySenseRestConnector.RestConnector(host, username, password, debug, verify)
+        self.connector = PySenseRestConnector.RestConnector(host, token, debug, verify)
         self._roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
 
     def set_debug(self, debug):
@@ -709,15 +750,26 @@ class PySense:
 <dd>
 <section class="desc"><p>Creates a new PySense client with the credentials in the given config file.</p>
 <p>py_client = PySense.authenticate_by_file('C:\PySense\PySenseConfig.yaml')</p>
-<p>Sample yaml
-host: 'your_host'
+<p>Yaml must include
+- host
+- version</p>
+<p>Yaml must include either
+- Password, Username
+- Token</p>
+<p>Yaml can include
+- Debug (false by default)
+- Verify (true by default)</p>
+<p>host: 'localhost:8081'
 username: 'your_username@sample.com'
 password: 'your_password'
-version: 'your platform'</p>
+version: 'Windows'
+token: 'somelongaccesstokenthatisnotneededifyouhaveapasswordandusername'
+verify = True
+debug = False</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>config_file</code></strong></dt>
-<dd>Yaml file with entries for host, username, and password</dd>
+<dd>Yaml file with credentials</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -733,26 +785,112 @@ version: 'your platform'</p>
 
     py_client = PySense.authenticate_by_file(&#39;C:\\PySense\\PySenseConfig.yaml&#39;)
 
-    Sample yaml
-    host: &#39;your_host&#39;
+    Yaml must include
+        - host
+        - version
+
+    Yaml must include either
+        - Password, Username
+        - Token
+
+    Yaml can include
+        - Debug (false by default)
+        - Verify (true by default)
+
+
+    host: &#39;localhost:8081&#39;
     username: &#39;your_username@sample.com&#39;
     password: &#39;your_password&#39;
-    version: &#39;your platform&#39;
+    version: &#39;Windows&#39;
+    token: &#39;somelongaccesstokenthatisnotneededifyouhaveapasswordandusername&#39;
+    verify = True
+    debug = False
 
     Args:
-        config_file: Yaml file with entries for host, username, and password
+        config_file: Yaml file with credentials
 
     Returns:
         A new PySense client for the given credentials
     &#34;&#34;&#34;
+    return PySenseAuthentication.authenticate_by_file(config_file)</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySense.authenticate_by_password"><code class="name flex">
+<span>def <span class="ident">authenticate_by_password</span></span>(<span>host, username, password, version, debug=False, verify=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Creates a new PySense client with the token</p>
+<h2 id="args">Args</h2>
+<ul>
+<li>host: The Sisense server address</li>
+<li>username: Sisense username</li>
+<li>password: Sisense password</li>
+<li>debug: (Optional) True to enable debugging. False by default.</li>
+<li>verify: (Optional) False to disable SSL certificate verification. True by default.</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A</code> <code>new</code> <a title="PySense.PySense.PySense" href="#PySense.PySense.PySense"><code>PySense</code></a> <code>client</code> <code>for</code> <code>the</code> <code>given</code> <code>credentials</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def authenticate_by_password(host, username, password, version, debug=False, verify=True):
+    &#34;&#34;&#34;Creates a new PySense client with the token
 
-    with open(config_file, &#39;r&#39;) as yml_file:
-        cfg = yaml.safe_load(yml_file)
+    Args:
+        - host: The Sisense server address
+        - username: Sisense username
+        - password: Sisense password
+        - debug: (Optional) True to enable debugging. False by default.
+        - verify: (Optional) False to disable SSL certificate verification. True by default.
 
-        debug = cfg[&#39;debug&#39;] if &#39;debug&#39; in cfg else False
-        verify = cfg[&#39;verify&#39;] if &#39;verify&#39; in cfg else True
 
-        return PySense(cfg[&#39;host&#39;], cfg[&#39;username&#39;], cfg[&#39;password&#39;], cfg[&#39;version&#39;], debug=debug, verify=verify)</code></pre>
+    Returns:
+        A new PySense client for the given credentials
+    &#34;&#34;&#34;
+    return PySenseAuthentication.authenticate_by_password(host, username, password, version, debug, verify)</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySense.authenticate_by_token"><code class="name flex">
+<span>def <span class="ident">authenticate_by_token</span></span>(<span>host, token, version, debug=False, verify=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Creates a new PySense client with the token</p>
+<h2 id="args">Args</h2>
+<ul>
+<li>host: The Sisense server address</li>
+<li>token: A Sisense user token</li>
+<li>version: 'Windows' or 'Linux'</li>
+<li>debug: (Optional) True to enable debugging. False by default.</li>
+<li>verify: (Optional) False to disable SSL certificate verification. True by default.</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A</code> <code>new</code> <a title="PySense.PySense.PySense" href="#PySense.PySense.PySense"><code>PySense</code></a> <code>client</code> <code>for</code> <code>the</code> <code>given</code> <code>credentials</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def authenticate_by_token(host, token, version, debug=False, verify=True):
+    &#34;&#34;&#34;Creates a new PySense client with the token
+
+    Args:
+        - host: The Sisense server address
+        - token: A Sisense user token
+        - version: &#39;Windows&#39; or &#39;Linux&#39;
+        - debug: (Optional) True to enable debugging. False by default.
+        - verify: (Optional) False to disable SSL certificate verification. True by default.
+
+
+    Returns:
+        A new PySense client for the given credentials
+    &#34;&#34;&#34;
+    return PySenseAuthentication.authenticate_by_token(host, token, version, debug, verify)</code></pre>
 </details>
 </dd>
 </dl>
@@ -762,7 +900,7 @@ version: 'your platform'</p>
 <dl>
 <dt id="PySense.PySense.PySense"><code class="flex name class">
 <span>class <span class="ident">PySense</span></span>
-<span>(</span><span>host, username, password, version, *, debug=False, verify=True)</span>
+<span>(</span><span>host, token, version, *, debug=False, verify=True)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>The manager of connections to the PySense server</p>
@@ -770,17 +908,15 @@ version: 'your platform'</p>
 <h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>connector</code></strong></dt>
-<dd>The PySenseRestConnector which runs the rest command.</dd>
+<dd>The PySenseRestConnector which runs the rest commands.</dd>
 </dl>
 <p>Initializes a PySense instance</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>host</code></strong></dt>
 <dd>host address</dd>
-<dt><strong><code>username</code></strong></dt>
-<dd>username</dd>
-<dt><strong><code>password</code></strong></dt>
-<dd>password</dd>
+<dt><strong><code>token</code></strong></dt>
+<dd _Bearer="&quot;Bearer" _authorization_:="'authorization':" yourlongaccesstokenstringthatyougotfromapreviouslogin_="yourlongaccesstokenstringthatyougotfromapreviouslogin&quot;">a json bearer token with format</dd>
 <dt><strong><code>version</code></strong></dt>
 <dd>version (either 'Windows' or 'Linux')</dd>
 <dt><strong><code>debug</code></strong></dt>
@@ -798,16 +934,16 @@ version: 'your platform'</p>
     This class is for sever level changes like getting, adding, and removing dashboards, elasticubes, users, etc
 
     Attributes:
-        connector: The PySenseRestConnector which runs the rest command.
+        connector: The PySenseRestConnector which runs the rest commands.
     &#34;&#34;&#34;
 
-    def __init__(self, host, username, password, version, *, debug=False, verify=True):
+    def __init__(self, host, token, version, *, debug=False, verify=True):
         &#34;&#34;&#34; Initializes a PySense instance
 
         Args:
             host: host address
-            username: username
-            password: password
+            token: a json bearer token with format
+                {&#39;authorization&#39;:  &#34;Bearer yourlongaccesstokenstringthatyougotfromapreviouslogin&#34;}
             version: version (either &#39;Windows&#39; or &#39;Linux&#39;)
             debug: If true, prints detailed REST API logs to console. False by default.
             verify: If false, disables SSL Certification. True by default.
@@ -819,7 +955,7 @@ version: 'your platform'</p>
         else:
             raise PySenseException.PySenseException(&#39;{} not a valid OS. Please select Linux or Windows&#39;.format(version))
 
-        self.connector = PySenseRestConnector.RestConnector(host, username, password, debug, verify)
+        self.connector = PySenseRestConnector.RestConnector(host, token, debug, verify)
         self._roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
 
     def set_debug(self, debug):
@@ -2578,6 +2714,8 @@ May be nested using the resource.subResource format</dd>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="PySense.PySense.authenticate_by_file" href="#PySense.PySense.authenticate_by_file">authenticate_by_file</a></code></li>
+<li><code><a title="PySense.PySense.authenticate_by_password" href="#PySense.PySense.authenticate_by_password">authenticate_by_password</a></code></li>
+<li><code><a title="PySense.PySense.authenticate_by_token" href="#PySense.PySense.authenticate_by_token">authenticate_by_token</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>

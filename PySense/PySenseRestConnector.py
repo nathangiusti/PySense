@@ -2,18 +2,16 @@ import requests
 import urllib.parse
 
 from PySense import PySenseException
+from PySense import PySenseUtils
 
 
 class RestConnector:
 
-    def __init__(self, host, username, password, debug, verify):
-        self._host = format_host(host)
+    def __init__(self, host, token, debug, verify):
+        self._host = PySenseUtils.format_host(host)
         self.debug = debug
         self.verify = verify
-        data = {'username': username, 'password': password}
-        resp = requests.post('{}/api/v1/authentication/login'.format(self._host), verify=verify, data=data)
-        parse_response(resp)
-        self._token = {'authorization':  "Bearer " + resp.json()['access_token']}
+        self._token = token
 
     def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
         """Run an arbitrary rest command against your Sisense instance and returns the JSON response
@@ -62,15 +60,6 @@ def parse_response(response):
     if response.status_code not in [200, 201, 204]:
         raise PySenseException.PySenseException('ERROR: {}: {}\nURL: {}'
                                                 .format(response.status_code, response.content, response.url))
-
-
-def format_host(host):
-    """Formats host for PySense"""
-    if not host.startswith('http'):
-        host = 'http://' + host
-    if host.endswith('/'):
-        host = host[:-1]
-    return host
 
 
 def build_query_string(dictionary):

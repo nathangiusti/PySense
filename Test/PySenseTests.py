@@ -11,7 +11,7 @@ class PySenseTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseTokenConfig.yaml')
         cls.py_client_linux = PySense.authenticate_by_file('C:\\PySense\\PySenseLinux.yaml')
         cls.sample_path = 'C:\\PySense\\'
         cls.group_names = ["TempGroup", "TempGroup2"]

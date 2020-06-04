@@ -28,18 +28,16 @@
 import urllib.parse
 
 from PySense import PySenseException
+from PySense import PySenseUtils
 
 
 class RestConnector:
 
-    def __init__(self, host, username, password, debug, verify):
-        self._host = format_host(host)
+    def __init__(self, host, token, debug, verify):
+        self._host = PySenseUtils.format_host(host)
         self.debug = debug
         self.verify = verify
-        data = {&#39;username&#39;: username, &#39;password&#39;: password}
-        resp = requests.post(&#39;{}/api/v1/authentication/login&#39;.format(self._host), verify=verify, data=data)
-        parse_response(resp)
-        self._token = {&#39;authorization&#39;:  &#34;Bearer &#34; + resp.json()[&#39;access_token&#39;]}
+        self._token = token
 
     def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
         &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response
@@ -88,15 +86,6 @@ def parse_response(response):
     if response.status_code not in [200, 201, 204]:
         raise PySenseException.PySenseException(&#39;ERROR: {}: {}\nURL: {}&#39;
                                                 .format(response.status_code, response.content, response.url))
-
-
-def format_host(host):
-    &#34;&#34;&#34;Formats host for PySense&#34;&#34;&#34;
-    if not host.startswith(&#39;http&#39;):
-        host = &#39;http://&#39; + host
-    if host.endswith(&#39;/&#39;):
-        host = host[:-1]
-    return host
 
 
 def build_query_string(dictionary):
@@ -161,24 +150,6 @@ def build_query_string(dictionary):
         return &#39;&#39;</code></pre>
 </details>
 </dd>
-<dt id="PySense.PySenseRestConnector.format_host"><code class="name flex">
-<span>def <span class="ident">format_host</span></span>(<span>host)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Formats host for PySense</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def format_host(host):
-    &#34;&#34;&#34;Formats host for PySense&#34;&#34;&#34;
-    if not host.startswith(&#39;http&#39;):
-        host = &#39;http://&#39; + host
-    if host.endswith(&#39;/&#39;):
-        host = host[:-1]
-    return host</code></pre>
-</details>
-</dd>
 <dt id="PySense.PySenseRestConnector.parse_response"><code class="name flex">
 <span>def <span class="ident">parse_response</span></span>(<span>response)</span>
 </code></dt>
@@ -202,7 +173,7 @@ def build_query_string(dictionary):
 <dl>
 <dt id="PySense.PySenseRestConnector.RestConnector"><code class="flex name class">
 <span>class <span class="ident">RestConnector</span></span>
-<span>(</span><span>host, username, password, debug, verify)</span>
+<span>(</span><span>host, token, debug, verify)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -212,14 +183,11 @@ def build_query_string(dictionary):
 </summary>
 <pre><code class="python">class RestConnector:
 
-    def __init__(self, host, username, password, debug, verify):
-        self._host = format_host(host)
+    def __init__(self, host, token, debug, verify):
+        self._host = PySenseUtils.format_host(host)
         self.debug = debug
         self.verify = verify
-        data = {&#39;username&#39;: username, &#39;password&#39;: password}
-        resp = requests.post(&#39;{}/api/v1/authentication/login&#39;.format(self._host), verify=verify, data=data)
-        parse_response(resp)
-        self._token = {&#39;authorization&#39;:  &#34;Bearer &#34; + resp.json()[&#39;access_token&#39;]}
+        self._token = token
 
     def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
         &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response
@@ -351,7 +319,6 @@ def build_query_string(dictionary):
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="PySense.PySenseRestConnector.build_query_string" href="#PySense.PySenseRestConnector.build_query_string">build_query_string</a></code></li>
-<li><code><a title="PySense.PySenseRestConnector.format_host" href="#PySense.PySenseRestConnector.format_host">format_host</a></code></li>
 <li><code><a title="PySense.PySenseRestConnector.parse_response" href="#PySense.PySenseRestConnector.parse_response">parse_response</a></code></li>
 </ul>
 </li>

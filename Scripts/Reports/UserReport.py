@@ -2,7 +2,7 @@
 Get's all users and prints the following to a csv:
 Username, email, full name, groups, role, last active, days since last active
 
-Set the report name by modifying the report_name variable. 
+Set the report name by modifying the report_name variable.
 """
 
 import csv
@@ -25,10 +25,10 @@ with open(report_name, 'w', newline='') as csv_file:
             group_list_string = group_list_string + ' ' + group.get_name()
         full_name = user.get_first_name() + ' ' + user.get_last_name()
         user_writer.writerow([
-            user.get_user_name(), 
+            user.get_user_name(),
             user.get_email(),
-            full_name.strip(), 
-            group_list_string.strip(), 
+            full_name.strip(),
+            group_list_string.strip(),
             user.get_role(),
             user.get_last_login(),
             (datetime.now() - user.get_last_login()).days + 1]
