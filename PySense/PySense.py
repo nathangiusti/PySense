@@ -1,5 +1,4 @@
-import yaml
-
+from PySense import PySenseAuthentication
 from PySense import PySenseConnection
 from PySense import PySenseDashboard
 from PySense import PySenseDataModel
@@ -14,31 +13,73 @@ from PySense import PySenseUtils
 from PySense import SisenseVersion
 
 
+def authenticate_by_token(host, token, version, debug=False, verify=True):
+    """Creates a new PySense client with the token
+
+    Args:
+        - host: The Sisense server address
+        - token: A Sisense user token
+        - version: 'Windows' or 'Linux'
+        - debug: (Optional) True to enable debugging. False by default.
+        - verify: (Optional) False to disable SSL certificate verification. True by default.
+
+
+    Returns:
+        A new PySense client for the given credentials
+    """
+    return PySenseAuthentication.authenticate_by_token(host, token, version, debug, verify)
+
+
+def authenticate_by_password(host, username, password, version, debug=False, verify=True):
+    """Creates a new PySense client with the token
+
+    Args:
+        - host: The Sisense server address
+        - username: Sisense username
+        - password: Sisense password
+        - debug: (Optional) True to enable debugging. False by default.
+        - verify: (Optional) False to disable SSL certificate verification. True by default.
+
+
+    Returns:
+        A new PySense client for the given credentials
+    """
+    return PySenseAuthentication.authenticate_by_password(host, username, password, version, debug, verify)
+
+
 def authenticate_by_file(config_file):
     """Creates a new PySense client with the credentials in the given config file.
 
     py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
 
-    Sample yaml
-    host: 'your_host'
+    Yaml must include
+        - host
+        - version
+
+    Yaml must include either
+        - Password, Username
+        - Token
+
+    Yaml can include
+        - Debug (false by default)
+        - Verify (true by default)
+
+
+    host: 'localhost:8081'
     username: 'your_username@sample.com'
     password: 'your_password'
-    version: 'your platform'
+    version: 'Windows'
+    token: 'somelongaccesstokenthatisnotneededifyouhaveapasswordandusername'
+    verify = True
+    debug = False
 
     Args:
-        config_file: Yaml file with entries for host, username, and password
+        config_file: Yaml file with credentials
 
     Returns:
         A new PySense client for the given credentials
     """
-
-    with open(config_file, 'r') as yml_file:
-        cfg = yaml.safe_load(yml_file)
-
-        debug = cfg['debug'] if 'debug' in cfg else False
-        verify = cfg['verify'] if 'verify' in cfg else True
-
-        return PySense(cfg['host'], cfg['username'], cfg['password'], cfg['version'], debug=debug, verify=verify)
+    return PySenseAuthentication.authenticate_by_file(config_file)
 
 
 class PySense:
@@ -47,16 +88,16 @@ class PySense:
     This class is for sever level changes like getting, adding, and removing dashboards, elasticubes, users, etc
 
     Attributes:
-        connector: The PySenseRestConnector which runs the rest command.
+        connector: The PySenseRestConnector which runs the rest commands.
     """
 
-    def __init__(self, host, username, password, version, *, debug=False, verify=True):
+    def __init__(self, host, token, version, *, debug=False, verify=True):
         """ Initializes a PySense instance
 
         Args:
             host: host address
-            username: username
-            password: password
+            token: a json bearer token with format
+                {'authorization':  "Bearer yourlongaccesstokenstringthatyougotfromapreviouslogin"}
             version: version (either 'Windows' or 'Linux')
             debug: If true, prints detailed REST API logs to console. False by default.
             verify: If false, disables SSL Certification. True by default.
@@ -68,7 +109,7 @@ class PySense:
         else:
             raise PySenseException.PySenseException('{} not a valid OS. Please select Linux or Windows'.format(version))
 
-        self.connector = PySenseRestConnector.RestConnector(host, username, password, debug, verify)
+        self.connector = PySenseRestConnector.RestConnector(host, token, debug, verify)
         self._roles = self.connector.rest_call('get', 'api/roles')
 
     def set_debug(self, debug):

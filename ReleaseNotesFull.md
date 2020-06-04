@@ -1,3 +1,28 @@
+**V 0.2.9 Release Notes**
+
+Hello Everyone. 
+
+Additional development on new features of PySense will go dark for a bit as we integrate better into the API structure. 
+
+If you find a critical release bug, please file an issue on GitHub and a patch may be released for it. 
+
+Thank you for your patience and support
+The PySense Team
+
+- Additions
+    - Authenticate by passing in a bearer token instead of having to provide username and password either inline or via config file
+
+- Breaking changes
+    - PyClient.PyClient() constructor should no longer be used. Instead use PyClient.authenticate_by_password or PyClient.authenticate_by_token
+    - PyClient.authenticate_by_file is unchanged. 
+    - Authentication snippets and power points have been updated to reflect the new login procedure. 
+
+- Fixes
+    - None
+	
+- Known Issues
+    - REST API sometimes becomes responsive on Linux builds
+
 **V 0.2.8 Release Notes**
 
 - Additions
