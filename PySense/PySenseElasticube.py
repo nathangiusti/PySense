@@ -21,7 +21,7 @@ class Elasticube:
             metadata = self.get_metadata()
             if metadata is None:
                 print('No meta data for cube {}'.format(self.get_name()))
-                self._server_address = metadata['address']
+            self._server_address = metadata['address']
 
     def get_oid(self):
         """Returns the Elasticube id"""
@@ -72,7 +72,7 @@ class Elasticube:
         else:
             data_model_json = self._py_client.connector.rest_call(
                 'get', 'api/v1/elasticubes/{}/datamodel-exports/stream/schema'
-                .format(self.get_elasticube_oid()), query_params=query_params)
+                    .format(self.get_elasticube_oid()), query_params=query_params)
             return PySenseDataModel.DataModel(self._py_client, data_model_json)
 
     def get_name(self, url_encoded=False):
@@ -155,14 +155,14 @@ class Elasticube:
         server_address = server_address if server_address else self._server_address
 
         rule_json = [{
-                        "column": column,
-                        "datatype": data_type,
-                        "table": table,
-                        "elasticube": self.get_name(),
-                        "server": server_address,
-                        "exclusionary": exclusionary,
-                        "allMembers": all_members
-                    }]
+            "column": column,
+            "datatype": data_type,
+            "table": table,
+            "elasticube": self.get_name(),
+            "server": server_address,
+            "exclusionary": exclusionary,
+            "allMembers": all_members
+        }]
 
         shares_json = []
         if shares is None:
@@ -254,7 +254,8 @@ class Elasticube:
         else:
             user_id = urllib.parse.quote(user)
         resp_json = self._py_client.connector.rest_call('get', 'api/elasticubes/{}/{}/{}/datasecurity'
-                                                        .format(server_address, self.get_name(url_encoded=True), user_id))
+                                                        .format(server_address, self.get_name(url_encoded=True),
+                                                                user_id))
         ret_arr = []
         for rule in resp_json:
             ret_arr.append(PySenseRule.Rule(self._py_client, rule))
@@ -317,9 +318,9 @@ class Elasticube:
 
     def get_metadata(self):
         """Get ElastiCube metadata"""
-        resp_json = self._py_client.connector.rest_call('get', 'api/elasticubes/metadata/{}'
-                                                        .format(self.get_name(url_encoded=True)))
-        if resp_json is None:
+        query_params = {"q": self.get_name()}
+        resp_json = self._py_client.connector.rest_call('get', 'api/elasticubes/metadata', query_params=query_params)
+        if resp_json is None or len(resp_json) == 0:
             # If we don't get a response, it means the cube was never built so we return defaults
             return {
                 "title": "",
@@ -328,7 +329,7 @@ class Elasticube:
                 "address": "",
                 "database": ""
             }
-        return resp_json
+        return resp_json[0]
 
     def add_formula_to_cube(self, formulas):
         """Add formulas to cube"""
@@ -353,7 +354,8 @@ class Elasticube:
 
         """
         if self._py_client.version == SisenseVersion.Version.LINUX:
-            raise PySenseException.PySenseException('Start build cube only supported on Windows. To build in linux, use data models')
+            raise PySenseException.PySenseException(
+                'Start build cube only supported on Windows. To build in linux, use data models')
         query_params = {
             'type': build_type,
             'orchestratorTask': orchestrator_task
@@ -374,7 +376,8 @@ class Elasticube:
                 Set this to your server ip if this method fails without it set.
         """
         if self._py_client.version == SisenseVersion.Version.LINUX:
-            raise PySenseException.PySenseException('Stop build cube only supported on Windows. To build in linux, use data models')
+            raise PySenseException.PySenseException(
+                'Stop build cube only supported on Windows. To build in linux, use data models')
 
         server_address = server_address if server_address else self._server_address
         self._py_client.connector.rest_call('post', 'api/elasticubes/{}/{}/stopBuild'
@@ -390,7 +393,8 @@ class Elasticube:
                 Set this to your server ip if this method fails without it set.
         """
         if self._py_client.version == SisenseVersion.Version.LINUX:
-            raise PySenseException.PySenseException('Stop cube only supported on Windows. To build in linux, use data models')
+            raise PySenseException.PySenseException(
+                'Stop cube only supported on Windows. To build in linux, use data models')
 
         server_address = server_address if server_address else self._server_address
         self._py_client.connector.rest_call('post', 'api/elasticubes/{}/{}/stop'
@@ -406,7 +410,8 @@ class Elasticube:
                 Set this to your server ip if this method fails without it set.
         """
         if self._py_client.version == SisenseVersion.Version.LINUX:
-            raise PySenseException.PySenseException('Start cube only supported on Windows. To build in linux, use data models')
+            raise PySenseException.PySenseException(
+                'Start cube only supported on Windows. To build in linux, use data models')
 
         server_address = server_address if server_address else self._server_address
         self._py_client.connector.rest_call('post', 'api/elasticubes/{}/{}/start'
@@ -422,8 +427,75 @@ class Elasticube:
                 Set this to your server ip if this method fails without it set.
         """
         if self._py_client.version == SisenseVersion.Version.LINUX:
-            raise PySenseException.PySenseException('Restart cube only supported on Windows. To build in linux, use data models')
+            raise PySenseException.PySenseException(
+                'Restart cube only supported on Windows. To build in linux, use data models')
 
         server_address = server_address if server_address else self._server_address
         self._py_client.connector.rest_call('post', 'api/elasticubes/{}/{}/restart'
                                             .format(server_address, self.get_name(url_encoded=True)))
+
+    def add_share(self, shares, *, can_edit=False):
+        """Share a cube to new groups and users
+
+        By default will give query access. Set can_edit to True for editor access.
+
+        Args:
+            shares: One to many PySense Groups and Users
+            can_edit: (Optional) True for edit privileges, False or default for query privileges.
+        """
+
+        shares = PySenseUtils.make_iterable(shares)
+        curr_shares_arr = self.get_shares()['shares']
+        rule = 'r' if can_edit is False else 'w'
+        curr_id_arr = []
+        for share in curr_shares_arr:
+            party_id = share['partyId']
+            curr_id_arr.append(party_id)
+            del share['partyId']
+            share['party'] = party_id
+
+        for share in shares:
+            share_id = share.get_id()
+            if share_id is None:
+                raise PySenseException.PySenseException('No id found for {}'.format(share))
+            elif share_id in curr_id_arr:
+                index = curr_id_arr.index(share_id)
+                curr_shares_arr[index]['permission'] = rule
+            elif isinstance(share, PySenseUser.User):
+                curr_shares_arr.append({'party': share.get_id(), 'type': 'user', 'permission': rule})
+            elif isinstance(share, PySenseGroup.Group):
+                curr_shares_arr.append({'shareId': share.get_id(), 'type': 'group', 'rule': rule})
+            else:
+                raise PySenseException.PySenseException('Add Share expected User or group, got {}'.format(type(share)))
+
+        self._py_client.connector.rest_call('put', 'api/elasticubes/{}/{}/permissions'
+                                            .format(self._server_address, self.get_name(url_encoded=True)),
+                                            json_payload=curr_shares_arr)
+
+    def remove_shares(self, shares):
+        """Unshare a cube to groups and users
+
+        Args:
+            shares: One to many PySense Groups and Users
+        """
+        shares = PySenseUtils.make_iterable(shares)
+        curr_shares_arr = self.get_shares()['shares']
+        curr_id_arr = []
+        for share in curr_shares_arr:
+            curr_id_arr.append(share['partyId'])
+
+        for share in shares:
+            share_id = share.get_id()
+            if share_id is None:
+                raise PySenseException.PySenseException('No id found for {}'.format(share))
+            elif share_id in curr_id_arr:
+                del curr_shares_arr[curr_id_arr.index(share_id)]
+
+        self._py_client.connector.rest_call('put', 'api/elasticubes/{}/{}/permissions'
+                                            .format(self._server_address, self.get_name(url_encoded=True)),
+                                            json_payload=curr_shares_arr)
+
+    def get_shares(self):
+        """Returns the shares of the elasticube"""
+        return self._py_client.connector.rest_call('get', 'api/elasticubes/{}/{}/permissions'
+                                                   .format(self._server_address, self.get_name(url_encoded=True)))

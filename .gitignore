@@ -7,3 +7,4 @@ PySenseSDK.egg-info/
 dist/
 build/
 TestFiles/
+venv/*

@@ -11,7 +11,7 @@ class PySenseDashboardTests(unittest.TestCase):
         cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
         cls.sample_path = 'C:\\PySense\\'
         cls.dashboard = cls.py_client.get_dashboards(name='PySense')[0]
-        
+
     def test_getters(self):
         assert self.dashboard.get_name() is not None
         assert self.dashboard.get_datasource().get_name() == 'PySense'
@@ -50,11 +50,12 @@ class PySenseDashboardTests(unittest.TestCase):
     def test_dashboard_shares(self):
         user = self.py_client.get_users(email='testuser@sisense.com')[0]
         group = self.py_client.get_groups(name='PySense')[0]
-        self.dashboard.add_share(user, 'view', 'false')
-        self.dashboard.add_share(group, 'view', 'false')
+        self.dashboard.add_share([user, group], 'view', 'false')
         assert len(self.dashboard.get_share_users_groups()) == 3
         assert len(self.dashboard.get_shares()['sharesTo']) == 3
         self.dashboard.remove_shares([user, group])
+        self.dashboard.get_datasource().remove_shares([user, group])
+        assert len(self.dashboard.get_datasource().get_shares()['shares']) == 1
         assert len(self.dashboard.get_shares()['sharesTo']) == 1
 
     def test_move_to_folder(self):
@@ -66,13 +67,13 @@ class PySenseDashboardTests(unittest.TestCase):
 
     def test_remove_ghost_widgets(self):
         self.dashboard.remove_ghost_widgets()
-        
+
     @classmethod
-    def tearDownClass(cls): 
+    def tearDownClass(cls):
         cls.dashboard.remove_shares(cls.dashboard.get_share_users_groups())
-    
-        
-            
+
+
+
 
 
 

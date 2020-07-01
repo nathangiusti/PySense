@@ -29,15 +29,18 @@ Thank you for your patience and support
 The PySense Team
 
 - Additions
-    - Authenticate by passing in a bearer token instead of having to provide username and password either inline or via config file
+    - Manage elasticube sharing
+    - Sharing dashboards also shares the source cube
+    - Updated sample config
 
 - Breaking changes
-    - PyClient.PyClient() constructor should no longer be used. Instead use PyClient.authenticate_by_password or PyClient.authenticate_by_token
-    - PyClient.authenticate_by_file is unchanged. 
-    - Authentication snippets and power points have been updated to reflect the new login procedure. 
+    - Dashboard.get_dashboard_folder() now returns a folder object
 
 - Fixes
-    - None
+    - Some documentation errors found and fixed
+    - PySense will fail more gracefully when an invalid username/password is given
+    - Some issues with Elasticube.get_metadata() resolved 
+ 
 	
 - Known Issues
     - REST API sometimes becomes responsive on Linux builds

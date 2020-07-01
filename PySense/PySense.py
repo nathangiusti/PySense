@@ -31,12 +31,13 @@ def authenticate_by_token(host, token, version, debug=False, verify=True):
 
 
 def authenticate_by_password(host, username, password, version, debug=False, verify=True):
-    """Creates a new PySense client with the token
+    """Creates a new PySense client with the username and password
 
     Args:
         - host: The Sisense server address
         - username: Sisense username
         - password: Sisense password
+        - version: 'Windows' or 'Linux'
         - debug: (Optional) True to enable debugging. False by default.
         - verify: (Optional) False to disable SSL certificate verification. True by default.
 
@@ -52,26 +53,7 @@ def authenticate_by_file(config_file):
 
     py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
 
-    Yaml must include
-        - host
-        - version
-
-    Yaml must include either
-        - Password, Username
-        - Token
-
-    Yaml can include
-        - Debug (false by default)
-        - Verify (true by default)
-
-
-    host: 'localhost:8081'
-    username: 'your_username@sample.com'
-    password: 'your_password'
-    version: 'Windows'
-    token: 'somelongaccesstokenthatisnotneededifyouhaveapasswordandusername'
-    verify = True
-    debug = False
+    See sample config in Snippets/SampleConfig.yaml
 
     Args:
         config_file: Yaml file with credentials
