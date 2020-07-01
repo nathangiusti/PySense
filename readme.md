@@ -17,16 +17,7 @@ Download the PySense Tutorial Power Point for a hands on introduction.
 
 See snippets folder for common usage snippets
 
-**V 0.2.9 Release Notes**
-
-Hello Everyone. 
-
-Additional development on new features of PySense will go dark for a bit as we integrate better into the API structure. 
-
-If you find a critical release bug, please file an issue on GitHub and a patch may be released for it. 
-
-Thank you for your patience and support
-The PySense Team
+**V 0.2.11 Release Notes**
 
 - Additions
     - Manage elasticube sharing
