@@ -12,9 +12,18 @@ class PySenseElasticubeTests(unittest.TestCase):
         cls.elasticube = cls.py_client.get_elasticube_by_name('PySense')
 
     def test_getters(self):
-        model = self.elasticube.get_model()
-        assert model is not None
+        assert self.elasticube.get_model() is not None
         assert self.elasticube.get_name() is not None
+        assert self.elasticube.get_shares() is not None
+
+    def test_shares(self):
+        shares = self.py_client.get_users(email='testuser@sisense.com')
+        self.elasticube.add_share(shares)
+        self.elasticube.add_share(shares)
+        assert len(self.elasticube.get_shares()['shares']) == 2
+        self.elasticube.remove_shares(shares)
+        self.elasticube.remove_shares(shares)
+        assert len(self.elasticube.get_shares()['shares']) == 1
 
     def test_get_add_modify_delete_security_rule(self):
         default_rule = self.elasticube.add_security_rule('Dim_Dates', 'BusinessDay', 'numeric', members=['1'])

@@ -3,15 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.5" />
+<meta name="generator" content="pdoc 0.8.3" />
 <title>PySense.PySenseDashboard API documentation</title>
 <meta name="description" content="" />
-<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
-<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
-<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
 </head>
 <body>
 <main>
@@ -57,11 +59,17 @@ class Dashboard:
 
     def get_name(self):
         &#34;&#34;&#34;Gets the dashboard&#39;s title&#34;&#34;&#34;
-        return self._dashboard_json[&#39;title&#39;]
+        if &#39;title&#39; in self._dashboard_json:
+            return self._dashboard_json[&#39;title&#39;]
+        else:
+            return None
 
     def get_dashboard_folder(self):
         &#34;&#34;&#34;Gets the dashboards folder&#34;&#34;&#34;
-        return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
+        if &#39;parentFolder&#39; in self._dashboard_json:
+            return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
+        else:
+            return None
 
     def get_shares(self):
         &#34;&#34;&#34;Gets the dashboard shares json &#34;&#34;&#34;
@@ -90,34 +98,42 @@ class Dashboard:
                 ret_arr.append(self._py_client.get_group_by_id(share[&#39;shareId&#39;]))
         return ret_arr
 
-    def add_share(self, share, rule, subscribe):
+    def add_share(self, shares, rule, subscribe, *, share_cube=True):
         &#34;&#34;&#34;Share a dashboard to a new group or user.
 
         If dashboard is already shared with user or group, nothing happens
 
+        By default gives query permission to the cube as well. Set share_cubes to false to not update cube shares
+
         Args:
-            share: A PySense Group or User
+            shares: One to many PySense Groups or Users
             rule: The permission of the user on the dashboard (view, edit, etc)
             subscribe: true or false, whether to subscribe the user to reports
+            share_cube: (Optional) False to not share cube with groups/users
         &#34;&#34;&#34;
         curr_shares = self.get_shares()
-        share_id = share.get_id()
-        for curr_share in curr_shares[&#39;sharesTo&#39;]:
-            if &#39;shareId&#39; == curr_share[&#39;shareId&#39;]:
-                share_id = None
 
-        if share_id is not None:
-            if isinstance(share, PySenseUser.User):
-                curr_shares[&#39;sharesTo&#39;].append(
-                    {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
-                )
-            elif isinstance(share, PySenseGroup.Group):
-                curr_shares[&#39;sharesTo&#39;].append(
-                    {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
-                )
+        for share in shares:
+            share_id = share.get_id()
+            for curr_share in curr_shares[&#39;sharesTo&#39;]:
+                if &#39;shareId&#39; == curr_share[&#39;shareId&#39;]:
+                    share_id = None
+
+            if share_id is not None:
+                if isinstance(share, PySenseUser.User):
+                    curr_shares[&#39;sharesTo&#39;].append(
+                        {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+                    )
+                elif isinstance(share, PySenseGroup.Group):
+                    curr_shares[&#39;sharesTo&#39;].append(
+                        {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+                    )
 
         self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
                                             json_payload=curr_shares)
+        if share_cube:
+            data_source = self.get_datasource()
+            data_source.add_share(shares)
 
     def remove_shares(self, shares):
         &#34;&#34;&#34;Unshare a dashboard to a list of groups and users&#34;&#34;&#34;
@@ -367,7 +383,7 @@ class Dashboard:
 <span>(</span><span>py_client, dashboard_json)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -398,11 +414,17 @@ class Dashboard:
 
     def get_name(self):
         &#34;&#34;&#34;Gets the dashboard&#39;s title&#34;&#34;&#34;
-        return self._dashboard_json[&#39;title&#39;]
+        if &#39;title&#39; in self._dashboard_json:
+            return self._dashboard_json[&#39;title&#39;]
+        else:
+            return None
 
     def get_dashboard_folder(self):
         &#34;&#34;&#34;Gets the dashboards folder&#34;&#34;&#34;
-        return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
+        if &#39;parentFolder&#39; in self._dashboard_json:
+            return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
+        else:
+            return None
 
     def get_shares(self):
         &#34;&#34;&#34;Gets the dashboard shares json &#34;&#34;&#34;
@@ -431,34 +453,42 @@ class Dashboard:
                 ret_arr.append(self._py_client.get_group_by_id(share[&#39;shareId&#39;]))
         return ret_arr
 
-    def add_share(self, share, rule, subscribe):
+    def add_share(self, shares, rule, subscribe, *, share_cube=True):
         &#34;&#34;&#34;Share a dashboard to a new group or user.
 
         If dashboard is already shared with user or group, nothing happens
 
+        By default gives query permission to the cube as well. Set share_cubes to false to not update cube shares
+
         Args:
-            share: A PySense Group or User
+            shares: One to many PySense Groups or Users
             rule: The permission of the user on the dashboard (view, edit, etc)
             subscribe: true or false, whether to subscribe the user to reports
+            share_cube: (Optional) False to not share cube with groups/users
         &#34;&#34;&#34;
         curr_shares = self.get_shares()
-        share_id = share.get_id()
-        for curr_share in curr_shares[&#39;sharesTo&#39;]:
-            if &#39;shareId&#39; == curr_share[&#39;shareId&#39;]:
-                share_id = None
 
-        if share_id is not None:
-            if isinstance(share, PySenseUser.User):
-                curr_shares[&#39;sharesTo&#39;].append(
-                    {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
-                )
-            elif isinstance(share, PySenseGroup.Group):
-                curr_shares[&#39;sharesTo&#39;].append(
-                    {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
-                )
+        for share in shares:
+            share_id = share.get_id()
+            for curr_share in curr_shares[&#39;sharesTo&#39;]:
+                if &#39;shareId&#39; == curr_share[&#39;shareId&#39;]:
+                    share_id = None
+
+            if share_id is not None:
+                if isinstance(share, PySenseUser.User):
+                    curr_shares[&#39;sharesTo&#39;].append(
+                        {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+                    )
+                elif isinstance(share, PySenseGroup.Group):
+                    curr_shares[&#39;sharesTo&#39;].append(
+                        {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+                    )
 
         self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
                                             json_payload=curr_shares)
+        if share_cube:
+            data_source = self.get_datasource()
+            data_source.add_share(shares)
 
     def remove_shares(self, shares):
         &#34;&#34;&#34;Unshare a dashboard to a list of groups and users&#34;&#34;&#34;
@@ -696,69 +726,77 @@ class Dashboard:
 <h3>Methods</h3>
 <dl>
 <dt id="PySense.PySenseDashboard.Dashboard.add_share"><code class="name flex">
-<span>def <span class="ident">add_share</span></span>(<span>self, share, rule, subscribe)</span>
+<span>def <span class="ident">add_share</span></span>(<span>self, shares, rule, subscribe, *, share_cube=True)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Share a dashboard to a new group or user.</p>
+<div class="desc"><p>Share a dashboard to a new group or user.</p>
 <p>If dashboard is already shared with user or group, nothing happens</p>
+<p>By default gives query permission to the cube as well. Set share_cubes to false to not update cube shares</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>share</code></strong></dt>
-<dd>A PySense Group or User</dd>
+<dt><strong><code>shares</code></strong></dt>
+<dd>One to many PySense Groups or Users</dd>
 <dt><strong><code>rule</code></strong></dt>
 <dd>The permission of the user on the dashboard (view, edit, etc)</dd>
 <dt><strong><code>subscribe</code></strong></dt>
 <dd>true or false, whether to subscribe the user to reports</dd>
-</dl></section>
+<dt><strong><code>share_cube</code></strong></dt>
+<dd>(Optional) False to not share cube with groups/users</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_share(self, share, rule, subscribe):
+<pre><code class="python">def add_share(self, shares, rule, subscribe, *, share_cube=True):
     &#34;&#34;&#34;Share a dashboard to a new group or user.
 
     If dashboard is already shared with user or group, nothing happens
 
+    By default gives query permission to the cube as well. Set share_cubes to false to not update cube shares
+
     Args:
-        share: A PySense Group or User
+        shares: One to many PySense Groups or Users
         rule: The permission of the user on the dashboard (view, edit, etc)
         subscribe: true or false, whether to subscribe the user to reports
+        share_cube: (Optional) False to not share cube with groups/users
     &#34;&#34;&#34;
     curr_shares = self.get_shares()
-    share_id = share.get_id()
-    for curr_share in curr_shares[&#39;sharesTo&#39;]:
-        if &#39;shareId&#39; == curr_share[&#39;shareId&#39;]:
-            share_id = None
 
-    if share_id is not None:
-        if isinstance(share, PySenseUser.User):
-            curr_shares[&#39;sharesTo&#39;].append(
-                {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
-            )
-        elif isinstance(share, PySenseGroup.Group):
-            curr_shares[&#39;sharesTo&#39;].append(
-                {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
-            )
+    for share in shares:
+        share_id = share.get_id()
+        for curr_share in curr_shares[&#39;sharesTo&#39;]:
+            if &#39;shareId&#39; == curr_share[&#39;shareId&#39;]:
+                share_id = None
+
+        if share_id is not None:
+            if isinstance(share, PySenseUser.User):
+                curr_shares[&#39;sharesTo&#39;].append(
+                    {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;user&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+                )
+            elif isinstance(share, PySenseGroup.Group):
+                curr_shares[&#39;sharesTo&#39;].append(
+                    {&#39;shareId&#39;: share.get_id(), &#39;type&#39;: &#39;group&#39;, &#39;rule&#39;: rule, &#39;subscribe&#39;: subscribe}
+                )
 
     self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
-                                        json_payload=curr_shares)</code></pre>
+                                        json_payload=curr_shares)
+    if share_cube:
+        data_source = self.get_datasource()
+        data_source.add_share(shares)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.add_widget"><code class="name flex">
 <span>def <span class="ident">add_widget</span></span>(<span>self, widget)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Adds the provided widget object to the dashboard.</p>
+<div class="desc"><p>Adds the provided widget object to the dashboard.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>widget</code></strong></dt>
 <dd>PySenseWidget.Widget object to add</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>The</code> <code>widget</code> <code>added</code> <code>to</code> <code>the</code> <code>dashboard</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<p>The widget added to the dashboard</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -782,7 +820,7 @@ class Dashboard:
 <span>def <span class="ident">delete_widget</span></span>(<span>self, widgets)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Deletes widgets from it’s dashboard.</p></section>
+<div class="desc"><p>Deletes widgets from it’s dashboard.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -799,7 +837,7 @@ class Dashboard:
 <span>def <span class="ident">does_widget_exist</span></span>(<span>self, widget_id)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns true or false if the widget with id is in the dashboard</p></section>
+<div class="desc"><p>Returns true or false if the widget with id is in the dashboard</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -818,17 +856,14 @@ class Dashboard:
 <span>def <span class="ident">export_to_dash</span></span>(<span>self, *, path=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get dashboard as dash file.</p>
+<div class="desc"><p>Get dashboard as dash file.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>path</code></strong></dt>
 <dd>(optional) Path to save location of dash file</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>The</code> <code>path</code> of <code>the</code> <code>created</code> <code>file</code> <code>if</code> <code>path</code> <code>provided</code>, <code>else</code> <code>the</code> <code>raw</code> <code>content</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<p>The path of the created file if path provided, else the raw content</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -857,7 +892,7 @@ class Dashboard:
 <span>def <span class="ident">export_to_pdf</span></span>(<span>self, paper_format, paper_orientation, layout, *, path=None, include_title=None, include_filters=None, include_ds=None, widget_id=None, preview=None, row_count=None, show_title=None, show_footer=None, title=None, title_size=None, title_position=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get dashboard as pdf</p>
+<div class="desc"><p>Get dashboard as pdf</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>paper_format</code></strong></dt>
@@ -892,10 +927,7 @@ class Dashboard:
 <dd>(optional) Table/Pivot widget title position in the exported file</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>The</code> <code>path</code> of <code>the</code> <code>created</code> <code>file</code> <code>if</code> <code>provided</code>, <code>else</code> <code>the</code> <code>raw</code> <code>content</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<p>The path of the created file if provided, else the raw content</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -958,7 +990,7 @@ class Dashboard:
 <span>def <span class="ident">export_to_png</span></span>(<span>self, *, path=None, include_title=None, include_filters=None, include_ds=None, width=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get dashboard as png</p>
+<div class="desc"><p>Get dashboard as png</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>path</code></strong></dt>
@@ -973,10 +1005,7 @@ class Dashboard:
 <dd>(optional) Render width in pixels</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>The</code> <code>path</code> of <code>the</code> <code>created</code> <code>file</code> <code>if</code> <code>provided</code> or <code>else</code> <code>the</code> <code>raw</code> <code>response</code> <code>object</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<p>The path of the created file if provided or else the raw response object</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1015,22 +1044,25 @@ class Dashboard:
 <span>def <span class="ident">get_dashboard_folder</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Gets the dashboards folder</p></section>
+<div class="desc"><p>Gets the dashboards folder</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_dashboard_folder(self):
     &#34;&#34;&#34;Gets the dashboards folder&#34;&#34;&#34;
-    return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])</code></pre>
+    if &#39;parentFolder&#39; in self._dashboard_json:
+        return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
+    else:
+        return None</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_datasource"><code class="name flex">
 <span>def <span class="ident">get_datasource</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns the elasticube powering the dashboard.</p>
-<p>Not reliable when multiple elasticubes on dashboard.</p></section>
+<div class="desc"><p>Returns the elasticube powering the dashboard.</p>
+<p>Not reliable when multiple elasticubes on dashboard.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1047,7 +1079,7 @@ class Dashboard:
 <span>def <span class="ident">get_id</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Gets the dashboard's id</p></section>
+<div class="desc"><p>Gets the dashboard's id</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1061,7 +1093,7 @@ class Dashboard:
 <span>def <span class="ident">get_json</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns dashboard json</p></section>
+<div class="desc"><p>Returns dashboard json</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1075,21 +1107,24 @@ class Dashboard:
 <span>def <span class="ident">get_name</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Gets the dashboard's title</p></section>
+<div class="desc"><p>Gets the dashboard's title</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_name(self):
     &#34;&#34;&#34;Gets the dashboard&#39;s title&#34;&#34;&#34;
-    return self._dashboard_json[&#39;title&#39;]</code></pre>
+    if &#39;title&#39; in self._dashboard_json:
+        return self._dashboard_json[&#39;title&#39;]
+    else:
+        return None</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_share_users_groups"><code class="name flex">
 <span>def <span class="ident">get_share_users_groups</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Gets a list of users and groups the dashboard is shared with</p></section>
+<div class="desc"><p>Gets a list of users and groups the dashboard is shared with</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1110,7 +1145,7 @@ class Dashboard:
 <span>def <span class="ident">get_shares</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Gets the dashboard shares json</p></section>
+<div class="desc"><p>Gets the dashboard shares json</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1136,7 +1171,7 @@ class Dashboard:
 <span>def <span class="ident">get_widget_by_id</span></span>(<span>self, widget_id, *, fields=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns a specific widget (by ID) from a specific dashboard.</p>
+<div class="desc"><p>Returns a specific widget (by ID) from a specific dashboard.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>widget_id</code></strong></dt>
@@ -1146,10 +1181,7 @@ class Dashboard:
 Fields Can also define which fields to exclude by prefixing field names with -</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>A</code> <code>widget</code> <code>object</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<p>A widget object</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1179,7 +1211,7 @@ Fields Can also define which fields to exclude by prefixing field names with -</
 <span>def <span class="ident">get_widgets</span></span>(<span>self, *, title=None, type=None, subtype=None, fields=None, sort=None, skip=None, limit=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns an array of a dashboard’s widgets.</p>
+<div class="desc"><p>Returns an array of a dashboard’s widgets.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>title</code></strong></dt>
@@ -1200,10 +1232,7 @@ parameter for paging</dd>
 <dd>(optional) How many results should be returned. limit is to be used with the skip parameter for paging</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>An</code> <code>array</code> of <code>widget</code> <code>objects</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<p>An array of widget objects</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1249,7 +1278,7 @@ parameter for paging</dd>
 <span>def <span class="ident">move_to_folder</span></span>(<span>self, folder)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Move dashboard to given folder</p></section>
+<div class="desc"><p>Move dashboard to given folder</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1269,7 +1298,7 @@ parameter for paging</dd>
 <span>def <span class="ident">remove_ghost_widgets</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Removes ghost widgets from dashboard</p></section>
+<div class="desc"><p>Removes ghost widgets from dashboard</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1302,7 +1331,7 @@ parameter for paging</dd>
 <span>def <span class="ident">remove_shares</span></span>(<span>self, shares)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Unshare a dashboard to a list of groups and users</p></section>
+<div class="desc"><p>Unshare a dashboard to a list of groups and users</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1369,9 +1398,7 @@ parameter for paging</dd>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.3</a>.</p>
 </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad()</script>
 </body>
 </html>

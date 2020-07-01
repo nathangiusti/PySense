@@ -17,34 +17,21 @@ Download the PySense Tutorial Power Point for a hands on introduction.
 
 See snippets folder for common usage snippets
 
-If you are encountering issues with your Sisense server timing out or not responding download and run this script:
-https://github.com/nathangiusti/PySense/blob/master/Scripts/Troubleshooting/TestSisenseConnection.py
-
-If this script fails, there is an issue with your network/server set up. You will need to resolve this before continuing. 
-
-If this script succeeds and you encounter issues, please file an issue. 
-
-**V 0.2.9 Release Notes**
-
-Hello Everyone. 
-
-Additional development on new features of PySense will go dark for a bit as we integrate better into the API structure. 
-
-If you find a critical release bug, please file an issue on GitHub and a patch may be released for it. 
-
-Thank you for your patience and support
-The PySense Team
+**V 0.2.11 Release Notes**
 
 - Additions
-    - Authenticate by passing in a bearer token instead of having to provide username and password either inline or via config file
+    - Manage elasticube sharing
+    - Sharing dashboards also shares the source cube
+    - Updated sample config
 
 - Breaking changes
-    - PyClient.PyClient() constructor should no longer be used. Instead use PyClient.authenticate_by_password or PyClient.authenticate_by_token
-    - PyClient.authenticate_by_file is unchanged. 
-    - Authentication snippets and power points have been updated to reflect the new login procedure. 
+    - Dashboard.get_dashboard_folder() now returns a folder object
 
 - Fixes
-    - None
+    - Some documentation errors found and fixed
+    - PySense will fail more gracefully when an invalid username/password is given
+    - Some issues with Elasticube.get_metadata() resolved 
+ 
 	
 - Known Issues
     - REST API sometimes becomes responsive on Linux builds

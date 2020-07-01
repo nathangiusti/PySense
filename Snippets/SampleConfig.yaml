@@ -1,9 +1,12 @@
-host: 'your_host'
+# Required
+host: 'your_host' # May need to include port
+version: 'os' # 'Windows' or 'Linux'
+
+#Requires either username and password or token
 username: 'your_username@sample.com'
 password: 'your_password'
 
-# Windows or Linux
-version: 'Windows' 
+token: 'somelongbearertokenstring'
 
 # Optional. False by default. Set to true to turn on more detailed debugging
 debug: False

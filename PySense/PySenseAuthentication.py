@@ -2,6 +2,7 @@ import requests
 import yaml
 
 from PySense import PySense
+from PySense import PySenseException
 from PySense import PySenseUtils
 
 
@@ -14,6 +15,9 @@ def generate_token(host, username, password, verify=True):
     host = PySenseUtils.format_host(host)
     data = {'username': username, 'password': password}
     resp = requests.post('{}/api/v1/authentication/login'.format(host), verify=verify, data=data)
+    if resp.status_code not in [200, 201, 204]:
+        raise PySenseException.PySenseException('ERROR: {}: {}\nURL: {}'
+                                                .format(resp.status_code, resp.content, resp.url))
     return {'authorization':  "Bearer " + resp.json()['access_token']}
 
 

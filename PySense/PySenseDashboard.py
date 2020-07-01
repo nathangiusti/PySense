@@ -31,11 +31,17 @@ class Dashboard:
 
     def get_name(self):
         """Gets the dashboard's title"""
-        return self._dashboard_json['title']
+        if 'title' in self._dashboard_json:
+            return self._dashboard_json['title']
+        else:
+            return None
 
     def get_dashboard_folder(self):
         """Gets the dashboards folder"""
-        return self._py_client.get_folder_by_id(self._dashboard_json['parentFolder'])
+        if 'parentFolder' in self._dashboard_json:
+            return self._py_client.get_folder_by_id(self._dashboard_json['parentFolder'])
+        else:
+            return None
 
     def get_shares(self):
         """Gets the dashboard shares json """
@@ -64,34 +70,42 @@ class Dashboard:
                 ret_arr.append(self._py_client.get_group_by_id(share['shareId']))
         return ret_arr
 
-    def add_share(self, share, rule, subscribe):
+    def add_share(self, shares, rule, subscribe, *, share_cube=True):
         """Share a dashboard to a new group or user.
 
         If dashboard is already shared with user or group, nothing happens
 
+        By default gives query permission to the cube as well. Set share_cubes to false to not update cube shares
+
         Args:
-            share: A PySense Group or User
+            shares: One to many PySense Groups or Users
             rule: The permission of the user on the dashboard (view, edit, etc)
             subscribe: true or false, whether to subscribe the user to reports
+            share_cube: (Optional) False to not share cube with groups/users
         """
         curr_shares = self.get_shares()
-        share_id = share.get_id()
-        for curr_share in curr_shares['sharesTo']:
-            if 'shareId' == curr_share['shareId']:
-                share_id = None
 
-        if share_id is not None:
-            if isinstance(share, PySenseUser.User):
-                curr_shares['sharesTo'].append(
-                    {'shareId': share.get_id(), 'type': 'user', 'rule': rule, 'subscribe': subscribe}
-                )
-            elif isinstance(share, PySenseGroup.Group):
-                curr_shares['sharesTo'].append(
-                    {'shareId': share.get_id(), 'type': 'group', 'rule': rule, 'subscribe': subscribe}
-                )
+        for share in shares:
+            share_id = share.get_id()
+            for curr_share in curr_shares['sharesTo']:
+                if 'shareId' == curr_share['shareId']:
+                    share_id = None
+
+            if share_id is not None:
+                if isinstance(share, PySenseUser.User):
+                    curr_shares['sharesTo'].append(
+                        {'shareId': share.get_id(), 'type': 'user', 'rule': rule, 'subscribe': subscribe}
+                    )
+                elif isinstance(share, PySenseGroup.Group):
+                    curr_shares['sharesTo'].append(
+                        {'shareId': share.get_id(), 'type': 'group', 'rule': rule, 'subscribe': subscribe}
+                    )
 
         self._py_client.connector.rest_call('post', 'api/shares/dashboard/{}'.format(self.get_id()),
                                             json_payload=curr_shares)
+        if share_cube:
+            data_source = self.get_datasource()
+            data_source.add_share(shares)
 
     def remove_shares(self, shares):
         """Unshare a dashboard to a list of groups and users"""
