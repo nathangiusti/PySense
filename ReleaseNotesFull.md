@@ -1,3 +1,17 @@
+**V 0.2.12 Release Notes**
+
+- Additions
+    - Now supports white labeling. See the branding snippets for details
+
+- Breaking changes
+    - None
+
+- Fixes
+    - None
+    
+- Known Issues
+    - REST API sometimes becomes responsive on Linux builds
+
 **V 0.2.11 Release Notes**
 
 - Additions

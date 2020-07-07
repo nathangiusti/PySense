@@ -22,8 +22,6 @@ class PySenseDataModelTests(unittest.TestCase):
         time.sleep(1)
         while build.get_status() is None:
             time.sleep(1)
-        print(build.get_status())
-        time.sleep(1)
         build.cancel_build()
 
 

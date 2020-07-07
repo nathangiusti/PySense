@@ -27,6 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from PySense import PySenseAuthentication
+from PySense import PySenseBranding
 from PySense import PySenseConnection
 from PySense import PySenseDashboard
 from PySense import PySenseDataModel
@@ -718,7 +719,18 @@ class PySense:
             raise PySenseException.PySenseException(&#34;Delete data model not supported on windows&#34;)
 
         for data_model in PySenseUtils.make_iterable(data_models):
-            self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))</code></pre>
+            self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))
+
+    def get_branding(self):
+        &#34;&#34;&#34;Returns the current branding&#34;&#34;&#34;
+        return PySenseBranding.Branding(self.connector, self.connector.rest_call(&#39;get&#39;, &#39;api/branding&#39;))
+
+    def set_branding(self, branding):
+        &#34;&#34;&#34;Update the branding
+        Args:
+            - branding: The PySense Branding object
+        &#34;&#34;&#34;
+        self.connector.rest_call(&#39;post&#39;, &#39;api/branding&#39;, json_payload=branding.get_json())</code></pre>
 </details>
 </section>
 <section>
@@ -1497,7 +1509,18 @@ class PySense:
             raise PySenseException.PySenseException(&#34;Delete data model not supported on windows&#34;)
 
         for data_model in PySenseUtils.make_iterable(data_models):
-            self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))</code></pre>
+            self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))
+
+    def get_branding(self):
+        &#34;&#34;&#34;Returns the current branding&#34;&#34;&#34;
+        return PySenseBranding.Branding(self.connector, self.connector.rest_call(&#39;get&#39;, &#39;api/branding&#39;))
+
+    def set_branding(self, branding):
+        &#34;&#34;&#34;Update the branding
+        Args:
+            - branding: The PySense Branding object
+        &#34;&#34;&#34;
+        self.connector.rest_call(&#39;post&#39;, &#39;api/branding&#39;, json_payload=branding.get_json())</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -1822,6 +1845,20 @@ add_data_model(new_data_model, target_data_model=old_data_model)</p>
     &#34;&#34;&#34;
     for user in PySenseUtils.make_iterable(users):
         self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/users/{}&#39;.format(user.get_id()))</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySense.PySense.get_branding"><code class="name flex">
+<span>def <span class="ident">get_branding</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the current branding</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_branding(self):
+    &#34;&#34;&#34;Returns the current branding&#34;&#34;&#34;
+    return PySenseBranding.Branding(self.connector, self.connector.rest_call(&#39;get&#39;, &#39;api/branding&#39;))</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySense.PySense.get_connection_by_id"><code class="name flex">
@@ -2596,6 +2633,27 @@ May be nested using the resource.subResource format</dd>
     return ret_arr</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySense.PySense.set_branding"><code class="name flex">
+<span>def <span class="ident">set_branding</span></span>(<span>self, branding)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Update the branding</p>
+<h2 id="args">Args</h2>
+<ul>
+<li>branding: The PySense Branding object</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_branding(self, branding):
+    &#34;&#34;&#34;Update the branding
+    Args:
+        - branding: The PySense Branding object
+    &#34;&#34;&#34;
+    self.connector.rest_call(&#39;post&#39;, &#39;api/branding&#39;, json_payload=branding.get_json())</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySense.PySense.set_debug"><code class="name flex">
 <span>def <span class="ident">set_debug</span></span>(<span>self, debug)</span>
 </code></dt>
@@ -2652,6 +2710,7 @@ May be nested using the resource.subResource format</dd>
 <li><code><a title="PySense.PySense.PySense.delete_data_model" href="#PySense.PySense.PySense.delete_data_model">delete_data_model</a></code></li>
 <li><code><a title="PySense.PySense.PySense.delete_groups" href="#PySense.PySense.PySense.delete_groups">delete_groups</a></code></li>
 <li><code><a title="PySense.PySense.PySense.delete_users" href="#PySense.PySense.PySense.delete_users">delete_users</a></code></li>
+<li><code><a title="PySense.PySense.PySense.get_branding" href="#PySense.PySense.PySense.get_branding">get_branding</a></code></li>
 <li><code><a title="PySense.PySense.PySense.get_connection_by_id" href="#PySense.PySense.PySense.get_connection_by_id">get_connection_by_id</a></code></li>
 <li><code><a title="PySense.PySense.PySense.get_connections" href="#PySense.PySense.PySense.get_connections">get_connections</a></code></li>
 <li><code><a title="PySense.PySense.PySense.get_dashboard_by_id" href="#PySense.PySense.PySense.get_dashboard_by_id">get_dashboard_by_id</a></code></li>
@@ -2670,6 +2729,7 @@ May be nested using the resource.subResource format</dd>
 <li><code><a title="PySense.PySense.PySense.get_user_by_email" href="#PySense.PySense.PySense.get_user_by_email">get_user_by_email</a></code></li>
 <li><code><a title="PySense.PySense.PySense.get_user_by_id" href="#PySense.PySense.PySense.get_user_by_id">get_user_by_id</a></code></li>
 <li><code><a title="PySense.PySense.PySense.get_users" href="#PySense.PySense.PySense.get_users">get_users</a></code></li>
+<li><code><a title="PySense.PySense.PySense.set_branding" href="#PySense.PySense.PySense.set_branding">set_branding</a></code></li>
 <li><code><a title="PySense.PySense.PySense.set_debug" href="#PySense.PySense.PySense.set_debug">set_debug</a></code></li>
 </ul>
 </li>

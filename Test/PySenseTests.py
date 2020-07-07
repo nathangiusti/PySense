@@ -84,6 +84,11 @@ class PySenseTests(unittest.TestCase):
         data_model = self.py_client_linux.get_data_models(title='PySense')
         assert isinstance(data_model, PySenseDataModel.DataModel)
 
+    def test_branding(self):
+        branding = self.py_client_linux.get_branding()
+        assert branding is not None
+        self.py_client_linux.set_branding(branding)
+
     @classmethod
     def tearDownClass(cls):
         groups_to_delete = []

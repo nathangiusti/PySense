@@ -17,21 +17,16 @@ Download the PySense Tutorial Power Point for a hands on introduction.
 
 See snippets folder for common usage snippets
 
-**V 0.2.11 Release Notes**
+**V 0.2.12 Release Notes**
 
 - Additions
-    - Manage elasticube sharing
-    - Sharing dashboards also shares the source cube
-    - Updated sample config
+    - Now supports white labeling. See the branding snippets for details
 
 - Breaking changes
-    - Dashboard.get_dashboard_folder() now returns a folder object
+    - None
 
 - Fixes
-    - Some documentation errors found and fixed
-    - PySense will fail more gracefully when an invalid username/password is given
-    - Some issues with Elasticube.get_metadata() resolved 
- 
-	
+    - None
+    
 - Known Issues
     - REST API sometimes becomes responsive on Linux builds
