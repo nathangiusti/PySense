@@ -10,6 +10,7 @@ from PySense.PySenseMixIns import DataModelMixIn
 from PySense.PySenseMixIns import ElasticubeMixIn
 from PySense.PySenseMixIns import FolderMixIn
 from PySense.PySenseMixIns import GroupMixIn
+from PySense.PySenseMixIns import RoleMixIn
 from PySense.PySenseMixIns import PluginMixIn
 from PySense.PySenseMixIns import UserMixIn
 
@@ -67,7 +68,7 @@ def authenticate_by_file(config_file):
 
 class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, DashboardMixIn.DashboardMixIn,
               DataModelMixIn.DataModelMixIn, ElasticubeMixIn.ElasticubeMixIn, FolderMixIn.FolderMixIn,
-              GroupMixIn.GroupMixIn, PluginMixIn.PluginMixIn, UserMixIn.UserMixIn):
+              GroupMixIn.GroupMixIn, PluginMixIn.PluginMixIn, RoleMixIn.RoleMixIn, UserMixIn.UserMixIn):
 
     """The manager of connections to the PySense server
 
