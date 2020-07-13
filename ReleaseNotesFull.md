@@ -1,3 +1,17 @@
+**V 0.2.13 Release Notes**
+
+- Additions
+    - None
+
+- Breaking changes
+    - None
+
+- Fixes
+    - PySense root class has been reorganized for readability and maintenance
+    
+- Known Issues
+    - REST API sometimes becomes responsive on Linux builds
+
 **V 0.2.12 Release Notes**
 
 - Additions

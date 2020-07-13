@@ -17,16 +17,16 @@ Download the PySense Tutorial Power Point for a hands on introduction.
 
 See snippets folder for common usage snippets
 
-**V 0.2.12 Release Notes**
+**V 0.2.13 Release Notes**
 
 - Additions
-    - Now supports white labeling. See the branding snippets for details
+    - None
 
 - Breaking changes
     - None
 
 - Fixes
-    - None
+    - PySense root class has been reorganized for readability and maintenance
     
 - Known Issues
     - REST API sometimes becomes responsive on Linux builds
