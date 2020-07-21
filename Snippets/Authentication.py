@@ -10,7 +10,7 @@ py_client = PySense.authenticate_by_passwword('host', 'username', 'password', 'w
 py_client = PySense.authenticate_by_passwword('host', 'username', 'password', 'windows', verify=False)
 
 # Authenticate with token
-py_client = PySense.authenticate_by_token('host', 'thebearertokenreturnedfromasisenselogincall')
+py_client = PySense.authenticate_by_token('host', 'thebearertokenreturnedfromasisenselogincall', 'windows')
 
 # Verify and debug can also be added as values to your config file
 # Authenticate by file
