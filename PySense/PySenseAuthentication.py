@@ -50,3 +50,4 @@ def authenticate_by_file(config_file):
                                             debug=debug, verify=verify)
         else:
             return authenticate_by_token(host, cfg['token'], cfg['version'], debug=debug, verify=verify)
+

@@ -15,6 +15,8 @@ def make_iterable(obj):
     """Makes object iterable"""
     if obj is None:
         return []
+    if isinstance(obj, str):
+        return [obj]
     if not isinstance(obj, Iterable):
         return [obj]
     return obj

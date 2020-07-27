@@ -132,8 +132,8 @@ class Elasticube:
         else:
             return resp_content
 
-    def add_security_rule(self, table, column, data_type, *, shares=None, members=[],
-                          server_address=None, exclusionary=False, all_members=None, ):
+    def add_security_rule(self, table, column, data_type, *, shares=None, members=None,
+                          server_address=None, exclusionary=False, all_members=None):
         """Defines data security rules for a column on a specific server and ElastiCube
 
         Args:
@@ -179,10 +179,14 @@ class Elasticube:
             rule_json[0]['shares'] = shares_json
 
         member_arr = []
-        for member in members:
-            member_arr.append(str(member))
-        rule_json[0]['members'] = member_arr
-
+        if members is None:
+            rule_json[0]['members'] = []
+            rule_json[0]['allMembers'] = False if all_members is None else all_members
+        else:
+            rule_json[0]['allMembers'] = None
+            for member in members:
+                member_arr.append(str(member))
+            rule_json[0]['members'] = member_arr
         resp_json = self._py_client.connector.rest_call('post', 'api/elasticubes/{}/{}/datasecurity'
                                                         .format(server_address, self.get_name(url_encoded=True)),
                                                         json_payload=rule_json)

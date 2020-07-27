@@ -23,7 +23,10 @@ class Dashboard:
 
         Not reliable when multiple elasticubes on dashboard.
         """
-        return self._py_client.get_elasticube_by_name(self._dashboard_json['datasource']['title'])
+        if 'datasource' in self._dashboard_json:
+            return self._py_client.get_elasticube_by_name(self._dashboard_json['datasource']['title'])
+        else:
+            None
 
     def get_id(self):
         """Gets the dashboard's id"""
