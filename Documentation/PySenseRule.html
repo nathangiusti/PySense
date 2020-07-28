@@ -75,8 +75,8 @@ class Rule:
         &#34;&#34;&#34;Returns whether or not the rule is for all members.&#34;&#34;&#34;
         return self._rule_json[&#39;exclusionary&#39;]
 
-    def update_rule(self, *, shares=None, table=None, column=None, data_type=None, members=None,
-                    exclusionary=None, all_members=None):
+    def update_rule(self, *, table=None, column=None, data_type=None, shares=&#39;&#39;, members=&#39;&#39;,
+                    exclusionary=&#39;&#39;, all_members=&#39;&#39;):
         &#34;&#34;&#34;Updates the current rule.
 
         Any arguments given will replace the current value and update the rule in place
@@ -94,11 +94,11 @@ class Rule:
             &#34;column&#34;: column if column is not None else self.get_column(),
             &#34;datatype&#34;: data_type if data_type is not None else self.get_data_type(),
             &#34;table&#34;: table if table is not None else self.get_table(),
-            &#34;exclusionary&#34;: exclusionary if table is not None else self.get_exclusionary(),
-            &#34;allMembers&#34;: all_members if all_members is not None else self.get_all_members(),
+            &#34;exclusionary&#34;: exclusionary if exclusionary != &#39;&#39; else self.get_exclusionary(),
+            &#34;allMembers&#34;: all_members if all_members != &#39;&#39; else self.get_all_members(),
         }
         shares_json = []
-        if shares is not None:
+        if shares != &#39;&#39;:
             for party in PySenseUtils.make_iterable(shares):
                 if isinstance(party, PySenseUser.User):
                     shares_json.append({&#39;party&#39;: party.get_id(), &#39;type&#39;: &#39;user&#39;})
@@ -108,11 +108,16 @@ class Rule:
         else:
             rule_json[&#39;shares&#39;] = self.get_shares()
 
-        if members is not None:
-            member_arr = []
-            for member in PySenseUtils.make_iterable(members):
-                member_arr.append(str(member))
-            rule_json[&#39;members&#39;] = member_arr
+        if members != &#39;&#39;:
+            if members is None:
+                rule_json[&#39;members&#39;] = []
+                rule_json[&#39;allMembers&#39;] = False if all_members == &#39;&#39; else all_members
+            else:
+                member_arr = []
+                for member in PySenseUtils.make_iterable(members):
+                    member_arr.append(str(member))
+                rule_json[&#39;members&#39;] = member_arr
+                rule_json[&#39;allMembers&#39;] = None
         else:
             rule_json[&#39;members&#39;] = self.get_members()
 
@@ -184,8 +189,8 @@ class Rule:
         &#34;&#34;&#34;Returns whether or not the rule is for all members.&#34;&#34;&#34;
         return self._rule_json[&#39;exclusionary&#39;]
 
-    def update_rule(self, *, shares=None, table=None, column=None, data_type=None, members=None,
-                    exclusionary=None, all_members=None):
+    def update_rule(self, *, table=None, column=None, data_type=None, shares=&#39;&#39;, members=&#39;&#39;,
+                    exclusionary=&#39;&#39;, all_members=&#39;&#39;):
         &#34;&#34;&#34;Updates the current rule.
 
         Any arguments given will replace the current value and update the rule in place
@@ -203,11 +208,11 @@ class Rule:
             &#34;column&#34;: column if column is not None else self.get_column(),
             &#34;datatype&#34;: data_type if data_type is not None else self.get_data_type(),
             &#34;table&#34;: table if table is not None else self.get_table(),
-            &#34;exclusionary&#34;: exclusionary if table is not None else self.get_exclusionary(),
-            &#34;allMembers&#34;: all_members if all_members is not None else self.get_all_members(),
+            &#34;exclusionary&#34;: exclusionary if exclusionary != &#39;&#39; else self.get_exclusionary(),
+            &#34;allMembers&#34;: all_members if all_members != &#39;&#39; else self.get_all_members(),
         }
         shares_json = []
-        if shares is not None:
+        if shares != &#39;&#39;:
             for party in PySenseUtils.make_iterable(shares):
                 if isinstance(party, PySenseUser.User):
                     shares_json.append({&#39;party&#39;: party.get_id(), &#39;type&#39;: &#39;user&#39;})
@@ -217,11 +222,16 @@ class Rule:
         else:
             rule_json[&#39;shares&#39;] = self.get_shares()
 
-        if members is not None:
-            member_arr = []
-            for member in PySenseUtils.make_iterable(members):
-                member_arr.append(str(member))
-            rule_json[&#39;members&#39;] = member_arr
+        if members != &#39;&#39;:
+            if members is None:
+                rule_json[&#39;members&#39;] = []
+                rule_json[&#39;allMembers&#39;] = False if all_members == &#39;&#39; else all_members
+            else:
+                member_arr = []
+                for member in PySenseUtils.make_iterable(members):
+                    member_arr.append(str(member))
+                rule_json[&#39;members&#39;] = member_arr
+                rule_json[&#39;allMembers&#39;] = None
         else:
             rule_json[&#39;members&#39;] = self.get_members()
 
@@ -344,7 +354,7 @@ class Rule:
 </details>
 </dd>
 <dt id="PySense.PySenseRule.Rule.update_rule"><code class="name flex">
-<span>def <span class="ident">update_rule</span></span>(<span>self, *, shares=None, table=None, column=None, data_type=None, members=None, exclusionary=None, all_members=None)</span>
+<span>def <span class="ident">update_rule</span></span>(<span>self, *, table=None, column=None, data_type=None, shares='', members='', exclusionary='', all_members='')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Updates the current rule.</p>
@@ -370,8 +380,8 @@ class Rule:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def update_rule(self, *, shares=None, table=None, column=None, data_type=None, members=None,
-                exclusionary=None, all_members=None):
+<pre><code class="python">def update_rule(self, *, table=None, column=None, data_type=None, shares=&#39;&#39;, members=&#39;&#39;,
+                exclusionary=&#39;&#39;, all_members=&#39;&#39;):
     &#34;&#34;&#34;Updates the current rule.
 
     Any arguments given will replace the current value and update the rule in place
@@ -389,11 +399,11 @@ class Rule:
         &#34;column&#34;: column if column is not None else self.get_column(),
         &#34;datatype&#34;: data_type if data_type is not None else self.get_data_type(),
         &#34;table&#34;: table if table is not None else self.get_table(),
-        &#34;exclusionary&#34;: exclusionary if table is not None else self.get_exclusionary(),
-        &#34;allMembers&#34;: all_members if all_members is not None else self.get_all_members(),
+        &#34;exclusionary&#34;: exclusionary if exclusionary != &#39;&#39; else self.get_exclusionary(),
+        &#34;allMembers&#34;: all_members if all_members != &#39;&#39; else self.get_all_members(),
     }
     shares_json = []
-    if shares is not None:
+    if shares != &#39;&#39;:
         for party in PySenseUtils.make_iterable(shares):
             if isinstance(party, PySenseUser.User):
                 shares_json.append({&#39;party&#39;: party.get_id(), &#39;type&#39;: &#39;user&#39;})
@@ -403,11 +413,16 @@ class Rule:
     else:
         rule_json[&#39;shares&#39;] = self.get_shares()
 
-    if members is not None:
-        member_arr = []
-        for member in PySenseUtils.make_iterable(members):
-            member_arr.append(str(member))
-        rule_json[&#39;members&#39;] = member_arr
+    if members != &#39;&#39;:
+        if members is None:
+            rule_json[&#39;members&#39;] = []
+            rule_json[&#39;allMembers&#39;] = False if all_members == &#39;&#39; else all_members
+        else:
+            member_arr = []
+            for member in PySenseUtils.make_iterable(members):
+                member_arr.append(str(member))
+            rule_json[&#39;members&#39;] = member_arr
+            rule_json[&#39;allMembers&#39;] = None
     else:
         rule_json[&#39;members&#39;] = self.get_members()
 

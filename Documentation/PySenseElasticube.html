@@ -160,8 +160,8 @@ class Elasticube:
         else:
             return resp_content
 
-    def add_security_rule(self, table, column, data_type, *, shares=None, members=[],
-                          server_address=None, exclusionary=False, all_members=None, ):
+    def add_security_rule(self, table, column, data_type, *, shares=None, members=None,
+                          server_address=None, exclusionary=False, all_members=None):
         &#34;&#34;&#34;Defines data security rules for a column on a specific server and ElastiCube
 
         Args:
@@ -207,10 +207,14 @@ class Elasticube:
             rule_json[0][&#39;shares&#39;] = shares_json
 
         member_arr = []
-        for member in members:
-            member_arr.append(str(member))
-        rule_json[0][&#39;members&#39;] = member_arr
-
+        if members is None:
+            rule_json[0][&#39;members&#39;] = []
+            rule_json[0][&#39;allMembers&#39;] = False if all_members is None else all_members
+        else:
+            rule_json[0][&#39;allMembers&#39;] = None
+            for member in members:
+                member_arr.append(str(member))
+            rule_json[0][&#39;members&#39;] = member_arr
         resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
                                                         .format(server_address, self.get_name(url_encoded=True)),
                                                         json_payload=rule_json)
@@ -669,8 +673,8 @@ class Elasticube:
         else:
             return resp_content
 
-    def add_security_rule(self, table, column, data_type, *, shares=None, members=[],
-                          server_address=None, exclusionary=False, all_members=None, ):
+    def add_security_rule(self, table, column, data_type, *, shares=None, members=None,
+                          server_address=None, exclusionary=False, all_members=None):
         &#34;&#34;&#34;Defines data security rules for a column on a specific server and ElastiCube
 
         Args:
@@ -716,10 +720,14 @@ class Elasticube:
             rule_json[0][&#39;shares&#39;] = shares_json
 
         member_arr = []
-        for member in members:
-            member_arr.append(str(member))
-        rule_json[0][&#39;members&#39;] = member_arr
-
+        if members is None:
+            rule_json[0][&#39;members&#39;] = []
+            rule_json[0][&#39;allMembers&#39;] = False if all_members is None else all_members
+        else:
+            rule_json[0][&#39;allMembers&#39;] = None
+            for member in members:
+                member_arr.append(str(member))
+            rule_json[0][&#39;members&#39;] = member_arr
         resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
                                                         .format(server_address, self.get_name(url_encoded=True)),
                                                         json_payload=rule_json)
@@ -1060,7 +1068,7 @@ class Elasticube:
 </details>
 </dd>
 <dt id="PySense.PySenseElasticube.Elasticube.add_security_rule"><code class="name flex">
-<span>def <span class="ident">add_security_rule</span></span>(<span>self, table, column, data_type, *, shares=None, members=[], server_address=None, exclusionary=False, all_members=None)</span>
+<span>def <span class="ident">add_security_rule</span></span>(<span>self, table, column, data_type, *, shares=None, members=None, server_address=None, exclusionary=False, all_members=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Defines data security rules for a column on a specific server and ElastiCube</p>
@@ -1084,8 +1092,8 @@ Use 'Set' for Elasticube Set. Required for elasticube sets.</li>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_security_rule(self, table, column, data_type, *, shares=None, members=[],
-                      server_address=None, exclusionary=False, all_members=None, ):
+<pre><code class="python">def add_security_rule(self, table, column, data_type, *, shares=None, members=None,
+                      server_address=None, exclusionary=False, all_members=None):
     &#34;&#34;&#34;Defines data security rules for a column on a specific server and ElastiCube
 
     Args:
@@ -1131,10 +1139,14 @@ Use 'Set' for Elasticube Set. Required for elasticube sets.</li>
         rule_json[0][&#39;shares&#39;] = shares_json
 
     member_arr = []
-    for member in members:
-        member_arr.append(str(member))
-    rule_json[0][&#39;members&#39;] = member_arr
-
+    if members is None:
+        rule_json[0][&#39;members&#39;] = []
+        rule_json[0][&#39;allMembers&#39;] = False if all_members is None else all_members
+    else:
+        rule_json[0][&#39;allMembers&#39;] = None
+        for member in members:
+            member_arr.append(str(member))
+        rule_json[0][&#39;members&#39;] = member_arr
     resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/elasticubes/{}/{}/datasecurity&#39;
                                                     .format(server_address, self.get_name(url_encoded=True)),
                                                     json_payload=rule_json)

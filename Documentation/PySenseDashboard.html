@@ -51,7 +51,10 @@ class Dashboard:
 
         Not reliable when multiple elasticubes on dashboard.
         &#34;&#34;&#34;
-        return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])
+        if &#39;datasource&#39; in self._dashboard_json:
+            return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])
+        else:
+            None
 
     def get_id(self):
         &#34;&#34;&#34;Gets the dashboard&#39;s id&#34;&#34;&#34;
@@ -406,7 +409,10 @@ class Dashboard:
 
         Not reliable when multiple elasticubes on dashboard.
         &#34;&#34;&#34;
-        return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])
+        if &#39;datasource&#39; in self._dashboard_json:
+            return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])
+        else:
+            None
 
     def get_id(self):
         &#34;&#34;&#34;Gets the dashboard&#39;s id&#34;&#34;&#34;
@@ -1072,7 +1078,10 @@ class Dashboard:
 
     Not reliable when multiple elasticubes on dashboard.
     &#34;&#34;&#34;
-    return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])</code></pre>
+    if &#39;datasource&#39; in self._dashboard_json:
+        return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])
+    else:
+        None</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_id"><code class="name flex">
