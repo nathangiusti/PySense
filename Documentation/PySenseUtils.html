@@ -43,6 +43,8 @@ def make_iterable(obj):
     &#34;&#34;&#34;Makes object iterable&#34;&#34;&#34;
     if obj is None:
         return []
+    if isinstance(obj, str):
+        return [obj]
     if not isinstance(obj, Iterable):
         return [obj]
     return obj
@@ -91,6 +93,8 @@ def sisense_time_to_python(datetime_str):
     &#34;&#34;&#34;Makes object iterable&#34;&#34;&#34;
     if obj is None:
         return []
+    if isinstance(obj, str):
+        return [obj]
     if not isinstance(obj, Iterable):
         return [obj]
     return obj</code></pre>

@@ -17,16 +17,19 @@ Download the PySense Tutorial Power Point for a hands on introduction.
 
 See snippets folder for common usage snippets
 
-**V 0.2.13 Release Notes**
+**V 0.2.15 Release Notes**
 
 - Additions
-    - None
+    - Script for backing up dashboards
 
 - Breaking changes
     - None
 
 - Fixes
-    - PySense root class has been reorganized for readability and maintenance
+    - PySenseDashboard.get_datasource returns None instead of throwing exception when no datasource is found.
+    - Data Security rules applied more uniformly
+    - PySenseRule.update rule now uses empty strings instead of None for default parameters
+    - PySenseUtils.make_iterable now handles strings as a discrete object and not an array in and of itself
     
 - Known Issues
     - REST API sometimes becomes responsive on Linux builds
