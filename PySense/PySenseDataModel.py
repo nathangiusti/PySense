@@ -1,6 +1,7 @@
 from PySense import PySenseBuildTask
 from PySense import PySenseDataSet
 from PySense import PySenseException
+from PySense import PySenseUtils
 from PySense import SisenseVersion
 
 
@@ -42,6 +43,7 @@ class DataModel:
         return ret_arr
 
     def get_schema_json(self):
+        """Returns the schema json. Linux Only"""
         if self._py_client.version == SisenseVersion.Version.WINDOWS:
             raise PySenseException.PySenseException('Get schema json not supported on windows')
 
@@ -49,9 +51,6 @@ class DataModel:
             query_params = {'datamodelId': self.get_oid(), 'type': 'schema-latest'}
             schema_json = self._py_client.connector.rest_call('get', 'api/v2/datamodel-exports/schema',
                                                               query_params=query_params)
-            if schema_json is None:
-                raise PySenseException.PySenseException('Schema JSON not found for data model {}'
-                                                        .format(self.get_oid()))
             self._schema_json = schema_json
         return self._schema_json
 
@@ -105,4 +104,19 @@ class DataModel:
 
         self._py_client.connector.rest_call('delete', 'api/v2/builds', query_params=query_params)
 
+    def export_to_smodel(self, path):
+        """Download datamodel as an smodel file.
 
+        Args:
+            path: Path to save location of the smodel file. Ex: 'C:\\Backups\\mydatamodel.smodel'
+
+        Returns:
+            The path of the created file
+        """
+        query_params = {
+            'datamodelId': self.get_oid(),
+            'type': 'schema-latest'
+        }
+        output_json = self._py_client.connector.rest_call('get', '/api/v2/datamodel-exports/schema',
+                                                          query_params=query_params)
+        return PySenseUtils.dump_json(output_json, path)

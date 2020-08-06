@@ -7,7 +7,7 @@ class PySenseWidgetTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\VmConfig.yaml')
         cls.dashboard = cls.py_client.get_dashboards(name='PySense')[0]
         cls.widget = cls.dashboard.get_widgets()[0]
 

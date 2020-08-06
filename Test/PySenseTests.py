@@ -1,4 +1,5 @@
 import json
+import os
 import unittest
 
 from PySense import PySense
@@ -11,7 +12,7 @@ class PySenseTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseTokenConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\VmConfig.yaml')
         cls.py_client_linux = PySense.authenticate_by_file('C:\\PySense\\PySenseLinux.yaml')
         cls.sample_path = 'C:\\PySense\\'
         cls.group_names = ["TempGroup", "TempGroup2"]
@@ -20,6 +21,8 @@ class PySenseTests(unittest.TestCase):
         ret = self.py_client.get_dashboards(name='PySense')
         assert len(ret) == 1
         assert ret[0].get_name() == 'PySense'
+        ret = self.py_client.get_dashboards_admin()
+        assert len(ret) > 1
 
     def test_get_dashboards_id(self):
         ret = self.py_client.get_dashboards(name='PySense')
@@ -76,13 +79,15 @@ class PySenseTests(unittest.TestCase):
         data_model = self.py_client_linux.get_data_models(title='PySense')
         assert isinstance(data_model, PySenseDataModel.DataModel)
 
-        self.py_client_linux.delete_data_model(data_model)
-        with self.assertRaises(PySenseException.PySenseException):
-            data_model = self.py_client.get_data_models(title='PySense')
+        path = data_model.export_to_smodel(self.sample_path + data_model.get_oid() + '.smodel')
 
-        self.py_client_linux.add_data_model(data_model)
+        self.py_client_linux.delete_data_model(data_model)
+        imported_data_model = self.py_client_linux.import_schema(path)
+        assert isinstance(imported_data_model, PySenseDataModel.DataModel)
+
         data_model = self.py_client_linux.get_data_models(title='PySense')
         assert isinstance(data_model, PySenseDataModel.DataModel)
+        os.remove(path)
 
     def test_branding(self):
         branding = self.py_client_linux.get_branding()

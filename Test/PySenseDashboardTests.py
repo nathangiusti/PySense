@@ -8,7 +8,7 @@ class PySenseDashboardTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\VmConfig.yaml')
         cls.sample_path = 'C:\\PySense\\'
         cls.dashboard = cls.py_client.get_dashboards(name='PySense')[0]
 
@@ -39,13 +39,13 @@ class PySenseDashboardTests(unittest.TestCase):
 
     def test_dashboard_widgets(self):
         widget_array = self.dashboard.get_widgets()
-        assert len(widget_array) == 2
+        assert len(widget_array) == 1
         widget = self.dashboard.get_widget_by_id(widget_array[0].get_id())
         assert widget.get_id() == widget_array[0].get_id()
         added_widget = self.dashboard.add_widget(widget)
-        assert len(self.dashboard.get_widgets()) == 3
-        self.dashboard.delete_widget(added_widget)
         assert len(self.dashboard.get_widgets()) == 2
+        self.dashboard.delete_widget(added_widget)
+        assert len(self.dashboard.get_widgets()) == 1
 
     def test_dashboard_shares(self):
         user = self.py_client.get_users(email='testuser@sisense.com')[0]

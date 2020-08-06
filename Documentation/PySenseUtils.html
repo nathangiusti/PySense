@@ -26,7 +26,9 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from collections.abc import Iterable
+<pre><code class="python">import json
+
+from collections.abc import Iterable
 from datetime import datetime
 
 
@@ -52,7 +54,21 @@ def make_iterable(obj):
 
 def sisense_time_to_python(datetime_str):
     &#34;&#34;&#34;Converts a Sisense date time to a python date time.&#34;&#34;&#34;
-    return datetime.strptime(datetime_str[: -5], &#39;%Y-%m-%dT%H:%M:%S&#39;)</code></pre>
+    return datetime.strptime(datetime_str[: -5], &#39;%Y-%m-%dT%H:%M:%S&#39;)
+
+
+def read_json(path):
+    &#34;&#34;&#34;Reads in obj_json&#34;&#34;&#34;
+    with open(path) as json_file:
+        obj_json = json.load(json_file)
+    return obj_json
+
+
+def dump_json(obj_json, path):
+    &#34;&#34;&#34;Dumps object json to file&#34;&#34;&#34;
+    with open(path, &#39;w&#39;) as json_file:
+        json.dump(obj_json, json_file)
+    return path</code></pre>
 </details>
 </section>
 <section>
@@ -62,6 +78,22 @@ def sisense_time_to_python(datetime_str):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="PySense.PySenseUtils.dump_json"><code class="name flex">
+<span>def <span class="ident">dump_json</span></span>(<span>obj_json, path)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Dumps object json to file</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dump_json(obj_json, path):
+    &#34;&#34;&#34;Dumps object json to file&#34;&#34;&#34;
+    with open(path, &#39;w&#39;) as json_file:
+        json.dump(obj_json, json_file)
+    return path</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySenseUtils.format_host"><code class="name flex">
 <span>def <span class="ident">format_host</span></span>(<span>host)</span>
 </code></dt>
@@ -100,6 +132,22 @@ def sisense_time_to_python(datetime_str):
     return obj</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseUtils.read_json"><code class="name flex">
+<span>def <span class="ident">read_json</span></span>(<span>path)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Reads in obj_json</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read_json(path):
+    &#34;&#34;&#34;Reads in obj_json&#34;&#34;&#34;
+    with open(path) as json_file:
+        obj_json = json.load(json_file)
+    return obj_json</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySenseUtils.sisense_time_to_python"><code class="name flex">
 <span>def <span class="ident">sisense_time_to_python</span></span>(<span>datetime_str)</span>
 </code></dt>
@@ -132,8 +180,10 @@ def sisense_time_to_python(datetime_str):
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="PySense.PySenseUtils.dump_json" href="#PySense.PySenseUtils.dump_json">dump_json</a></code></li>
 <li><code><a title="PySense.PySenseUtils.format_host" href="#PySense.PySenseUtils.format_host">format_host</a></code></li>
 <li><code><a title="PySense.PySenseUtils.make_iterable" href="#PySense.PySenseUtils.make_iterable">make_iterable</a></code></li>
+<li><code><a title="PySense.PySenseUtils.read_json" href="#PySense.PySenseUtils.read_json">read_json</a></code></li>
 <li><code><a title="PySense.PySenseUtils.sisense_time_to_python" href="#PySense.PySenseUtils.sisense_time_to_python">sisense_time_to_python</a></code></li>
 </ul>
 </li>

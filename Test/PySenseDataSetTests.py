@@ -7,7 +7,8 @@ class PySenseDataSetTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\VmConfig.yaml')
+        assert cls.py_client.get_elasticube_by_name('PySense') is not None
         cls.data_set = cls.py_client.get_elasticube_by_name('PySense').get_model().get_data_sets()[0]
 
     def test_getters(self):

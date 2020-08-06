@@ -18,7 +18,7 @@ scale_test_suite = unittest.TestSuite([
     unittest.TestLoader().loadTestsFromTestCase(PySenseDataSetTests),
     unittest.TestLoader().loadTestsFromTestCase(PySenseTableTests),
     unittest.TestLoader().loadTestsFromTestCase(PySenseDataModelTests),
-    unittest.TestLoader().loadTestsFromTestCase(PySenseConnectionTests),
+    # unittest.TestLoader().loadTestsFromTestCase(PySenseConnectionTests),
     unittest.TestLoader().loadTestsFromTestCase(PySenseUserTests),
     unittest.TestLoader().loadTestsFromTestCase(PySenseRuleTests),
     unittest.TestLoader().loadTestsFromTestCase(PySenseFolderTests),

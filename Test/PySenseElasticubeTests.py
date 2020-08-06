@@ -8,7 +8,7 @@ class PySenseElasticubeTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\VmConfig.yaml')
         cls.elasticube = cls.py_client.get_elasticube_by_name('PySense')
 
     def test_getters(self):

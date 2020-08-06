@@ -1,3 +1,5 @@
+import json
+
 from PySense import PySenseDataModel
 from PySense import PySenseException
 from PySense import PySenseUtils
@@ -78,7 +80,7 @@ class DataModelMixIn:
 
         data_models = self.connector.rest_call('get', 'api/v2/datamodels/schema', query_params=query_params)
         if title is not None:
-            if data_models is not None:
+            if data_models is not None and len(data_models) > 0:
                 return PySenseDataModel.DataModel(self, data_models)
             else:
                 raise PySenseException.PySenseException('No data model with name {} found'.format(title))
@@ -99,3 +101,34 @@ class DataModelMixIn:
 
         for data_model in PySenseUtils.make_iterable(data_models):
             self.connector.rest_call('delete', 'api/v2/datamodels/{}'.format(data_model.get_oid()))
+
+    def import_schema(self, path, *, title=None, target_data_model=None):
+        """Import schema file from path
+
+        Sisense does not support this in Windows
+
+        Can be used to update an existing data model by adding it to target data model.
+
+        To add a new model with a new title
+        add_data_model(path, title='New Title')
+
+        To update an existing model
+        add_data_model(path, target_data_model=old_data_model)
+
+        If updating an existing data model, no modifications to title will happen.
+
+        Args:
+            path: The path to the schema smodel file
+            title: (optional) Title to give the data model
+            target_data_model: (optional) The data model to update.
+        """
+        if self.version == SisenseVersion.Version.WINDOWS:
+            raise PySenseException.PySenseException("Import data model not supported on windows")
+
+        target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
+
+        query_params = {'title': title, 'datamodelId': target_data_model_id}
+        data_model_json = self.connector.rest_call('post', 'api/v2/datamodel-imports/schema',
+                                                   query_params=query_params, json_payload=PySenseUtils.read_json(path))
+
+        return PySenseDataModel.DataModel(self, data_model_json)

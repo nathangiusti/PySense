@@ -26,7 +26,9 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PySense import PySenseDataModel
+<pre><code class="python">import json
+
+from PySense import PySenseDataModel
 from PySense import PySenseException
 from PySense import PySenseUtils
 from PySense import SisenseVersion
@@ -106,7 +108,7 @@ class DataModelMixIn:
 
         data_models = self.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/schema&#39;, query_params=query_params)
         if title is not None:
-            if data_models is not None:
+            if data_models is not None and len(data_models) &gt; 0:
                 return PySenseDataModel.DataModel(self, data_models)
             else:
                 raise PySenseException.PySenseException(&#39;No data model with name {} found&#39;.format(title))
@@ -126,7 +128,38 @@ class DataModelMixIn:
             raise PySenseException.PySenseException(&#34;Delete data model not supported on windows&#34;)
 
         for data_model in PySenseUtils.make_iterable(data_models):
-            self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))</code></pre>
+            self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))
+
+    def import_schema(self, path, *, title=None, target_data_model=None):
+        &#34;&#34;&#34;Import schema file from path
+
+        Sisense does not support this in Windows
+
+        Can be used to update an existing data model by adding it to target data model.
+
+        To add a new model with a new title
+        add_data_model(path, title=&#39;New Title&#39;)
+
+        To update an existing model
+        add_data_model(path, target_data_model=old_data_model)
+
+        If updating an existing data model, no modifications to title will happen.
+
+        Args:
+            path: The path to the schema smodel file
+            title: (optional) Title to give the data model
+            target_data_model: (optional) The data model to update.
+        &#34;&#34;&#34;
+        if self.version == SisenseVersion.Version.WINDOWS:
+            raise PySenseException.PySenseException(&#34;Import data model not supported on windows&#34;)
+
+        target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
+
+        query_params = {&#39;title&#39;: title, &#39;datamodelId&#39;: target_data_model_id}
+        data_model_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v2/datamodel-imports/schema&#39;,
+                                                   query_params=query_params, json_payload=PySenseUtils.read_json(path))
+
+        return PySenseDataModel.DataModel(self, data_model_json)</code></pre>
 </details>
 </section>
 <section>
@@ -221,7 +254,7 @@ class DataModelMixIn:
 
         data_models = self.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/schema&#39;, query_params=query_params)
         if title is not None:
-            if data_models is not None:
+            if data_models is not None and len(data_models) &gt; 0:
                 return PySenseDataModel.DataModel(self, data_models)
             else:
                 raise PySenseException.PySenseException(&#39;No data model with name {} found&#39;.format(title))
@@ -241,7 +274,38 @@ class DataModelMixIn:
             raise PySenseException.PySenseException(&#34;Delete data model not supported on windows&#34;)
 
         for data_model in PySenseUtils.make_iterable(data_models):
-            self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))</code></pre>
+            self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))
+
+    def import_schema(self, path, *, title=None, target_data_model=None):
+        &#34;&#34;&#34;Import schema file from path
+
+        Sisense does not support this in Windows
+
+        Can be used to update an existing data model by adding it to target data model.
+
+        To add a new model with a new title
+        add_data_model(path, title=&#39;New Title&#39;)
+
+        To update an existing model
+        add_data_model(path, target_data_model=old_data_model)
+
+        If updating an existing data model, no modifications to title will happen.
+
+        Args:
+            path: The path to the schema smodel file
+            title: (optional) Title to give the data model
+            target_data_model: (optional) The data model to update.
+        &#34;&#34;&#34;
+        if self.version == SisenseVersion.Version.WINDOWS:
+            raise PySenseException.PySenseException(&#34;Import data model not supported on windows&#34;)
+
+        target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
+
+        query_params = {&#39;title&#39;: title, &#39;datamodelId&#39;: target_data_model_id}
+        data_model_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v2/datamodel-imports/schema&#39;,
+                                                   query_params=query_params, json_payload=PySenseUtils.read_json(path))
+
+        return PySenseDataModel.DataModel(self, data_model_json)</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -410,7 +474,7 @@ If title is not specified an array will be returned.</p></div>
 
     data_models = self.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/schema&#39;, query_params=query_params)
     if title is not None:
-        if data_models is not None:
+        if data_models is not None and len(data_models) &gt; 0:
             return PySenseDataModel.DataModel(self, data_models)
         else:
             raise PySenseException.PySenseException(&#39;No data model with name {} found&#39;.format(title))
@@ -419,6 +483,63 @@ If title is not specified an array will be returned.</p></div>
         for data_model in data_models:
             ret_arr.append(PySenseDataModel.DataModel(self, data_model))
         return ret_arr</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.import_schema"><code class="name flex">
+<span>def <span class="ident">import_schema</span></span>(<span>self, path, *, title=None, target_data_model=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Import schema file from path</p>
+<p>Sisense does not support this in Windows</p>
+<p>Can be used to update an existing data model by adding it to target data model.</p>
+<p>To add a new model with a new title
+add_data_model(path, title='New Title')</p>
+<p>To update an existing model
+add_data_model(path, target_data_model=old_data_model)</p>
+<p>If updating an existing data model, no modifications to title will happen.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong></dt>
+<dd>The path to the schema smodel file</dd>
+<dt><strong><code>title</code></strong></dt>
+<dd>(optional) Title to give the data model</dd>
+<dt><strong><code>target_data_model</code></strong></dt>
+<dd>(optional) The data model to update.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_schema(self, path, *, title=None, target_data_model=None):
+    &#34;&#34;&#34;Import schema file from path
+
+    Sisense does not support this in Windows
+
+    Can be used to update an existing data model by adding it to target data model.
+
+    To add a new model with a new title
+    add_data_model(path, title=&#39;New Title&#39;)
+
+    To update an existing model
+    add_data_model(path, target_data_model=old_data_model)
+
+    If updating an existing data model, no modifications to title will happen.
+
+    Args:
+        path: The path to the schema smodel file
+        title: (optional) Title to give the data model
+        target_data_model: (optional) The data model to update.
+    &#34;&#34;&#34;
+    if self.version == SisenseVersion.Version.WINDOWS:
+        raise PySenseException.PySenseException(&#34;Import data model not supported on windows&#34;)
+
+    target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
+
+    query_params = {&#39;title&#39;: title, &#39;datamodelId&#39;: target_data_model_id}
+    data_model_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v2/datamodel-imports/schema&#39;,
+                                               query_params=query_params, json_payload=PySenseUtils.read_json(path))
+
+    return PySenseDataModel.DataModel(self, data_model_json)</code></pre>
 </details>
 </dd>
 </dl>
@@ -445,6 +566,7 @@ If title is not specified an array will be returned.</p></div>
 <li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.add_data_model" href="#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.add_data_model">add_data_model</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.delete_data_model" href="#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.delete_data_model">delete_data_model</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.get_data_models" href="#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.get_data_models">get_data_models</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.import_schema" href="#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.import_schema">import_schema</a></code></li>
 </ul>
 </li>
 </ul>

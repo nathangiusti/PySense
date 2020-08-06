@@ -1,3 +1,38 @@
+**V 0.2.16 Release Notes**
+
+- Additions
+    - Export smodel files from data model
+    - New data model back up script
+    - Get dashboards admin endpoint implemented
+    - Import smodel files into Sisense
+
+- Breaking changes
+    - None
+
+- Fixes
+    - General stability fixes on schemas and data models
+    
+- Known Issues
+    - REST API sometimes becomes responsive on Linux builds
+    - Connections API will no longer be developed as there appear to be issues with the underlying service in Sisense
+
+**V 0.2.15 Release Notes**
+
+- Additions
+    - Script for backing up dashboards
+
+- Breaking changes
+    - None
+
+- Fixes
+    - PySenseDashboard.get_datasource returns None instead of throwing exception when no datasource is found.
+    - Data Security rules applied more uniformly
+    - PySenseRule.update rule now uses empty strings instead of None for default parameters
+    - PySenseUtils.make_iterable now handles strings as a discrete object and not an array in and of itself
+    
+- Known Issues
+    - REST API sometimes becomes responsive on Linux builds
+
 **V 0.2.13 Release Notes**
 
 - Additions

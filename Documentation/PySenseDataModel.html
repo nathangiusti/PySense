@@ -29,6 +29,7 @@
 <pre><code class="python">from PySense import PySenseBuildTask
 from PySense import PySenseDataSet
 from PySense import PySenseException
+from PySense import PySenseUtils
 from PySense import SisenseVersion
 
 
@@ -70,6 +71,7 @@ class DataModel:
         return ret_arr
 
     def get_schema_json(self):
+        &#34;&#34;&#34;Returns the schema json. Linux Only&#34;&#34;&#34;
         if self._py_client.version == SisenseVersion.Version.WINDOWS:
             raise PySenseException.PySenseException(&#39;Get schema json not supported on windows&#39;)
 
@@ -77,9 +79,6 @@ class DataModel:
             query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
             schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;,
                                                               query_params=query_params)
-            if schema_json is None:
-                raise PySenseException.PySenseException(&#39;Schema JSON not found for data model {}&#39;
-                                                        .format(self.get_oid()))
             self._schema_json = schema_json
         return self._schema_json
 
@@ -131,7 +130,24 @@ class DataModel:
             &#39;datamodelId&#39;: self.get_oid()
         }
 
-        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)</code></pre>
+        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)
+
+    def export_to_smodel(self, path):
+        &#34;&#34;&#34;Download datamodel as an smodel file.
+
+        Args:
+            path: Path to save location of the smodel file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
+
+        Returns:
+            The path of the created file
+        &#34;&#34;&#34;
+        query_params = {
+            &#39;datamodelId&#39;: self.get_oid(),
+            &#39;type&#39;: &#39;schema-latest&#39;
+        }
+        output_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
+                                                          query_params=query_params)
+        return PySenseUtils.dump_json(output_json, path)</code></pre>
 </details>
 </section>
 <section>
@@ -191,6 +207,7 @@ class DataModel:
         return ret_arr
 
     def get_schema_json(self):
+        &#34;&#34;&#34;Returns the schema json. Linux Only&#34;&#34;&#34;
         if self._py_client.version == SisenseVersion.Version.WINDOWS:
             raise PySenseException.PySenseException(&#39;Get schema json not supported on windows&#39;)
 
@@ -198,9 +215,6 @@ class DataModel:
             query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
             schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;,
                                                               query_params=query_params)
-            if schema_json is None:
-                raise PySenseException.PySenseException(&#39;Schema JSON not found for data model {}&#39;
-                                                        .format(self.get_oid()))
             self._schema_json = schema_json
         return self._schema_json
 
@@ -252,7 +266,24 @@ class DataModel:
             &#39;datamodelId&#39;: self.get_oid()
         }
 
-        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)</code></pre>
+        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)
+
+    def export_to_smodel(self, path):
+        &#34;&#34;&#34;Download datamodel as an smodel file.
+
+        Args:
+            path: Path to save location of the smodel file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
+
+        Returns:
+            The path of the created file
+        &#34;&#34;&#34;
+        query_params = {
+            &#39;datamodelId&#39;: self.get_oid(),
+            &#39;type&#39;: &#39;schema-latest&#39;
+        }
+        output_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
+                                                          query_params=query_params)
+        return PySenseUtils.dump_json(output_json, path)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -292,6 +323,40 @@ class DataModel:
     }
 
     self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDataModel.DataModel.export_to_smodel"><code class="name flex">
+<span>def <span class="ident">export_to_smodel</span></span>(<span>self, path)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Download datamodel as an smodel file.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong></dt>
+<dd>Path to save location of the smodel file. Ex: 'C:\Backups\mydatamodel.smodel'</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The path of the created file</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_to_smodel(self, path):
+    &#34;&#34;&#34;Download datamodel as an smodel file.
+
+    Args:
+        path: Path to save location of the smodel file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
+
+    Returns:
+        The path of the created file
+    &#34;&#34;&#34;
+    query_params = {
+        &#39;datamodelId&#39;: self.get_oid(),
+        &#39;type&#39;: &#39;schema-latest&#39;
+    }
+    output_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
+                                                      query_params=query_params)
+    return PySenseUtils.dump_json(output_json, path)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataModel.DataModel.get_data_sets"><code class="name flex">
@@ -356,12 +421,13 @@ class DataModel:
 <span>def <span class="ident">get_schema_json</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the schema json. Linux Only</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_schema_json(self):
+    &#34;&#34;&#34;Returns the schema json. Linux Only&#34;&#34;&#34;
     if self._py_client.version == SisenseVersion.Version.WINDOWS:
         raise PySenseException.PySenseException(&#39;Get schema json not supported on windows&#39;)
 
@@ -369,9 +435,6 @@ class DataModel:
         query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
         schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;,
                                                           query_params=query_params)
-        if schema_json is None:
-            raise PySenseException.PySenseException(&#39;Schema JSON not found for data model {}&#39;
-                                                    .format(self.get_oid()))
         self._schema_json = schema_json
     return self._schema_json</code></pre>
 </details>
@@ -460,6 +523,7 @@ class DataModel:
 <h4><code><a title="PySense.PySenseDataModel.DataModel" href="#PySense.PySenseDataModel.DataModel">DataModel</a></code></h4>
 <ul class="two-column">
 <li><code><a title="PySense.PySenseDataModel.DataModel.cancel_build" href="#PySense.PySenseDataModel.DataModel.cancel_build">cancel_build</a></code></li>
+<li><code><a title="PySense.PySenseDataModel.DataModel.export_to_smodel" href="#PySense.PySenseDataModel.DataModel.export_to_smodel">export_to_smodel</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_data_sets" href="#PySense.PySenseDataModel.DataModel.get_data_sets">get_data_sets</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_json" href="#PySense.PySenseDataModel.DataModel.get_json">get_json</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_oid" href="#PySense.PySenseDataModel.DataModel.get_oid">get_oid</a></code></li>
