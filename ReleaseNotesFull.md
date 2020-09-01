@@ -3,8 +3,6 @@
 - Additions
     - dashboard.get_widgets supports an id field to get a specific widget
     - Create new default dashboard with create_dashboard
-    - Get dashboards admin endpoint implemented
-    - Import smodel files into Sisense
 
 - Breaking changes
     - None
