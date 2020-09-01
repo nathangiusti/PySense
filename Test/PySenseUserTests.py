@@ -7,7 +7,7 @@ class PySenseUserTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\VmConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
         cls.user = cls.py_client.get_user_by_email('testuser@sisense.com')
         if cls.user is None:
             cls.user = cls.py_client.add_user('testuser@sisense.com', 'Viewer', first_name='Test', last_name='User')

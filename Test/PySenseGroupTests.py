@@ -7,7 +7,7 @@ class PySenseGroupTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\VmConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
         cls.sample_path = 'C:\\PySense\\'
         if len(cls.py_client.get_groups(name='PySense')) == 0:
             cls.py_client.add_groups('PySense')

@@ -5,16 +5,16 @@ import unittest
 from PySense import PySense
 from PySense import PySenseDashboard
 from PySense import PySenseDataModel
-from PySense import PySenseException
 
 
 class PySenseTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\VmConfig.yaml')
-        cls.py_client_linux = PySense.authenticate_by_file('C:\\PySense\\PySenseLinux.yaml')
-        cls.sample_path = 'C:\\PySense\\'
+        cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
+        cls.py_client_linux = PySense.authenticate_by_file(
+            '//Users//nathan.giusti//Documents//PySense//PySenseLinux.yaml')
+        cls.sample_path = '//Users//nathan.giusti//Documents//PySense//'
         cls.group_names = ["TempGroup", "TempGroup2"]
 
     def test_get_dashboards(self):
@@ -30,13 +30,17 @@ class PySenseTests(unittest.TestCase):
         assert dashboard_id == self.py_client.get_dashboard_by_id(dashboard_id).get_id()
 
     def test_dashboard_import_delete(self):
-        with open(self.sample_path + '\\' + 'ImportDash.dash', 'r', encoding="utf8") as file:
+        with open(self.sample_path + 'ImportDash.dash', 'r', encoding="utf8") as file:
             data = json.loads(file.read())
         dash_file = PySenseDashboard.Dashboard(self.py_client, data)
         dash = self.py_client.add_dashboards(dash_file)
         assert dash is not None
         self.py_client.delete_dashboards(dash)
         self.py_client.add_dashboards(dash)
+
+    def test_create_dashboard(self):
+        dashboard = self.py_client.create_dashboard('Test Dashboard')
+        self.py_client.delete_dashboards(dashboard)
 
     def test_get_folders(self):
         temp = self.py_client.get_folders(name='PySense')

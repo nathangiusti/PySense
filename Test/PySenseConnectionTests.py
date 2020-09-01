@@ -6,7 +6,7 @@ from PySense import PySense
 class PySenseConnectionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
         cls.connection = cls.py_client.get_connections(provider='JAYDBCFederator')[0]
         cls.connection_id = cls.connection.get_id()
         cls.connection_timeout = cls.connection.get_timeout()

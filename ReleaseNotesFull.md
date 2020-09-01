@@ -1,3 +1,21 @@
+**V 0.2.17 Release Notes**
+
+- Additions
+    - dashboard.get_widgets supports an id field to get a specific widget
+    - Create new default dashboard with create_dashboard
+    - Get dashboards admin endpoint implemented
+    - Import smodel files into Sisense
+
+- Breaking changes
+    - None
+
+- Fixes
+    - Fixed issue with cubes not sharing with groups properly
+    
+- Known Issues
+    - REST API sometimes becomes responsive on Linux builds
+    - Connections API will no longer be developed as there appear to be issues with the underlying service in Sisense
+    
 **V 0.2.16 Release Notes**
 
 - Additions

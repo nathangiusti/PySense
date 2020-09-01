@@ -468,7 +468,7 @@ class Elasticube:
             elif isinstance(share, PySenseUser.User):
                 curr_shares_arr.append({'party': share.get_id(), 'type': 'user', 'permission': rule})
             elif isinstance(share, PySenseGroup.Group):
-                curr_shares_arr.append({'shareId': share.get_id(), 'type': 'group', 'rule': rule})
+                curr_shares_arr.append({'party': share.get_id(), 'type': 'group', 'rule': rule})
             else:
                 raise PySenseException.PySenseException('Add Share expected User or group, got {}'.format(type(share)))
 
@@ -493,7 +493,9 @@ class Elasticube:
             if share_id is None:
                 raise PySenseException.PySenseException('No id found for {}'.format(share))
             elif share_id in curr_id_arr:
-                del curr_shares_arr[curr_id_arr.index(share_id)]
+                index = curr_id_arr.index(share_id)
+                del curr_shares_arr[index]
+                del curr_id_arr[index]
 
         self._py_client.connector.rest_call('put', 'api/elasticubes/{}/{}/permissions'
                                             .format(self._server_address, self.get_name(url_encoded=True)),

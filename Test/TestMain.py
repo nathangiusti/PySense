@@ -1,6 +1,5 @@
 import unittest
 
-from Test.PySenseConnectionTests import PySenseConnectionTests
 from Test.PySenseDashboardTests import PySenseDashboardTests
 from Test.PySenseDataModelTests import PySenseDataModelTests
 from Test.PySenseDataSetTests import PySenseDataSetTests
