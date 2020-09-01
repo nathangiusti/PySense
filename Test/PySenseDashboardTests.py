@@ -8,8 +8,8 @@ class PySenseDashboardTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\VmConfig.yaml')
-        cls.sample_path = 'C:\\PySense\\'
+        cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
+        cls.sample_path = '//Users//nathan.giusti//Documents//PySense//'
         cls.dashboard = cls.py_client.get_dashboards(name='PySense')[0]
 
     def test_getters(self):

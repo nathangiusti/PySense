@@ -8,7 +8,7 @@ class PySenseDataModelTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseLinux.yaml')
+        cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//PySenseLinux.yaml')
         cls.data_model = cls.py_client.get_data_models(title='PySense')
 
     def test_getters(self):

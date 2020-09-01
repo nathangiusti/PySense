@@ -17,11 +17,11 @@ Download the PySense Tutorial Power Point for a hands on introduction.
 
 See snippets folder for common usage snippets
 
-**V 0.2.16 Release Notes**
+**V 0.2.17 Release Notes**
 
 - Additions
-    - Export smodel files from data model
-    - New data model back up script
+    - dashboard.get_widgets supports an id field to get a specific widget
+    - Create new default dashboard with create_dashboard
     - Get dashboards admin endpoint implemented
     - Import smodel files into Sisense
 
@@ -29,7 +29,7 @@ See snippets folder for common usage snippets
     - None
 
 - Fixes
-    - General stability fixes on schemas and data models
+    - Fixed issue with cubes not sharing with groups properly
     
 - Known Issues
     - REST API sometimes becomes responsive on Linux builds

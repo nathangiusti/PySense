@@ -7,7 +7,7 @@ class PySenseFormulaTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\VmConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
         cls.elasticube = cls.py_client.get_elasticube_by_name('PySense')
         cls.formula = cls.elasticube.get_saved_formulas()[0]
 

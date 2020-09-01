@@ -235,7 +235,7 @@ class Dashboard:
             return resp_content
 
     def get_widgets(self, *, title=None, type=None, subtype=None,
-                    fields=None, sort=None, skip=None, limit=None):
+                    fields=None, sort=None, skip=None, limit=None, id=None):
         """Returns an array of a dashboard’s widgets.
 
         Args:
@@ -248,6 +248,7 @@ class Dashboard:
             skip: (optional) Number of results to skip from the start of the data set. skip is to be used with the limit
                 parameter for paging
             limit: (optional) How many results should be returned. limit is to be used with the skip parameter for paging
+            id: (Optional) If set, will return only the widget with matching id or all widgets if that id is not found
 
         Returns:
             An array of widget objects
@@ -267,7 +268,10 @@ class Dashboard:
         resp_json = self._py_client.connector.rest_call('get', 'api/v1/dashboards/{}/widgets'.format(self.get_id()),
                                               query_params=query_params)
         for widget in resp_json:
-            ret_arr.append(PySenseWidget.Widget(self._py_client, widget))
+            dash_widget = PySenseWidget.Widget(self._py_client, widget)
+            if id is not None and dash_widget.get_id() == id:
+                return dash_widget
+            ret_arr.append(dash_widget)
         return ret_arr
 
     def get_widget_by_id(self, widget_id, *, fields=None):

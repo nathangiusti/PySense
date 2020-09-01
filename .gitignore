@@ -8,3 +8,4 @@ dist/
 build/
 TestFiles/
 venv/*
+**/.DS_Store

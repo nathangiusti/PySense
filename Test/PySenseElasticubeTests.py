@@ -8,7 +8,7 @@ class PySenseElasticubeTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\VmConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
         cls.elasticube = cls.py_client.get_elasticube_by_name('PySense')
 
     def test_getters(self):
@@ -18,11 +18,12 @@ class PySenseElasticubeTests(unittest.TestCase):
 
     def test_shares(self):
         shares = self.py_client.get_users(email='testuser@sisense.com')
+        group_share = self.py_client.get_groups(name='PySense')
         self.elasticube.add_share(shares)
-        self.elasticube.add_share(shares)
-        assert len(self.elasticube.get_shares()['shares']) == 2
+        self.elasticube.add_share(group_share)
+        assert len(self.elasticube.get_shares()['shares']) == 3
         self.elasticube.remove_shares(shares)
-        self.elasticube.remove_shares(shares)
+        self.elasticube.remove_shares(group_share)
         assert len(self.elasticube.get_shares()['shares']) == 1
 
     def test_get_add_modify_delete_security_rule(self):

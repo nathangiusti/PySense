@@ -7,7 +7,7 @@ class PySenseTableTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\VmConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
         cls.table = cls.py_client.get_elasticube_by_name('PySense').get_model().get_data_sets()[0].get_tables()[0]
 
     def test_getters(self):

@@ -7,7 +7,7 @@ class PySensePluginTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('C:\\PySense\\VmConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
         cls.plugin = cls.py_client.get_plugins(search='jumpToDashboard')[0]
 
     def test_enable_disable(self):

@@ -1,3 +1,5 @@
+import json
+
 from PySense import PySenseDashboard
 from PySense import PySenseUtils
 
@@ -146,3 +148,22 @@ class DashboardMixIn:
         """
         for dashboard in PySenseUtils.make_iterable(dashboards):
             self.connector.rest_call('delete', 'api/v1/dashboards/{}'.format(dashboard.get_id()))
+
+    def create_dashboard(self, title):
+        """Create a new dashboard.
+
+        Args:
+            title: The title of the dashboard
+
+        Returns:
+            The new dashboard
+        """
+
+        dashboard_json = json.loads('{"title":"' + title + '","datasource":{"title":"Sample ECommerce","fullname":' \
+                         '"LocalHost/Sample ECommerce","id":"aLOCALHOST_aSAMPLEIAAaECOMMERCE","address":"LocalHost",' \
+                         '"database":"aSampleIAAaECommerce"},"type":"dashboard","desc":"","filters":[],"style":' \
+                         '{"name":"vivid","palette":{"colors":["#00cee6","#9b9bd7","#6EDA55","#fc7570","#fbb755",' \
+                         '"#218A8C"],"name":"Vivid","sortOrder":10,"isSystem":true,"systemDefault":true}},' \
+                         '"editing":true}')
+        resp = self.connector.rest_call('post', 'api/v1/dashboards', json_payload=dashboard_json)
+        return PySenseDashboard.Dashboard(self, resp)
