@@ -1,6 +1,7 @@
 from PySense import PySenseGroup
 from PySense import PySenseUtils
 
+
 class GroupMixIn:
 
     def get_groups(self, *, name=None, mail=None, role=None, origin=None, ids=None, fields=None,

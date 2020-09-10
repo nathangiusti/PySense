@@ -104,7 +104,10 @@ def build_query_string(dictionary):
             elif isinstance(value, list):
                 validated = &#39;,&#39;.join(value)
             else:
-                validated = urllib.parse.quote(str(value))
+                if key != &#39;query&#39;:
+                    validated = urllib.parse.quote(str(value))
+                else:
+                    validated = str(value)
             ret_arr.append(&#34;{}={}&#34;.format(key, validated))
     query_string = separator.join(ret_arr)
     if len(query_string) &gt; 1:
@@ -143,7 +146,10 @@ def build_query_string(dictionary):
             elif isinstance(value, list):
                 validated = &#39;,&#39;.join(value)
             else:
-                validated = urllib.parse.quote(str(value))
+                if key != &#39;query&#39;:
+                    validated = urllib.parse.quote(str(value))
+                else:
+                    validated = str(value)
             ret_arr.append(&#34;{}={}&#34;.format(key, validated))
     query_string = separator.join(ret_arr)
     if len(query_string) &gt; 1:

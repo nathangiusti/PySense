@@ -26,19 +26,17 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PySense import PySenseException
-
-
-class RoleMixIn:
+<pre><code class="python">class RoleMixIn:
 
     def get_role_id(self, role_name):
         &#34;&#34;&#34;Get the role id for the given role name&#34;&#34;&#34;
+
         if role_name is None:
             return None
         for item in self._roles:
             if role_name == item[&#39;name&#39;] or role_name == item[&#39;displayName&#39;]:
                 return item[&#39;_id&#39;]
-        raise PySenseException.PySenseException(&#39;No role with name {} found&#39;.format(role_name))
+        return None
 
     def get_role_name(self, role_id):
         &#34;&#34;&#34;Get the role name for the given role id&#34;&#34;&#34;
@@ -46,7 +44,7 @@ class RoleMixIn:
         for item in self._roles:
             if role_id == item[&#39;_id&#39;]:
                 return item[&#39;displayName&#39;]
-        raise PySenseException.PySenseException(&#39;No role with id {} found&#39;.format(role_id))</code></pre>
+        return None</code></pre>
 </details>
 </section>
 <section>
@@ -71,12 +69,13 @@ class RoleMixIn:
 
     def get_role_id(self, role_name):
         &#34;&#34;&#34;Get the role id for the given role name&#34;&#34;&#34;
+
         if role_name is None:
             return None
         for item in self._roles:
             if role_name == item[&#39;name&#39;] or role_name == item[&#39;displayName&#39;]:
                 return item[&#39;_id&#39;]
-        raise PySenseException.PySenseException(&#39;No role with name {} found&#39;.format(role_name))
+        return None
 
     def get_role_name(self, role_id):
         &#34;&#34;&#34;Get the role name for the given role id&#34;&#34;&#34;
@@ -84,7 +83,7 @@ class RoleMixIn:
         for item in self._roles:
             if role_id == item[&#39;_id&#39;]:
                 return item[&#39;displayName&#39;]
-        raise PySenseException.PySenseException(&#39;No role with id {} found&#39;.format(role_id))</code></pre>
+        return None</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -103,12 +102,13 @@ class RoleMixIn:
 </summary>
 <pre><code class="python">def get_role_id(self, role_name):
     &#34;&#34;&#34;Get the role id for the given role name&#34;&#34;&#34;
+
     if role_name is None:
         return None
     for item in self._roles:
         if role_name == item[&#39;name&#39;] or role_name == item[&#39;displayName&#39;]:
             return item[&#39;_id&#39;]
-    raise PySenseException.PySenseException(&#39;No role with name {} found&#39;.format(role_name))</code></pre>
+    return None</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseMixIns.RoleMixIn.RoleMixIn.get_role_name"><code class="name flex">
@@ -126,7 +126,7 @@ class RoleMixIn:
     for item in self._roles:
         if role_id == item[&#39;_id&#39;]:
             return item[&#39;displayName&#39;]
-    raise PySenseException.PySenseException(&#39;No role with id {} found&#39;.format(role_id))</code></pre>
+    return None</code></pre>
 </details>
 </dd>
 </dl>

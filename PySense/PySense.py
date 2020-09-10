@@ -105,3 +105,8 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
         Use for debugging. Debug is false by default.
         """
         self.connector.debug = debug
+
+    def _validate_version(self, expected_version, function_name):
+        if self.version != expected_version:
+            raise PySenseException.PySenseException('{} is only supported on {}'
+                                                    .format(function_name, expected_version))

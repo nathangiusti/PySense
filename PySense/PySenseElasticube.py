@@ -108,9 +108,10 @@ class Elasticube:
         Returns:
              The path of the created file or the content payload if path is None
         """
+
         server_address = server_address if server_address else self._server_address
 
-        query = urllib.parse.quote(query)
+        query = query.replace(" ", "%20")
 
         query_params = {
             'query': query,
@@ -120,9 +121,15 @@ class Elasticube:
             'includeMetadata': include_metadata,
             'isMaskedResponse': is_masked_response
         }
-        resp_content = self._py_client.connector.rest_call('get', 'api/datasources/{}/{}/sql'
-                                                           .format(server_address, self.get_name(url_encoded=True)),
-                                                           query_params=query_params, raw=True)
+
+        if self._py_client.version == 'Linux':
+            resp_content = self._py_client.connector.rest_call('get', 'api/datasources/{}/{}/sql'
+                                                               .format(server_address, self.get_name(url_encoded=True)),
+                                                               query_params=query_params, raw=True)
+        else:
+            resp_content = self._py_client.connector.rest_call('get', 'api/elasticubes/{}/sql'
+                                                               .format(self.get_name(url_encoded=True)),
+                                                               query_params=query_params, raw=True)
         output = resp_content.decode('utf-8-sig').splitlines()
         if path is not None:
             with open(path, "w") as file:
@@ -505,3 +512,7 @@ class Elasticube:
         """Returns the shares of the elasticube"""
         return self._py_client.connector.rest_call('get', 'api/elasticubes/{}/{}/permissions'
                                                    .format(self._server_address, self.get_name(url_encoded=True)))
+
+    def get_address(self):
+        """Returns the server address from the elasticube metadata"""
+        return self._server_address
