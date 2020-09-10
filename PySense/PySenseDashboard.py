@@ -48,19 +48,22 @@ class Dashboard:
 
     def get_shares(self):
         """Gets the dashboard shares json """
-        resp_json = self._py_client.connector.rest_call('get', 'api/shares/dashboard/{}'.format(self.get_id()))
-        return_json = {'sharesTo': []}
-        for share in resp_json['sharesTo']:
-            share_json = {
-                'shareId': share['shareId'],
-                'type': share['type']
-            }
-            if 'rule' in share:
-                share_json['rule'] = share['rule']
-            if 'subscribe' in share:
-                share_json['subscribe'] = share['subscribe']
-            return_json['sharesTo'].append(share_json)
-        return return_json
+        try:
+            resp_json = self._py_client.connector.rest_call('get', 'api/shares/dashboard/{}'.format(self.get_id()))
+            return_json = {'sharesTo': []}
+            for share in resp_json['sharesTo']:
+                share_json = {
+                    'shareId': share['shareId'],
+                    'type': share['type']
+                }
+                if 'rule' in share:
+                    share_json['rule'] = share['rule']
+                if 'subscribe' in share:
+                    share_json['subscribe'] = share['subscribe']
+                return_json['sharesTo'].append(share_json)
+            return return_json
+        except PySenseException.PySenseException:
+            return self._dashboard_json['shares']
 
     def get_share_users_groups(self):
         """Gets a list of users and groups the dashboard is shared with"""
@@ -346,3 +349,21 @@ class Dashboard:
             return False
         else:
             return True
+
+    def get_owner(self):
+        """Returns the user object that owns this dashboard"""
+        return self._py_client.get_user_by_id(self._dashboard_json['owner'])
+
+    def get_last_updated(self):
+        """Returns the last updated time for the dashboard"""
+        if 'lastUpdated' in self._dashboard_json:
+            return PySenseUtils.sisense_time_to_python(self._dashboard_json['lastUpdated'])
+        else:
+            return None
+
+    def get_last_opened(self):
+        """Returns the last updated time for the dashboard"""
+        if 'lastOpened' in self._dashboard_json:
+            return PySenseUtils.sisense_time_to_python(self._dashboard_json['lastOpened'])
+        else:
+            return None

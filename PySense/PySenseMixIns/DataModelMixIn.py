@@ -1,7 +1,4 @@
-import json
-
 from PySense import PySenseDataModel
-from PySense import PySenseException
 from PySense import PySenseUtils
 from PySense import SisenseVersion
 
@@ -27,8 +24,7 @@ class DataModelMixIn:
             title: (optional) Title to give the data model
             target_data_model: (optional) The data model to update.
         """
-        if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException("Import data model not supported on windows")
+        self._validate_version(SisenseVersion.Version.LINUX, 'add_data_model')
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -62,13 +58,12 @@ class DataModelMixIn:
                 This parameter must be used with the limit parameter, and is intended for paging.
 
         Returns:
-            If title is specified, a single data model will be returned if a matching data model is found.
-            Otherwise PySense will throw an exception.
+            If title is specified, a single data model will be returned if a matching data model is found,
+            otherwise None
             If title is not specified an array will be returned.
 
         """
-        if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException("Get data model not supported on windows")
+        self._validate_version(SisenseVersion.Version.LINUX, 'get_data_models')
 
         query_params = {
             'title': title,
@@ -83,7 +78,7 @@ class DataModelMixIn:
             if data_models is not None and len(data_models) > 0:
                 return PySenseDataModel.DataModel(self, data_models)
             else:
-                raise PySenseException.PySenseException('No data model with name {} found'.format(title))
+                return None
         else:
             ret_arr = []
             for data_model in data_models:
@@ -96,8 +91,7 @@ class DataModelMixIn:
         Args:
             data_models: One to many data models to delete
         """
-        if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException("Delete data model not supported on windows")
+        self._validate_version(SisenseVersion.Version.LINUX, 'delete_data_model')
 
         for data_model in PySenseUtils.make_iterable(data_models):
             self.connector.rest_call('delete', 'api/v2/datamodels/{}'.format(data_model.get_oid()))
@@ -122,8 +116,7 @@ class DataModelMixIn:
             title: (optional) Title to give the data model
             target_data_model: (optional) The data model to update.
         """
-        if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException("Import data model not supported on windows")
+        self._validate_version(SisenseVersion.Version.LINUX, 'import_schema')
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 

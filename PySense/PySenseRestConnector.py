@@ -76,7 +76,10 @@ def build_query_string(dictionary):
             elif isinstance(value, list):
                 validated = ','.join(value)
             else:
-                validated = urllib.parse.quote(str(value))
+                if key != 'query':
+                    validated = urllib.parse.quote(str(value))
+                else:
+                    validated = str(value)
             ret_arr.append("{}={}".format(key, validated))
     query_string = separator.join(ret_arr)
     if len(query_string) > 1:
