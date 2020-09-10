@@ -76,19 +76,22 @@ class Dashboard:
 
     def get_shares(self):
         &#34;&#34;&#34;Gets the dashboard shares json &#34;&#34;&#34;
-        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
-        return_json = {&#39;sharesTo&#39;: []}
-        for share in resp_json[&#39;sharesTo&#39;]:
-            share_json = {
-                &#39;shareId&#39;: share[&#39;shareId&#39;],
-                &#39;type&#39;: share[&#39;type&#39;]
-            }
-            if &#39;rule&#39; in share:
-                share_json[&#39;rule&#39;] = share[&#39;rule&#39;]
-            if &#39;subscribe&#39; in share:
-                share_json[&#39;subscribe&#39;] = share[&#39;subscribe&#39;]
-            return_json[&#39;sharesTo&#39;].append(share_json)
-        return return_json
+        try:
+            resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+            return_json = {&#39;sharesTo&#39;: []}
+            for share in resp_json[&#39;sharesTo&#39;]:
+                share_json = {
+                    &#39;shareId&#39;: share[&#39;shareId&#39;],
+                    &#39;type&#39;: share[&#39;type&#39;]
+                }
+                if &#39;rule&#39; in share:
+                    share_json[&#39;rule&#39;] = share[&#39;rule&#39;]
+                if &#39;subscribe&#39; in share:
+                    share_json[&#39;subscribe&#39;] = share[&#39;subscribe&#39;]
+                return_json[&#39;sharesTo&#39;].append(share_json)
+            return return_json
+        except PySenseException.PySenseException:
+            return self._dashboard_json[&#39;shares&#39;]
 
     def get_share_users_groups(self):
         &#34;&#34;&#34;Gets a list of users and groups the dashboard is shared with&#34;&#34;&#34;
@@ -373,7 +376,25 @@ class Dashboard:
         except PySenseException.PySenseException:
             return False
         else:
-            return True</code></pre>
+            return True
+
+    def get_owner(self):
+        &#34;&#34;&#34;Returns the user object that owns this dashboard&#34;&#34;&#34;
+        return self._py_client.get_user_by_id(self._dashboard_json[&#39;owner&#39;])
+
+    def get_last_updated(self):
+        &#34;&#34;&#34;Returns the last updated time for the dashboard&#34;&#34;&#34;
+        if &#39;lastUpdated&#39; in self._dashboard_json:
+            return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;lastUpdated&#39;])
+        else:
+            return None
+
+    def get_last_opened(self):
+        &#34;&#34;&#34;Returns the last updated time for the dashboard&#34;&#34;&#34;
+        if &#39;lastOpened&#39; in self._dashboard_json:
+            return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;lastOpened&#39;])
+        else:
+            return None</code></pre>
 </details>
 </section>
 <section>
@@ -438,19 +459,22 @@ class Dashboard:
 
     def get_shares(self):
         &#34;&#34;&#34;Gets the dashboard shares json &#34;&#34;&#34;
-        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
-        return_json = {&#39;sharesTo&#39;: []}
-        for share in resp_json[&#39;sharesTo&#39;]:
-            share_json = {
-                &#39;shareId&#39;: share[&#39;shareId&#39;],
-                &#39;type&#39;: share[&#39;type&#39;]
-            }
-            if &#39;rule&#39; in share:
-                share_json[&#39;rule&#39;] = share[&#39;rule&#39;]
-            if &#39;subscribe&#39; in share:
-                share_json[&#39;subscribe&#39;] = share[&#39;subscribe&#39;]
-            return_json[&#39;sharesTo&#39;].append(share_json)
-        return return_json
+        try:
+            resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+            return_json = {&#39;sharesTo&#39;: []}
+            for share in resp_json[&#39;sharesTo&#39;]:
+                share_json = {
+                    &#39;shareId&#39;: share[&#39;shareId&#39;],
+                    &#39;type&#39;: share[&#39;type&#39;]
+                }
+                if &#39;rule&#39; in share:
+                    share_json[&#39;rule&#39;] = share[&#39;rule&#39;]
+                if &#39;subscribe&#39; in share:
+                    share_json[&#39;subscribe&#39;] = share[&#39;subscribe&#39;]
+                return_json[&#39;sharesTo&#39;].append(share_json)
+            return return_json
+        except PySenseException.PySenseException:
+            return self._dashboard_json[&#39;shares&#39;]
 
     def get_share_users_groups(self):
         &#34;&#34;&#34;Gets a list of users and groups the dashboard is shared with&#34;&#34;&#34;
@@ -735,7 +759,25 @@ class Dashboard:
         except PySenseException.PySenseException:
             return False
         else:
-            return True</code></pre>
+            return True
+
+    def get_owner(self):
+        &#34;&#34;&#34;Returns the user object that owns this dashboard&#34;&#34;&#34;
+        return self._py_client.get_user_by_id(self._dashboard_json[&#39;owner&#39;])
+
+    def get_last_updated(self):
+        &#34;&#34;&#34;Returns the last updated time for the dashboard&#34;&#34;&#34;
+        if &#39;lastUpdated&#39; in self._dashboard_json:
+            return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;lastUpdated&#39;])
+        else:
+            return None
+
+    def get_last_opened(self):
+        &#34;&#34;&#34;Returns the last updated time for the dashboard&#34;&#34;&#34;
+        if &#39;lastOpened&#39; in self._dashboard_json:
+            return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;lastOpened&#39;])
+        else:
+            return None</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -1120,6 +1162,40 @@ class Dashboard:
     return self._dashboard_json</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseDashboard.Dashboard.get_last_opened"><code class="name flex">
+<span>def <span class="ident">get_last_opened</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the last updated time for the dashboard</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_last_opened(self):
+    &#34;&#34;&#34;Returns the last updated time for the dashboard&#34;&#34;&#34;
+    if &#39;lastOpened&#39; in self._dashboard_json:
+        return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;lastOpened&#39;])
+    else:
+        return None</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDashboard.Dashboard.get_last_updated"><code class="name flex">
+<span>def <span class="ident">get_last_updated</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the last updated time for the dashboard</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_last_updated(self):
+    &#34;&#34;&#34;Returns the last updated time for the dashboard&#34;&#34;&#34;
+    if &#39;lastUpdated&#39; in self._dashboard_json:
+        return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;lastUpdated&#39;])
+    else:
+        return None</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_name"><code class="name flex">
 <span>def <span class="ident">get_name</span></span>(<span>self)</span>
 </code></dt>
@@ -1135,6 +1211,20 @@ class Dashboard:
         return self._dashboard_json[&#39;title&#39;]
     else:
         return None</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDashboard.Dashboard.get_owner"><code class="name flex">
+<span>def <span class="ident">get_owner</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the user object that owns this dashboard</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_owner(self):
+    &#34;&#34;&#34;Returns the user object that owns this dashboard&#34;&#34;&#34;
+    return self._py_client.get_user_by_id(self._dashboard_json[&#39;owner&#39;])</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_share_users_groups"><code class="name flex">
@@ -1169,19 +1259,22 @@ class Dashboard:
 </summary>
 <pre><code class="python">def get_shares(self):
     &#34;&#34;&#34;Gets the dashboard shares json &#34;&#34;&#34;
-    resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
-    return_json = {&#39;sharesTo&#39;: []}
-    for share in resp_json[&#39;sharesTo&#39;]:
-        share_json = {
-            &#39;shareId&#39;: share[&#39;shareId&#39;],
-            &#39;type&#39;: share[&#39;type&#39;]
-        }
-        if &#39;rule&#39; in share:
-            share_json[&#39;rule&#39;] = share[&#39;rule&#39;]
-        if &#39;subscribe&#39; in share:
-            share_json[&#39;subscribe&#39;] = share[&#39;subscribe&#39;]
-        return_json[&#39;sharesTo&#39;].append(share_json)
-    return return_json</code></pre>
+    try:
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+        return_json = {&#39;sharesTo&#39;: []}
+        for share in resp_json[&#39;sharesTo&#39;]:
+            share_json = {
+                &#39;shareId&#39;: share[&#39;shareId&#39;],
+                &#39;type&#39;: share[&#39;type&#39;]
+            }
+            if &#39;rule&#39; in share:
+                share_json[&#39;rule&#39;] = share[&#39;rule&#39;]
+            if &#39;subscribe&#39; in share:
+                share_json[&#39;subscribe&#39;] = share[&#39;subscribe&#39;]
+            return_json[&#39;sharesTo&#39;].append(share_json)
+        return return_json
+    except PySenseException.PySenseException:
+        return self._dashboard_json[&#39;shares&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_widget_by_id"><code class="name flex">
@@ -1405,7 +1498,10 @@ parameter for paging</dd>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_datasource" href="#PySense.PySenseDashboard.Dashboard.get_datasource">get_datasource</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_id" href="#PySense.PySenseDashboard.Dashboard.get_id">get_id</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_json" href="#PySense.PySenseDashboard.Dashboard.get_json">get_json</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.get_last_opened" href="#PySense.PySenseDashboard.Dashboard.get_last_opened">get_last_opened</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.get_last_updated" href="#PySense.PySenseDashboard.Dashboard.get_last_updated">get_last_updated</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_name" href="#PySense.PySenseDashboard.Dashboard.get_name">get_name</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.get_owner" href="#PySense.PySenseDashboard.Dashboard.get_owner">get_owner</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_share_users_groups" href="#PySense.PySenseDashboard.Dashboard.get_share_users_groups">get_share_users_groups</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_shares" href="#PySense.PySenseDashboard.Dashboard.get_shares">get_shares</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_widget_by_id" href="#PySense.PySenseDashboard.Dashboard.get_widget_by_id">get_widget_by_id</a></code></li>

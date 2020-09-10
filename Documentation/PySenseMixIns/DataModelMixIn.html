@@ -26,10 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import json
-
-from PySense import PySenseDataModel
-from PySense import PySenseException
+<pre><code class="python">from PySense import PySenseDataModel
 from PySense import PySenseUtils
 from PySense import SisenseVersion
 
@@ -55,8 +52,7 @@ class DataModelMixIn:
             title: (optional) Title to give the data model
             target_data_model: (optional) The data model to update.
         &#34;&#34;&#34;
-        if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException(&#34;Import data model not supported on windows&#34;)
+        self._validate_version(SisenseVersion.Version.LINUX, &#39;add_data_model&#39;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -90,13 +86,12 @@ class DataModelMixIn:
                 This parameter must be used with the limit parameter, and is intended for paging.
 
         Returns:
-            If title is specified, a single data model will be returned if a matching data model is found.
-            Otherwise PySense will throw an exception.
+            If title is specified, a single data model will be returned if a matching data model is found,
+            otherwise None
             If title is not specified an array will be returned.
 
         &#34;&#34;&#34;
-        if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException(&#34;Get data model not supported on windows&#34;)
+        self._validate_version(SisenseVersion.Version.LINUX, &#39;get_data_models&#39;)
 
         query_params = {
             &#39;title&#39;: title,
@@ -111,7 +106,7 @@ class DataModelMixIn:
             if data_models is not None and len(data_models) &gt; 0:
                 return PySenseDataModel.DataModel(self, data_models)
             else:
-                raise PySenseException.PySenseException(&#39;No data model with name {} found&#39;.format(title))
+                return None
         else:
             ret_arr = []
             for data_model in data_models:
@@ -124,8 +119,7 @@ class DataModelMixIn:
         Args:
             data_models: One to many data models to delete
         &#34;&#34;&#34;
-        if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException(&#34;Delete data model not supported on windows&#34;)
+        self._validate_version(SisenseVersion.Version.LINUX, &#39;delete_data_model&#39;)
 
         for data_model in PySenseUtils.make_iterable(data_models):
             self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))
@@ -150,8 +144,7 @@ class DataModelMixIn:
             title: (optional) Title to give the data model
             target_data_model: (optional) The data model to update.
         &#34;&#34;&#34;
-        if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException(&#34;Import data model not supported on windows&#34;)
+        self._validate_version(SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -201,8 +194,7 @@ class DataModelMixIn:
             title: (optional) Title to give the data model
             target_data_model: (optional) The data model to update.
         &#34;&#34;&#34;
-        if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException(&#34;Import data model not supported on windows&#34;)
+        self._validate_version(SisenseVersion.Version.LINUX, &#39;add_data_model&#39;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -236,13 +228,12 @@ class DataModelMixIn:
                 This parameter must be used with the limit parameter, and is intended for paging.
 
         Returns:
-            If title is specified, a single data model will be returned if a matching data model is found.
-            Otherwise PySense will throw an exception.
+            If title is specified, a single data model will be returned if a matching data model is found,
+            otherwise None
             If title is not specified an array will be returned.
 
         &#34;&#34;&#34;
-        if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException(&#34;Get data model not supported on windows&#34;)
+        self._validate_version(SisenseVersion.Version.LINUX, &#39;get_data_models&#39;)
 
         query_params = {
             &#39;title&#39;: title,
@@ -257,7 +248,7 @@ class DataModelMixIn:
             if data_models is not None and len(data_models) &gt; 0:
                 return PySenseDataModel.DataModel(self, data_models)
             else:
-                raise PySenseException.PySenseException(&#39;No data model with name {} found&#39;.format(title))
+                return None
         else:
             ret_arr = []
             for data_model in data_models:
@@ -270,8 +261,7 @@ class DataModelMixIn:
         Args:
             data_models: One to many data models to delete
         &#34;&#34;&#34;
-        if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException(&#34;Delete data model not supported on windows&#34;)
+        self._validate_version(SisenseVersion.Version.LINUX, &#39;delete_data_model&#39;)
 
         for data_model in PySenseUtils.make_iterable(data_models):
             self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))
@@ -296,8 +286,7 @@ class DataModelMixIn:
             title: (optional) Title to give the data model
             target_data_model: (optional) The data model to update.
         &#34;&#34;&#34;
-        if self.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException(&#34;Import data model not supported on windows&#34;)
+        self._validate_version(SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -358,8 +347,7 @@ add_data_model(new_data_model, target_data_model=old_data_model)</p>
         title: (optional) Title to give the data model
         target_data_model: (optional) The data model to update.
     &#34;&#34;&#34;
-    if self.version == SisenseVersion.Version.WINDOWS:
-        raise PySenseException.PySenseException(&#34;Import data model not supported on windows&#34;)
+    self._validate_version(SisenseVersion.Version.LINUX, &#39;add_data_model&#39;)
 
     target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -390,8 +378,7 @@ add_data_model(new_data_model, target_data_model=old_data_model)</p>
     Args:
         data_models: One to many data models to delete
     &#34;&#34;&#34;
-    if self.version == SisenseVersion.Version.WINDOWS:
-        raise PySenseException.PySenseException(&#34;Delete data model not supported on windows&#34;)
+    self._validate_version(SisenseVersion.Version.LINUX, &#39;delete_data_model&#39;)
 
     for data_model in PySenseUtils.make_iterable(data_models):
         self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))</code></pre>
@@ -425,8 +412,8 @@ This field must be used with the skip parameter, and is intended for paging.</dd
 This parameter must be used with the limit parameter, and is intended for paging.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>If title is specified, a single data model will be returned if a matching data model is found.
-Otherwise PySense will throw an exception.
+<p>If title is specified, a single data model will be returned if a matching data model is found,
+otherwise None
 If title is not specified an array will be returned.</p></div>
 <details class="source">
 <summary>
@@ -456,13 +443,12 @@ If title is not specified an array will be returned.</p></div>
             This parameter must be used with the limit parameter, and is intended for paging.
 
     Returns:
-        If title is specified, a single data model will be returned if a matching data model is found.
-        Otherwise PySense will throw an exception.
+        If title is specified, a single data model will be returned if a matching data model is found,
+        otherwise None
         If title is not specified an array will be returned.
 
     &#34;&#34;&#34;
-    if self.version == SisenseVersion.Version.WINDOWS:
-        raise PySenseException.PySenseException(&#34;Get data model not supported on windows&#34;)
+    self._validate_version(SisenseVersion.Version.LINUX, &#39;get_data_models&#39;)
 
     query_params = {
         &#39;title&#39;: title,
@@ -477,7 +463,7 @@ If title is not specified an array will be returned.</p></div>
         if data_models is not None and len(data_models) &gt; 0:
             return PySenseDataModel.DataModel(self, data_models)
         else:
-            raise PySenseException.PySenseException(&#39;No data model with name {} found&#39;.format(title))
+            return None
     else:
         ret_arr = []
         for data_model in data_models:
@@ -530,8 +516,7 @@ add_data_model(path, target_data_model=old_data_model)</p>
         title: (optional) Title to give the data model
         target_data_model: (optional) The data model to update.
     &#34;&#34;&#34;
-    if self.version == SisenseVersion.Version.WINDOWS:
-        raise PySenseException.PySenseException(&#34;Import data model not supported on windows&#34;)
+    self._validate_version(SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
 
     target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 

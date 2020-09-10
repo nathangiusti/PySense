@@ -45,7 +45,31 @@ class ElasticubeMixIn:
         for cube in cubes:
             if cube.get_name() == name:
                 return cube
-        return None</code></pre>
+        return None
+
+    &#34;&#34;&#34; The end point used here only deletes the build cube and not the actual model. When model deletion is supported,
+    these methods will be enabled&#34;&#34;&#34;
+    # def delete_elasticube_by_name(self, name):
+    #     &#34;&#34;&#34;Deletes the elasticube with given name.
+    #
+    #     Windows only
+    #     &#34;&#34;&#34;
+    #
+    #     self._validate_version(SisenseVersion.Version.WINDOWS, &#39;delete_elasticube_by_name&#39;)
+    #
+    #     elasticube = self.get_elasticube_by_name(name)
+    #     if elasticube is not None:
+    #         self.delete_elasticube(elasticube)
+    #     else:
+    #         raise PySenseException.PySenseException(&#39;No elasticube with name {} found&#39;.format(name))
+    #
+    # def delete_elasticube(self, elasticube):
+    #     &#34;&#34;&#34;Deletes the elasticube.
+    #
+    #     Windows only
+    #     &#34;&#34;&#34;
+    #     return self.connector.rest_call(&#39;delete&#39;, &#39;api/elasticubes/{}/{}/delete&#39;
+    #                                     .format(elasticube.get_address(), elasticube.get_name(url_encoded=True)))</code></pre>
 </details>
 </section>
 <section>
@@ -82,7 +106,10 @@ class ElasticubeMixIn:
         for cube in cubes:
             if cube.get_name() == name:
                 return cube
-        return None</code></pre>
+        return None
+
+    &#34;&#34;&#34; The end point used here only deletes the build cube and not the actual model. When model deletion is supported,
+    these methods will be enabled&#34;&#34;&#34;</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
