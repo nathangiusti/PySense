@@ -113,42 +113,13 @@ class Connection:
 
 
 class ODBCConnection(Connection):
-    """The connection for ODBC.   
-      
-    Has additional getters and setters for ODBC specific fields.   
-    """  
-    
+    """The connection for ODBC.
+
+    Has additional getters and setters for ODBC specific fields.
+    """
+
     def __init__(self, py_client, connection_json):
         super().__init__(py_client, connection_json)
-        
-    def get_server(self):
-        """Returns the server for the ODBC Connection"""
-        return self.get_parameters()['Server']
-    
-    def get_culture(self):
-        """Returns the culture for the ODBC connection"""
-        return self.get_parameters()['culture']
-    
-    def is_using_direct_connection(self):
-        """Returns true of direct connection otherwise false"""
-        if self.get_parameters()['IsUsingDirectConnection'] == 'false':
-            return False
-        return True
-
-    def set_server(self, server):
-        """Set the server for the ODBC Connection"""
-        self.get_parameters()['Server'] = server
-
-    def set_culture(self, culture):
-        """Set the culture for the ODBC connection"""
-        self.get_parameters()['culture'] = culture
-
-    def set_is_using_direct_connection(self, boolean):
-        """Returns true of direct connection otherwise false"""
-        if boolean:
-            self.get_parameters()['IsUsingDirectConnection'] == 'true'
-        else:
-            self.get_parameters()['IsUsingDirectConnection'] == 'false'
 
 
 class FileConnection(Connection):
@@ -160,33 +131,9 @@ class FileConnection(Connection):
     def __init__(self, py_client, connection_json):
         super().__init__(py_client, connection_json)
 
-    def get_api_version(self):
-        """Returns the API version"""
-        return self.get_parameters()['ApiVersion']
-
     def get_files(self):
         """Returns an array of file locations used by the connection"""
         return self.get_parameters()['files']
-    
-    def get_ui_params(self):
-        """Returns A JSON blob of UI parameters"""
-        return self._connection_json['uiParams']
-    
-    def get_global_table_config_options(self):
-        """Returns a json blob of global table config options"""
-        return self._connection_json['globalTableConfigOptions']
-    
-    def is_created_by_user(self):
-        """Returns True if connection created by user otherwise False."""
-        return self._connection_json['createdByUser']
-    
-    def get_file_name(self):
-        """Returns the file name"""
-        return self._connection_json['fileName']
-
-    def set_api_version(self, version):
-        """Sets the API version"""
-        self.get_parameters()['ApiVersion'] = version
 
     def set_files(self, files):
         """Set the files for the connector.   
@@ -195,22 +142,6 @@ class FileConnection(Connection):
             - files: An array of string file locations  
         """
         self.get_parameters()['files'] = files
-
-    def set_ui_params(self, ui_params):
-        """Set the UI parameters"""
-        self._connection_json['uiParams'] = ui_params
-
-    def set_global_table_config_options(self, config):
-        """Set the global table config options"""
-        self._connection_json['globalTableConfigOptions'] = config
-
-    def set_is_created_by_user(self, boolean):
-        """Set if connection created by user"""
-        self._connection_json['createdByUser'] = boolean
-
-    def set_file_name(self, file_name):
-        """Sets the file name"""
-        self._connection_json['fileName'] = file_name
       
         
 class ExcelConnection(FileConnection):
@@ -226,48 +157,14 @@ class CsvConnection(FileConnection):
 
 
 class SqlConnection(ODBCConnection):
-    """The Sql Connection  
-    
-    Inherits from ODBC connection with additional specific getters and setters.   
+    """The Sql Connection
+
+    Inherits from ODBC connection with additional specific getters and setters.
     """
     def __init__(self, py_client, connection_json):
         super().__init__(py_client, connection_json)
-    
-    def get_database(self):
-        """Returns the database for the SQL connection"""
-        return self.get_parameters()['Database']
-    
-    def is_encrypted(self):
-        """Returns whether or not connection is encrypted"""
-        if self.get_parameters()['Encrypt'] == 'false':
-            return False
-        return True
-    
-    def is_using_trust_certificate(self):
-        """Returns whether or not connection is using trust certificate"""
-        if self.get_parameters()['trustServerCertificate'] == 'false':
-            return False
-        return True
 
-    def set_database(self, database):
-        """Set the database for the SQL connection"""
-        self.get_parameters()['Database'] = database
 
-    def set_is_encrypted(self, boolean):
-        """Set whether or not connection is encrypted"""
-        if boolean:
-            self.get_parameters()['Encrypt'] = 'false'
-        else:
-            self.get_parameters()['Encrypt'] = 'true'
-
-    def set_is_using_trust_certificate(self, boolean):
-        """Sets whether or not connection is using trust certificate"""
-        if boolean:
-            self.get_parameters()['trustServerCertificate'] = 'false'
-        else:
-            self.get_parameters()['trustServerCertificate'] = 'true'
-        
-        
 class PostgreSQLConnection(SqlConnection):
     """The PostgreSQL Connection.  
      
