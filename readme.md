@@ -17,18 +17,22 @@ Download the PySense Tutorial Power Point for a hands on introduction.
 
 See snippets folder for common usage snippets
 
-**V 0.2.17 Release Notes**
+**V 0.2.18 Release Notes**
 
 - Additions
-    - dashboard.get_widgets supports an id field to get a specific widget
-    - Create new default dashboard with create_dashboard
+    - Dashboard class now has get owner, get last updated, and get last opened options. 
+    - Cube class now has get address method to get the server address.
+    - New script to show how to run a sql query against an elasticube. 
+    - New script to create report on how many users have opened a dashboard recently 
 
 - Breaking changes
-    - None
-
+    - Role.get_role_id and get_role_name will return None instead of throwing an exception if a matching value is not found.
+    
 - Fixes
-    - Fixed issue with cubes not sharing with groups properly
+    - Dashboard.get_shares would fail if rest API call failed. Now if the rest API fails, it will check the local JSON
+    - Various bug fixes to the Cube.run_sql function
+    - Version checks on functions are now done in a more systemic way
     
 - Known Issues
     - REST API sometimes becomes responsive on Linux builds
-    - Connections API will no longer be developed as there appear to be issues with the underlying service in Sisense
+    - Connections in PySense are unstable. Will be fixed in future releases. 
