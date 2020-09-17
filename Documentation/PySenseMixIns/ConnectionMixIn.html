@@ -51,24 +51,23 @@ class ConnectionMixIn:
         resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/connection&#39;, query_params=query_params)
         ret_arr = []
         for connection in resp_json:
-            connection = PySenseConnection.make_connection(self, connection)
+            connection = PySenseConnection.Connection(self, connection)
             if len(provider) &gt; 0:
                 if connection.get_provider() in provider:
                     ret_arr.append(connection)
             else:
                 ret_arr.append(connection)
-
         return ret_arr
 
     def get_connection_by_id(self, connection_id):
         &#34;&#34;&#34;Returns the connection with the given id&#34;&#34;&#34;
         resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/connection/{}&#39;.format(connection_id))
-        return PySenseConnection.make_connection(self, resp_json)
+        return PySenseConnection.Connection(self, resp_json)
 
     def add_connection(self, connection_json):
-        &#34;&#34;&#34;Add a new connection with given connection json&#34;&#34;&#34;
+        &#34;&#34;&#34;Adds a new connection with given connection json. Returns the new connection&#34;&#34;&#34;
         resp_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/connection&#39;, json_payload=connection_json)
-        return PySenseConnection.make_connection(self, resp_json)
+        return PySenseConnection.Connection(self, resp_json)
 
     def delete_connections(self, connections):
         &#34;&#34;&#34;Deletes the given PySense connections&#34;&#34;&#34;
@@ -115,24 +114,23 @@ class ConnectionMixIn:
         resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/connection&#39;, query_params=query_params)
         ret_arr = []
         for connection in resp_json:
-            connection = PySenseConnection.make_connection(self, connection)
+            connection = PySenseConnection.Connection(self, connection)
             if len(provider) &gt; 0:
                 if connection.get_provider() in provider:
                     ret_arr.append(connection)
             else:
                 ret_arr.append(connection)
-
         return ret_arr
 
     def get_connection_by_id(self, connection_id):
         &#34;&#34;&#34;Returns the connection with the given id&#34;&#34;&#34;
         resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/connection/{}&#39;.format(connection_id))
-        return PySenseConnection.make_connection(self, resp_json)
+        return PySenseConnection.Connection(self, resp_json)
 
     def add_connection(self, connection_json):
-        &#34;&#34;&#34;Add a new connection with given connection json&#34;&#34;&#34;
+        &#34;&#34;&#34;Adds a new connection with given connection json. Returns the new connection&#34;&#34;&#34;
         resp_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/connection&#39;, json_payload=connection_json)
-        return PySenseConnection.make_connection(self, resp_json)
+        return PySenseConnection.Connection(self, resp_json)
 
     def delete_connections(self, connections):
         &#34;&#34;&#34;Deletes the given PySense connections&#34;&#34;&#34;
@@ -149,15 +147,15 @@ class ConnectionMixIn:
 <span>def <span class="ident">add_connection</span></span>(<span>self, connection_json)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Add a new connection with given connection json</p></div>
+<div class="desc"><p>Adds a new connection with given connection json. Returns the new connection</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def add_connection(self, connection_json):
-    &#34;&#34;&#34;Add a new connection with given connection json&#34;&#34;&#34;
+    &#34;&#34;&#34;Adds a new connection with given connection json. Returns the new connection&#34;&#34;&#34;
     resp_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/connection&#39;, json_payload=connection_json)
-    return PySenseConnection.make_connection(self, resp_json)</code></pre>
+    return PySenseConnection.Connection(self, resp_json)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseMixIns.ConnectionMixIn.ConnectionMixIn.delete_connections"><code class="name flex">
@@ -187,7 +185,7 @@ class ConnectionMixIn:
 <pre><code class="python">def get_connection_by_id(self, connection_id):
     &#34;&#34;&#34;Returns the connection with the given id&#34;&#34;&#34;
     resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/connection/{}&#39;.format(connection_id))
-    return PySenseConnection.make_connection(self, resp_json)</code></pre>
+    return PySenseConnection.Connection(self, resp_json)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseMixIns.ConnectionMixIn.ConnectionMixIn.get_connections"><code class="name flex">
@@ -230,13 +228,12 @@ Skip is to be used with the limit parameter for paging</dd>
     resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/connection&#39;, query_params=query_params)
     ret_arr = []
     for connection in resp_json:
-        connection = PySenseConnection.make_connection(self, connection)
+        connection = PySenseConnection.Connection(self, connection)
         if len(provider) &gt; 0:
             if connection.get_provider() in provider:
                 ret_arr.append(connection)
         else:
             ret_arr.append(connection)
-
     return ret_arr</code></pre>
 </details>
 </dd>

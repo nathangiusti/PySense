@@ -367,3 +367,7 @@ class Dashboard:
             return PySenseUtils.sisense_time_to_python(self._dashboard_json['lastOpened'])
         else:
             return None
+
+    def publish(self):
+        """Publishes the dashboard"""
+        self._py_client.connector.rest_call('post', 'api/v1/dashboards/{}/publish'.format(self.get_id()))

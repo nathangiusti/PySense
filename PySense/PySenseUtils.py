@@ -29,6 +29,11 @@ def sisense_time_to_python(datetime_str):
     return datetime.strptime(datetime_str[: -5], '%Y-%m-%dT%H:%M:%S')
 
 
+def python_time_to_sisense(datetime):
+    """Converts a python date time to a Sisense date time."""
+    return datetime.strftime('%Y-%m-%dT%H:%M:%S')
+
+
 def read_json(path):
     """Reads in obj_json"""
     with open(path) as json_file:

@@ -394,7 +394,11 @@ class Dashboard:
         if &#39;lastOpened&#39; in self._dashboard_json:
             return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;lastOpened&#39;])
         else:
-            return None</code></pre>
+            return None
+
+    def publish(self):
+        &#34;&#34;&#34;Publishes the dashboard&#34;&#34;&#34;
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/publish&#39;.format(self.get_id()))</code></pre>
 </details>
 </section>
 <section>
@@ -777,7 +781,11 @@ class Dashboard:
         if &#39;lastOpened&#39; in self._dashboard_json:
             return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;lastOpened&#39;])
         else:
-            return None</code></pre>
+            return None
+
+    def publish(self):
+        &#34;&#34;&#34;Publishes the dashboard&#34;&#34;&#34;
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/publish&#39;.format(self.get_id()))</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -1410,6 +1418,20 @@ parameter for paging</dd>
     self._reset()</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseDashboard.Dashboard.publish"><code class="name flex">
+<span>def <span class="ident">publish</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Publishes the dashboard</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def publish(self):
+    &#34;&#34;&#34;Publishes the dashboard&#34;&#34;&#34;
+    self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/publish&#39;.format(self.get_id()))</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySenseDashboard.Dashboard.remove_ghost_widgets"><code class="name flex">
 <span>def <span class="ident">remove_ghost_widgets</span></span>(<span>self)</span>
 </code></dt>
@@ -1507,6 +1529,7 @@ parameter for paging</dd>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_widget_by_id" href="#PySense.PySenseDashboard.Dashboard.get_widget_by_id">get_widget_by_id</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_widgets" href="#PySense.PySenseDashboard.Dashboard.get_widgets">get_widgets</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.move_to_folder" href="#PySense.PySenseDashboard.Dashboard.move_to_folder">move_to_folder</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.publish" href="#PySense.PySenseDashboard.Dashboard.publish">publish</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.remove_ghost_widgets" href="#PySense.PySenseDashboard.Dashboard.remove_ghost_widgets">remove_ghost_widgets</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.remove_shares" href="#PySense.PySenseDashboard.Dashboard.remove_shares">remove_shares</a></code></li>
 </ul>
