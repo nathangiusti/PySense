@@ -68,6 +68,9 @@ class PySenseDashboardTests(unittest.TestCase):
     def test_remove_ghost_widgets(self):
         self.dashboard.remove_ghost_widgets()
 
+    def test_publish(self):
+        self.dashboard.publish()
+
     @classmethod
     def tearDownClass(cls):
         cls.dashboard.remove_shares(cls.dashboard.get_share_users_groups())

@@ -1,3 +1,18 @@
+**V 0.2.19 Release Notes**
+
+- Additions
+    - Connections have been reworked. The part is still in beta while we await user testing. 
+        - When migrating a cube/datamodel between environments, the connections strings will carry over. 
+        - You'll need to query the need to query the new instance and update the newly created connections. 
+        - The JSON for each connector differs so there are few helper functions. 
+    - You can now trigger the publishing of dashboards
+        
+- Fixes
+    - None
+    
+- Known Issues
+    - REST API sometimes becomes responsive on Linux builds
+    
 **V 0.2.18 Release Notes**
 
 - Additions

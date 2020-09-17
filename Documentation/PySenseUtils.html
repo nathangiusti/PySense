@@ -57,6 +57,11 @@ def sisense_time_to_python(datetime_str):
     return datetime.strptime(datetime_str[: -5], &#39;%Y-%m-%dT%H:%M:%S&#39;)
 
 
+def python_time_to_sisense(datetime):
+    &#34;&#34;&#34;Converts a python date time to a Sisense date time.&#34;&#34;&#34;
+    return datetime.strftime(&#39;%Y-%m-%dT%H:%M:%S&#39;)
+
+
 def read_json(path):
     &#34;&#34;&#34;Reads in obj_json&#34;&#34;&#34;
     with open(path) as json_file:
@@ -132,6 +137,20 @@ def dump_json(obj_json, path):
     return obj</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseUtils.python_time_to_sisense"><code class="name flex">
+<span>def <span class="ident">python_time_to_sisense</span></span>(<span>datetime)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts a python date time to a Sisense date time.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def python_time_to_sisense(datetime):
+    &#34;&#34;&#34;Converts a python date time to a Sisense date time.&#34;&#34;&#34;
+    return datetime.strftime(&#39;%Y-%m-%dT%H:%M:%S&#39;)</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySenseUtils.read_json"><code class="name flex">
 <span>def <span class="ident">read_json</span></span>(<span>path)</span>
 </code></dt>
@@ -183,6 +202,7 @@ def dump_json(obj_json, path):
 <li><code><a title="PySense.PySenseUtils.dump_json" href="#PySense.PySenseUtils.dump_json">dump_json</a></code></li>
 <li><code><a title="PySense.PySenseUtils.format_host" href="#PySense.PySenseUtils.format_host">format_host</a></code></li>
 <li><code><a title="PySense.PySenseUtils.make_iterable" href="#PySense.PySenseUtils.make_iterable">make_iterable</a></code></li>
+<li><code><a title="PySense.PySenseUtils.python_time_to_sisense" href="#PySense.PySenseUtils.python_time_to_sisense">python_time_to_sisense</a></code></li>
 <li><code><a title="PySense.PySenseUtils.read_json" href="#PySense.PySenseUtils.read_json">read_json</a></code></li>
 <li><code><a title="PySense.PySenseUtils.sisense_time_to_python" href="#PySense.PySenseUtils.sisense_time_to_python">sisense_time_to_python</a></code></li>
 </ul>
