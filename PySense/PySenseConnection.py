@@ -12,9 +12,14 @@ class Connection:
 
     def get_id(self):
         """Returns the connection id"""
-        return self._connection_json['_id']
+        if 'id' in self._connection_json:
+            return self._connection_json['id']
+        elif '_id' in self._connection_json:
+            return self._connection_json['_id']
+        else:
+            return None
         
-    def get_connection_json(self):
+    def get_json(self):
         """Gets the connection JSON  
           
         To update the connection call this method, change the needed parameters and pass this to update_connection"""
@@ -50,4 +55,4 @@ class Connection:
         connection.set_schema('newSchema') -- Changes the value locally  
         connection.sync_connection() -- Sends the new values back to the server  
         """
-        self.update_connection(self.get_connection_json())
+        self.update_connection(self.get_json())

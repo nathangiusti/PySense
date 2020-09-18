@@ -73,7 +73,15 @@ def dump_json(obj_json, path):
     &#34;&#34;&#34;Dumps object json to file&#34;&#34;&#34;
     with open(path, &#39;w&#39;) as json_file:
         json.dump(obj_json, json_file)
-    return path</code></pre>
+    return path
+
+
+def strip_json(input_json, keys_to_delete):
+    &#34;&#34;&#34;Removes keys_to_delete from input json&#34;&#34;&#34;
+    for key in make_iterable(keys_to_delete):
+        if key in input_json:
+            input_json.pop(key, None)
+    return input_json</code></pre>
 </details>
 </section>
 <section>
@@ -181,6 +189,23 @@ def dump_json(obj_json, path):
     return datetime.strptime(datetime_str[: -5], &#39;%Y-%m-%dT%H:%M:%S&#39;)</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseUtils.strip_json"><code class="name flex">
+<span>def <span class="ident">strip_json</span></span>(<span>input_json, keys_to_delete)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Removes keys_to_delete from input json</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def strip_json(input_json, keys_to_delete):
+    &#34;&#34;&#34;Removes keys_to_delete from input json&#34;&#34;&#34;
+    for key in make_iterable(keys_to_delete):
+        if key in input_json:
+            input_json.pop(key, None)
+    return input_json</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -205,6 +230,7 @@ def dump_json(obj_json, path):
 <li><code><a title="PySense.PySenseUtils.python_time_to_sisense" href="#PySense.PySenseUtils.python_time_to_sisense">python_time_to_sisense</a></code></li>
 <li><code><a title="PySense.PySenseUtils.read_json" href="#PySense.PySenseUtils.read_json">read_json</a></code></li>
 <li><code><a title="PySense.PySenseUtils.sisense_time_to_python" href="#PySense.PySenseUtils.sisense_time_to_python">sisense_time_to_python</a></code></li>
+<li><code><a title="PySense.PySenseUtils.strip_json" href="#PySense.PySenseUtils.strip_json">strip_json</a></code></li>
 </ul>
 </li>
 </ul>

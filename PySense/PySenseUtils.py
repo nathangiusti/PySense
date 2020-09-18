@@ -46,3 +46,11 @@ def dump_json(obj_json, path):
     with open(path, 'w') as json_file:
         json.dump(obj_json, json_file)
     return path
+
+
+def strip_json(input_json, keys_to_delete):
+    """Removes keys_to_delete from input json"""
+    for key in make_iterable(keys_to_delete):
+        if key in input_json:
+            input_json.pop(key, None)
+    return input_json

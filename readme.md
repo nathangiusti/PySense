@@ -17,17 +17,19 @@ Download the PySense Tutorial Power Point for a hands on introduction.
 
 See snippets folder for common usage snippets
 
-**V 0.2.19 Release Notes**
+**V 0.2.20 Release Notes**
 
 - Additions
-    - Connections have been reworked. The part is still in beta while we await user testing. 
-        - When migrating a cube/datamodel between environments, the connections strings will carry over. 
-        - You'll need to query the need to query the new instance and update the newly created connections. 
-        - The JSON for each connector differs so there are few helper functions. 
-    - You can now trigger the publishing of dashboards
-        
+    - Get connections specific to a datamodel
+        - To update a datamodel connection, get the data model, and then the data sets. 
+        - Each data set is a table, you can call get/set connection on data set to change the connection for that table
+        - All of this functionality is Linux only
+
 - Fixes
-    - None
+    - Connection.get_id more reliable
+
+- Breaking changes
+    - PySenseConnection.get_connection_json updated to get_json for continuity
     
 - Known Issues
     - REST API sometimes becomes responsive on Linux builds

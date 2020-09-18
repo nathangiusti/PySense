@@ -34,7 +34,7 @@ class DataModel:
         """
         ret_arr = []
         for data_set_json in self._data_model_json['datasets']:
-            data_set = PySenseDataSet.DataSet(self._py_client, data_set_json)
+            data_set = PySenseDataSet.DataSet(self._py_client, data_set_json, self)
             if source is not None:
                 if source.lower() == data_set.get_source():
                     ret_arr.append(data_set)

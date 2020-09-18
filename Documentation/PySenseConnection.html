@@ -40,9 +40,14 @@
 
     def get_id(self):
         &#34;&#34;&#34;Returns the connection id&#34;&#34;&#34;
-        return self._connection_json[&#39;_id&#39;]
+        if &#39;id&#39; in self._connection_json:
+            return self._connection_json[&#39;id&#39;]
+        elif &#39;_id&#39; in self._connection_json:
+            return self._connection_json[&#39;_id&#39;]
+        else:
+            return None
         
-    def get_connection_json(self):
+    def get_json(self):
         &#34;&#34;&#34;Gets the connection JSON  
           
         To update the connection call this method, change the needed parameters and pass this to update_connection&#34;&#34;&#34;
@@ -78,7 +83,7 @@
         connection.set_schema(&#39;newSchema&#39;) -- Changes the value locally  
         connection.sync_connection() -- Sends the new values back to the server  
         &#34;&#34;&#34;
-        self.update_connection(self.get_connection_json())</code></pre>
+        self.update_connection(self.get_json())</code></pre>
 </details>
 </section>
 <section>
@@ -119,9 +124,14 @@ Specific fields must be accessed through the connection json.</p></div>
 
     def get_id(self):
         &#34;&#34;&#34;Returns the connection id&#34;&#34;&#34;
-        return self._connection_json[&#39;_id&#39;]
+        if &#39;id&#39; in self._connection_json:
+            return self._connection_json[&#39;id&#39;]
+        elif &#39;_id&#39; in self._connection_json:
+            return self._connection_json[&#39;_id&#39;]
+        else:
+            return None
         
-    def get_connection_json(self):
+    def get_json(self):
         &#34;&#34;&#34;Gets the connection JSON  
           
         To update the connection call this method, change the needed parameters and pass this to update_connection&#34;&#34;&#34;
@@ -157,28 +167,10 @@ Specific fields must be accessed through the connection json.</p></div>
         connection.set_schema(&#39;newSchema&#39;) -- Changes the value locally  
         connection.sync_connection() -- Sends the new values back to the server  
         &#34;&#34;&#34;
-        self.update_connection(self.get_connection_json())</code></pre>
+        self.update_connection(self.get_json())</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="PySense.PySenseConnection.Connection.get_connection_json"><code class="name flex">
-<span>def <span class="ident">get_connection_json</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Gets the connection JSON
-</p>
-<p>To update the connection call this method, change the needed parameters and pass this to update_connection</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_connection_json(self):
-    &#34;&#34;&#34;Gets the connection JSON  
-      
-    To update the connection call this method, change the needed parameters and pass this to update_connection&#34;&#34;&#34;
-    return self._connection_json</code></pre>
-</details>
-</dd>
 <dt id="PySense.PySenseConnection.Connection.get_id"><code class="name flex">
 <span>def <span class="ident">get_id</span></span>(<span>self)</span>
 </code></dt>
@@ -190,7 +182,30 @@ Specific fields must be accessed through the connection json.</p></div>
 </summary>
 <pre><code class="python">def get_id(self):
     &#34;&#34;&#34;Returns the connection id&#34;&#34;&#34;
-    return self._connection_json[&#39;_id&#39;]</code></pre>
+    if &#39;id&#39; in self._connection_json:
+        return self._connection_json[&#39;id&#39;]
+    elif &#39;_id&#39; in self._connection_json:
+        return self._connection_json[&#39;_id&#39;]
+    else:
+        return None</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseConnection.Connection.get_json"><code class="name flex">
+<span>def <span class="ident">get_json</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the connection JSON
+</p>
+<p>To update the connection call this method, change the needed parameters and pass this to update_connection</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_json(self):
+    &#34;&#34;&#34;Gets the connection JSON  
+      
+    To update the connection call this method, change the needed parameters and pass this to update_connection&#34;&#34;&#34;
+    return self._connection_json</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseConnection.Connection.sync_connection"><code class="name flex">
@@ -220,7 +235,7 @@ connection.sync_connection() &ndash; Sends the new values back to the server</p>
     connection.set_schema(&#39;newSchema&#39;) -- Changes the value locally  
     connection.sync_connection() -- Sends the new values back to the server  
     &#34;&#34;&#34;
-    self.update_connection(self.get_connection_json())</code></pre>
+    self.update_connection(self.get_json())</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseConnection.Connection.update_connection"><code class="name flex">
@@ -279,8 +294,8 @@ connection.sync_connection() &ndash; Sends the new values back to the server</p>
 <li>
 <h4><code><a title="PySense.PySenseConnection.Connection" href="#PySense.PySenseConnection.Connection">Connection</a></code></h4>
 <ul class="">
-<li><code><a title="PySense.PySenseConnection.Connection.get_connection_json" href="#PySense.PySenseConnection.Connection.get_connection_json">get_connection_json</a></code></li>
 <li><code><a title="PySense.PySenseConnection.Connection.get_id" href="#PySense.PySenseConnection.Connection.get_id">get_id</a></code></li>
+<li><code><a title="PySense.PySenseConnection.Connection.get_json" href="#PySense.PySenseConnection.Connection.get_json">get_json</a></code></li>
 <li><code><a title="PySense.PySenseConnection.Connection.sync_connection" href="#PySense.PySenseConnection.Connection.sync_connection">sync_connection</a></code></li>
 <li><code><a title="PySense.PySenseConnection.Connection.update_connection" href="#PySense.PySenseConnection.Connection.update_connection">update_connection</a></code></li>
 </ul>
