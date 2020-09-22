@@ -41,9 +41,9 @@ Install PySense with pip:
 
     - Sisense Roles are now an enum.
         - There are many different names for a role that are used internally and externally. In an attempt to control for that, Roles are now implemented as an enum in SisenseRoles.Role. 
-        - To get the role from a string, you can use SisenseRole.Role.fromStr()
+        - To get the role from a string, you can use SisenseRole.Role.from_str()
         - To add a user with the Viewer role you would do:
-            add_user('my_user@example.com', SisenseRole.Role.fromStr('Viewer'))
+            add_user('my_user@example.com', SisenseRole.Role.from_str('Viewer'))
         - This will ensure stability around roles as Sisense terminology changes.
         - PySense.get_role_name -> PySense.get_role_by_id() 
             - This method now returns a SisenseRole.Role enum instead of a string
