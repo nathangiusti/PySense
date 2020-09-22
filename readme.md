@@ -49,7 +49,7 @@ Install PySense with pip:
             - This method now returns a SisenseRole.Role enum instead of a string
      
     - Many methods have been renamed
-        - Some Sisense componenets have ids, some have oids, some have _ids, and some have multiple. When I started I wanted to see if I could remove some of the confusion by picking a single naming structure. As Sisense and PySense have grown in complexity, that goal is no longer realistic and so methods have been renamed to match their json attributes more directly.
+        - Some Sisense components have ids, some have oids, some have _ids, and some have multiple. When I started I wanted to see if I could remove some of the confusion by picking a single naming structure. As Sisense and PySense have grown in complexity, that goal is no longer realistic and so methods have been renamed to match their json attributes more directly.
         - In addition some methods have been renamed for brevity, clarity, and to align with the rest of PySense.
         - The parameters and usage of these methods has not changes unless noted otherwise
         - The following have been changes
@@ -69,8 +69,6 @@ Install PySense with pip:
             - Elasticube.get_model no longer works on Windows
         - To manipulate datamodels in Windows, use the CLI/Prism
         
-    - Snippets have been removed as the effort required to keep them in sync with versions was not worth it
-    
 - Additions
     - A public training series is being created. The reference material for that will be stored in the PySense Tutorial folder.
 
