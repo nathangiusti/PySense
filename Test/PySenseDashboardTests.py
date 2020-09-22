@@ -13,8 +13,8 @@ class PySenseDashboardTests(unittest.TestCase):
         cls.dashboard = cls.py_client.get_dashboards(name='PySense')[0]
 
     def test_getters(self):
-        assert self.dashboard.get_name() is not None
-        assert self.dashboard.get_datasource().get_name() == 'PySense'
+        assert self.dashboard.get_title() is not None
+        assert self.dashboard.get_datasource().get_title() == 'PySense'
 
     def test_get_dashboard_export_png(self):
         path = self.sample_path + '\\' + self.dashboard.get_id() + '.png'
@@ -40,8 +40,8 @@ class PySenseDashboardTests(unittest.TestCase):
     def test_dashboard_widgets(self):
         widget_array = self.dashboard.get_widgets()
         assert len(widget_array) == 1
-        widget = self.dashboard.get_widget_by_id(widget_array[0].get_id())
-        assert widget.get_id() == widget_array[0].get_id()
+        widget = self.dashboard.get_widget_by_id(widget_array[0].get_oid())
+        assert widget.get_oid() == widget_array[0].get_oid()
         added_widget = self.dashboard.add_widget(widget)
         assert len(self.dashboard.get_widgets()) == 2
         self.dashboard.delete_widget(added_widget)
@@ -61,9 +61,9 @@ class PySenseDashboardTests(unittest.TestCase):
     def test_move_to_folder(self):
         folder = self.py_client.get_folders(name='PySense')[0]
         self.dashboard.move_to_folder(None)
-        assert self.dashboard.get_dashboard_folder() is None
+        assert self.dashboard.get_folder() is None
         self.dashboard.move_to_folder(folder)
-        assert self.dashboard.get_dashboard_folder().get_id() == folder.get_id()
+        assert self.dashboard.get_folder().get_oid() == folder.get_oid()
 
     def test_remove_ghost_widgets(self):
         self.dashboard.remove_ghost_widgets()

@@ -16,6 +16,6 @@ path_to_save = 'C:\\PySense\\MyQuery.csv'
 
 py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
 
-cube = py_client.get_elasticube_by_name(cube_name)
+cube = py_client.get_elasticube_by_title(cube_name)
 
 cube.run_sql(query, "csv", path=path_to_save)

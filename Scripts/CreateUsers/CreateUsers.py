@@ -26,6 +26,7 @@ Sample Config: https://github.com/nathangiusti/PySense/blob/master/Snippets/Samp
 import csv
 
 from PySense import PySense
+from PySense import SisenseRole
 
 py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
 
@@ -58,7 +59,7 @@ with open('new_users.csv') as csv_file:
         user = py_client.get_user_by_email(row['email'])
         if user is not None:
             if action_on_found_user == 'Update':
-                user.update(role_name=row['role'], first_name=row['first_name'],
+                user.update(role_name=SisenseRole.Role.from_str(row['role']), first_name=row['first_name'],
                             last_name=row['last_name'], groups=user_groups)
             elif action_on_found_user == 'Skip':
                 continue
@@ -66,7 +67,7 @@ with open('new_users.csv') as csv_file:
                 print('No user with email {} found'.format(row['email']))
                 exit(1)
         else:
-            py_client.add_user(row['email'], row['role'],
+            py_client.add_user(row['email'], SisenseRole.Role.from_str(row['role']),
                                first_name=row['first_name'], last_name=row['last_name'], groups=user_groups)
 
 

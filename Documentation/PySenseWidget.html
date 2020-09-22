@@ -40,7 +40,7 @@
         &#34;&#34;&#34;Returns the dashboard id of the widget.&#34;&#34;&#34;
         return self._widget_json[&#39;dashboardid&#39;]
 
-    def get_id(self):
+    def get_oid(self):
         &#34;&#34;&#34;Gets the widget&#39;s id&#34;&#34;&#34;
         return self._widget_json[&#39;oid&#39;]
 
@@ -57,7 +57,7 @@
         &#34;&#34;&#34;
         query_params = {&#39;width&#39;: width, &#39;height&#39;: height}
         resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
-                                                           .format(self.get_dashboard_id(), self.get_id()),
+                                                           .format(self.get_dashboard_id(), self.get_oid()),
                                                            query_params=query_params, raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
@@ -100,7 +100,7 @@
         &#34;&#34;&#34;Returns the dashboard id of the widget.&#34;&#34;&#34;
         return self._widget_json[&#39;dashboardid&#39;]
 
-    def get_id(self):
+    def get_oid(self):
         &#34;&#34;&#34;Gets the widget&#39;s id&#34;&#34;&#34;
         return self._widget_json[&#39;oid&#39;]
 
@@ -117,7 +117,7 @@
         &#34;&#34;&#34;
         query_params = {&#39;width&#39;: width, &#39;height&#39;: height}
         resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
-                                                           .format(self.get_dashboard_id(), self.get_id()),
+                                                           .format(self.get_dashboard_id(), self.get_oid()),
                                                            query_params=query_params, raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
@@ -161,7 +161,7 @@
     &#34;&#34;&#34;
     query_params = {&#39;width&#39;: width, &#39;height&#39;: height}
     resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
-                                                       .format(self.get_dashboard_id(), self.get_id()),
+                                                       .format(self.get_dashboard_id(), self.get_oid()),
                                                        query_params=query_params, raw=True)
     if path is not None:
         with open(path, &#39;wb&#39;) as out_file:
@@ -185,20 +185,6 @@
     return self._widget_json[&#39;dashboardid&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PySense.PySenseWidget.Widget.get_id"><code class="name flex">
-<span>def <span class="ident">get_id</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Gets the widget's id</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_id(self):
-    &#34;&#34;&#34;Gets the widget&#39;s id&#34;&#34;&#34;
-    return self._widget_json[&#39;oid&#39;]</code></pre>
-</details>
-</dd>
 <dt id="PySense.PySenseWidget.Widget.get_json"><code class="name flex">
 <span>def <span class="ident">get_json</span></span>(<span>self)</span>
 </code></dt>
@@ -211,6 +197,20 @@
 <pre><code class="python">def get_json(self):
     &#34;&#34;&#34;Returns the widget&#39;s JSON.&#34;&#34;&#34;
     return self._widget_json</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseWidget.Widget.get_oid"><code class="name flex">
+<span>def <span class="ident">get_oid</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the widget's id</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_oid(self):
+    &#34;&#34;&#34;Gets the widget&#39;s id&#34;&#34;&#34;
+    return self._widget_json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
 </dl>
@@ -236,8 +236,8 @@
 <ul class="">
 <li><code><a title="PySense.PySenseWidget.Widget.export_to_png" href="#PySense.PySenseWidget.Widget.export_to_png">export_to_png</a></code></li>
 <li><code><a title="PySense.PySenseWidget.Widget.get_dashboard_id" href="#PySense.PySenseWidget.Widget.get_dashboard_id">get_dashboard_id</a></code></li>
-<li><code><a title="PySense.PySenseWidget.Widget.get_id" href="#PySense.PySenseWidget.Widget.get_id">get_id</a></code></li>
 <li><code><a title="PySense.PySenseWidget.Widget.get_json" href="#PySense.PySenseWidget.Widget.get_json">get_json</a></code></li>
+<li><code><a title="PySense.PySenseWidget.Widget.get_oid" href="#PySense.PySenseWidget.Widget.get_oid">get_oid</a></code></li>
 </ul>
 </li>
 </ul>

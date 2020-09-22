@@ -37,11 +37,11 @@ for owner_dashboard in owner_dashboards:
         else:
             if dashboard.get_last_opened() is not None:
                 val = 1 if dashboard.get_last_opened().date() > comp_date else 0
-                report_map[dashboard.get_id()] = [dashboard.get_name(), dashboard.get_id(),
+                report_map[dashboard.get_id()] = [dashboard.get_title(), dashboard.get_id(),
                                                   dashboard.get_owner().get_email(), val,
                                                   dashboard.get_last_opened().date()]
             else:
-                report_map[dashboard.get_id()] = [dashboard.get_name(), dashboard.get_id(),
+                report_map[dashboard.get_id()] = [dashboard.get_title(), dashboard.get_id(),
                                                   dashboard.get_owner().get_email(), 0,
                                                   datetime.datetime(1970, 1, 1).date()]
     x = x + 1

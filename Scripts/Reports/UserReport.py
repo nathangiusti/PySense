@@ -22,7 +22,7 @@ with open(report_name, 'w', newline='') as csv_file:
     for user in users:
         group_list_string = ""
         for group in user.get_groups():
-            group_list_string = group_list_string + ' ' + group.get_name()
+            group_list_string = group_list_string + ' ' + group.get_title()
         full_name = user.get_first_name() + ' ' + user.get_last_name()
         user_writer.writerow([
             user.get_user_name(),

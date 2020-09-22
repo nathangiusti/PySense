@@ -43,7 +43,7 @@ class ElasticubeMixIn:
         &#34;&#34;&#34;Gets elasticube with given name&#34;&#34;&#34;
         cubes = self.get_elasticubes()
         for cube in cubes:
-            if cube.get_name() == name:
+            if cube.get_title() == name:
                 return cube
         return None
 
@@ -104,7 +104,7 @@ class ElasticubeMixIn:
         &#34;&#34;&#34;Gets elasticube with given name&#34;&#34;&#34;
         cubes = self.get_elasticubes()
         for cube in cubes:
-            if cube.get_name() == name:
+            if cube.get_title() == name:
                 return cube
         return None
 
@@ -130,7 +130,7 @@ class ElasticubeMixIn:
     &#34;&#34;&#34;Gets elasticube with given name&#34;&#34;&#34;
     cubes = self.get_elasticubes()
     for cube in cubes:
-        if cube.get_name() == name:
+        if cube.get_title() == name:
             return cube
     return None</code></pre>
 </details>

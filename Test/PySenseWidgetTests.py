@@ -15,7 +15,7 @@ class PySenseWidgetTests(unittest.TestCase):
         self.widget.export_to_png(100, 100)
 
     def test_getters(self):
-        assert self.widget.get_id() is not None
+        assert self.widget.get_oid() is not None
         assert self.widget.get_dashboard_id() is not None
         assert self.widget.get_json() is not None
 

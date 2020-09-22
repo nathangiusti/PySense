@@ -32,6 +32,7 @@ from PySense import SisenseVersion
 
 
 class DataModelMixIn:
+
     def add_data_model(self, data_model, *, title=None, target_data_model=None):
         &#34;&#34;&#34;Adds a new data model to the instance.
 
@@ -52,7 +53,7 @@ class DataModelMixIn:
             title: (optional) Title to give the data model
             target_data_model: (optional) The data model to update.
         &#34;&#34;&#34;
-        self._validate_version(SisenseVersion.Version.LINUX, &#39;add_data_model&#39;)
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;add_data_model&#39;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -91,7 +92,7 @@ class DataModelMixIn:
             If title is not specified an array will be returned.
 
         &#34;&#34;&#34;
-        self._validate_version(SisenseVersion.Version.LINUX, &#39;get_data_models&#39;)
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;get_data_models&#39;)
 
         query_params = {
             &#39;title&#39;: title,
@@ -119,7 +120,7 @@ class DataModelMixIn:
         Args:
             data_models: One to many data models to delete
         &#34;&#34;&#34;
-        self._validate_version(SisenseVersion.Version.LINUX, &#39;delete_data_model&#39;)
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;delete_data_model&#39;)
 
         for data_model in PySenseUtils.make_iterable(data_models):
             self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))
@@ -144,7 +145,7 @@ class DataModelMixIn:
             title: (optional) Title to give the data model
             target_data_model: (optional) The data model to update.
         &#34;&#34;&#34;
-        self._validate_version(SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -174,6 +175,7 @@ class DataModelMixIn:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class DataModelMixIn:
+
     def add_data_model(self, data_model, *, title=None, target_data_model=None):
         &#34;&#34;&#34;Adds a new data model to the instance.
 
@@ -194,7 +196,7 @@ class DataModelMixIn:
             title: (optional) Title to give the data model
             target_data_model: (optional) The data model to update.
         &#34;&#34;&#34;
-        self._validate_version(SisenseVersion.Version.LINUX, &#39;add_data_model&#39;)
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;add_data_model&#39;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -233,7 +235,7 @@ class DataModelMixIn:
             If title is not specified an array will be returned.
 
         &#34;&#34;&#34;
-        self._validate_version(SisenseVersion.Version.LINUX, &#39;get_data_models&#39;)
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;get_data_models&#39;)
 
         query_params = {
             &#39;title&#39;: title,
@@ -261,7 +263,7 @@ class DataModelMixIn:
         Args:
             data_models: One to many data models to delete
         &#34;&#34;&#34;
-        self._validate_version(SisenseVersion.Version.LINUX, &#39;delete_data_model&#39;)
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;delete_data_model&#39;)
 
         for data_model in PySenseUtils.make_iterable(data_models):
             self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))
@@ -286,7 +288,7 @@ class DataModelMixIn:
             title: (optional) Title to give the data model
             target_data_model: (optional) The data model to update.
         &#34;&#34;&#34;
-        self._validate_version(SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -347,7 +349,7 @@ add_data_model(new_data_model, target_data_model=old_data_model)</p>
         title: (optional) Title to give the data model
         target_data_model: (optional) The data model to update.
     &#34;&#34;&#34;
-    self._validate_version(SisenseVersion.Version.LINUX, &#39;add_data_model&#39;)
+    PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;add_data_model&#39;)
 
     target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -378,7 +380,7 @@ add_data_model(new_data_model, target_data_model=old_data_model)</p>
     Args:
         data_models: One to many data models to delete
     &#34;&#34;&#34;
-    self._validate_version(SisenseVersion.Version.LINUX, &#39;delete_data_model&#39;)
+    PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;delete_data_model&#39;)
 
     for data_model in PySenseUtils.make_iterable(data_models):
         self.connector.rest_call(&#39;delete&#39;, &#39;api/v2/datamodels/{}&#39;.format(data_model.get_oid()))</code></pre>
@@ -448,7 +450,7 @@ If title is not specified an array will be returned.</p></div>
         If title is not specified an array will be returned.
 
     &#34;&#34;&#34;
-    self._validate_version(SisenseVersion.Version.LINUX, &#39;get_data_models&#39;)
+    PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;get_data_models&#39;)
 
     query_params = {
         &#39;title&#39;: title,
@@ -516,7 +518,7 @@ add_data_model(path, target_data_model=old_data_model)</p>
         title: (optional) Title to give the data model
         target_data_model: (optional) The data model to update.
     &#34;&#34;&#34;
-    self._validate_version(SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
+    PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
 
     target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 

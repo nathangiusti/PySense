@@ -3,6 +3,7 @@ import json
 from collections.abc import Iterable
 from datetime import datetime
 
+from PySense import PySenseException
 
 def format_host(host):
     """Formats host for PySense"""
@@ -54,3 +55,9 @@ def strip_json(input_json, keys_to_delete):
         if key in input_json:
             input_json.pop(key, None)
     return input_json
+
+
+def validate_version(py_client, expected_version, function_name):
+    if py_client.version != expected_version:
+        raise PySenseException.PySenseException('{} is only supported on {}'
+                                                .format(function_name, expected_version))

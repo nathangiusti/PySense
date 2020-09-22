@@ -31,6 +31,7 @@
 from collections.abc import Iterable
 from datetime import datetime
 
+from PySense import PySenseException
 
 def format_host(host):
     &#34;&#34;&#34;Formats host for PySense&#34;&#34;&#34;
@@ -81,7 +82,13 @@ def strip_json(input_json, keys_to_delete):
     for key in make_iterable(keys_to_delete):
         if key in input_json:
             input_json.pop(key, None)
-    return input_json</code></pre>
+    return input_json
+
+
+def validate_version(py_client, expected_version, function_name):
+    if py_client.version != expected_version:
+        raise PySenseException.PySenseException(&#39;{} is only supported on {}&#39;
+                                                .format(function_name, expected_version))</code></pre>
 </details>
 </section>
 <section>
@@ -206,6 +213,21 @@ def strip_json(input_json, keys_to_delete):
     return input_json</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseUtils.validate_version"><code class="name flex">
+<span>def <span class="ident">validate_version</span></span>(<span>py_client, expected_version, function_name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_version(py_client, expected_version, function_name):
+    if py_client.version != expected_version:
+        raise PySenseException.PySenseException(&#39;{} is only supported on {}&#39;
+                                                .format(function_name, expected_version))</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -231,6 +253,7 @@ def strip_json(input_json, keys_to_delete):
 <li><code><a title="PySense.PySenseUtils.read_json" href="#PySense.PySenseUtils.read_json">read_json</a></code></li>
 <li><code><a title="PySense.PySenseUtils.sisense_time_to_python" href="#PySense.PySenseUtils.sisense_time_to_python">sisense_time_to_python</a></code></li>
 <li><code><a title="PySense.PySenseUtils.strip_json" href="#PySense.PySenseUtils.strip_json">strip_json</a></code></li>
+<li><code><a title="PySense.PySenseUtils.validate_version" href="#PySense.PySenseUtils.validate_version">validate_version</a></code></li>
 </ul>
 </li>
 </ul>

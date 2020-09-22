@@ -26,7 +26,7 @@ class DashboardMixIn:
 
         folder_id = None
         if parent_folder:
-            folder_id = parent_folder.get_id()
+            folder_id = parent_folder.get_oid()
 
         query_params = {
             'parentFolder': folder_id,
@@ -76,7 +76,7 @@ class DashboardMixIn:
 
         folder_id = None
         if parent_folder:
-            folder_id = parent_folder.get_id()
+            folder_id = parent_folder.get_oid()
 
         query_params = {
             'dashboardType': dashboard_type,

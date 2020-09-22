@@ -1,6 +1,7 @@
 from PySense import PySenseAuthentication
 from PySense import PySenseException
 from PySense import PySenseRestConnector
+from PySense import SisenseRole
 from PySense import SisenseVersion
 
 from PySense.PySenseMixIns import BrandingMixIn
@@ -89,6 +90,8 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
             debug: If true, prints detailed REST API logs to console. False by default.
             verify: If false, disables SSL Certification. True by default.
         """
+
+        # Verify version
         if version.lower() == 'windows':
             self.version = SisenseVersion.Version.WINDOWS
         elif version.lower() == 'linux':
@@ -96,8 +99,15 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
         else:
             raise PySenseException.PySenseException('{} not a valid OS. Please select Linux or Windows'.format(version))
 
+        # Initiate PySense Connection
         self.connector = PySenseRestConnector.RestConnector(host, token, debug, verify)
-        self._roles = self.connector.rest_call('get', 'api/roles')
+
+        # Set up Roles
+        roles = self.connector.rest_call('get', 'api/roles')
+        self._roles = {}
+        for role in roles:
+            if role['name'] in ['dataDesigner', 'super', 'dataAdmin', 'admin', 'contributor', 'consumer']:
+                self._roles[SisenseRole.Role.from_str(role['name'])] = role['_id']
 
     def set_debug(self, debug):
         """Enable or disable logging of REST api calls to std out.
@@ -105,8 +115,3 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
         Use for debugging. Debug is false by default.
         """
         self.connector.debug = debug
-
-    def _validate_version(self, expected_version, function_name):
-        if self.version != expected_version:
-            raise PySenseException.PySenseException('{} is only supported on {}'
-                                                    .format(function_name, expected_version))

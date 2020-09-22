@@ -13,4 +13,4 @@ path_to_backup = 'C:\\PySense\\Backups\\'
 py_client = PySense.authenticate_by_file(config_file_location)
 
 for dashboard in py_client.get_dashboards():
-    dashboard.export_to_dash(path=path_to_backup + '{}.dash'.format(dashboard.get_id()))
+    dashboard.export_to_dash(path=path_to_backup + '{}.dash'.format(dashboard.get_oid()))

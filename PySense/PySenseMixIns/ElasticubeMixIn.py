@@ -15,7 +15,7 @@ class ElasticubeMixIn:
         """Gets elasticube with given name"""
         cubes = self.get_elasticubes()
         for cube in cubes:
-            if cube.get_name() == name:
+            if cube.get_title() == name:
                 return cube
         return None
 

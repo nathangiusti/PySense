@@ -12,13 +12,13 @@ elasticubes = py_client.get_elasticubes()
 
 elasticube_counter_dict = {}
 for elasticube in elasticubes:
-    elasticube_counter_dict[elasticube.get_name()] = 0
+    elasticube_counter_dict[elasticube.get_title()] = 0
 
 for dashboard in dashboards:
     cube_name = None
     cube = dashboard.get_datasource() 
     if cube is not None:
-        cube_name = cube.get_name()
+        cube_name = cube.get_title()
     if cube_name is not None:
         elasticube_counter_dict[cube_name] = elasticube_counter_dict[cube_name] + 1
 

@@ -85,7 +85,7 @@ class User:
 
     def get_role(self):
         &#34;&#34;&#34;Returns the user&#39;s role.&#34;&#34;&#34;
-        return self._py_client.get_role_name(self._user_json[&#39;roleId&#39;])
+        return self._py_client.get_role_by_id(self._user_json[&#39;roleId&#39;])
 
     def get_role_id(self):
         &#34;&#34;&#34;Returns the role id.&#34;&#34;&#34;
@@ -201,7 +201,7 @@ class User:
 
     def get_role(self):
         &#34;&#34;&#34;Returns the user&#39;s role.&#34;&#34;&#34;
-        return self._py_client.get_role_name(self._user_json[&#39;roleId&#39;])
+        return self._py_client.get_role_by_id(self._user_json[&#39;roleId&#39;])
 
     def get_role_id(self):
         &#34;&#34;&#34;Returns the role id.&#34;&#34;&#34;
@@ -366,7 +366,7 @@ class User:
 </summary>
 <pre><code class="python">def get_role(self):
     &#34;&#34;&#34;Returns the user&#39;s role.&#34;&#34;&#34;
-    return self._py_client.get_role_name(self._user_json[&#39;roleId&#39;])</code></pre>
+    return self._py_client.get_role_by_id(self._user_json[&#39;roleId&#39;])</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseUser.User.get_role_id"><code class="name flex">

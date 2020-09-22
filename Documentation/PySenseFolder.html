@@ -32,8 +32,8 @@
         self._py_client = py_client
         self._folder_json = folder_json
 
-    def get_id(self):
-        &#34;&#34;&#34;Returns the folder&#39;s id.&#34;&#34;&#34;
+    def get_oid(self):
+        &#34;&#34;&#34;Returns the folder&#39;s oid.&#34;&#34;&#34;
         return self._folder_json[&#39;oid&#39;]
 
     def get_name(self):
@@ -66,8 +66,8 @@
         self._py_client = py_client
         self._folder_json = folder_json
 
-    def get_id(self):
-        &#34;&#34;&#34;Returns the folder&#39;s id.&#34;&#34;&#34;
+    def get_oid(self):
+        &#34;&#34;&#34;Returns the folder&#39;s oid.&#34;&#34;&#34;
         return self._folder_json[&#39;oid&#39;]
 
     def get_name(self):
@@ -76,20 +76,6 @@
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="PySense.PySenseFolder.Folder.get_id"><code class="name flex">
-<span>def <span class="ident">get_id</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the folder's id.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_id(self):
-    &#34;&#34;&#34;Returns the folder&#39;s id.&#34;&#34;&#34;
-    return self._folder_json[&#39;oid&#39;]</code></pre>
-</details>
-</dd>
 <dt id="PySense.PySenseFolder.Folder.get_name"><code class="name flex">
 <span>def <span class="ident">get_name</span></span>(<span>self)</span>
 </code></dt>
@@ -102,6 +88,20 @@
 <pre><code class="python">def get_name(self):
     &#34;&#34;&#34;Returns the folder&#39;s name&#34;&#34;&#34;
     return self._folder_json[&#39;name&#39;]</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseFolder.Folder.get_oid"><code class="name flex">
+<span>def <span class="ident">get_oid</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the folder's oid.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_oid(self):
+    &#34;&#34;&#34;Returns the folder&#39;s oid.&#34;&#34;&#34;
+    return self._folder_json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
 </dl>
@@ -125,8 +125,8 @@
 <li>
 <h4><code><a title="PySense.PySenseFolder.Folder" href="#PySense.PySenseFolder.Folder">Folder</a></code></h4>
 <ul class="">
-<li><code><a title="PySense.PySenseFolder.Folder.get_id" href="#PySense.PySenseFolder.Folder.get_id">get_id</a></code></li>
 <li><code><a title="PySense.PySenseFolder.Folder.get_name" href="#PySense.PySenseFolder.Folder.get_name">get_name</a></code></li>
+<li><code><a title="PySense.PySenseFolder.Folder.get_oid" href="#PySense.PySenseFolder.Folder.get_oid">get_oid</a></code></li>
 </ul>
 </li>
 </ul>

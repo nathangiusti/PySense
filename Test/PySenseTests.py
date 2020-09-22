@@ -5,6 +5,7 @@ import unittest
 from PySense import PySense
 from PySense import PySenseDashboard
 from PySense import PySenseDataModel
+from PySense import SisenseRole
 
 
 class PySenseTests(unittest.TestCase):
@@ -20,7 +21,7 @@ class PySenseTests(unittest.TestCase):
     def test_get_dashboards(self):
         ret = self.py_client.get_dashboards(name='PySense')
         assert len(ret) == 1
-        assert ret[0].get_name() == 'PySense'
+        assert ret[0].get_title() == 'PySense'
         ret = self.py_client.get_dashboards_admin()
         assert len(ret) > 1
 
@@ -50,12 +51,12 @@ class PySenseTests(unittest.TestCase):
     def test_get_folder_by_name_by_id(self):
         folder = self.py_client.get_folders(name='PySense')[0]
         assert folder.get_name() == 'PySense'
-        folder2 = self.py_client.get_folder_by_id(folder.get_id())
-        assert folder.get_id() == folder2.get_id()
+        folder2 = self.py_client.get_folder_by_id(folder.get_oid())
+        assert folder.get_oid() == folder2.get_oid()
 
     def test_post_update_delete_user(self):
         group = self.py_client.get_groups(name='PySense')
-        user = self.py_client.add_user('thisisfake@example.com', 'Viewer', groups=group)
+        user = self.py_client.add_user('thisisfake@example.com', SisenseRole.Role.from_str('Viewer'), groups=group)
         assert user is not None
         self.py_client.delete_users(user)
         assert len(self.py_client.get_users(user_name='new name')) == 0
@@ -64,7 +65,7 @@ class PySenseTests(unittest.TestCase):
         ret = self.py_client.get_elasticubes()
         assert len(ret) > 1
         ret = self.py_client.get_elasticube_by_name('PySense')
-        assert ret.get_name() == 'PySense'
+        assert ret.get_title() == 'PySense'
 
     def test_get_add_remove_group(self):
         groups = self.py_client.add_groups(self.group_names)
@@ -97,6 +98,9 @@ class PySenseTests(unittest.TestCase):
         branding = self.py_client_linux.get_branding()
         assert branding is not None
         self.py_client_linux.set_branding(branding)
+
+    def test_roles(self):
+        assert self.py_client.get_role_id(SisenseRole.Role.VIEWER) is not None
 
     @classmethod
     def tearDownClass(cls):

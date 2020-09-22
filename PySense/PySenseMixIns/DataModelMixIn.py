@@ -4,6 +4,7 @@ from PySense import SisenseVersion
 
 
 class DataModelMixIn:
+
     def add_data_model(self, data_model, *, title=None, target_data_model=None):
         """Adds a new data model to the instance.
 
@@ -24,7 +25,7 @@ class DataModelMixIn:
             title: (optional) Title to give the data model
             target_data_model: (optional) The data model to update.
         """
-        self._validate_version(SisenseVersion.Version.LINUX, 'add_data_model')
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, 'add_data_model')
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
@@ -63,7 +64,7 @@ class DataModelMixIn:
             If title is not specified an array will be returned.
 
         """
-        self._validate_version(SisenseVersion.Version.LINUX, 'get_data_models')
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, 'get_data_models')
 
         query_params = {
             'title': title,
@@ -91,7 +92,7 @@ class DataModelMixIn:
         Args:
             data_models: One to many data models to delete
         """
-        self._validate_version(SisenseVersion.Version.LINUX, 'delete_data_model')
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, 'delete_data_model')
 
         for data_model in PySenseUtils.make_iterable(data_models):
             self.connector.rest_call('delete', 'api/v2/datamodels/{}'.format(data_model.get_oid()))
@@ -116,7 +117,7 @@ class DataModelMixIn:
             title: (optional) Title to give the data model
             target_data_model: (optional) The data model to update.
         """
-        self._validate_version(SisenseVersion.Version.LINUX, 'import_schema')
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, 'import_schema')
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 

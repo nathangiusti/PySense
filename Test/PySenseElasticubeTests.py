@@ -12,8 +12,7 @@ class PySenseElasticubeTests(unittest.TestCase):
         cls.elasticube = cls.py_client.get_elasticube_by_name('PySense')
 
     def test_getters(self):
-        assert self.elasticube.get_model() is not None
-        assert self.elasticube.get_name() is not None
+        assert self.elasticube.get_title() is not None
         assert self.elasticube.get_shares() is not None
 
     def test_shares(self):
@@ -38,7 +37,7 @@ class PySenseElasticubeTests(unittest.TestCase):
         shares.extend(self.py_client.get_groups(name='PySense'))
 
         rule = self.elasticube.add_security_rule('Dim_Dates', 'BusinessDay', 'numeric', shares=shares, members=["1"])
-        assert len(self.elasticube.get_security_for_user(shares[0])) == 2
+        assert len(self.elasticube.get_datasecurity_for_user(shares[0])) == 2
         assert len(self.elasticube.get_datasecurity()) == 2
         assert len(self.elasticube.
                    get_datasecurity_by_table_column('Dim_Dates', 'BusinessDay')) == 2

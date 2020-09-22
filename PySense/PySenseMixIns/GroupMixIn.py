@@ -75,7 +75,6 @@ class GroupMixIn:
                 ret.append(group)
         return ret
 
-
     def add_groups(self, names):
         """Add groups with given names.
 
@@ -91,7 +90,6 @@ class GroupMixIn:
             resp_json = self.connector.rest_call('post', 'api/v1/groups', json_payload=payload)
             ret_arr.append(PySenseGroup.Group(self, resp_json))
         return ret_arr
-
 
     def delete_groups(self, groups):
         """Delete groups.

@@ -72,7 +72,7 @@ class ConnectionMixIn:
     def delete_connections(self, connections):
         &#34;&#34;&#34;Deletes the given PySense connections&#34;&#34;&#34;
         for connection in PySenseUtils.make_iterable(connections):
-            self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/connection/{}&#39;.format(connection.get_id()))</code></pre>
+            self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/connection/{}&#39;.format(connection.get_oid()))</code></pre>
 </details>
 </section>
 <section>
@@ -135,7 +135,7 @@ class ConnectionMixIn:
     def delete_connections(self, connections):
         &#34;&#34;&#34;Deletes the given PySense connections&#34;&#34;&#34;
         for connection in PySenseUtils.make_iterable(connections):
-            self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/connection/{}&#39;.format(connection.get_id()))</code></pre>
+            self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/connection/{}&#39;.format(connection.get_oid()))</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -170,7 +170,7 @@ class ConnectionMixIn:
 <pre><code class="python">def delete_connections(self, connections):
     &#34;&#34;&#34;Deletes the given PySense connections&#34;&#34;&#34;
     for connection in PySenseUtils.make_iterable(connections):
-        self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/connection/{}&#39;.format(connection.get_id()))</code></pre>
+        self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/connection/{}&#39;.format(connection.get_oid()))</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseMixIns.ConnectionMixIn.ConnectionMixIn.get_connection_by_id"><code class="name flex">

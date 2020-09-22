@@ -12,7 +12,7 @@ class Widget:
         """Returns the dashboard id of the widget."""
         return self._widget_json['dashboardid']
 
-    def get_id(self):
+    def get_oid(self):
         """Gets the widget's id"""
         return self._widget_json['oid']
 
@@ -29,7 +29,7 @@ class Widget:
         """
         query_params = {'width': width, 'height': height}
         resp_content = self._py_client.connector.rest_call('get', 'api/v1/dashboards/{}/widgets/{}/export/png'
-                                                           .format(self.get_dashboard_id(), self.get_id()),
+                                                           .format(self.get_dashboard_id(), self.get_oid()),
                                                            query_params=query_params, raw=True)
         if path is not None:
             with open(path, 'wb') as out_file:

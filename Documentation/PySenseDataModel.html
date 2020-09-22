@@ -72,8 +72,7 @@ class DataModel:
 
     def get_schema_json(self):
         &#34;&#34;&#34;Returns the schema json. Linux Only&#34;&#34;&#34;
-        if self._py_client.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException(&#39;Get schema json not supported on windows&#39;)
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;get_schema_json&#39;)
 
         if self._schema_json is None:
             query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
@@ -93,8 +92,7 @@ class DataModel:
         Returns:
             A BuildTask object
         &#34;&#34;&#34;
-        if self._py_client.version != SisenseVersion.Version.LINUX:
-            raise PySenseException.PySenseException(&#39;Build from API not supported in Windows&#39;)
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;start_build&#39;)
 
         build_type = build_type.lower()
         if build_type not in [&#39;schema_changes&#39;, &#39;by_table&#39;, &#39;full&#39;, &#39;publish&#39;]:
@@ -123,8 +121,7 @@ class DataModel:
         Returns:
             A BuildTask object
         &#34;&#34;&#34;
-        if self._py_client.version != SisenseVersion.Version.LINUX:
-            raise PySenseException.PySenseException(&#39;Cancel build from API not supported in Windows&#39;)
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;cancel_build&#39;)
 
         query_params = {
             &#39;datamodelId&#39;: self.get_oid()
@@ -135,12 +132,16 @@ class DataModel:
     def export_to_smodel(self, path):
         &#34;&#34;&#34;Download datamodel as an smodel file.
 
+        Only supported on Linux
+
         Args:
             path: Path to save location of the smodel file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
 
         Returns:
             The path of the created file
         &#34;&#34;&#34;
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;export_to_smodel&#39;)
+
         query_params = {
             &#39;datamodelId&#39;: self.get_oid(),
             &#39;type&#39;: &#39;schema-latest&#39;
@@ -208,8 +209,7 @@ class DataModel:
 
     def get_schema_json(self):
         &#34;&#34;&#34;Returns the schema json. Linux Only&#34;&#34;&#34;
-        if self._py_client.version == SisenseVersion.Version.WINDOWS:
-            raise PySenseException.PySenseException(&#39;Get schema json not supported on windows&#39;)
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;get_schema_json&#39;)
 
         if self._schema_json is None:
             query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
@@ -229,8 +229,7 @@ class DataModel:
         Returns:
             A BuildTask object
         &#34;&#34;&#34;
-        if self._py_client.version != SisenseVersion.Version.LINUX:
-            raise PySenseException.PySenseException(&#39;Build from API not supported in Windows&#39;)
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;start_build&#39;)
 
         build_type = build_type.lower()
         if build_type not in [&#39;schema_changes&#39;, &#39;by_table&#39;, &#39;full&#39;, &#39;publish&#39;]:
@@ -259,8 +258,7 @@ class DataModel:
         Returns:
             A BuildTask object
         &#34;&#34;&#34;
-        if self._py_client.version != SisenseVersion.Version.LINUX:
-            raise PySenseException.PySenseException(&#39;Cancel build from API not supported in Windows&#39;)
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;cancel_build&#39;)
 
         query_params = {
             &#39;datamodelId&#39;: self.get_oid()
@@ -271,12 +269,16 @@ class DataModel:
     def export_to_smodel(self, path):
         &#34;&#34;&#34;Download datamodel as an smodel file.
 
+        Only supported on Linux
+
         Args:
             path: Path to save location of the smodel file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
 
         Returns:
             The path of the created file
         &#34;&#34;&#34;
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;export_to_smodel&#39;)
+
         query_params = {
             &#39;datamodelId&#39;: self.get_oid(),
             &#39;type&#39;: &#39;schema-latest&#39;
@@ -315,8 +317,7 @@ class DataModel:
     Returns:
         A BuildTask object
     &#34;&#34;&#34;
-    if self._py_client.version != SisenseVersion.Version.LINUX:
-        raise PySenseException.PySenseException(&#39;Cancel build from API not supported in Windows&#39;)
+    PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;cancel_build&#39;)
 
     query_params = {
         &#39;datamodelId&#39;: self.get_oid()
@@ -330,6 +331,7 @@ class DataModel:
 </code></dt>
 <dd>
 <div class="desc"><p>Download datamodel as an smodel file.</p>
+<p>Only supported on Linux</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>path</code></strong></dt>
@@ -344,12 +346,16 @@ class DataModel:
 <pre><code class="python">def export_to_smodel(self, path):
     &#34;&#34;&#34;Download datamodel as an smodel file.
 
+    Only supported on Linux
+
     Args:
         path: Path to save location of the smodel file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
 
     Returns:
         The path of the created file
     &#34;&#34;&#34;
+    PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;export_to_smodel&#39;)
+
     query_params = {
         &#39;datamodelId&#39;: self.get_oid(),
         &#39;type&#39;: &#39;schema-latest&#39;
@@ -428,8 +434,7 @@ class DataModel:
 </summary>
 <pre><code class="python">def get_schema_json(self):
     &#34;&#34;&#34;Returns the schema json. Linux Only&#34;&#34;&#34;
-    if self._py_client.version == SisenseVersion.Version.WINDOWS:
-        raise PySenseException.PySenseException(&#39;Get schema json not supported on windows&#39;)
+    PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;get_schema_json&#39;)
 
     if self._schema_json is None:
         query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
@@ -481,8 +486,7 @@ class DataModel:
     Returns:
         A BuildTask object
     &#34;&#34;&#34;
-    if self._py_client.version != SisenseVersion.Version.LINUX:
-        raise PySenseException.PySenseException(&#39;Build from API not supported in Windows&#39;)
+    PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;start_build&#39;)
 
     build_type = build_type.lower()
     if build_type not in [&#39;schema_changes&#39;, &#39;by_table&#39;, &#39;full&#39;, &#39;publish&#39;]:

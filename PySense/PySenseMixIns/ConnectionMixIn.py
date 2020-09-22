@@ -44,4 +44,4 @@ class ConnectionMixIn:
     def delete_connections(self, connections):
         """Deletes the given PySense connections"""
         for connection in PySenseUtils.make_iterable(connections):
-            self.connector.rest_call('delete', 'api/v1/connection/{}'.format(connection.get_id()))
+            self.connector.rest_call('delete', 'api/v1/connection/{}'.format(connection.get_oid()))

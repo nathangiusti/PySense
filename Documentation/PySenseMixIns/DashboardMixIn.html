@@ -54,7 +54,7 @@ class DashboardMixIn:
 
         folder_id = None
         if parent_folder:
-            folder_id = parent_folder.get_id()
+            folder_id = parent_folder.get_oid()
 
         query_params = {
             &#39;parentFolder&#39;: folder_id,
@@ -104,7 +104,7 @@ class DashboardMixIn:
 
         folder_id = None
         if parent_folder:
-            folder_id = parent_folder.get_id()
+            folder_id = parent_folder.get_oid()
 
         query_params = {
             &#39;dashboardType&#39;: dashboard_type,
@@ -237,7 +237,7 @@ class DashboardMixIn:
 
         folder_id = None
         if parent_folder:
-            folder_id = parent_folder.get_id()
+            folder_id = parent_folder.get_oid()
 
         query_params = {
             &#39;parentFolder&#39;: folder_id,
@@ -287,7 +287,7 @@ class DashboardMixIn:
 
         folder_id = None
         if parent_folder:
-            folder_id = parent_folder.get_id()
+            folder_id = parent_folder.get_oid()
 
         query_params = {
             &#39;dashboardType&#39;: dashboard_type,
@@ -573,7 +573,7 @@ Can also exclude by prefixing field names with -</dd>
 
     folder_id = None
     if parent_folder:
-        folder_id = parent_folder.get_id()
+        folder_id = parent_folder.get_oid()
 
     query_params = {
         &#39;parentFolder&#39;: folder_id,
@@ -671,7 +671,7 @@ limit is to be used with the skip parameter for paging</dd>
 
     folder_id = None
     if parent_folder:
-        folder_id = parent_folder.get_id()
+        folder_id = parent_folder.get_oid()
 
     query_params = {
         &#39;dashboardType&#39;: dashboard_type,

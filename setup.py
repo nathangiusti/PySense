@@ -6,7 +6,7 @@ with open("readme.md", "r") as fh:
 
 setuptools.setup(
     name="PySenseSDK",
-    version="0.2.20",
+    version="0.3.0",
     author="Nathan Giusti",
     author_email="nathanggiusti@gmail.com",
     description="Sisense Python SDK",

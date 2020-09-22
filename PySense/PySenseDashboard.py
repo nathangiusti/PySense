@@ -32,14 +32,14 @@ class Dashboard:
         """Gets the dashboard's id"""
         return self._dashboard_json['oid']
 
-    def get_name(self):
+    def get_title(self):
         """Gets the dashboard's title"""
         if 'title' in self._dashboard_json:
             return self._dashboard_json['title']
         else:
             return None
 
-    def get_dashboard_folder(self):
+    def get_folder(self):
         """Gets the dashboards folder"""
         if 'parentFolder' in self._dashboard_json:
             return self._py_client.get_folder_by_id(self._dashboard_json['parentFolder'])
@@ -129,7 +129,7 @@ class Dashboard:
     def move_to_folder(self, folder):
         """Move dashboard to given folder"""
         if folder:
-            folder_oid = folder.get_id()
+            folder_oid = folder.get_oid()
         else:
             folder_oid = None
         self._py_client.connector.rest_call('patch', 'api/v1/dashboards/{}'.format(self.get_id()),
@@ -272,7 +272,7 @@ class Dashboard:
                                               query_params=query_params)
         for widget in resp_json:
             dash_widget = PySenseWidget.Widget(self._py_client, widget)
-            if id is not None and dash_widget.get_id() == id:
+            if id is not None and dash_widget.get_oid() == id:
                 return dash_widget
             ret_arr.append(dash_widget)
         return ret_arr
@@ -315,7 +315,7 @@ class Dashboard:
         """Deletes widgets from it’s dashboard."""
         for widget in PySenseUtils.make_iterable(widgets):
             self._py_client.connector.rest_call('delete', 'api/v1/dashboards/{}/widgets/{}'
-                                                .format(self.get_id(), widget.get_id()))
+                                                .format(self.get_id(), widget.get_oid()))
         self._reset()
 
     def remove_ghost_widgets(self):

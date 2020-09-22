@@ -57,7 +57,7 @@ class User:
 
     def get_role(self):
         """Returns the user's role."""
-        return self._py_client.get_role_name(self._user_json['roleId'])
+        return self._py_client.get_role_by_id(self._user_json['roleId'])
 
     def get_role_id(self):
         """Returns the role id."""

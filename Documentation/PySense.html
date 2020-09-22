@@ -29,6 +29,7 @@
 <pre><code class="python">from PySense import PySenseAuthentication
 from PySense import PySenseException
 from PySense import PySenseRestConnector
+from PySense import SisenseRole
 from PySense import SisenseVersion
 
 from PySense.PySenseMixIns import BrandingMixIn
@@ -117,6 +118,8 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
             debug: If true, prints detailed REST API logs to console. False by default.
             verify: If false, disables SSL Certification. True by default.
         &#34;&#34;&#34;
+
+        # Verify version
         if version.lower() == &#39;windows&#39;:
             self.version = SisenseVersion.Version.WINDOWS
         elif version.lower() == &#39;linux&#39;:
@@ -124,20 +127,22 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
         else:
             raise PySenseException.PySenseException(&#39;{} not a valid OS. Please select Linux or Windows&#39;.format(version))
 
+        # Initiate PySense Connection
         self.connector = PySenseRestConnector.RestConnector(host, token, debug, verify)
-        self._roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
+
+        # Set up Roles
+        roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
+        self._roles = {}
+        for role in roles:
+            if role[&#39;name&#39;] in [&#39;dataDesigner&#39;, &#39;super&#39;, &#39;dataAdmin&#39;, &#39;admin&#39;, &#39;contributor&#39;, &#39;consumer&#39;]:
+                self._roles[SisenseRole.Role.from_str(role[&#39;name&#39;])] = role[&#39;_id&#39;]
 
     def set_debug(self, debug):
         &#34;&#34;&#34;Enable or disable logging of REST api calls to std out.
 
         Use for debugging. Debug is false by default.
         &#34;&#34;&#34;
-        self.connector.debug = debug
-
-    def _validate_version(self, expected_version, function_name):
-        if self.version != expected_version:
-            raise PySenseException.PySenseException(&#39;{} is only supported on {}&#39;
-                                                    .format(function_name, expected_version))</code></pre>
+        self.connector.debug = debug</code></pre>
 </details>
 </section>
 <section>
@@ -313,6 +318,8 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
             debug: If true, prints detailed REST API logs to console. False by default.
             verify: If false, disables SSL Certification. True by default.
         &#34;&#34;&#34;
+
+        # Verify version
         if version.lower() == &#39;windows&#39;:
             self.version = SisenseVersion.Version.WINDOWS
         elif version.lower() == &#39;linux&#39;:
@@ -320,20 +327,22 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
         else:
             raise PySenseException.PySenseException(&#39;{} not a valid OS. Please select Linux or Windows&#39;.format(version))
 
+        # Initiate PySense Connection
         self.connector = PySenseRestConnector.RestConnector(host, token, debug, verify)
-        self._roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
+
+        # Set up Roles
+        roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
+        self._roles = {}
+        for role in roles:
+            if role[&#39;name&#39;] in [&#39;dataDesigner&#39;, &#39;super&#39;, &#39;dataAdmin&#39;, &#39;admin&#39;, &#39;contributor&#39;, &#39;consumer&#39;]:
+                self._roles[SisenseRole.Role.from_str(role[&#39;name&#39;])] = role[&#39;_id&#39;]
 
     def set_debug(self, debug):
         &#34;&#34;&#34;Enable or disable logging of REST api calls to std out.
 
         Use for debugging. Debug is false by default.
         &#34;&#34;&#34;
-        self.connector.debug = debug
-
-    def _validate_version(self, expected_version, function_name):
-        if self.version != expected_version:
-            raise PySenseException.PySenseException(&#39;{} is only supported on {}&#39;
-                                                    .format(function_name, expected_version))</code></pre>
+        self.connector.debug = debug</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -432,7 +441,6 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <li><code><b><a title="PySense.PySenseMixIns.RoleMixIn.RoleMixIn" href="PySenseMixIns/RoleMixIn.html#PySense.PySenseMixIns.RoleMixIn.RoleMixIn">RoleMixIn</a></b></code>:
 <ul class="hlist">
 <li><code><a title="PySense.PySenseMixIns.RoleMixIn.RoleMixIn.get_role_id" href="PySenseMixIns/RoleMixIn.html#PySense.PySenseMixIns.RoleMixIn.RoleMixIn.get_role_id">get_role_id</a></code></li>
-<li><code><a title="PySense.PySenseMixIns.RoleMixIn.RoleMixIn.get_role_name" href="PySenseMixIns/RoleMixIn.html#PySense.PySenseMixIns.RoleMixIn.RoleMixIn.get_role_name">get_role_name</a></code></li>
 </ul>
 </li>
 <li><code><b><a title="PySense.PySenseMixIns.UserMixIn.UserMixIn" href="PySenseMixIns/UserMixIn.html#PySense.PySenseMixIns.UserMixIn.UserMixIn">UserMixIn</a></b></code>:

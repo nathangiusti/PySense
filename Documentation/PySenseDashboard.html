@@ -60,14 +60,14 @@ class Dashboard:
         &#34;&#34;&#34;Gets the dashboard&#39;s id&#34;&#34;&#34;
         return self._dashboard_json[&#39;oid&#39;]
 
-    def get_name(self):
+    def get_title(self):
         &#34;&#34;&#34;Gets the dashboard&#39;s title&#34;&#34;&#34;
         if &#39;title&#39; in self._dashboard_json:
             return self._dashboard_json[&#39;title&#39;]
         else:
             return None
 
-    def get_dashboard_folder(self):
+    def get_folder(self):
         &#34;&#34;&#34;Gets the dashboards folder&#34;&#34;&#34;
         if &#39;parentFolder&#39; in self._dashboard_json:
             return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
@@ -157,7 +157,7 @@ class Dashboard:
     def move_to_folder(self, folder):
         &#34;&#34;&#34;Move dashboard to given folder&#34;&#34;&#34;
         if folder:
-            folder_oid = folder.get_id()
+            folder_oid = folder.get_oid()
         else:
             folder_oid = None
         self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
@@ -300,7 +300,7 @@ class Dashboard:
                                               query_params=query_params)
         for widget in resp_json:
             dash_widget = PySenseWidget.Widget(self._py_client, widget)
-            if id is not None and dash_widget.get_id() == id:
+            if id is not None and dash_widget.get_oid() == id:
                 return dash_widget
             ret_arr.append(dash_widget)
         return ret_arr
@@ -343,7 +343,7 @@ class Dashboard:
         &#34;&#34;&#34;Deletes widgets from it’s dashboard.&#34;&#34;&#34;
         for widget in PySenseUtils.make_iterable(widgets):
             self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
-                                                .format(self.get_id(), widget.get_id()))
+                                                .format(self.get_id(), widget.get_oid()))
         self._reset()
 
     def remove_ghost_widgets(self):
@@ -447,14 +447,14 @@ class Dashboard:
         &#34;&#34;&#34;Gets the dashboard&#39;s id&#34;&#34;&#34;
         return self._dashboard_json[&#39;oid&#39;]
 
-    def get_name(self):
+    def get_title(self):
         &#34;&#34;&#34;Gets the dashboard&#39;s title&#34;&#34;&#34;
         if &#39;title&#39; in self._dashboard_json:
             return self._dashboard_json[&#39;title&#39;]
         else:
             return None
 
-    def get_dashboard_folder(self):
+    def get_folder(self):
         &#34;&#34;&#34;Gets the dashboards folder&#34;&#34;&#34;
         if &#39;parentFolder&#39; in self._dashboard_json:
             return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
@@ -544,7 +544,7 @@ class Dashboard:
     def move_to_folder(self, folder):
         &#34;&#34;&#34;Move dashboard to given folder&#34;&#34;&#34;
         if folder:
-            folder_oid = folder.get_id()
+            folder_oid = folder.get_oid()
         else:
             folder_oid = None
         self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
@@ -687,7 +687,7 @@ class Dashboard:
                                               query_params=query_params)
         for widget in resp_json:
             dash_widget = PySenseWidget.Widget(self._py_client, widget)
-            if id is not None and dash_widget.get_id() == id:
+            if id is not None and dash_widget.get_oid() == id:
                 return dash_widget
             ret_arr.append(dash_widget)
         return ret_arr
@@ -730,7 +730,7 @@ class Dashboard:
         &#34;&#34;&#34;Deletes widgets from it’s dashboard.&#34;&#34;&#34;
         for widget in PySenseUtils.make_iterable(widgets):
             self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
-                                                .format(self.get_id(), widget.get_id()))
+                                                .format(self.get_id(), widget.get_oid()))
         self._reset()
 
     def remove_ghost_widgets(self):
@@ -893,7 +893,7 @@ class Dashboard:
     &#34;&#34;&#34;Deletes widgets from it’s dashboard.&#34;&#34;&#34;
     for widget in PySenseUtils.make_iterable(widgets):
         self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
-                                            .format(self.get_id(), widget.get_id()))
+                                            .format(self.get_id(), widget.get_oid()))
     self._reset()</code></pre>
 </details>
 </dd>
@@ -1104,23 +1104,6 @@ class Dashboard:
         return resp_content</code></pre>
 </details>
 </dd>
-<dt id="PySense.PySenseDashboard.Dashboard.get_dashboard_folder"><code class="name flex">
-<span>def <span class="ident">get_dashboard_folder</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Gets the dashboards folder</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_dashboard_folder(self):
-    &#34;&#34;&#34;Gets the dashboards folder&#34;&#34;&#34;
-    if &#39;parentFolder&#39; in self._dashboard_json:
-        return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
-    else:
-        return None</code></pre>
-</details>
-</dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_datasource"><code class="name flex">
 <span>def <span class="ident">get_datasource</span></span>(<span>self)</span>
 </code></dt>
@@ -1140,6 +1123,23 @@ class Dashboard:
         return self._py_client.get_elasticube_by_name(self._dashboard_json[&#39;datasource&#39;][&#39;title&#39;])
     else:
         None</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDashboard.Dashboard.get_folder"><code class="name flex">
+<span>def <span class="ident">get_folder</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the dashboards folder</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_folder(self):
+    &#34;&#34;&#34;Gets the dashboards folder&#34;&#34;&#34;
+    if &#39;parentFolder&#39; in self._dashboard_json:
+        return self._py_client.get_folder_by_id(self._dashboard_json[&#39;parentFolder&#39;])
+    else:
+        return None</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_id"><code class="name flex">
@@ -1200,23 +1200,6 @@ class Dashboard:
     &#34;&#34;&#34;Returns the last updated time for the dashboard&#34;&#34;&#34;
     if &#39;lastUpdated&#39; in self._dashboard_json:
         return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;lastUpdated&#39;])
-    else:
-        return None</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseDashboard.Dashboard.get_name"><code class="name flex">
-<span>def <span class="ident">get_name</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Gets the dashboard's title</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_name(self):
-    &#34;&#34;&#34;Gets the dashboard&#39;s title&#34;&#34;&#34;
-    if &#39;title&#39; in self._dashboard_json:
-        return self._dashboard_json[&#39;title&#39;]
     else:
         return None</code></pre>
 </details>
@@ -1283,6 +1266,23 @@ class Dashboard:
         return return_json
     except PySenseException.PySenseException:
         return self._dashboard_json[&#39;shares&#39;]</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDashboard.Dashboard.get_title"><code class="name flex">
+<span>def <span class="ident">get_title</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the dashboard's title</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_title(self):
+    &#34;&#34;&#34;Gets the dashboard&#39;s title&#34;&#34;&#34;
+    if &#39;title&#39; in self._dashboard_json:
+        return self._dashboard_json[&#39;title&#39;]
+    else:
+        return None</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_widget_by_id"><code class="name flex">
@@ -1392,7 +1392,7 @@ parameter for paging</dd>
                                           query_params=query_params)
     for widget in resp_json:
         dash_widget = PySenseWidget.Widget(self._py_client, widget)
-        if id is not None and dash_widget.get_id() == id:
+        if id is not None and dash_widget.get_oid() == id:
             return dash_widget
         ret_arr.append(dash_widget)
     return ret_arr</code></pre>
@@ -1410,7 +1410,7 @@ parameter for paging</dd>
 <pre><code class="python">def move_to_folder(self, folder):
     &#34;&#34;&#34;Move dashboard to given folder&#34;&#34;&#34;
     if folder:
-        folder_oid = folder.get_id()
+        folder_oid = folder.get_oid()
     else:
         folder_oid = None
     self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
@@ -1516,16 +1516,16 @@ parameter for paging</dd>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_dash" href="#PySense.PySenseDashboard.Dashboard.export_to_dash">export_to_dash</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_pdf" href="#PySense.PySenseDashboard.Dashboard.export_to_pdf">export_to_pdf</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_png" href="#PySense.PySenseDashboard.Dashboard.export_to_png">export_to_png</a></code></li>
-<li><code><a title="PySense.PySenseDashboard.Dashboard.get_dashboard_folder" href="#PySense.PySenseDashboard.Dashboard.get_dashboard_folder">get_dashboard_folder</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_datasource" href="#PySense.PySenseDashboard.Dashboard.get_datasource">get_datasource</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.get_folder" href="#PySense.PySenseDashboard.Dashboard.get_folder">get_folder</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_id" href="#PySense.PySenseDashboard.Dashboard.get_id">get_id</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_json" href="#PySense.PySenseDashboard.Dashboard.get_json">get_json</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_last_opened" href="#PySense.PySenseDashboard.Dashboard.get_last_opened">get_last_opened</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_last_updated" href="#PySense.PySenseDashboard.Dashboard.get_last_updated">get_last_updated</a></code></li>
-<li><code><a title="PySense.PySenseDashboard.Dashboard.get_name" href="#PySense.PySenseDashboard.Dashboard.get_name">get_name</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_owner" href="#PySense.PySenseDashboard.Dashboard.get_owner">get_owner</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_share_users_groups" href="#PySense.PySenseDashboard.Dashboard.get_share_users_groups">get_share_users_groups</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_shares" href="#PySense.PySenseDashboard.Dashboard.get_shares">get_shares</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.get_title" href="#PySense.PySenseDashboard.Dashboard.get_title">get_title</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_widget_by_id" href="#PySense.PySenseDashboard.Dashboard.get_widget_by_id">get_widget_by_id</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_widgets" href="#PySense.PySenseDashboard.Dashboard.get_widgets">get_widgets</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.move_to_folder" href="#PySense.PySenseDashboard.Dashboard.move_to_folder">move_to_folder</a></code></li>

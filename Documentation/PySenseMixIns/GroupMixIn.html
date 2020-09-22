@@ -103,7 +103,6 @@ class GroupMixIn:
                 ret.append(group)
         return ret
 
-
     def add_groups(self, names):
         &#34;&#34;&#34;Add groups with given names.
 
@@ -119,7 +118,6 @@ class GroupMixIn:
             resp_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/groups&#39;, json_payload=payload)
             ret_arr.append(PySenseGroup.Group(self, resp_json))
         return ret_arr
-
 
     def delete_groups(self, groups):
         &#34;&#34;&#34;Delete groups.
@@ -222,7 +220,6 @@ class GroupMixIn:
                 ret.append(group)
         return ret
 
-
     def add_groups(self, names):
         &#34;&#34;&#34;Add groups with given names.
 
@@ -238,7 +235,6 @@ class GroupMixIn:
             resp_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/groups&#39;, json_payload=payload)
             ret_arr.append(PySenseGroup.Group(self, resp_json))
         return ret_arr
-
 
     def delete_groups(self, groups):
         &#34;&#34;&#34;Delete groups.
