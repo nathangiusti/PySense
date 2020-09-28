@@ -194,7 +194,26 @@ class DashboardMixIn:
                          &#39;&#34;#218A8C&#34;],&#34;name&#34;:&#34;Vivid&#34;,&#34;sortOrder&#34;:10,&#34;isSystem&#34;:true,&#34;systemDefault&#34;:true}},&#39; \
                          &#39;&#34;editing&#34;:true}&#39;)
         resp = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards&#39;, json_payload=dashboard_json)
-        return PySenseDashboard.Dashboard(self, resp)</code></pre>
+        return PySenseDashboard.Dashboard(self, resp)
+
+    def import_dashboard(self, path, *, action=&#39;overwrite&#39;, republish=True):
+        &#34;&#34;&#34;Import dashboard file from path
+
+        Can be used to update an existing dashboard.
+
+        Args:
+            path: The path to the dash file
+            action: Determines if the dashboard should be overwritten
+            republish: Republishes dashboards on target server after copying
+        &#34;&#34;&#34;
+
+        query_params = {&#39;action&#39;: action, &#39;republish&#39;: republish}
+        json_obj = PySenseUtils.read_json(path)
+        json_array = [json_obj]
+        result_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/import/bulk&#39;,
+                                               query_params=query_params, json_payload=json_array)
+        dashboard_json = result_json[&#34;succeded&#34;][0]
+        return PySenseDashboard.Dashboard(self, dashboard_json)</code></pre>
 </details>
 </section>
 <section>
@@ -377,7 +396,26 @@ class DashboardMixIn:
                          &#39;&#34;#218A8C&#34;],&#34;name&#34;:&#34;Vivid&#34;,&#34;sortOrder&#34;:10,&#34;isSystem&#34;:true,&#34;systemDefault&#34;:true}},&#39; \
                          &#39;&#34;editing&#34;:true}&#39;)
         resp = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards&#39;, json_payload=dashboard_json)
-        return PySenseDashboard.Dashboard(self, resp)</code></pre>
+        return PySenseDashboard.Dashboard(self, resp)
+
+    def import_dashboard(self, path, *, action=&#39;overwrite&#39;, republish=True):
+        &#34;&#34;&#34;Import dashboard file from path
+
+        Can be used to update an existing dashboard.
+
+        Args:
+            path: The path to the dash file
+            action: Determines if the dashboard should be overwritten
+            republish: Republishes dashboards on target server after copying
+        &#34;&#34;&#34;
+
+        query_params = {&#39;action&#39;: action, &#39;republish&#39;: republish}
+        json_obj = PySenseUtils.read_json(path)
+        json_array = [json_obj]
+        result_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/import/bulk&#39;,
+                                               query_params=query_params, json_payload=json_array)
+        dashboard_json = result_json[&#34;succeded&#34;][0]
+        return PySenseDashboard.Dashboard(self, dashboard_json)</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -697,6 +735,45 @@ limit is to be used with the skip parameter for paging</dd>
     return ret_arr</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.import_dashboard"><code class="name flex">
+<span>def <span class="ident">import_dashboard</span></span>(<span>self, path, *, action='overwrite', republish=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Import dashboard file from path</p>
+<p>Can be used to update an existing dashboard.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong></dt>
+<dd>The path to the dash file</dd>
+<dt><strong><code>action</code></strong></dt>
+<dd>Determines if the dashboard should be overwritten</dd>
+<dt><strong><code>republish</code></strong></dt>
+<dd>Republishes dashboards on target server after copying</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_dashboard(self, path, *, action=&#39;overwrite&#39;, republish=True):
+    &#34;&#34;&#34;Import dashboard file from path
+
+    Can be used to update an existing dashboard.
+
+    Args:
+        path: The path to the dash file
+        action: Determines if the dashboard should be overwritten
+        republish: Republishes dashboards on target server after copying
+    &#34;&#34;&#34;
+
+    query_params = {&#39;action&#39;: action, &#39;republish&#39;: republish}
+    json_obj = PySenseUtils.read_json(path)
+    json_array = [json_obj]
+    result_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/import/bulk&#39;,
+                                           query_params=query_params, json_payload=json_array)
+    dashboard_json = result_json[&#34;succeded&#34;][0]
+    return PySenseDashboard.Dashboard(self, dashboard_json)</code></pre>
+</details>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -724,6 +801,7 @@ limit is to be used with the skip parameter for paging</dd>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboard_by_id" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboard_by_id">get_dashboard_by_id</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards">get_dashboards</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards_admin" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards_admin">get_dashboards_admin</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.import_dashboard" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.import_dashboard">import_dashboard</a></code></li>
 </ul>
 </li>
 </ul>

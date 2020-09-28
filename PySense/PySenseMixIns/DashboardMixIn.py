@@ -171,12 +171,10 @@ class DashboardMixIn:
     def import_dashboard(self, path, *, action='overwrite', republish=True):
         """Import dashboard file from path
 
-        Sisense does not support this in Windows
-
         Can be used to update an existing dashboard.
 
         Args:
-            path: The path to the schema smodel file
+            path: The path to the dash file
             action: Determines if the dashboard should be overwritten
             republish: Republishes dashboards on target server after copying
         """
