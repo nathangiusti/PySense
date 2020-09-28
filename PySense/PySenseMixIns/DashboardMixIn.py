@@ -167,3 +167,24 @@ class DashboardMixIn:
                          '"editing":true}')
         resp = self.connector.rest_call('post', 'api/v1/dashboards', json_payload=dashboard_json)
         return PySenseDashboard.Dashboard(self, resp)
+
+    def import_dashboard(self, path, *, action='overwrite', republish=True):
+        """Import dashboard file from path
+
+        Sisense does not support this in Windows
+
+        Can be used to update an existing dashboard.
+
+        Args:
+            path: The path to the schema smodel file
+            action: Determines if the dashboard should be overwritten
+            republish: Republishes dashboards on target server after copying
+        """
+
+        query_params = {'action': action, 'republish': republish}
+        json_obj = PySenseUtils.read_json(path)
+        json_array = [json_obj]
+        result_json = self.connector.rest_call('post', 'api/v1/dashboards/import/bulk',
+                                               query_params=query_params, json_payload=json_array)
+        dashboard_json = result_json["succeded"][0]
+        return PySenseDashboard.Dashboard(self, dashboard_json)

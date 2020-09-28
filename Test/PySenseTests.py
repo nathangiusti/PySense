@@ -31,10 +31,7 @@ class PySenseTests(unittest.TestCase):
         assert dashboard_id == self.py_client.get_dashboard_by_id(dashboard_id).get_id()
 
     def test_dashboard_import_delete(self):
-        with open(self.sample_path + 'ImportDash.dash', 'r', encoding="utf8") as file:
-            data = json.loads(file.read())
-        dash_file = PySenseDashboard.Dashboard(self.py_client, data)
-        dash = self.py_client.add_dashboards(dash_file)
+        dash = self.py_client.import_dashboard(self.sample_path + 'ImportDash.dash')
         assert dash is not None
         self.py_client.delete_dashboards(dash)
         self.py_client.add_dashboards(dash)
