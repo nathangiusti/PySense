@@ -1,3 +1,17 @@
+**V 0.3.1 Release Notes**
+
+- Breaking changes
+    - None
+        
+- Additions
+    - Import dash files from your py_client with the import_dashboard method
+
+- Fixes
+
+- Known Issues
+    - REST API sometimes becomes responsive on Linux builds
+    - Tutorial video number 3 references an out of date version of PySense. It will be redone
+
 **V 0.3.0 Release Notes**
 
 - Breaking changes
