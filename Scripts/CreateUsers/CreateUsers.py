@@ -8,6 +8,7 @@ create_group:
 - True: Create a new group with the group name
 - False: Throw an error
 
+
 What to do when a user to be added is already found
 action_on_found_user:
 - 'Update': Update the user to the settings
@@ -28,34 +29,24 @@ import csv
 from PySense import PySense
 from PySense import SisenseRole
 
-py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
+py_client = PySense.authenticate_by_file('SampleConfig.yaml')
 
 create_group = False
 action_on_found_user = 'Update'
 
-
-def get_groups(group_names):
-    if not group_names or not group_names[0]:
-        return []
-    ret_arr = []
-    for group_name in group_names:
-        groups = py_client.get_groups_by_name(group_name)
-        if len(groups) == 0:
-            if create_group:
-                group = py_client.add_groups(group_name)
-            else:
-                print('No group with name {} found'.format(group_name))
-                exit(1)
-        else:
-            group = groups[0]
-        ret_arr.append(group)
-    return ret_arr
-
-
 with open('new_users.csv') as csv_file:
     reader = csv.DictReader(csv_file)
     for row in reader:
-        user_groups = get_groups(row['groups'].split('|'))
+        group_names = row['groups'].split('|')
+        for group in group_names:
+            if not py_client.get_groups_by_name(group):
+                if create_group:
+                    py_client.add_groups(group)
+                else:
+                    print('No group with name {} found'.format(group))
+                    exit(1)
+
+        user_groups = py_client.get_groups_by_name(group_names)
         user = py_client.get_user_by_email(row['email'])
         if user is not None:
             if action_on_found_user == 'Update':
@@ -64,10 +55,8 @@ with open('new_users.csv') as csv_file:
             elif action_on_found_user == 'Skip':
                 continue
             else:
-                print('No user with email {} found'.format(row['email']))
+                print('User with email {} already exists'.format(row['email']))
                 exit(1)
         else:
             py_client.add_user(row['email'], SisenseRole.Role.from_str(row['role']),
                                first_name=row['first_name'], last_name=row['last_name'], groups=user_groups)
-
-
