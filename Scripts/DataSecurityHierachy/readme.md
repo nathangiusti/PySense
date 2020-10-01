@@ -7,11 +7,11 @@ Use Case:
 Solution Overview:
 - Data Security in Sisense will only allow the intersection of all data security rules being applied. 
 - This means if we grant permissions for one column and no permissions for another column, the user will see no data. 
-- Since it only takes the intersection of the security rules, so long as they are restricted on one column of our security table, 
+- Since it only takes the intersection of the security rules, we can give them access to all data in the other columns
 
 Security_Table.csv: 
 - There are 4 columns, one for each tier of our hierachy and a key column. 
-- This is essentially a csv representation of your hierarchy.
+- This is essentially a csv representation of our hierarchy.
 
 Fact.csv:
 - This is a fact table for testing our hierarchy. 
@@ -24,11 +24,11 @@ Security Groups.csv:
 Example:
 - Acme Admins,1,Acme
 
-This assigns a group called Acme Admins to see all data in the Acme organization.
+This assigns a group called Acme Admins to see all data in the Acme organization. It is added at level 1, the company level.
 
 - Xyz East 1,3, Xyz East 1
 
-This assigns a group called Xyz East 1 to only see the data for Xyz East 1. 
+This assigns a group called Xyz East 1 to only see the data for Xyz East 1. It is added at level 3, the division level.
 
 DataSecurityHierarchy.py
 - See the comments in the python script for detailed information
