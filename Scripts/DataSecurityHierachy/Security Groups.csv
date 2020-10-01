@@ -1,0 +1,15 @@
+group_name,level,value
+Acme Admin,1,Acme
+Acme East Div,2,Acme East
+Acme West Div,2,Acme West
+Acme East Div 1,3,Acme East 1
+Acme East Div 2,3,Acme East 2
+Acme West Div 1,3,Acme West 1
+Acme West Div 2,3,Acme West 2
+Xyz Admin,1,Xyz
+Xyz East Div,2,Xyz East
+Xyz West Div,2,Xyz West
+Xyz East Div 1,3,Xyz East 1
+Xyz East Div 2,3,Xyz East 2
+Xyz West Div 1,3,Xyz West 1
+Xyz West Div 2,3,Xyz West 2
