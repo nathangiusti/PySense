@@ -32,3 +32,6 @@ This assigns a group called Xyz East 1 to only see the data for Xyz East 1.
 
 DataSecurityHierarchy.py
 - See the comments in the python script for detailed information
+
+Data Security Screen Shot.png
+- A screenshot of the finished applied data security
