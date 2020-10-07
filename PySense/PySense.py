@@ -79,7 +79,7 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
         connector: The PySenseRestConnector which runs the rest commands.
     """
 
-    def __init__(self, host, token, version, *, debug=False, verify=True):
+    def __init__(self, host, token, version, *, debug=False, verify=True, param_dict=None):
         """ Initializes a PySense instance
 
         Args:
@@ -89,7 +89,20 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
             version: version (either 'Windows' or 'Linux')
             debug: If true, prints detailed REST API logs to console. False by default.
             verify: If false, disables SSL Certification. True by default.
+            param_dict: For passing in additional parameters
         """
+        if param_dict is None:
+            self.param_dict = {}
+        else:
+            self.param_dict = {}
+
+        default_dict = {
+            'CUBE_CACHE_TIMEOUT_SECONDS': 60
+        }
+
+        for key, value in default_dict.items():
+            if key not in self.param_dict:
+                self.param_dict[key] = value
 
         # Verify version
         if version.lower() == 'windows':
@@ -115,3 +128,14 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
         Use for debugging. Debug is false by default.
         """
         self.connector.debug = debug
+
+    def get_param(self, param):
+        """Get the value in the param dictionary for the given parameter. Returns None if not found"""
+        if param in self.param_dict:
+            return self.param_dict[param]
+        else:
+            None
+
+    def set_param(self, param, value):
+        """Set the key "param" to the value "value". """
+        self.param_dict[param] = value

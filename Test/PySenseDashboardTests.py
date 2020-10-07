@@ -71,6 +71,13 @@ class PySenseDashboardTests(unittest.TestCase):
     def test_publish(self):
         self.dashboard.publish()
 
+    def test_bulk_export_import(self):
+        path = self.sample_path + 'bulkExport.dash'
+        folder = self.py_client.get_folders(name='PySense')[0]
+        dashboards = self.py_client.get_dashboards(parent_folder=folder)
+        self.py_client.bulk_export_dashboards(dashboards, path=path)
+        self.py_client.import_dashboards(path, republish=False)
+
     @classmethod
     def tearDownClass(cls):
         cls.dashboard.remove_shares(cls.dashboard.get_share_users_groups())

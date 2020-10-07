@@ -27,8 +27,10 @@ class DataSet:
 
     def get_tables(self):
         """Returns the tables"""
+        resp = self._py_client.connector.rest_call('get', 'api/v2/datamodels/{}/schema/datasets/{}/tables'
+                                                   .format(self._data_model.get_oid(), self.get_oid()))
         ret_arr = []
-        for table_json in self._data_set_json['schema']['tables']:
+        for table_json in resp:
             ret_arr.append(PySenseTable.Table(self._py_client, table_json))
         return ret_arr
 
@@ -53,4 +55,7 @@ class DataSet:
     def _sync_data_set(self):
         self._data_set_json = self._py_client.connector.rest_call('get', 'api/v2/datamodels/{}/schema/datasets/{}'
                                             .format(self._data_model.get_oid(), self.get_oid()))
+
+    def get_schema(self):
+        return self._data_set_json['schema']
 

@@ -20,7 +20,7 @@ with open('Security Groups.csv') as csv_file:
     reader = csv.DictReader(csv_file)
     for row in reader:
         group_name = row['group_name']
-        group = py_client.add_groups(group_name)[0] # Not needed if the group already exists. Just get the group.
+        group = py_client.add_groups(group_name)[0]  # Not needed if the group already exists. Just get the group.
         for i in range(1, 4):
             if i == int(row['level']):  # If this is the level to apply security at, we set the security rule
                 cube.add_security_rule(

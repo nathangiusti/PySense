@@ -35,17 +35,40 @@ Install PySense with pip:
 
 [Tutorial Videos](https://www.youtube.com/playlist?list=PL0xO3VH5OF2JD2KiZs_41zvKvPyebg6MW)
 
-**V 0.3.1 Release Notes**
+**V 0.3.2 Release Notes**
 
 - Breaking changes
-    - None
-        
+    - PySenseDataSet.get_tables now returns an array of table objects
+    - py_client.import_dashboard
+        - Now returns an array of dashboards 
+        - Has been renamed to py_client.import_dashboards
 - Additions
-    - Import dash files from your py_client with the import_dashboard method
-
+    - Pass in your own parameters to PySense
+        - If authenticating by config file you can add additional parameters. 
+        - They can be accessed via py_client.get_parameter('the parameter name')
+        - You can add and modify parameters via py_client.set_parameter('parameter name', 'parameter value')
+    - Additional tools for admins
+        - Admins can use the admin_access optional parameter to the following methods in order to perform work on unowned dashboards. 
+        - The following methods have admin_access parameters
+            - dashboard.export_to_dash
+            - py_client.get_dashboard_by_id
+            - py_client.delete_dashboard
+    - Bulk import and export dashboards
+        - You can use the py_client.bulk_export_dashboards to export multiple dashboards as a single file
+        - You can use the py_client.import_dashboard to import a dash file with 1 to many dashboards inside
+    - Caching
+        - To increase performance, results from queries for elasticubes are cached to reduce calls to the server
+        - The cache can be modified via config file or py_client.set_param('CUBE_CACHE_TIMEOUT_SECONDS', [the desired cache time in seconds]) 
+        - You can also pass the optional parameter flush_cache=True to py_client.get_elasticubes or get_elasticube_by_name to force a flush of the cache.
+        - The default value for the cache is 60 seconds 
+    - Backup and Delete dashboards script
+        - See the admin_access keyword in action 
+        - Allows for an admin to backup and delete a list of dashboards, include those unowned by the admin
+     
 - Fixes
+    - Elasticube sets handled better
+    - Dashboard Cube usage report now used admin to get all dashboards, not just ones owned by the account
 
 - Known Issues
     - REST API sometimes becomes responsive on Linux builds
-    - Tutorial video number 3 references an out of date version of PySense. It will be redone
     

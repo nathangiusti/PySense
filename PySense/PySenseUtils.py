@@ -37,7 +37,7 @@ def python_time_to_sisense(datetime):
 
 def read_json(path):
     """Reads in obj_json"""
-    with open(path) as json_file:
+    with open(path, 'r') as json_file:
         obj_json = json.load(json_file)
     return obj_json
 

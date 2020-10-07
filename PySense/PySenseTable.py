@@ -22,3 +22,23 @@ class Table:
     def get_config_options(self):
         """Returns a dictionary of the config options"""
         return self._table_json['configOptions']
+
+    def get_oid(self):
+        """Return oid"""
+        return self._table_json['oid']
+
+    def get_id(self):
+        """Return id"""
+        return self._table_json['id']
+
+    def get_type(self):
+        """Return type"""
+        return self._table_json['type']
+
+    def get_json(self):
+        """Return table json"""
+        return self._table_json
+
+    def get_name(self):
+        return self._table_json['name']
+

@@ -15,6 +15,11 @@ class PySenseTableTests(unittest.TestCase):
         options = self.table.get_config_options()
         assert options is not None
         assert options['hasHeader'] == self.table.get_config_option('hasHeader')
+        assert self.table.get_oid() is not None
+        assert self.table.get_id() is not None
+        assert self.table.get_type() is not None
+        assert self.table.get_json() is not None
+        assert self.table.get_name() is not None
 
 
 if __name__ == '__main__':

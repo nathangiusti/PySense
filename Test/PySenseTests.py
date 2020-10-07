@@ -18,6 +18,12 @@ class PySenseTests(unittest.TestCase):
         cls.sample_path = '//Users//nathan.giusti//Documents//PySense//'
         cls.group_names = ["TempGroup", "TempGroup2"]
 
+    def test_params(self):
+        cube_timeout = self.py_client.get_param('CUBE_CACHE_TIMEOUT_SECONDS')
+        assert cube_timeout == 60
+        self.py_client.set_param('new_param', 'new value')
+        assert self.py_client.get_param('new_param') == 'new value'
+
     def test_get_dashboards(self):
         ret = self.py_client.get_dashboards(name='PySense')
         assert len(ret) == 1
@@ -31,7 +37,7 @@ class PySenseTests(unittest.TestCase):
         assert dashboard_id == self.py_client.get_dashboard_by_id(dashboard_id).get_id()
 
     def test_dashboard_import_delete(self):
-        dash = self.py_client.import_dashboard(self.sample_path + 'ImportDash.dash')
+        dash = self.py_client.import_dashboards(self.sample_path + 'ImportDash.dash')
         assert dash is not None
         self.py_client.delete_dashboards(dash)
         self.py_client.add_dashboards(dash)

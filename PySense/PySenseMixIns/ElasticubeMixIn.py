@@ -1,19 +1,34 @@
+import datetime as datetime
+
 from PySense import PySenseElasticube
 
 
 class ElasticubeMixIn:
 
-    def get_elasticubes(self):
-        """Gets elasticubes"""
-        resp_json = self.connector.rest_call('get', 'api/v1/elasticubes/getElasticubes')
-        ret_arr = []
-        for cube in resp_json:
-            ret_arr.append(PySenseElasticube.Elasticube(self, cube))
-        return ret_arr
+    elasticubes = None
+    last_run_time = datetime.datetime.now()
 
-    def get_elasticube_by_name(self, name):
+    def get_elasticubes(self, flush_cache=False):
+        """Gets elasticubes
+        Args:
+            flush_cache: (Optional) Ignores cache and pull fresh data from Mongo
+        """
+        if (datetime.datetime.now() - self.last_run_time).total_seconds() > \
+                self.param_dict['CUBE_CACHE_TIMEOUT_SECONDS'] \
+                or self.elasticubes is None \
+                or flush_cache:
+
+            self.last_run_time = datetime.datetime.now()
+            resp_json = self.connector.rest_call('get', 'api/v1/elasticubes/getElasticubes')
+            ret_arr = []
+            for cube in resp_json:
+                ret_arr.append(PySenseElasticube.Elasticube(self, cube))
+            self.elasticubes = ret_arr
+        return self.elasticubes
+
+    def get_elasticube_by_name(self, name, *, flush_cache=False):
         """Gets elasticube with given name"""
-        cubes = self.get_elasticubes()
+        cubes = self.get_elasticubes(flush_cache=flush_cache)
         for cube in cubes:
             if cube.get_title() == name:
                 return cube

@@ -21,18 +21,18 @@ def generate_token(host, username, password, verify=True):
     return {'authorization':  "Bearer " + resp.json()['access_token']}
 
 
-def authenticate_by_token(host, token, version, debug=False, verify=True):
+def authenticate_by_token(host, token, version, debug=False, verify=True, param_dict=None):
     """Do not call directly. Call from PySense"""
     host = PySenseUtils.format_host(host)
     token_json = {'authorization':  "Bearer " + token}
-    return PySense.PySense(host, token_json, version, debug=debug, verify=verify)
+    return PySense.PySense(host, token_json, version, debug=debug, verify=verify, param_dict=param_dict)
 
 
-def authenticate_by_password(host, username, password, version, debug=False, verify=True):
+def authenticate_by_password(host, username, password, version, debug=False, verify=True, param_dict=None):
     """Do not call directly. Call from PySense"""
     host = PySenseUtils.format_host(host)
     token = generate_token(host, username, password, verify=verify)
-    return PySense.PySense(host, token, version, debug=debug, verify=verify)
+    return PySense.PySense(host, token, version, debug=debug, verify=verify, param_dict=param_dict)
 
 
 def authenticate_by_file(config_file):
@@ -47,7 +47,7 @@ def authenticate_by_file(config_file):
         host = PySenseUtils.format_host(cfg['host'])
         if token is None:
             return authenticate_by_password(host, cfg['username'], cfg['password'], cfg['version'],
-                                            debug=debug, verify=verify)
+                                            debug=debug, verify=verify, param_dict=cfg)
         else:
-            return authenticate_by_token(host, cfg['token'], cfg['version'], debug=debug, verify=verify)
+            return authenticate_by_token(host, cfg['token'], cfg['version'], debug=debug, verify=verify, param_dict=cfg)
 
