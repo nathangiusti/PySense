@@ -49,18 +49,18 @@ def generate_token(host, username, password, verify=True):
     return {&#39;authorization&#39;:  &#34;Bearer &#34; + resp.json()[&#39;access_token&#39;]}
 
 
-def authenticate_by_token(host, token, version, debug=False, verify=True):
+def authenticate_by_token(host, token, version, debug=False, verify=True, param_dict=None):
     &#34;&#34;&#34;Do not call directly. Call from PySense&#34;&#34;&#34;
     host = PySenseUtils.format_host(host)
     token_json = {&#39;authorization&#39;:  &#34;Bearer &#34; + token}
-    return PySense.PySense(host, token_json, version, debug=debug, verify=verify)
+    return PySense.PySense(host, token_json, version, debug=debug, verify=verify, param_dict=param_dict)
 
 
-def authenticate_by_password(host, username, password, version, debug=False, verify=True):
+def authenticate_by_password(host, username, password, version, debug=False, verify=True, param_dict=None):
     &#34;&#34;&#34;Do not call directly. Call from PySense&#34;&#34;&#34;
     host = PySenseUtils.format_host(host)
     token = generate_token(host, username, password, verify=verify)
-    return PySense.PySense(host, token, version, debug=debug, verify=verify)
+    return PySense.PySense(host, token, version, debug=debug, verify=verify, param_dict=param_dict)
 
 
 def authenticate_by_file(config_file):
@@ -75,9 +75,9 @@ def authenticate_by_file(config_file):
         host = PySenseUtils.format_host(cfg[&#39;host&#39;])
         if token is None:
             return authenticate_by_password(host, cfg[&#39;username&#39;], cfg[&#39;password&#39;], cfg[&#39;version&#39;],
-                                            debug=debug, verify=verify)
+                                            debug=debug, verify=verify, param_dict=cfg)
         else:
-            return authenticate_by_token(host, cfg[&#39;token&#39;], cfg[&#39;version&#39;], debug=debug, verify=verify)</code></pre>
+            return authenticate_by_token(host, cfg[&#39;token&#39;], cfg[&#39;version&#39;], debug=debug, verify=verify, param_dict=cfg)</code></pre>
 </details>
 </section>
 <section>
@@ -108,13 +108,13 @@ def authenticate_by_file(config_file):
         host = PySenseUtils.format_host(cfg[&#39;host&#39;])
         if token is None:
             return authenticate_by_password(host, cfg[&#39;username&#39;], cfg[&#39;password&#39;], cfg[&#39;version&#39;],
-                                            debug=debug, verify=verify)
+                                            debug=debug, verify=verify, param_dict=cfg)
         else:
-            return authenticate_by_token(host, cfg[&#39;token&#39;], cfg[&#39;version&#39;], debug=debug, verify=verify)</code></pre>
+            return authenticate_by_token(host, cfg[&#39;token&#39;], cfg[&#39;version&#39;], debug=debug, verify=verify, param_dict=cfg)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseAuthentication.authenticate_by_password"><code class="name flex">
-<span>def <span class="ident">authenticate_by_password</span></span>(<span>host, username, password, version, debug=False, verify=True)</span>
+<span>def <span class="ident">authenticate_by_password</span></span>(<span>host, username, password, version, debug=False, verify=True, param_dict=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Do not call directly. Call from PySense</p></div>
@@ -122,15 +122,15 @@ def authenticate_by_file(config_file):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def authenticate_by_password(host, username, password, version, debug=False, verify=True):
+<pre><code class="python">def authenticate_by_password(host, username, password, version, debug=False, verify=True, param_dict=None):
     &#34;&#34;&#34;Do not call directly. Call from PySense&#34;&#34;&#34;
     host = PySenseUtils.format_host(host)
     token = generate_token(host, username, password, verify=verify)
-    return PySense.PySense(host, token, version, debug=debug, verify=verify)</code></pre>
+    return PySense.PySense(host, token, version, debug=debug, verify=verify, param_dict=param_dict)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseAuthentication.authenticate_by_token"><code class="name flex">
-<span>def <span class="ident">authenticate_by_token</span></span>(<span>host, token, version, debug=False, verify=True)</span>
+<span>def <span class="ident">authenticate_by_token</span></span>(<span>host, token, version, debug=False, verify=True, param_dict=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Do not call directly. Call from PySense</p></div>
@@ -138,11 +138,11 @@ def authenticate_by_file(config_file):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def authenticate_by_token(host, token, version, debug=False, verify=True):
+<pre><code class="python">def authenticate_by_token(host, token, version, debug=False, verify=True, param_dict=None):
     &#34;&#34;&#34;Do not call directly. Call from PySense&#34;&#34;&#34;
     host = PySenseUtils.format_host(host)
     token_json = {&#39;authorization&#39;:  &#34;Bearer &#34; + token}
-    return PySense.PySense(host, token_json, version, debug=debug, verify=verify)</code></pre>
+    return PySense.PySense(host, token_json, version, debug=debug, verify=verify, param_dict=param_dict)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseAuthentication.generate_token"><code class="name flex">

@@ -129,7 +129,7 @@ class DashboardMixIn:
             ret_arr.append(PySenseDashboard.Dashboard(self, dash))
         return ret_arr
 
-    def get_dashboard_by_id(self, dashboard_id, *, fields=None, expand=None):
+    def get_dashboard_by_id(self, dashboard_id, *, fields=None, expand=None, admin_access=None):
         &#34;&#34;&#34;Returns a specific dashboard object by ID.
 
         Args:
@@ -138,7 +138,7 @@ class DashboardMixIn:
                 Fields Can also define which fields to exclude by prefixing field names with -
             expand: (optional) List of fields that should be expanded (substitues their IDs with actual objects).
                 May be nested using the resource.subResource format
-
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
         Returns:
              Dashboard with the given id.
         &#34;&#34;&#34;
@@ -148,8 +148,13 @@ class DashboardMixIn:
             &#39;expand&#39;: expand
         }
 
-        resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard_id),
-                                             query_params=query_params)
+        if admin_access:
+            query_params[&#39;adminAccess&#39;] = admin_access
+            resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/dashboards/{}&#39;.format(dashboard_id),
+                                                 query_params=query_params)
+        else:
+            resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard_id),
+                                                 query_params=query_params)
 
         return PySenseDashboard.Dashboard(self, resp_json)
 
@@ -168,14 +173,20 @@ class DashboardMixIn:
             ret_arr.append(PySenseDashboard.Dashboard(self, resp))
         return ret_arr
 
-    def delete_dashboards(self, dashboards):
+    def delete_dashboards(self, dashboards, *, admin_access=None):
         &#34;&#34;&#34;Delete dashboards.
 
         Args:
             dashboards: Dashboards to delete
+            admin_access: (Optional) Set to true if logged in as admin and deleting unowned dashboard
         &#34;&#34;&#34;
         for dashboard in PySenseUtils.make_iterable(dashboards):
-            self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard.get_id()))
+            if admin_access is True:
+                query_params = {&#39;adminAccess&#39;: admin_access}
+                self.connector.rest_call(&#39;delete&#39;, &#39;api/dashboards/{}&#39;.format(dashboard.get_id()),
+                                         query_params=query_params)
+            else:
+                self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard.get_id()))
 
     def create_dashboard(self, title):
         &#34;&#34;&#34;Create a new dashboard.
@@ -196,7 +207,7 @@ class DashboardMixIn:
         resp = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards&#39;, json_payload=dashboard_json)
         return PySenseDashboard.Dashboard(self, resp)
 
-    def import_dashboard(self, path, *, action=&#39;overwrite&#39;, republish=True):
+    def import_dashboards(self, path, *, action=&#39;overwrite&#39;, republish=True):
         &#34;&#34;&#34;Import dashboard file from path
 
         Can be used to update an existing dashboard.
@@ -209,11 +220,40 @@ class DashboardMixIn:
 
         query_params = {&#39;action&#39;: action, &#39;republish&#39;: republish}
         json_obj = PySenseUtils.read_json(path)
-        json_array = [json_obj]
+
+        if isinstance(json_obj, list):
+            json_array = json_obj
+        else:
+            json_array = [json_obj]
         result_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/import/bulk&#39;,
                                                query_params=query_params, json_payload=json_array)
-        dashboard_json = result_json[&#34;succeded&#34;][0]
-        return PySenseDashboard.Dashboard(self, dashboard_json)</code></pre>
+        ret_arr = []
+        for dashboard_json in result_json[&#34;succeded&#34;]:
+            ret_arr.append(PySenseDashboard.Dashboard(self, dashboard_json))
+        return ret_arr
+
+    def bulk_export_dashboards(self, dashboards, *, path=None, admin_access=None):
+        &#34;&#34;&#34;Get dashboard as dash file.
+
+        Args:
+            dashboards: One to many dashboards to back up to dash file
+            path: (optional) Path to save location of dash file
+            admin_access: (Optional) Set to true if logged in as admin and exporting unowned dashboard
+        Returns:
+            The path of the created file if path provided, else the raw content
+        &#34;&#34;&#34;
+        query_params = {&#39;dashboardIds&#39;: [], &#39;adminAccess&#39;: admin_access}
+        for dashboard in PySenseUtils.make_iterable(dashboards):
+            query_params[&#39;dashboardIds&#39;].append(dashboard.get_id())
+
+        resp_content = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/export&#39;, raw=True, query_params=query_params)
+
+        if path is not None:
+            with open(path, &#39;wb&#39;) as out_file:
+                out_file.write(resp_content)
+            return path
+        else:
+            return resp_content</code></pre>
 </details>
 </section>
 <section>
@@ -331,7 +371,7 @@ class DashboardMixIn:
             ret_arr.append(PySenseDashboard.Dashboard(self, dash))
         return ret_arr
 
-    def get_dashboard_by_id(self, dashboard_id, *, fields=None, expand=None):
+    def get_dashboard_by_id(self, dashboard_id, *, fields=None, expand=None, admin_access=None):
         &#34;&#34;&#34;Returns a specific dashboard object by ID.
 
         Args:
@@ -340,7 +380,7 @@ class DashboardMixIn:
                 Fields Can also define which fields to exclude by prefixing field names with -
             expand: (optional) List of fields that should be expanded (substitues their IDs with actual objects).
                 May be nested using the resource.subResource format
-
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
         Returns:
              Dashboard with the given id.
         &#34;&#34;&#34;
@@ -350,8 +390,13 @@ class DashboardMixIn:
             &#39;expand&#39;: expand
         }
 
-        resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard_id),
-                                             query_params=query_params)
+        if admin_access:
+            query_params[&#39;adminAccess&#39;] = admin_access
+            resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/dashboards/{}&#39;.format(dashboard_id),
+                                                 query_params=query_params)
+        else:
+            resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard_id),
+                                                 query_params=query_params)
 
         return PySenseDashboard.Dashboard(self, resp_json)
 
@@ -370,14 +415,20 @@ class DashboardMixIn:
             ret_arr.append(PySenseDashboard.Dashboard(self, resp))
         return ret_arr
 
-    def delete_dashboards(self, dashboards):
+    def delete_dashboards(self, dashboards, *, admin_access=None):
         &#34;&#34;&#34;Delete dashboards.
 
         Args:
             dashboards: Dashboards to delete
+            admin_access: (Optional) Set to true if logged in as admin and deleting unowned dashboard
         &#34;&#34;&#34;
         for dashboard in PySenseUtils.make_iterable(dashboards):
-            self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard.get_id()))
+            if admin_access is True:
+                query_params = {&#39;adminAccess&#39;: admin_access}
+                self.connector.rest_call(&#39;delete&#39;, &#39;api/dashboards/{}&#39;.format(dashboard.get_id()),
+                                         query_params=query_params)
+            else:
+                self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard.get_id()))
 
     def create_dashboard(self, title):
         &#34;&#34;&#34;Create a new dashboard.
@@ -398,7 +449,7 @@ class DashboardMixIn:
         resp = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards&#39;, json_payload=dashboard_json)
         return PySenseDashboard.Dashboard(self, resp)
 
-    def import_dashboard(self, path, *, action=&#39;overwrite&#39;, republish=True):
+    def import_dashboards(self, path, *, action=&#39;overwrite&#39;, republish=True):
         &#34;&#34;&#34;Import dashboard file from path
 
         Can be used to update an existing dashboard.
@@ -411,11 +462,40 @@ class DashboardMixIn:
 
         query_params = {&#39;action&#39;: action, &#39;republish&#39;: republish}
         json_obj = PySenseUtils.read_json(path)
-        json_array = [json_obj]
+
+        if isinstance(json_obj, list):
+            json_array = json_obj
+        else:
+            json_array = [json_obj]
         result_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/import/bulk&#39;,
                                                query_params=query_params, json_payload=json_array)
-        dashboard_json = result_json[&#34;succeded&#34;][0]
-        return PySenseDashboard.Dashboard(self, dashboard_json)</code></pre>
+        ret_arr = []
+        for dashboard_json in result_json[&#34;succeded&#34;]:
+            ret_arr.append(PySenseDashboard.Dashboard(self, dashboard_json))
+        return ret_arr
+
+    def bulk_export_dashboards(self, dashboards, *, path=None, admin_access=None):
+        &#34;&#34;&#34;Get dashboard as dash file.
+
+        Args:
+            dashboards: One to many dashboards to back up to dash file
+            path: (optional) Path to save location of dash file
+            admin_access: (Optional) Set to true if logged in as admin and exporting unowned dashboard
+        Returns:
+            The path of the created file if path provided, else the raw content
+        &#34;&#34;&#34;
+        query_params = {&#39;dashboardIds&#39;: [], &#39;adminAccess&#39;: admin_access}
+        for dashboard in PySenseUtils.make_iterable(dashboards):
+            query_params[&#39;dashboardIds&#39;].append(dashboard.get_id())
+
+        resp_content = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/export&#39;, raw=True, query_params=query_params)
+
+        if path is not None:
+            with open(path, &#39;wb&#39;) as out_file:
+                out_file.write(resp_content)
+            return path
+        else:
+            return resp_content</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -455,6 +535,50 @@ class DashboardMixIn:
     return ret_arr</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.bulk_export_dashboards"><code class="name flex">
+<span>def <span class="ident">bulk_export_dashboards</span></span>(<span>self, dashboards, *, path=None, admin_access=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get dashboard as dash file.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>dashboards</code></strong></dt>
+<dd>One to many dashboards to back up to dash file</dd>
+<dt><strong><code>path</code></strong></dt>
+<dd>(optional) Path to save location of dash file</dd>
+<dt><strong><code>admin_access</code></strong></dt>
+<dd>(Optional) Set to true if logged in as admin and exporting unowned dashboard</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The path of the created file if path provided, else the raw content</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bulk_export_dashboards(self, dashboards, *, path=None, admin_access=None):
+    &#34;&#34;&#34;Get dashboard as dash file.
+
+    Args:
+        dashboards: One to many dashboards to back up to dash file
+        path: (optional) Path to save location of dash file
+        admin_access: (Optional) Set to true if logged in as admin and exporting unowned dashboard
+    Returns:
+        The path of the created file if path provided, else the raw content
+    &#34;&#34;&#34;
+    query_params = {&#39;dashboardIds&#39;: [], &#39;adminAccess&#39;: admin_access}
+    for dashboard in PySenseUtils.make_iterable(dashboards):
+        query_params[&#39;dashboardIds&#39;].append(dashboard.get_id())
+
+    resp_content = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/export&#39;, raw=True, query_params=query_params)
+
+    if path is not None:
+        with open(path, &#39;wb&#39;) as out_file:
+            out_file.write(resp_content)
+        return path
+    else:
+        return resp_content</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.create_dashboard"><code class="name flex">
 <span>def <span class="ident">create_dashboard</span></span>(<span>self, title)</span>
 </code></dt>
@@ -492,7 +616,7 @@ class DashboardMixIn:
 </details>
 </dd>
 <dt id="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.delete_dashboards"><code class="name flex">
-<span>def <span class="ident">delete_dashboards</span></span>(<span>self, dashboards)</span>
+<span>def <span class="ident">delete_dashboards</span></span>(<span>self, dashboards, *, admin_access=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Delete dashboards.</p>
@@ -500,23 +624,31 @@ class DashboardMixIn:
 <dl>
 <dt><strong><code>dashboards</code></strong></dt>
 <dd>Dashboards to delete</dd>
+<dt><strong><code>admin_access</code></strong></dt>
+<dd>(Optional) Set to true if logged in as admin and deleting unowned dashboard</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def delete_dashboards(self, dashboards):
+<pre><code class="python">def delete_dashboards(self, dashboards, *, admin_access=None):
     &#34;&#34;&#34;Delete dashboards.
 
     Args:
         dashboards: Dashboards to delete
+        admin_access: (Optional) Set to true if logged in as admin and deleting unowned dashboard
     &#34;&#34;&#34;
     for dashboard in PySenseUtils.make_iterable(dashboards):
-        self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard.get_id()))</code></pre>
+        if admin_access is True:
+            query_params = {&#39;adminAccess&#39;: admin_access}
+            self.connector.rest_call(&#39;delete&#39;, &#39;api/dashboards/{}&#39;.format(dashboard.get_id()),
+                                     query_params=query_params)
+        else:
+            self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard.get_id()))</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboard_by_id"><code class="name flex">
-<span>def <span class="ident">get_dashboard_by_id</span></span>(<span>self, dashboard_id, *, fields=None, expand=None)</span>
+<span>def <span class="ident">get_dashboard_by_id</span></span>(<span>self, dashboard_id, *, fields=None, expand=None, admin_access=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Returns a specific dashboard object by ID.</p>
@@ -530,6 +662,8 @@ Fields Can also define which fields to exclude by prefixing field names with -</
 <dt><strong><code>expand</code></strong></dt>
 <dd>(optional) List of fields that should be expanded (substitues their IDs with actual objects).
 May be nested using the resource.subResource format</dd>
+<dt><strong><code>admin_access</code></strong></dt>
+<dd>(Optional) Set to true if logged in as admin and getting unowned dashboard</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>Dashboard with the given id.</p></div>
@@ -537,7 +671,7 @@ May be nested using the resource.subResource format</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_dashboard_by_id(self, dashboard_id, *, fields=None, expand=None):
+<pre><code class="python">def get_dashboard_by_id(self, dashboard_id, *, fields=None, expand=None, admin_access=None):
     &#34;&#34;&#34;Returns a specific dashboard object by ID.
 
     Args:
@@ -546,7 +680,7 @@ May be nested using the resource.subResource format</dd>
             Fields Can also define which fields to exclude by prefixing field names with -
         expand: (optional) List of fields that should be expanded (substitues their IDs with actual objects).
             May be nested using the resource.subResource format
-
+        admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
     Returns:
          Dashboard with the given id.
     &#34;&#34;&#34;
@@ -556,8 +690,13 @@ May be nested using the resource.subResource format</dd>
         &#39;expand&#39;: expand
     }
 
-    resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard_id),
-                                         query_params=query_params)
+    if admin_access:
+        query_params[&#39;adminAccess&#39;] = admin_access
+        resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/dashboards/{}&#39;.format(dashboard_id),
+                                             query_params=query_params)
+    else:
+        resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard_id),
+                                             query_params=query_params)
 
     return PySenseDashboard.Dashboard(self, resp_json)</code></pre>
 </details>
@@ -735,8 +874,8 @@ limit is to be used with the skip parameter for paging</dd>
     return ret_arr</code></pre>
 </details>
 </dd>
-<dt id="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.import_dashboard"><code class="name flex">
-<span>def <span class="ident">import_dashboard</span></span>(<span>self, path, *, action='overwrite', republish=True)</span>
+<dt id="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.import_dashboards"><code class="name flex">
+<span>def <span class="ident">import_dashboards</span></span>(<span>self, path, *, action='overwrite', republish=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Import dashboard file from path</p>
@@ -754,7 +893,7 @@ limit is to be used with the skip parameter for paging</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def import_dashboard(self, path, *, action=&#39;overwrite&#39;, republish=True):
+<pre><code class="python">def import_dashboards(self, path, *, action=&#39;overwrite&#39;, republish=True):
     &#34;&#34;&#34;Import dashboard file from path
 
     Can be used to update an existing dashboard.
@@ -767,11 +906,17 @@ limit is to be used with the skip parameter for paging</dd>
 
     query_params = {&#39;action&#39;: action, &#39;republish&#39;: republish}
     json_obj = PySenseUtils.read_json(path)
-    json_array = [json_obj]
+
+    if isinstance(json_obj, list):
+        json_array = json_obj
+    else:
+        json_array = [json_obj]
     result_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/import/bulk&#39;,
                                            query_params=query_params, json_payload=json_array)
-    dashboard_json = result_json[&#34;succeded&#34;][0]
-    return PySenseDashboard.Dashboard(self, dashboard_json)</code></pre>
+    ret_arr = []
+    for dashboard_json in result_json[&#34;succeded&#34;]:
+        ret_arr.append(PySenseDashboard.Dashboard(self, dashboard_json))
+    return ret_arr</code></pre>
 </details>
 </dd>
 </dl>
@@ -796,12 +941,13 @@ limit is to be used with the skip parameter for paging</dd>
 <h4><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn">DashboardMixIn</a></code></h4>
 <ul class="">
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.add_dashboards" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.add_dashboards">add_dashboards</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.bulk_export_dashboards" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.bulk_export_dashboards">bulk_export_dashboards</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.create_dashboard" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.create_dashboard">create_dashboard</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.delete_dashboards" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.delete_dashboards">delete_dashboards</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboard_by_id" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboard_by_id">get_dashboard_by_id</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards">get_dashboards</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards_admin" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards_admin">get_dashboards_admin</a></code></li>
-<li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.import_dashboard" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.import_dashboard">import_dashboard</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.import_dashboards" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.import_dashboards">import_dashboards</a></code></li>
 </ul>
 </li>
 </ul>

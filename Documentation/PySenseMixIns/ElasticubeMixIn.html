@@ -26,22 +26,37 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PySense import PySenseElasticube
+<pre><code class="python">import datetime as datetime
+
+from PySense import PySenseElasticube
 
 
 class ElasticubeMixIn:
 
-    def get_elasticubes(self):
-        &#34;&#34;&#34;Gets elasticubes&#34;&#34;&#34;
-        resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/getElasticubes&#39;)
-        ret_arr = []
-        for cube in resp_json:
-            ret_arr.append(PySenseElasticube.Elasticube(self, cube))
-        return ret_arr
+    elasticubes = None
+    last_run_time = datetime.datetime.now()
 
-    def get_elasticube_by_name(self, name):
+    def get_elasticubes(self, flush_cache=False):
+        &#34;&#34;&#34;Gets elasticubes
+        Args:
+            flush_cache: (Optional) Ignores cache and pull fresh data from Mongo
+        &#34;&#34;&#34;
+        if (datetime.datetime.now() - self.last_run_time).total_seconds() &gt; \
+                self.param_dict[&#39;CUBE_CACHE_TIMEOUT_SECONDS&#39;] \
+                or self.elasticubes is None \
+                or flush_cache:
+
+            self.last_run_time = datetime.datetime.now()
+            resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/getElasticubes&#39;)
+            ret_arr = []
+            for cube in resp_json:
+                ret_arr.append(PySenseElasticube.Elasticube(self, cube))
+            self.elasticubes = ret_arr
+        return self.elasticubes
+
+    def get_elasticube_by_name(self, name, *, flush_cache=False):
         &#34;&#34;&#34;Gets elasticube with given name&#34;&#34;&#34;
-        cubes = self.get_elasticubes()
+        cubes = self.get_elasticubes(flush_cache=flush_cache)
         for cube in cubes:
             if cube.get_title() == name:
                 return cube
@@ -92,17 +107,30 @@ class ElasticubeMixIn:
 </summary>
 <pre><code class="python">class ElasticubeMixIn:
 
-    def get_elasticubes(self):
-        &#34;&#34;&#34;Gets elasticubes&#34;&#34;&#34;
-        resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/getElasticubes&#39;)
-        ret_arr = []
-        for cube in resp_json:
-            ret_arr.append(PySenseElasticube.Elasticube(self, cube))
-        return ret_arr
+    elasticubes = None
+    last_run_time = datetime.datetime.now()
 
-    def get_elasticube_by_name(self, name):
+    def get_elasticubes(self, flush_cache=False):
+        &#34;&#34;&#34;Gets elasticubes
+        Args:
+            flush_cache: (Optional) Ignores cache and pull fresh data from Mongo
+        &#34;&#34;&#34;
+        if (datetime.datetime.now() - self.last_run_time).total_seconds() &gt; \
+                self.param_dict[&#39;CUBE_CACHE_TIMEOUT_SECONDS&#39;] \
+                or self.elasticubes is None \
+                or flush_cache:
+
+            self.last_run_time = datetime.datetime.now()
+            resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/getElasticubes&#39;)
+            ret_arr = []
+            for cube in resp_json:
+                ret_arr.append(PySenseElasticube.Elasticube(self, cube))
+            self.elasticubes = ret_arr
+        return self.elasticubes
+
+    def get_elasticube_by_name(self, name, *, flush_cache=False):
         &#34;&#34;&#34;Gets elasticube with given name&#34;&#34;&#34;
-        cubes = self.get_elasticubes()
+        cubes = self.get_elasticubes(flush_cache=flush_cache)
         for cube in cubes:
             if cube.get_title() == name:
                 return cube
@@ -115,10 +143,21 @@ class ElasticubeMixIn:
 <ul class="hlist">
 <li><a title="PySense.PySense.PySense" href="../PySense.html#PySense.PySense.PySense">PySense</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn.elasticubes"><code class="name">var <span class="ident">elasticubes</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn.last_run_time"><code class="name">var <span class="ident">last_run_time</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn.get_elasticube_by_name"><code class="name flex">
-<span>def <span class="ident">get_elasticube_by_name</span></span>(<span>self, name)</span>
+<span>def <span class="ident">get_elasticube_by_name</span></span>(<span>self, name, *, flush_cache=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets elasticube with given name</p></div>
@@ -126,9 +165,9 @@ class ElasticubeMixIn:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_elasticube_by_name(self, name):
+<pre><code class="python">def get_elasticube_by_name(self, name, *, flush_cache=False):
     &#34;&#34;&#34;Gets elasticube with given name&#34;&#34;&#34;
-    cubes = self.get_elasticubes()
+    cubes = self.get_elasticubes(flush_cache=flush_cache)
     for cube in cubes:
         if cube.get_title() == name:
             return cube
@@ -136,21 +175,36 @@ class ElasticubeMixIn:
 </details>
 </dd>
 <dt id="PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn.get_elasticubes"><code class="name flex">
-<span>def <span class="ident">get_elasticubes</span></span>(<span>self)</span>
+<span>def <span class="ident">get_elasticubes</span></span>(<span>self, flush_cache=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Gets elasticubes</p></div>
+<div class="desc"><p>Gets elasticubes</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>flush_cache</code></strong></dt>
+<dd>(Optional) Ignores cache and pull fresh data from Mongo</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_elasticubes(self):
-    &#34;&#34;&#34;Gets elasticubes&#34;&#34;&#34;
-    resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/getElasticubes&#39;)
-    ret_arr = []
-    for cube in resp_json:
-        ret_arr.append(PySenseElasticube.Elasticube(self, cube))
-    return ret_arr</code></pre>
+<pre><code class="python">def get_elasticubes(self, flush_cache=False):
+    &#34;&#34;&#34;Gets elasticubes
+    Args:
+        flush_cache: (Optional) Ignores cache and pull fresh data from Mongo
+    &#34;&#34;&#34;
+    if (datetime.datetime.now() - self.last_run_time).total_seconds() &gt; \
+            self.param_dict[&#39;CUBE_CACHE_TIMEOUT_SECONDS&#39;] \
+            or self.elasticubes is None \
+            or flush_cache:
+
+        self.last_run_time = datetime.datetime.now()
+        resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/elasticubes/getElasticubes&#39;)
+        ret_arr = []
+        for cube in resp_json:
+            ret_arr.append(PySenseElasticube.Elasticube(self, cube))
+        self.elasticubes = ret_arr
+    return self.elasticubes</code></pre>
 </details>
 </dd>
 </dl>
@@ -174,8 +228,10 @@ class ElasticubeMixIn:
 <li>
 <h4><code><a title="PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn" href="#PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn">ElasticubeMixIn</a></code></h4>
 <ul class="">
+<li><code><a title="PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn.elasticubes" href="#PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn.elasticubes">elasticubes</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn.get_elasticube_by_name" href="#PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn.get_elasticube_by_name">get_elasticube_by_name</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn.get_elasticubes" href="#PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn.get_elasticubes">get_elasticubes</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn.last_run_time" href="#PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn.last_run_time">last_run_time</a></code></li>
 </ul>
 </li>
 </ul>

@@ -65,7 +65,7 @@ def python_time_to_sisense(datetime):
 
 def read_json(path):
     &#34;&#34;&#34;Reads in obj_json&#34;&#34;&#34;
-    with open(path) as json_file:
+    with open(path, &#39;r&#39;) as json_file:
         obj_json = json.load(json_file)
     return obj_json
 
@@ -177,7 +177,7 @@ def validate_version(py_client, expected_version, function_name):
 </summary>
 <pre><code class="python">def read_json(path):
     &#34;&#34;&#34;Reads in obj_json&#34;&#34;&#34;
-    with open(path) as json_file:
+    with open(path, &#39;r&#39;) as json_file:
         obj_json = json.load(json_file)
     return obj_json</code></pre>
 </details>

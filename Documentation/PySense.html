@@ -107,7 +107,7 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
         connector: The PySenseRestConnector which runs the rest commands.
     &#34;&#34;&#34;
 
-    def __init__(self, host, token, version, *, debug=False, verify=True):
+    def __init__(self, host, token, version, *, debug=False, verify=True, param_dict=None):
         &#34;&#34;&#34; Initializes a PySense instance
 
         Args:
@@ -117,7 +117,20 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
             version: version (either &#39;Windows&#39; or &#39;Linux&#39;)
             debug: If true, prints detailed REST API logs to console. False by default.
             verify: If false, disables SSL Certification. True by default.
+            param_dict: For passing in additional parameters
         &#34;&#34;&#34;
+        if param_dict is None:
+            self.param_dict = {}
+        else:
+            self.param_dict = {}
+
+        default_dict = {
+            &#39;CUBE_CACHE_TIMEOUT_SECONDS&#39;: 60
+        }
+
+        for key, value in default_dict.items():
+            if key not in self.param_dict:
+                self.param_dict[key] = value
 
         # Verify version
         if version.lower() == &#39;windows&#39;:
@@ -142,7 +155,18 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 
         Use for debugging. Debug is false by default.
         &#34;&#34;&#34;
-        self.connector.debug = debug</code></pre>
+        self.connector.debug = debug
+
+    def get_param(self, param):
+        &#34;&#34;&#34;Get the value in the param dictionary for the given parameter. Returns None if not found&#34;&#34;&#34;
+        if param in self.param_dict:
+            return self.param_dict[param]
+        else:
+            None
+
+    def set_param(self, param, value):
+        &#34;&#34;&#34;Set the key &#34;param&#34; to the value &#34;value&#34;. &#34;&#34;&#34;
+        self.param_dict[param] = value</code></pre>
 </details>
 </section>
 <section>
@@ -267,7 +291,7 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <dl>
 <dt id="PySense.PySense.PySense"><code class="flex name class">
 <span>class <span class="ident">PySense</span></span>
-<span>(</span><span>host, token, version, *, debug=False, verify=True)</span>
+<span>(</span><span>host, token, version, *, debug=False, verify=True, param_dict=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The manager of connections to the PySense server</p>
@@ -290,6 +314,8 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <dd>If true, prints detailed REST API logs to console. False by default.</dd>
 <dt><strong><code>verify</code></strong></dt>
 <dd>If false, disables SSL Certification. True by default.</dd>
+<dt><strong><code>param_dict</code></strong></dt>
+<dd>For passing in additional parameters</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -307,7 +333,7 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
         connector: The PySenseRestConnector which runs the rest commands.
     &#34;&#34;&#34;
 
-    def __init__(self, host, token, version, *, debug=False, verify=True):
+    def __init__(self, host, token, version, *, debug=False, verify=True, param_dict=None):
         &#34;&#34;&#34; Initializes a PySense instance
 
         Args:
@@ -317,7 +343,20 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
             version: version (either &#39;Windows&#39; or &#39;Linux&#39;)
             debug: If true, prints detailed REST API logs to console. False by default.
             verify: If false, disables SSL Certification. True by default.
+            param_dict: For passing in additional parameters
         &#34;&#34;&#34;
+        if param_dict is None:
+            self.param_dict = {}
+        else:
+            self.param_dict = {}
+
+        default_dict = {
+            &#39;CUBE_CACHE_TIMEOUT_SECONDS&#39;: 60
+        }
+
+        for key, value in default_dict.items():
+            if key not in self.param_dict:
+                self.param_dict[key] = value
 
         # Verify version
         if version.lower() == &#39;windows&#39;:
@@ -342,7 +381,18 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 
         Use for debugging. Debug is false by default.
         &#34;&#34;&#34;
-        self.connector.debug = debug</code></pre>
+        self.connector.debug = debug
+
+    def get_param(self, param):
+        &#34;&#34;&#34;Get the value in the param dictionary for the given parameter. Returns None if not found&#34;&#34;&#34;
+        if param in self.param_dict:
+            return self.param_dict[param]
+        else:
+            None
+
+    def set_param(self, param, value):
+        &#34;&#34;&#34;Set the key &#34;param&#34; to the value &#34;value&#34;. &#34;&#34;&#34;
+        self.param_dict[param] = value</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -359,6 +409,23 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 </ul>
 <h3>Methods</h3>
 <dl>
+<dt id="PySense.PySense.PySense.get_param"><code class="name flex">
+<span>def <span class="ident">get_param</span></span>(<span>self, param)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the value in the param dictionary for the given parameter. Returns None if not found</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_param(self, param):
+    &#34;&#34;&#34;Get the value in the param dictionary for the given parameter. Returns None if not found&#34;&#34;&#34;
+    if param in self.param_dict:
+        return self.param_dict[param]
+    else:
+        None</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySense.PySense.set_debug"><code class="name flex">
 <span>def <span class="ident">set_debug</span></span>(<span>self, debug)</span>
 </code></dt>
@@ -375,6 +442,20 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
     Use for debugging. Debug is false by default.
     &#34;&#34;&#34;
     self.connector.debug = debug</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySense.PySense.set_param"><code class="name flex">
+<span>def <span class="ident">set_param</span></span>(<span>self, param, value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the key "param" to the value "value".</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_param(self, param, value):
+    &#34;&#34;&#34;Set the key &#34;param&#34; to the value &#34;value&#34;. &#34;&#34;&#34;
+    self.param_dict[param] = value</code></pre>
 </details>
 </dd>
 </dl>
@@ -397,12 +478,13 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <li><code><b><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn">DashboardMixIn</a></b></code>:
 <ul class="hlist">
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.add_dashboards" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.add_dashboards">add_dashboards</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.bulk_export_dashboards" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.bulk_export_dashboards">bulk_export_dashboards</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.create_dashboard" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.create_dashboard">create_dashboard</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.delete_dashboards" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.delete_dashboards">delete_dashboards</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboard_by_id" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboard_by_id">get_dashboard_by_id</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards">get_dashboards</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards_admin" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards_admin">get_dashboards_admin</a></code></li>
-<li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.import_dashboard" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.import_dashboard">import_dashboard</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.import_dashboards" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.import_dashboards">import_dashboards</a></code></li>
 </ul>
 </li>
 <li><code><b><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn" href="PySenseMixIns/DataModelMixIn.html#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn">DataModelMixIn</a></b></code>:
@@ -481,7 +563,9 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <li>
 <h4><code><a title="PySense.PySense.PySense" href="#PySense.PySense.PySense">PySense</a></code></h4>
 <ul class="">
+<li><code><a title="PySense.PySense.PySense.get_param" href="#PySense.PySense.PySense.get_param">get_param</a></code></li>
 <li><code><a title="PySense.PySense.PySense.set_debug" href="#PySense.PySense.PySense.set_debug">set_debug</a></code></li>
+<li><code><a title="PySense.PySense.PySense.set_param" href="#PySense.PySense.PySense.set_param">set_param</a></code></li>
 </ul>
 </li>
 </ul>

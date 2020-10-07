@@ -49,7 +49,10 @@ class Elasticube:
             metadata = self.get_metadata()
             if metadata is None:
                 print(&#39;No meta data for cube {}&#39;.format(self.get_title()))
-            self._server_address = metadata[&#39;address&#39;]
+            elif &#39;address&#39; in metadata:
+                self._server_address = metadata[&#39;address&#39;]
+            elif metadata[&#39;fullname&#39;].endswith(&#39; - Set&#39;):
+                self._server_address = &#39;Set&#39;
 
     def get_oid(self):
         &#34;&#34;&#34;Returns the Elasticube id&#34;&#34;&#34;
@@ -546,7 +549,10 @@ class Elasticube:
             metadata = self.get_metadata()
             if metadata is None:
                 print(&#39;No meta data for cube {}&#39;.format(self.get_title()))
-            self._server_address = metadata[&#39;address&#39;]
+            elif &#39;address&#39; in metadata:
+                self._server_address = metadata[&#39;address&#39;]
+            elif metadata[&#39;fullname&#39;].endswith(&#39; - Set&#39;):
+                self._server_address = &#39;Set&#39;
 
     def get_oid(self):
         &#34;&#34;&#34;Returns the Elasticube id&#34;&#34;&#34;

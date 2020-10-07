@@ -55,8 +55,10 @@ class DataSet:
 
     def get_tables(self):
         &#34;&#34;&#34;Returns the tables&#34;&#34;&#34;
+        resp = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables&#39;
+                                                   .format(self._data_model.get_oid(), self.get_oid()))
         ret_arr = []
-        for table_json in self._data_set_json[&#39;schema&#39;][&#39;tables&#39;]:
+        for table_json in resp:
             ret_arr.append(PySenseTable.Table(self._py_client, table_json))
         return ret_arr
 
@@ -80,7 +82,10 @@ class DataSet:
 
     def _sync_data_set(self):
         self._data_set_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}&#39;
-                                            .format(self._data_model.get_oid(), self.get_oid()))</code></pre>
+                                            .format(self._data_model.get_oid(), self.get_oid()))
+
+    def get_schema(self):
+        return self._data_set_json[&#39;schema&#39;]</code></pre>
 </details>
 </section>
 <section>
@@ -127,8 +132,10 @@ class DataSet:
 
     def get_tables(self):
         &#34;&#34;&#34;Returns the tables&#34;&#34;&#34;
+        resp = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables&#39;
+                                                   .format(self._data_model.get_oid(), self.get_oid()))
         ret_arr = []
-        for table_json in self._data_set_json[&#39;schema&#39;][&#39;tables&#39;]:
+        for table_json in resp:
             ret_arr.append(PySenseTable.Table(self._py_client, table_json))
         return ret_arr
 
@@ -152,7 +159,10 @@ class DataSet:
 
     def _sync_data_set(self):
         self._data_set_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}&#39;
-                                            .format(self._data_model.get_oid(), self.get_oid()))</code></pre>
+                                            .format(self._data_model.get_oid(), self.get_oid()))
+
+    def get_schema(self):
+        return self._data_set_json[&#39;schema&#39;]</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -198,6 +208,19 @@ class DataSet:
     return self._data_set_json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseDataSet.DataSet.get_schema"><code class="name flex">
+<span>def <span class="ident">get_schema</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_schema(self):
+    return self._data_set_json[&#39;schema&#39;]</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySenseDataSet.DataSet.get_source"><code class="name flex">
 <span>def <span class="ident">get_source</span></span>(<span>self)</span>
 </code></dt>
@@ -223,8 +246,10 @@ class DataSet:
 </summary>
 <pre><code class="python">def get_tables(self):
     &#34;&#34;&#34;Returns the tables&#34;&#34;&#34;
+    resp = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables&#39;
+                                               .format(self._data_model.get_oid(), self.get_oid()))
     ret_arr = []
-    for table_json in self._data_set_json[&#39;schema&#39;][&#39;tables&#39;]:
+    for table_json in resp:
         ret_arr.append(PySenseTable.Table(self._py_client, table_json))
     return ret_arr</code></pre>
 </details>
@@ -292,6 +317,7 @@ Will update connection on server, local object may still store old connection</p
 <li><code><a title="PySense.PySenseDataSet.DataSet.get_connection" href="#PySense.PySenseDataSet.DataSet.get_connection">get_connection</a></code></li>
 <li><code><a title="PySense.PySenseDataSet.DataSet.get_full_name" href="#PySense.PySenseDataSet.DataSet.get_full_name">get_full_name</a></code></li>
 <li><code><a title="PySense.PySenseDataSet.DataSet.get_oid" href="#PySense.PySenseDataSet.DataSet.get_oid">get_oid</a></code></li>
+<li><code><a title="PySense.PySenseDataSet.DataSet.get_schema" href="#PySense.PySenseDataSet.DataSet.get_schema">get_schema</a></code></li>
 <li><code><a title="PySense.PySenseDataSet.DataSet.get_source" href="#PySense.PySenseDataSet.DataSet.get_source">get_source</a></code></li>
 <li><code><a title="PySense.PySenseDataSet.DataSet.get_tables" href="#PySense.PySenseDataSet.DataSet.get_tables">get_tables</a></code></li>
 <li><code><a title="PySense.PySenseDataSet.DataSet.get_type" href="#PySense.PySenseDataSet.DataSet.get_type">get_type</a></code></li>

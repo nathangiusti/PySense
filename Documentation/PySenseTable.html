@@ -49,7 +49,26 @@
 
     def get_config_options(self):
         &#34;&#34;&#34;Returns a dictionary of the config options&#34;&#34;&#34;
-        return self._table_json[&#39;configOptions&#39;]</code></pre>
+        return self._table_json[&#39;configOptions&#39;]
+
+    def get_oid(self):
+        &#34;&#34;&#34;Return oid&#34;&#34;&#34;
+        return self._table_json[&#39;oid&#39;]
+
+    def get_id(self):
+        &#34;&#34;&#34;Return id&#34;&#34;&#34;
+        return self._table_json[&#39;id&#39;]
+
+    def get_type(self):
+        &#34;&#34;&#34;Return type&#34;&#34;&#34;
+        return self._table_json[&#39;type&#39;]
+
+    def get_json(self):
+        &#34;&#34;&#34;Return table json&#34;&#34;&#34;
+        return self._table_json
+
+    def get_name(self):
+        return self._table_json[&#39;name&#39;]</code></pre>
 </details>
 </section>
 <section>
@@ -94,7 +113,26 @@
 
     def get_config_options(self):
         &#34;&#34;&#34;Returns a dictionary of the config options&#34;&#34;&#34;
-        return self._table_json[&#39;configOptions&#39;]</code></pre>
+        return self._table_json[&#39;configOptions&#39;]
+
+    def get_oid(self):
+        &#34;&#34;&#34;Return oid&#34;&#34;&#34;
+        return self._table_json[&#39;oid&#39;]
+
+    def get_id(self):
+        &#34;&#34;&#34;Return id&#34;&#34;&#34;
+        return self._table_json[&#39;id&#39;]
+
+    def get_type(self):
+        &#34;&#34;&#34;Return type&#34;&#34;&#34;
+        return self._table_json[&#39;type&#39;]
+
+    def get_json(self):
+        &#34;&#34;&#34;Return table json&#34;&#34;&#34;
+        return self._table_json
+
+    def get_name(self):
+        return self._table_json[&#39;name&#39;]</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -143,6 +181,75 @@
     return self._table_json[&#39;configOptions&#39;]</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseTable.Table.get_id"><code class="name flex">
+<span>def <span class="ident">get_id</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return id</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_id(self):
+    &#34;&#34;&#34;Return id&#34;&#34;&#34;
+    return self._table_json[&#39;id&#39;]</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseTable.Table.get_json"><code class="name flex">
+<span>def <span class="ident">get_json</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return table json</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_json(self):
+    &#34;&#34;&#34;Return table json&#34;&#34;&#34;
+    return self._table_json</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseTable.Table.get_name"><code class="name flex">
+<span>def <span class="ident">get_name</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_name(self):
+    return self._table_json[&#39;name&#39;]</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseTable.Table.get_oid"><code class="name flex">
+<span>def <span class="ident">get_oid</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return oid</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_oid(self):
+    &#34;&#34;&#34;Return oid&#34;&#34;&#34;
+    return self._table_json[&#39;oid&#39;]</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseTable.Table.get_type"><code class="name flex">
+<span>def <span class="ident">get_type</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return type</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_type(self):
+    &#34;&#34;&#34;Return type&#34;&#34;&#34;
+    return self._table_json[&#39;type&#39;]</code></pre>
+</details>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -163,9 +270,14 @@
 <ul>
 <li>
 <h4><code><a title="PySense.PySenseTable.Table" href="#PySense.PySenseTable.Table">Table</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="PySense.PySenseTable.Table.get_config_option" href="#PySense.PySenseTable.Table.get_config_option">get_config_option</a></code></li>
 <li><code><a title="PySense.PySenseTable.Table.get_config_options" href="#PySense.PySenseTable.Table.get_config_options">get_config_options</a></code></li>
+<li><code><a title="PySense.PySenseTable.Table.get_id" href="#PySense.PySenseTable.Table.get_id">get_id</a></code></li>
+<li><code><a title="PySense.PySenseTable.Table.get_json" href="#PySense.PySenseTable.Table.get_json">get_json</a></code></li>
+<li><code><a title="PySense.PySenseTable.Table.get_name" href="#PySense.PySenseTable.Table.get_name">get_name</a></code></li>
+<li><code><a title="PySense.PySenseTable.Table.get_oid" href="#PySense.PySenseTable.Table.get_oid">get_oid</a></code></li>
+<li><code><a title="PySense.PySenseTable.Table.get_type" href="#PySense.PySenseTable.Table.get_type">get_type</a></code></li>
 </ul>
 </li>
 </ul>

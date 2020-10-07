@@ -246,18 +246,24 @@ class Dashboard:
         else:
             return resp_content
 
-    def export_to_dash(self, *, path=None):
+    def export_to_dash(self, *, path=None, admin_access=None):
         &#34;&#34;&#34;Get dashboard as dash file.
 
         Args:
             path: (optional) Path to save location of dash file
-
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
         Returns:
             The path of the created file if path provided, else the raw content
         &#34;&#34;&#34;
 
-        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
-                                                           .format(self.get_id()), raw=True)
+        if admin_access:
+            query_params = {&#39;adminAccess&#39;: admin_access}
+            resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/dashboards/{}/export&#39;
+                                                               .format(self.get_id()), raw=True,
+                                                               query_params=query_params)
+        else:
+            resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
+                                                               .format(self.get_id()), raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
@@ -633,18 +639,24 @@ class Dashboard:
         else:
             return resp_content
 
-    def export_to_dash(self, *, path=None):
+    def export_to_dash(self, *, path=None, admin_access=None):
         &#34;&#34;&#34;Get dashboard as dash file.
 
         Args:
             path: (optional) Path to save location of dash file
-
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
         Returns:
             The path of the created file if path provided, else the raw content
         &#34;&#34;&#34;
 
-        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
-                                                           .format(self.get_id()), raw=True)
+        if admin_access:
+            query_params = {&#39;adminAccess&#39;: admin_access}
+            resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/dashboards/{}/export&#39;
+                                                               .format(self.get_id()), raw=True,
+                                                               query_params=query_params)
+        else:
+            resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
+                                                               .format(self.get_id()), raw=True)
         if path is not None:
             with open(path, &#39;wb&#39;) as out_file:
                 out_file.write(resp_content)
@@ -917,7 +929,7 @@ class Dashboard:
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.export_to_dash"><code class="name flex">
-<span>def <span class="ident">export_to_dash</span></span>(<span>self, *, path=None)</span>
+<span>def <span class="ident">export_to_dash</span></span>(<span>self, *, path=None, admin_access=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get dashboard as dash file.</p>
@@ -925,6 +937,8 @@ class Dashboard:
 <dl>
 <dt><strong><code>path</code></strong></dt>
 <dd>(optional) Path to save location of dash file</dd>
+<dt><strong><code>admin_access</code></strong></dt>
+<dd>(Optional) Set to true if logged in as admin and getting unowned dashboard</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>The path of the created file if path provided, else the raw content</p></div>
@@ -932,18 +946,24 @@ class Dashboard:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def export_to_dash(self, *, path=None):
+<pre><code class="python">def export_to_dash(self, *, path=None, admin_access=None):
     &#34;&#34;&#34;Get dashboard as dash file.
 
     Args:
         path: (optional) Path to save location of dash file
-
+        admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
     Returns:
         The path of the created file if path provided, else the raw content
     &#34;&#34;&#34;
 
-    resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
-                                                       .format(self.get_id()), raw=True)
+    if admin_access:
+        query_params = {&#39;adminAccess&#39;: admin_access}
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/dashboards/{}/export&#39;
+                                                           .format(self.get_id()), raw=True,
+                                                           query_params=query_params)
+    else:
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/export/dash&#39;
+                                                           .format(self.get_id()), raw=True)
     if path is not None:
         with open(path, &#39;wb&#39;) as out_file:
             out_file.write(resp_content)
