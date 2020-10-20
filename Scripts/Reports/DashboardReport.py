@@ -38,12 +38,12 @@ for owner_dashboard in owner_dashboards:
             if dashboard.get_last_opened() is not None:
                 val = 1 if dashboard.get_last_opened().date() > comp_date else 0
                 report_map[dashboard.get_id()] = [dashboard.get_title(), dashboard.get_id(),
-                                                  dashboard.get_owner().get_email(), val,
-                                                  dashboard.get_last_opened().date()]
+                                                  dashboard.get_owner().get_email(), dashboard.get_created_date(),
+                                                  val, dashboard.get_last_opened().date()]
             else:
                 report_map[dashboard.get_id()] = [dashboard.get_title(), dashboard.get_id(),
-                                                  dashboard.get_owner().get_email(), 0,
-                                                  datetime.datetime(1970, 1, 1).date()]
+                                                  dashboard.get_owner().get_email(), dashboard.get_created_date(),
+                                                  0, datetime.datetime(1970, 1, 1).date()]
     x = x + 1
     print("{}/{}".format(x, length), end='\r')
 
@@ -51,7 +51,7 @@ for owner_dashboard in owner_dashboards:
 with open(report_name, 'w', newline='') as csv_file:
     dashboard_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     dashboard_writer.writerow(
-        ['Dashboard Name', 'Dashboard ID', 'Owner', 'Recent Users', 'Last Opened']
+        ['Dashboard Name', 'Dashboard ID', 'Owner', 'Created On', 'Recent Users', 'Last Opened']
     )
     for report in report_map.values():
         dashboard_writer.writerow(report)

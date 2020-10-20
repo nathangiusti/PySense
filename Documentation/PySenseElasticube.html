@@ -98,16 +98,14 @@ class Elasticube:
         else:
             return self._cube_json[&#39;title&#39;]
 
-    def run_sql(self, query, file_type, *, path=None, server_address=None,
+    def run_sql(self, query, file_type, *, path=None,
                 offset=None, count=None, include_metadata=None, is_masked_response=None):
-        &#34;&#34;&#34;Executes ElastiCube sql.
+        &#34;&#34;&#34;Executes SQL against ElastiCube.
 
         Args:
             - query: The query to execute
             - file_type: File format to return
             - (Optional) path: The location to save the file
-            - (Optional) server_address: The server address of the ElastiCube.
-                Set this to your server ip if this method fails without it set.
             - (Optional) offset: Defines how many items to skip before returning the results.
                 For example, to return results from value #101 onward, enter a value of ‘100’.
             - (Optional) count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.
@@ -117,8 +115,6 @@ class Elasticube:
         Returns:
              The path of the created file or the content payload if path is None
         &#34;&#34;&#34;
-
-        server_address = server_address if server_address else self._server_address
 
         query = query.replace(&#34; &#34;, &#34;%20&#34;)
 
@@ -132,8 +128,8 @@ class Elasticube:
         }
 
         if self._py_client.version == SisenseVersion.Version.LINUX:
-            resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/datasources/{}/{}/sql&#39;
-                                                               .format(server_address, self.get_title(url_encoded=True)),
+            resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/datasources/{}/sql&#39;
+                                                               .format(self.get_title(url_encoded=True)),
                                                                query_params=query_params, raw=True)
         else:
             resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/sql&#39;
@@ -369,7 +365,7 @@ class Elasticube:
         Windows only
 
         - Args
-            - build_type: The build type (schema_changes or full)
+            - build_type: The build type (SchemaChanges, Accumulate, or Entire)
             - (Optional) server_address: The server address of the ElastiCube.
                 Set this to your server ip if this method fails without it set.
             - (Optional) orchestrator_task:
@@ -598,16 +594,14 @@ class Elasticube:
         else:
             return self._cube_json[&#39;title&#39;]
 
-    def run_sql(self, query, file_type, *, path=None, server_address=None,
+    def run_sql(self, query, file_type, *, path=None,
                 offset=None, count=None, include_metadata=None, is_masked_response=None):
-        &#34;&#34;&#34;Executes ElastiCube sql.
+        &#34;&#34;&#34;Executes SQL against ElastiCube.
 
         Args:
             - query: The query to execute
             - file_type: File format to return
             - (Optional) path: The location to save the file
-            - (Optional) server_address: The server address of the ElastiCube.
-                Set this to your server ip if this method fails without it set.
             - (Optional) offset: Defines how many items to skip before returning the results.
                 For example, to return results from value #101 onward, enter a value of ‘100’.
             - (Optional) count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.
@@ -617,8 +611,6 @@ class Elasticube:
         Returns:
              The path of the created file or the content payload if path is None
         &#34;&#34;&#34;
-
-        server_address = server_address if server_address else self._server_address
 
         query = query.replace(&#34; &#34;, &#34;%20&#34;)
 
@@ -632,8 +624,8 @@ class Elasticube:
         }
 
         if self._py_client.version == SisenseVersion.Version.LINUX:
-            resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/datasources/{}/{}/sql&#39;
-                                                               .format(server_address, self.get_title(url_encoded=True)),
+            resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/datasources/{}/sql&#39;
+                                                               .format(self.get_title(url_encoded=True)),
                                                                query_params=query_params, raw=True)
         else:
             resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/sql&#39;
@@ -869,7 +861,7 @@ class Elasticube:
         Windows only
 
         - Args
-            - build_type: The build type (schema_changes or full)
+            - build_type: The build type (SchemaChanges, Accumulate, or Entire)
             - (Optional) server_address: The server address of the ElastiCube.
                 Set this to your server ip if this method fails without it set.
             - (Optional) orchestrator_task:
@@ -1621,17 +1613,15 @@ Set this to your server ip if this method fails without it set.</li>
 </details>
 </dd>
 <dt id="PySense.PySenseElasticube.Elasticube.run_sql"><code class="name flex">
-<span>def <span class="ident">run_sql</span></span>(<span>self, query, file_type, *, path=None, server_address=None, offset=None, count=None, include_metadata=None, is_masked_response=None)</span>
+<span>def <span class="ident">run_sql</span></span>(<span>self, query, file_type, *, path=None, offset=None, count=None, include_metadata=None, is_masked_response=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Executes ElastiCube sql.</p>
+<div class="desc"><p>Executes SQL against ElastiCube.</p>
 <h2 id="args">Args</h2>
 <ul>
 <li>query: The query to execute</li>
 <li>file_type: File format to return</li>
 <li>(Optional) path: The location to save the file</li>
-<li>(Optional) server_address: The server address of the ElastiCube.
-Set this to your server ip if this method fails without it set.</li>
 <li>(Optional) offset: Defines how many items to skip before returning the results.
 For example, to return results from value #101 onward, enter a value of ‘100’.</li>
 <li>(Optional) count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.</li>
@@ -1644,16 +1634,14 @@ For example, to return results from value #101 onward, enter a value of ‘100�
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def run_sql(self, query, file_type, *, path=None, server_address=None,
+<pre><code class="python">def run_sql(self, query, file_type, *, path=None,
             offset=None, count=None, include_metadata=None, is_masked_response=None):
-    &#34;&#34;&#34;Executes ElastiCube sql.
+    &#34;&#34;&#34;Executes SQL against ElastiCube.
 
     Args:
         - query: The query to execute
         - file_type: File format to return
         - (Optional) path: The location to save the file
-        - (Optional) server_address: The server address of the ElastiCube.
-            Set this to your server ip if this method fails without it set.
         - (Optional) offset: Defines how many items to skip before returning the results.
             For example, to return results from value #101 onward, enter a value of ‘100’.
         - (Optional) count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.
@@ -1663,8 +1651,6 @@ For example, to return results from value #101 onward, enter a value of ‘100�
     Returns:
          The path of the created file or the content payload if path is None
     &#34;&#34;&#34;
-
-    server_address = server_address if server_address else self._server_address
 
     query = query.replace(&#34; &#34;, &#34;%20&#34;)
 
@@ -1678,8 +1664,8 @@ For example, to return results from value #101 onward, enter a value of ‘100�
     }
 
     if self._py_client.version == SisenseVersion.Version.LINUX:
-        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/datasources/{}/{}/sql&#39;
-                                                           .format(server_address, self.get_title(url_encoded=True)),
+        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/datasources/{}/sql&#39;
+                                                           .format(self.get_title(url_encoded=True)),
                                                            query_params=query_params, raw=True)
     else:
         resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/sql&#39;
@@ -1703,7 +1689,7 @@ For example, to return results from value #101 onward, enter a value of ‘100�
 <p>Windows only</p>
 <ul>
 <li>Args<ul>
-<li>build_type: The build type (schema_changes or full)</li>
+<li>build_type: The build type (SchemaChanges, Accumulate, or Entire)</li>
 <li>(Optional) server_address: The server address of the ElastiCube.
 Set this to your server ip if this method fails without it set.</li>
 <li>(Optional) orchestrator_task:</li>
@@ -1720,7 +1706,7 @@ Set this to your server ip if this method fails without it set.</li>
     Windows only
 
     - Args
-        - build_type: The build type (schema_changes or full)
+        - build_type: The build type (SchemaChanges, Accumulate, or Entire)
         - (Optional) server_address: The server address of the ElastiCube.
             Set this to your server ip if this method fails without it set.
         - (Optional) orchestrator_task:

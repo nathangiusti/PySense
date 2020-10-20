@@ -1,3 +1,4 @@
+from PySense import PySenseException
 from PySense import PySenseUser
 from PySense import PySenseUtils
 
@@ -127,3 +128,36 @@ class UserMixIn:
         """
         for user in PySenseUtils.make_iterable(users):
             self.connector.rest_call('delete', 'api/v1/users/{}'.format(user.get_id()))
+
+    def add_users_active_directory(self, users):
+        """Adds users from active directory
+
+        Beta: May have issues
+
+        Args:
+            users: A json array of active directory user blobs
+
+        Ex:
+        [
+          {
+            "userName": "string",
+            "ldapDomainId": "string",
+            "roleId": "string",
+            "groups": [
+              "string"
+            ],
+            "objectSid": "string",
+            "preferences": {
+              "localeId": "Unknown Type: string,null"
+            },
+            "uiSettings": {}
+          }
+        ]
+
+        Returns the JSON response
+        """
+
+        return self.connector.rest_call('post', 'api/v1/users/ad/bulk', json_payload=users)
+
+
+

@@ -1,3 +1,23 @@
+**V 0.3.3 Release Notes**
+
+- Breaking changes
+    - None
+    
+- Additions
+    - Dashboard.get_created_date get the creation date of a dashboard
+    - (Beta) Active Directory integration
+        - The bulk active directory endpoint has been added. Pass in a JSON array of active directory users.
+        - Response will be raw JSON response from server
+        
+- Fixes
+    - Bug in Elasticube.run_sql() resolved
+    - Documentation for Elasticube.start_build() updated with more information
+    - Reports renamed and updated for clarity
+    - License in set up changed to match github
+
+- Known Issues
+    - REST API sometimes becomes unresponsive on Linux builds
+    
 **V 0.3.2 Release Notes**
 
 - Breaking changes

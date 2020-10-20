@@ -10,6 +10,8 @@ class PySenseElasticubeTests(unittest.TestCase):
     def setUpClass(cls):
         cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
         cls.elasticube = cls.py_client.get_elasticube_by_name('PySense')
+        cls.linux_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//PySenseLinux.yaml')
+        cls.linux_elasticube = cls.linux_client.get_elasticube_by_name('PySense')
 
     def test_getters(self):
         assert self.elasticube.get_title() is not None
@@ -63,6 +65,10 @@ class PySenseElasticubeTests(unittest.TestCase):
         self.elasticube.restart_cube()
         self.elasticube.start_build('delta')
         self.elasticube.stop_build()
+
+    def test_run_sql(self):
+        self.elasticube.run_sql("SELECT * FROM Dim_Dates", 'csv')
+        self.linux_elasticube.run_sql("SELECT * FROM Dim_Dates", 'csv')
 
     @classmethod
     def tearDownClass(cls):

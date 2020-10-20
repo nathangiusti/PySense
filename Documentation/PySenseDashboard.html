@@ -404,7 +404,11 @@ class Dashboard:
 
     def publish(self):
         &#34;&#34;&#34;Publishes the dashboard&#34;&#34;&#34;
-        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/publish&#39;.format(self.get_id()))</code></pre>
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/publish&#39;.format(self.get_id()))
+
+    def get_created_date(self):
+        &#34;&#34;&#34;Returns the creation datetime of the dashboard&#34;&#34;&#34;
+        return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;created&#39;])</code></pre>
 </details>
 </section>
 <section>
@@ -797,7 +801,11 @@ class Dashboard:
 
     def publish(self):
         &#34;&#34;&#34;Publishes the dashboard&#34;&#34;&#34;
-        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/publish&#39;.format(self.get_id()))</code></pre>
+        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/publish&#39;.format(self.get_id()))
+
+    def get_created_date(self):
+        &#34;&#34;&#34;Returns the creation datetime of the dashboard&#34;&#34;&#34;
+        return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;created&#39;])</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -1122,6 +1130,20 @@ class Dashboard:
         return path
     else:
         return resp_content</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDashboard.Dashboard.get_created_date"><code class="name flex">
+<span>def <span class="ident">get_created_date</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the creation datetime of the dashboard</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_created_date(self):
+    &#34;&#34;&#34;Returns the creation datetime of the dashboard&#34;&#34;&#34;
+    return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;created&#39;])</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_datasource"><code class="name flex">
@@ -1536,6 +1558,7 @@ parameter for paging</dd>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_dash" href="#PySense.PySenseDashboard.Dashboard.export_to_dash">export_to_dash</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_pdf" href="#PySense.PySenseDashboard.Dashboard.export_to_pdf">export_to_pdf</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.export_to_png" href="#PySense.PySenseDashboard.Dashboard.export_to_png">export_to_png</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.get_created_date" href="#PySense.PySenseDashboard.Dashboard.get_created_date">get_created_date</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_datasource" href="#PySense.PySenseDashboard.Dashboard.get_datasource">get_datasource</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_folder" href="#PySense.PySenseDashboard.Dashboard.get_folder">get_folder</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_id" href="#PySense.PySenseDashboard.Dashboard.get_id">get_id</a></code></li>

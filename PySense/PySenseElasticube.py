@@ -70,16 +70,14 @@ class Elasticube:
         else:
             return self._cube_json['title']
 
-    def run_sql(self, query, file_type, *, path=None, server_address=None,
+    def run_sql(self, query, file_type, *, path=None,
                 offset=None, count=None, include_metadata=None, is_masked_response=None):
-        """Executes ElastiCube sql.
+        """Executes SQL against ElastiCube.
 
         Args:
             - query: The query to execute
             - file_type: File format to return
             - (Optional) path: The location to save the file
-            - (Optional) server_address: The server address of the ElastiCube.
-                Set this to your server ip if this method fails without it set.
             - (Optional) offset: Defines how many items to skip before returning the results.
                 For example, to return results from value #101 onward, enter a value of ‘100’.
             - (Optional) count: Limits the result set to a defined number of results. Enter 0 (zero) or leave blank not to limit.
@@ -89,8 +87,6 @@ class Elasticube:
         Returns:
              The path of the created file or the content payload if path is None
         """
-
-        server_address = server_address if server_address else self._server_address
 
         query = query.replace(" ", "%20")
 
@@ -104,8 +100,8 @@ class Elasticube:
         }
 
         if self._py_client.version == SisenseVersion.Version.LINUX:
-            resp_content = self._py_client.connector.rest_call('get', 'api/datasources/{}/{}/sql'
-                                                               .format(server_address, self.get_title(url_encoded=True)),
+            resp_content = self._py_client.connector.rest_call('get', 'api/datasources/{}/sql'
+                                                               .format(self.get_title(url_encoded=True)),
                                                                query_params=query_params, raw=True)
         else:
             resp_content = self._py_client.connector.rest_call('get', 'api/elasticubes/{}/sql'
@@ -341,7 +337,7 @@ class Elasticube:
         Windows only
 
         - Args
-            - build_type: The build type (schema_changes or full)
+            - build_type: The build type (SchemaChanges, Accumulate, or Entire)
             - (Optional) server_address: The server address of the ElastiCube.
                 Set this to your server ip if this method fails without it set.
             - (Optional) orchestrator_task:

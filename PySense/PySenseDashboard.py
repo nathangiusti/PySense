@@ -377,3 +377,7 @@ class Dashboard:
     def publish(self):
         """Publishes the dashboard"""
         self._py_client.connector.rest_call('post', 'api/v1/dashboards/{}/publish'.format(self.get_id()))
+
+    def get_created_date(self):
+        """Returns the creation datetime of the dashboard"""
+        return PySenseUtils.sisense_time_to_python(self._dashboard_json['created'])
