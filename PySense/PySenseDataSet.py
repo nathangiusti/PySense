@@ -9,6 +9,10 @@ class DataSet:
         self._data_set_json = data_set_json
         self._data_model = data_model
 
+    def get_parent_data_model(self):
+        """Returns the data model this data set belongs to as a PySense DataSet"""
+        return self._data_model
+
     def get_oid(self):
         """Returns data set oid"""
         return self._data_set_json['oid']
@@ -31,7 +35,7 @@ class DataSet:
                                                    .format(self._data_model.get_oid(), self.get_oid()))
         ret_arr = []
         for table_json in resp:
-            ret_arr.append(PySenseTable.Table(self._py_client, table_json))
+            ret_arr.append(PySenseTable.Table(self._py_client, table_json, self))
         return ret_arr
 
     def get_connection(self):

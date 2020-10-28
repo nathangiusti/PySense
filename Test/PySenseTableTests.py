@@ -21,6 +21,9 @@ class PySenseTableTests(unittest.TestCase):
         assert self.table.get_json() is not None
         assert self.table.get_name() is not None
 
+    def test_update_build_connection(self):
+        self.table.update_build_behavior({'type': 'sync', 'accumulativeConfig': None})
+
 
 if __name__ == '__main__':
     unittest.main()

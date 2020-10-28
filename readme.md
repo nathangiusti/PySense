@@ -35,22 +35,17 @@ Install PySense with pip:
 
 [Tutorial Videos](https://www.youtube.com/playlist?list=PL0xO3VH5OF2JD2KiZs_41zvKvPyebg6MW)
 
-**V 0.3.3 Release Notes**
+**V 0.3.4 Release Notes**
 
 - Breaking changes
     - None
     
 - Additions
-    - Dashboard.get_created_date get the creation date of a dashboard
-    - (Beta) Active Directory integration
-        - The bulk active directory endpoint has been added. Pass in a JSON array of active directory users.
-        - Response will be raw JSON response from server
+    - Get the parent model of a data set DataSet.get_parent_data_model()
+    - Change the build behavior of a table Table.update_build_behavior
         
 - Fixes
-    - Bug in Elasticube.run_sql() resolved
-    - Documentation for Elasticube.start_build() updated with more information
-    - Reports renamed and updated for clarity
-    - License in set up changed to match github
+    - Minor documentation updates
 
 - Known Issues
     - REST API sometimes becomes unresponsive on Linux builds

@@ -28,9 +28,10 @@
 </summary>
 <pre><code class="python">class Table:
 
-    def __init__(self, py_client, table_json):
+    def __init__(self, py_client, table_json, dataset):
         self._py_client = py_client
         self._table_json = table_json
+        self._dataset = dataset
 
     def get_config_option(self, config_option):
         &#34;&#34;&#34;Returns the config option
@@ -46,6 +47,33 @@
             return self._table_json[&#39;configOptions&#39;][config_option]
         else:
             return None
+
+    def update_build_behavior(self, build_json):
+        &#34;&#34;&#34;Update the build behavior for the table
+
+        Args:
+            build_json: A json object of build parameters.
+
+        Ex.
+        {
+            &#34;type&#34;: &#34;sync&#34;,
+            &#34;accumulativeConfig&#34;:
+            {
+                  &#34;column&#34;: &#34;string&#34;,
+                  &#34;type&#34;: &#34;lastStored&#34;,
+                  &#34;lastDays&#34;: 0,
+                  &#34;keepOnlyDays&#34;: 0
+            }
+        }
+
+        {&#39;type&#39;: &#39;sync&#39;, &#39;accumulativeConfig&#39;: None}
+
+        &#34;&#34;&#34;
+        self._table_json[&#39;buildBehavior&#39;] = build_json
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables/{}&#39;
+                                            .format(self._dataset.get_parent_data_model().get_oid(),
+                                                    self._dataset.get_oid(), self.get_oid()),
+                                            json_payload=self._table_json)
 
     def get_config_options(self):
         &#34;&#34;&#34;Returns a dictionary of the config options&#34;&#34;&#34;
@@ -68,6 +96,7 @@
         return self._table_json
 
     def get_name(self):
+        &#34;&#34;&#34;Return the table name&#34;&#34;&#34;
         return self._table_json[&#39;name&#39;]</code></pre>
 </details>
 </section>
@@ -82,7 +111,7 @@
 <dl>
 <dt id="PySense.PySenseTable.Table"><code class="flex name class">
 <span>class <span class="ident">Table</span></span>
-<span>(</span><span>py_client, table_json)</span>
+<span>(</span><span>py_client, table_json, dataset)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -92,9 +121,10 @@
 </summary>
 <pre><code class="python">class Table:
 
-    def __init__(self, py_client, table_json):
+    def __init__(self, py_client, table_json, dataset):
         self._py_client = py_client
         self._table_json = table_json
+        self._dataset = dataset
 
     def get_config_option(self, config_option):
         &#34;&#34;&#34;Returns the config option
@@ -110,6 +140,33 @@
             return self._table_json[&#39;configOptions&#39;][config_option]
         else:
             return None
+
+    def update_build_behavior(self, build_json):
+        &#34;&#34;&#34;Update the build behavior for the table
+
+        Args:
+            build_json: A json object of build parameters.
+
+        Ex.
+        {
+            &#34;type&#34;: &#34;sync&#34;,
+            &#34;accumulativeConfig&#34;:
+            {
+                  &#34;column&#34;: &#34;string&#34;,
+                  &#34;type&#34;: &#34;lastStored&#34;,
+                  &#34;lastDays&#34;: 0,
+                  &#34;keepOnlyDays&#34;: 0
+            }
+        }
+
+        {&#39;type&#39;: &#39;sync&#39;, &#39;accumulativeConfig&#39;: None}
+
+        &#34;&#34;&#34;
+        self._table_json[&#39;buildBehavior&#39;] = build_json
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables/{}&#39;
+                                            .format(self._dataset.get_parent_data_model().get_oid(),
+                                                    self._dataset.get_oid(), self.get_oid()),
+                                            json_payload=self._table_json)
 
     def get_config_options(self):
         &#34;&#34;&#34;Returns a dictionary of the config options&#34;&#34;&#34;
@@ -132,6 +189,7 @@
         return self._table_json
 
     def get_name(self):
+        &#34;&#34;&#34;Return the table name&#34;&#34;&#34;
         return self._table_json[&#39;name&#39;]</code></pre>
 </details>
 <h3>Methods</h3>
@@ -213,12 +271,13 @@
 <span>def <span class="ident">get_name</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Return the table name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_name(self):
+    &#34;&#34;&#34;Return the table name&#34;&#34;&#34;
     return self._table_json[&#39;name&#39;]</code></pre>
 </details>
 </dd>
@@ -250,6 +309,60 @@
     return self._table_json[&#39;type&#39;]</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseTable.Table.update_build_behavior"><code class="name flex">
+<span>def <span class="ident">update_build_behavior</span></span>(<span>self, build_json)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Update the build behavior for the table</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>build_json</code></strong></dt>
+<dd>A json object of build parameters.</dd>
+</dl>
+<p>Ex.
+{
+"type": "sync",
+"accumulativeConfig":
+{
+"column": "string",
+"type": "lastStored",
+"lastDays": 0,
+"keepOnlyDays": 0
+}
+}</p>
+<p>{'type': 'sync', 'accumulativeConfig': None}</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_build_behavior(self, build_json):
+    &#34;&#34;&#34;Update the build behavior for the table
+
+    Args:
+        build_json: A json object of build parameters.
+
+    Ex.
+    {
+        &#34;type&#34;: &#34;sync&#34;,
+        &#34;accumulativeConfig&#34;:
+        {
+              &#34;column&#34;: &#34;string&#34;,
+              &#34;type&#34;: &#34;lastStored&#34;,
+              &#34;lastDays&#34;: 0,
+              &#34;keepOnlyDays&#34;: 0
+        }
+    }
+
+    {&#39;type&#39;: &#39;sync&#39;, &#39;accumulativeConfig&#39;: None}
+
+    &#34;&#34;&#34;
+    self._table_json[&#39;buildBehavior&#39;] = build_json
+    self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables/{}&#39;
+                                        .format(self._dataset.get_parent_data_model().get_oid(),
+                                                self._dataset.get_oid(), self.get_oid()),
+                                        json_payload=self._table_json)</code></pre>
+</details>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -270,7 +383,7 @@
 <ul>
 <li>
 <h4><code><a title="PySense.PySenseTable.Table" href="#PySense.PySenseTable.Table">Table</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="PySense.PySenseTable.Table.get_config_option" href="#PySense.PySenseTable.Table.get_config_option">get_config_option</a></code></li>
 <li><code><a title="PySense.PySenseTable.Table.get_config_options" href="#PySense.PySenseTable.Table.get_config_options">get_config_options</a></code></li>
 <li><code><a title="PySense.PySenseTable.Table.get_id" href="#PySense.PySenseTable.Table.get_id">get_id</a></code></li>
@@ -278,6 +391,7 @@
 <li><code><a title="PySense.PySenseTable.Table.get_name" href="#PySense.PySenseTable.Table.get_name">get_name</a></code></li>
 <li><code><a title="PySense.PySenseTable.Table.get_oid" href="#PySense.PySenseTable.Table.get_oid">get_oid</a></code></li>
 <li><code><a title="PySense.PySenseTable.Table.get_type" href="#PySense.PySenseTable.Table.get_type">get_type</a></code></li>
+<li><code><a title="PySense.PySenseTable.Table.update_build_behavior" href="#PySense.PySenseTable.Table.update_build_behavior">update_build_behavior</a></code></li>
 </ul>
 </li>
 </ul>

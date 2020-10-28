@@ -1,3 +1,18 @@
+**V 0.3.4 Release Notes**
+
+- Breaking changes
+    - None
+    
+- Additions
+    - Get the parent model of a data set DataSet.get_parent_data_model()
+    - Change the build behavior of a table Table.update_build_behavior
+        
+- Fixes
+    - Minor documentation updates
+
+- Known Issues
+    - REST API sometimes becomes unresponsive on Linux builds
+
 **V 0.3.3 Release Notes**
 
 - Breaking changes
