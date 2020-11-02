@@ -13,8 +13,8 @@ from PySense import PySense
 
 """Configuration"""
 recency_in_days = 30
-report_name = '/Users/Documents/Reports/DashboardRecencyReport.csv'
-config_file_location = '/Users/Documents/PySense/Config.yaml'
+report_name = '/Users/DashboardRecencyReport.csv'
+config_file_location = '/Users/Documents/PySense/VmConfig.yaml'
 """End Configuration"""
 
 py_client = PySense.authenticate_by_file(config_file_location)
@@ -31,9 +31,9 @@ for owner_dashboard in owner_dashboards:
         if dashboard.get_id() in report_map:
             if dashboard.get_last_opened() is not None:
                 if dashboard.get_last_opened().date() > comp_date:
-                    report_map[dashboard.get_id()][3] = report_map[dashboard.get_id()][3] + 1
-                if dashboard.get_last_opened().date() > report_map[dashboard.get_id()][4]:
-                    report_map[dashboard.get_id()][4] = dashboard.get_last_opened().date()
+                    report_map[dashboard.get_id()][4] = report_map[dashboard.get_id()][4] + 1
+                if dashboard.get_last_opened().date() > report_map[dashboard.get_id()][5]:
+                    report_map[dashboard.get_id()][5] = dashboard.get_last_opened().date()
         else:
             if dashboard.get_last_opened() is not None:
                 val = 1 if dashboard.get_last_opened().date() > comp_date else 0
