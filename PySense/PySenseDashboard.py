@@ -46,10 +46,20 @@ class Dashboard:
         else:
             return None
 
-    def get_shares(self):
-        """Gets the dashboard shares json """
+    def get_shares(self, *, admin_access=None):
+        """Gets the dashboard shares json
+
+        Args:
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+        """
+
+        query_params = {
+            'adminAccess': admin_access
+        }
+
         try:
-            resp_json = self._py_client.connector.rest_call('get', 'api/shares/dashboard/{}'.format(self.get_id()))
+            resp_json = self._py_client.connector.rest_call('get', 'api/shares/dashboard/{}'.format(self.get_id()),
+                                                            query_params=query_params)
             return_json = {'sharesTo': []}
             for share in resp_json['sharesTo']:
                 share_json = {
@@ -65,9 +75,19 @@ class Dashboard:
         except PySenseException.PySenseException:
             return self._dashboard_json['shares']
 
-    def get_share_users_groups(self):
-        """Gets a list of users and groups the dashboard is shared with"""
-        resp_json = self._py_client.connector.rest_call('get', 'api/shares/dashboard/{}'.format(self.get_id()))
+    def get_share_users_groups(self, *, admin_access=None):
+        """Gets a list of users and groups the dashboard is shared with
+
+        Args:
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+        """
+
+        query_params = {
+            'adminAccess': admin_access
+        }
+
+        resp_json = self._py_client.connector.rest_call('get', 'api/shares/dashboard/{}'.format(self.get_id()),
+                                                        query_params=query_params)
         ret_arr = []
         for share in resp_json['sharesTo']:
             if share['type'] == 'user':
@@ -76,7 +96,7 @@ class Dashboard:
                 ret_arr.append(self._py_client.get_group_by_id(share['shareId']))
         return ret_arr
 
-    def add_share(self, shares, rule, subscribe, *, share_cube=True):
+    def add_share(self, shares, rule, subscribe, *, share_cube=True, admin_access=None):
         """Share a dashboard to a new group or user.
 
         If dashboard is already shared with user or group, nothing happens
@@ -88,8 +108,14 @@ class Dashboard:
             rule: The permission of the user on the dashboard (view, edit, etc)
             subscribe: true or false, whether to subscribe the user to reports
             share_cube: (Optional) False to not share cube with groups/users
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
         """
-        curr_shares = self.get_shares()
+
+        query_params = {
+            'adminAccess': admin_access
+        }
+
+        curr_shares = self.get_shares(admin_access=admin_access)
 
         for share in shares:
             share_id = share.get_id()
@@ -108,23 +134,33 @@ class Dashboard:
                     )
 
         self._py_client.connector.rest_call('post', 'api/shares/dashboard/{}'.format(self.get_id()),
-                                            json_payload=curr_shares)
+                                            json_payload=curr_shares, query_params=query_params)
         if share_cube:
             data_source = self.get_datasource()
             data_source.add_share(shares)
 
-    def remove_shares(self, shares):
-        """Unshare a dashboard to a list of groups and users"""
+    def remove_shares(self, shares, *, admin_access=None):
+        """Unshare a dashboard to a list of groups and users
+
+        Args:
+            shares: Groups and users to unshare the dashboard with
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+        """
+
+        query_params = {
+            'adminAccess': admin_access
+        }
+
         share_ids_to_delete = []
         for shares in PySenseUtils.make_iterable(shares):
             share_ids_to_delete.append(shares.get_id())
-        current_shares = self.get_shares()
+        current_shares = self.get_shares(admin_access=admin_access)
         for share_id in share_ids_to_delete:
             for i, shares in enumerate(current_shares['sharesTo']):
                 if shares['shareId'] == share_id:
                     del current_shares['sharesTo'][i]
         self._py_client.connector.rest_call('post', 'api/shares/dashboard/{}'.format(self.get_id()),
-                                            json_payload=current_shares)
+                                            json_payload=current_shares, query_params=query_params)
 
     def move_to_folder(self, folder):
         """Move dashboard to given folder"""

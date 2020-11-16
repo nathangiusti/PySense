@@ -78,6 +78,19 @@ class PySenseDashboardTests(unittest.TestCase):
         self.py_client.bulk_export_dashboards(dashboards, path=path)
         self.py_client.import_dashboards(path, republish=False)
 
+    def test_share_unowned_dash(self):
+        dashboard = self.py_client.get_dashboard_by_id('5f7c79ae26e1201818bf479b', admin_access=True)
+        user = self.py_client.get_users(first_name='nathan.giusti')
+        assert len(dashboard.get_shares(admin_access=True)['sharesTo']) == 1
+        assert len(dashboard.get_share_users_groups(admin_access=True)) == 1
+        dashboard.add_share(user, 'view', False, admin_access=True)
+        assert len(dashboard.get_shares(admin_access=True)['sharesTo']) == 2
+        assert len(dashboard.get_share_users_groups(admin_access=True)) == 2
+        dashboard.remove_shares(user, admin_access=True)
+        assert len(dashboard.get_shares(admin_access=True)) == 1
+        assert len(dashboard.get_share_users_groups(admin_access=True)) == 1
+
+
     @classmethod
     def tearDownClass(cls):
         cls.dashboard.remove_shares(cls.dashboard.get_share_users_groups())

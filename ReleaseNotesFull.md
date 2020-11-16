@@ -1,3 +1,22 @@
+**V 0.3.5 Release Notes**
+
+- Breaking changes
+    - None
+    
+- Additions
+    - Ability to manage shares of unowned dashboards as admin
+    - admin_access parameter added to following functions
+        - Dashboard.get_shares()
+        - Dashboard.add_share()
+        - Dashboard.remove_shares()
+              
+- Fixes
+    - None
+
+- Known Issues
+    - REST API sometimes becomes unresponsive on Linux builds
+    
+
 **V 0.3.4 Release Notes**
 
 - Breaking changes

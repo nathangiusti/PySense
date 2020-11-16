@@ -35,17 +35,20 @@ Install PySense with pip:
 
 [Tutorial Videos](https://www.youtube.com/playlist?list=PL0xO3VH5OF2JD2KiZs_41zvKvPyebg6MW)
 
-**V 0.3.4 Release Notes**
+**V 0.3.5 Release Notes**
 
 - Breaking changes
     - None
     
 - Additions
-    - Get the parent model of a data set DataSet.get_parent_data_model()
-    - Change the build behavior of a table Table.update_build_behavior
-        
+    - Ability to manage shares of unowned dashboards as admin
+    - admin_access parameter added to following functions
+        - Dashboard.get_shares()
+        - Dashboard.add_share()
+        - Dashboard.remove_shares()
+              
 - Fixes
-    - Minor documentation updates
+    - None
 
 - Known Issues
     - REST API sometimes becomes unresponsive on Linux builds

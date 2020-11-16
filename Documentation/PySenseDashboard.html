@@ -74,10 +74,20 @@ class Dashboard:
         else:
             return None
 
-    def get_shares(self):
-        &#34;&#34;&#34;Gets the dashboard shares json &#34;&#34;&#34;
+    def get_shares(self, *, admin_access=None):
+        &#34;&#34;&#34;Gets the dashboard shares json
+
+        Args:
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+        &#34;&#34;&#34;
+
+        query_params = {
+            &#39;adminAccess&#39;: admin_access
+        }
+
         try:
-            resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+            resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
+                                                            query_params=query_params)
             return_json = {&#39;sharesTo&#39;: []}
             for share in resp_json[&#39;sharesTo&#39;]:
                 share_json = {
@@ -93,9 +103,19 @@ class Dashboard:
         except PySenseException.PySenseException:
             return self._dashboard_json[&#39;shares&#39;]
 
-    def get_share_users_groups(self):
-        &#34;&#34;&#34;Gets a list of users and groups the dashboard is shared with&#34;&#34;&#34;
-        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+    def get_share_users_groups(self, *, admin_access=None):
+        &#34;&#34;&#34;Gets a list of users and groups the dashboard is shared with
+
+        Args:
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+        &#34;&#34;&#34;
+
+        query_params = {
+            &#39;adminAccess&#39;: admin_access
+        }
+
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
+                                                        query_params=query_params)
         ret_arr = []
         for share in resp_json[&#39;sharesTo&#39;]:
             if share[&#39;type&#39;] == &#39;user&#39;:
@@ -104,7 +124,7 @@ class Dashboard:
                 ret_arr.append(self._py_client.get_group_by_id(share[&#39;shareId&#39;]))
         return ret_arr
 
-    def add_share(self, shares, rule, subscribe, *, share_cube=True):
+    def add_share(self, shares, rule, subscribe, *, share_cube=True, admin_access=None):
         &#34;&#34;&#34;Share a dashboard to a new group or user.
 
         If dashboard is already shared with user or group, nothing happens
@@ -116,8 +136,14 @@ class Dashboard:
             rule: The permission of the user on the dashboard (view, edit, etc)
             subscribe: true or false, whether to subscribe the user to reports
             share_cube: (Optional) False to not share cube with groups/users
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
         &#34;&#34;&#34;
-        curr_shares = self.get_shares()
+
+        query_params = {
+            &#39;adminAccess&#39;: admin_access
+        }
+
+        curr_shares = self.get_shares(admin_access=admin_access)
 
         for share in shares:
             share_id = share.get_id()
@@ -136,23 +162,33 @@ class Dashboard:
                     )
 
         self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
-                                            json_payload=curr_shares)
+                                            json_payload=curr_shares, query_params=query_params)
         if share_cube:
             data_source = self.get_datasource()
             data_source.add_share(shares)
 
-    def remove_shares(self, shares):
-        &#34;&#34;&#34;Unshare a dashboard to a list of groups and users&#34;&#34;&#34;
+    def remove_shares(self, shares, *, admin_access=None):
+        &#34;&#34;&#34;Unshare a dashboard to a list of groups and users
+
+        Args:
+            shares: Groups and users to unshare the dashboard with
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+        &#34;&#34;&#34;
+
+        query_params = {
+            &#39;adminAccess&#39;: admin_access
+        }
+
         share_ids_to_delete = []
         for shares in PySenseUtils.make_iterable(shares):
             share_ids_to_delete.append(shares.get_id())
-        current_shares = self.get_shares()
+        current_shares = self.get_shares(admin_access=admin_access)
         for share_id in share_ids_to_delete:
             for i, shares in enumerate(current_shares[&#39;sharesTo&#39;]):
                 if shares[&#39;shareId&#39;] == share_id:
                     del current_shares[&#39;sharesTo&#39;][i]
         self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
-                                            json_payload=current_shares)
+                                            json_payload=current_shares, query_params=query_params)
 
     def move_to_folder(self, folder):
         &#34;&#34;&#34;Move dashboard to given folder&#34;&#34;&#34;
@@ -471,10 +507,20 @@ class Dashboard:
         else:
             return None
 
-    def get_shares(self):
-        &#34;&#34;&#34;Gets the dashboard shares json &#34;&#34;&#34;
+    def get_shares(self, *, admin_access=None):
+        &#34;&#34;&#34;Gets the dashboard shares json
+
+        Args:
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+        &#34;&#34;&#34;
+
+        query_params = {
+            &#39;adminAccess&#39;: admin_access
+        }
+
         try:
-            resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+            resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
+                                                            query_params=query_params)
             return_json = {&#39;sharesTo&#39;: []}
             for share in resp_json[&#39;sharesTo&#39;]:
                 share_json = {
@@ -490,9 +536,19 @@ class Dashboard:
         except PySenseException.PySenseException:
             return self._dashboard_json[&#39;shares&#39;]
 
-    def get_share_users_groups(self):
-        &#34;&#34;&#34;Gets a list of users and groups the dashboard is shared with&#34;&#34;&#34;
-        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+    def get_share_users_groups(self, *, admin_access=None):
+        &#34;&#34;&#34;Gets a list of users and groups the dashboard is shared with
+
+        Args:
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+        &#34;&#34;&#34;
+
+        query_params = {
+            &#39;adminAccess&#39;: admin_access
+        }
+
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
+                                                        query_params=query_params)
         ret_arr = []
         for share in resp_json[&#39;sharesTo&#39;]:
             if share[&#39;type&#39;] == &#39;user&#39;:
@@ -501,7 +557,7 @@ class Dashboard:
                 ret_arr.append(self._py_client.get_group_by_id(share[&#39;shareId&#39;]))
         return ret_arr
 
-    def add_share(self, shares, rule, subscribe, *, share_cube=True):
+    def add_share(self, shares, rule, subscribe, *, share_cube=True, admin_access=None):
         &#34;&#34;&#34;Share a dashboard to a new group or user.
 
         If dashboard is already shared with user or group, nothing happens
@@ -513,8 +569,14 @@ class Dashboard:
             rule: The permission of the user on the dashboard (view, edit, etc)
             subscribe: true or false, whether to subscribe the user to reports
             share_cube: (Optional) False to not share cube with groups/users
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
         &#34;&#34;&#34;
-        curr_shares = self.get_shares()
+
+        query_params = {
+            &#39;adminAccess&#39;: admin_access
+        }
+
+        curr_shares = self.get_shares(admin_access=admin_access)
 
         for share in shares:
             share_id = share.get_id()
@@ -533,23 +595,33 @@ class Dashboard:
                     )
 
         self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
-                                            json_payload=curr_shares)
+                                            json_payload=curr_shares, query_params=query_params)
         if share_cube:
             data_source = self.get_datasource()
             data_source.add_share(shares)
 
-    def remove_shares(self, shares):
-        &#34;&#34;&#34;Unshare a dashboard to a list of groups and users&#34;&#34;&#34;
+    def remove_shares(self, shares, *, admin_access=None):
+        &#34;&#34;&#34;Unshare a dashboard to a list of groups and users
+
+        Args:
+            shares: Groups and users to unshare the dashboard with
+            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+        &#34;&#34;&#34;
+
+        query_params = {
+            &#39;adminAccess&#39;: admin_access
+        }
+
         share_ids_to_delete = []
         for shares in PySenseUtils.make_iterable(shares):
             share_ids_to_delete.append(shares.get_id())
-        current_shares = self.get_shares()
+        current_shares = self.get_shares(admin_access=admin_access)
         for share_id in share_ids_to_delete:
             for i, shares in enumerate(current_shares[&#39;sharesTo&#39;]):
                 if shares[&#39;shareId&#39;] == share_id:
                     del current_shares[&#39;sharesTo&#39;][i]
         self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
-                                            json_payload=current_shares)
+                                            json_payload=current_shares, query_params=query_params)
 
     def move_to_folder(self, folder):
         &#34;&#34;&#34;Move dashboard to given folder&#34;&#34;&#34;
@@ -810,7 +882,7 @@ class Dashboard:
 <h3>Methods</h3>
 <dl>
 <dt id="PySense.PySenseDashboard.Dashboard.add_share"><code class="name flex">
-<span>def <span class="ident">add_share</span></span>(<span>self, shares, rule, subscribe, *, share_cube=True)</span>
+<span>def <span class="ident">add_share</span></span>(<span>self, shares, rule, subscribe, *, share_cube=True, admin_access=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Share a dashboard to a new group or user.</p>
@@ -826,12 +898,14 @@ class Dashboard:
 <dd>true or false, whether to subscribe the user to reports</dd>
 <dt><strong><code>share_cube</code></strong></dt>
 <dd>(Optional) False to not share cube with groups/users</dd>
+<dt><strong><code>admin_access</code></strong></dt>
+<dd>(Optional) Set to true if logged in as admin and getting unowned dashboard</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_share(self, shares, rule, subscribe, *, share_cube=True):
+<pre><code class="python">def add_share(self, shares, rule, subscribe, *, share_cube=True, admin_access=None):
     &#34;&#34;&#34;Share a dashboard to a new group or user.
 
     If dashboard is already shared with user or group, nothing happens
@@ -843,8 +917,14 @@ class Dashboard:
         rule: The permission of the user on the dashboard (view, edit, etc)
         subscribe: true or false, whether to subscribe the user to reports
         share_cube: (Optional) False to not share cube with groups/users
+        admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
     &#34;&#34;&#34;
-    curr_shares = self.get_shares()
+
+    query_params = {
+        &#39;adminAccess&#39;: admin_access
+    }
+
+    curr_shares = self.get_shares(admin_access=admin_access)
 
     for share in shares:
         share_id = share.get_id()
@@ -863,7 +943,7 @@ class Dashboard:
                 )
 
     self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
-                                        json_payload=curr_shares)
+                                        json_payload=curr_shares, query_params=query_params)
     if share_cube:
         data_source = self.get_datasource()
         data_source.add_share(shares)</code></pre>
@@ -1261,17 +1341,32 @@ class Dashboard:
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_share_users_groups"><code class="name flex">
-<span>def <span class="ident">get_share_users_groups</span></span>(<span>self)</span>
+<span>def <span class="ident">get_share_users_groups</span></span>(<span>self, *, admin_access=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Gets a list of users and groups the dashboard is shared with</p></div>
+<div class="desc"><p>Gets a list of users and groups the dashboard is shared with</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>admin_access</code></strong></dt>
+<dd>(Optional) Set to true if logged in as admin and getting unowned dashboard</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_share_users_groups(self):
-    &#34;&#34;&#34;Gets a list of users and groups the dashboard is shared with&#34;&#34;&#34;
-    resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+<pre><code class="python">def get_share_users_groups(self, *, admin_access=None):
+    &#34;&#34;&#34;Gets a list of users and groups the dashboard is shared with
+
+    Args:
+        admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+    &#34;&#34;&#34;
+
+    query_params = {
+        &#39;adminAccess&#39;: admin_access
+    }
+
+    resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
+                                                    query_params=query_params)
     ret_arr = []
     for share in resp_json[&#39;sharesTo&#39;]:
         if share[&#39;type&#39;] == &#39;user&#39;:
@@ -1282,18 +1377,33 @@ class Dashboard:
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.get_shares"><code class="name flex">
-<span>def <span class="ident">get_shares</span></span>(<span>self)</span>
+<span>def <span class="ident">get_shares</span></span>(<span>self, *, admin_access=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Gets the dashboard shares json</p></div>
+<div class="desc"><p>Gets the dashboard shares json</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>admin_access</code></strong></dt>
+<dd>(Optional) Set to true if logged in as admin and getting unowned dashboard</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_shares(self):
-    &#34;&#34;&#34;Gets the dashboard shares json &#34;&#34;&#34;
+<pre><code class="python">def get_shares(self, *, admin_access=None):
+    &#34;&#34;&#34;Gets the dashboard shares json
+
+    Args:
+        admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+    &#34;&#34;&#34;
+
+    query_params = {
+        &#39;adminAccess&#39;: admin_access
+    }
+
     try:
-        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()))
+        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
+                                                        query_params=query_params)
         return_json = {&#39;sharesTo&#39;: []}
         for share in resp_json[&#39;sharesTo&#39;]:
             share_json = {
@@ -1508,26 +1618,43 @@ parameter for paging</dd>
 </details>
 </dd>
 <dt id="PySense.PySenseDashboard.Dashboard.remove_shares"><code class="name flex">
-<span>def <span class="ident">remove_shares</span></span>(<span>self, shares)</span>
+<span>def <span class="ident">remove_shares</span></span>(<span>self, shares, *, admin_access=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Unshare a dashboard to a list of groups and users</p></div>
+<div class="desc"><p>Unshare a dashboard to a list of groups and users</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>shares</code></strong></dt>
+<dd>Groups and users to unshare the dashboard with</dd>
+<dt><strong><code>admin_access</code></strong></dt>
+<dd>(Optional) Set to true if logged in as admin and getting unowned dashboard</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def remove_shares(self, shares):
-    &#34;&#34;&#34;Unshare a dashboard to a list of groups and users&#34;&#34;&#34;
+<pre><code class="python">def remove_shares(self, shares, *, admin_access=None):
+    &#34;&#34;&#34;Unshare a dashboard to a list of groups and users
+
+    Args:
+        shares: Groups and users to unshare the dashboard with
+        admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+    &#34;&#34;&#34;
+
+    query_params = {
+        &#39;adminAccess&#39;: admin_access
+    }
+
     share_ids_to_delete = []
     for shares in PySenseUtils.make_iterable(shares):
         share_ids_to_delete.append(shares.get_id())
-    current_shares = self.get_shares()
+    current_shares = self.get_shares(admin_access=admin_access)
     for share_id in share_ids_to_delete:
         for i, shares in enumerate(current_shares[&#39;sharesTo&#39;]):
             if shares[&#39;shareId&#39;] == share_id:
                 del current_shares[&#39;sharesTo&#39;][i]
     self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/shares/dashboard/{}&#39;.format(self.get_id()),
-                                        json_payload=current_shares)</code></pre>
+                                        json_payload=current_shares, query_params=query_params)</code></pre>
 </details>
 </dd>
 </dl>
