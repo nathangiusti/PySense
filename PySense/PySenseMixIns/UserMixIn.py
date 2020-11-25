@@ -11,7 +11,7 @@ class UserMixIn:
 
         Args:
             email: email address for user
-            role: role of user
+            role: SisenseRole enum for the role of the user
             user_name: (optional) User user name. Email used if None
             first_name: (optional) User first name
             last_name: (optional) User last name
@@ -46,7 +46,7 @@ class UserMixIn:
         resp_json = self.connector.rest_call('post', 'api/v1/users', json_payload=user_obj)
         return PySenseUser.User(self, resp_json)
 
-    def get_users(self, *, user_name=None, email=None, first_name=None, last_name=None, role_name=None, group=None,
+    def get_users(self, *, user_name=None, email=None, first_name=None, last_name=None, role=None, group=None,
                   active=None, origin=None, ids=None, fields=[], sort=None, skip=None, limit=None, expand=None):
         """Returns a list of users.
 
@@ -58,7 +58,7 @@ class UserMixIn:
             email: (optional) Email to filter by
             first_name: (optional) First name to filter by
             last_name: (optional) Last name to filter by
-            role_name: (optional) Role filter by
+            role: (optional) SisenseRole enum for the role of the user to filter by
             group: (optional) Group to filter by
             active: (optional) User state to filter by (true for active users, false for inactive users)
             origin: (optional) User origin to filter by (ad for active directory or sisense)
@@ -88,7 +88,7 @@ class UserMixIn:
             'email': email,
             'firstName': first_name,
             'lastName': last_name,
-            'role': self.get_role_id(role_name),
+            'role': self.get_role_id(role),
             'group': group,
             'active': active,
             'origin': origin,

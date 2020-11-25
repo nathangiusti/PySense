@@ -35,17 +35,17 @@ Install PySense with pip:
 
 [Tutorial Videos](https://www.youtube.com/playlist?list=PL0xO3VH5OF2JD2KiZs_41zvKvPyebg6MW)
 
-**V 0.3.5 Release Notes**
+**V 0.3.6 Release Notes**
 
 - Breaking changes
-    - None
+    - get_users optional param has been modified
+        - role_name is now role
+        - Function accepts a Sisense.Role enum instead of a string
     
 - Additions
-    - Ability to manage shares of unowned dashboards as admin
-    - admin_access parameter added to following functions
-        - Dashboard.get_shares()
-        - Dashboard.add_share()
-        - Dashboard.remove_shares()
+    - Authenticate by connector
+        - Pass in your own connector object, useful for testing
+        - Use PySense.authenticate_by_connector()
               
 - Fixes
     - None

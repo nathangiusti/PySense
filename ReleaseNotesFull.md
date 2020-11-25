@@ -1,3 +1,21 @@
+**V 0.3.6 Release Notes**
+
+- Breaking changes
+    - get_users optional param has been modified
+        - role_name is now role
+        - Function accepts a Sisense.Role enum instead of a string
+    
+- Additions
+    - Authenticate by connector
+        - Pass in your own connector object, useful for testing
+        - Use PySense.authenticate_by_connector()
+              
+- Fixes
+    - None
+
+- Known Issues
+    - REST API sometimes becomes unresponsive on Linux builds
+    
 **V 0.3.5 Release Notes**
 
 - Breaking changes

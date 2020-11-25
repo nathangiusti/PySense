@@ -39,7 +39,7 @@ class UserMixIn:
 
         Args:
             email: email address for user
-            role: role of user
+            role: SisenseRole enum for the role of the user
             user_name: (optional) User user name. Email used if None
             first_name: (optional) User first name
             last_name: (optional) User last name
@@ -74,7 +74,7 @@ class UserMixIn:
         resp_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/users&#39;, json_payload=user_obj)
         return PySenseUser.User(self, resp_json)
 
-    def get_users(self, *, user_name=None, email=None, first_name=None, last_name=None, role_name=None, group=None,
+    def get_users(self, *, user_name=None, email=None, first_name=None, last_name=None, role=None, group=None,
                   active=None, origin=None, ids=None, fields=[], sort=None, skip=None, limit=None, expand=None):
         &#34;&#34;&#34;Returns a list of users.
 
@@ -86,7 +86,7 @@ class UserMixIn:
             email: (optional) Email to filter by
             first_name: (optional) First name to filter by
             last_name: (optional) Last name to filter by
-            role_name: (optional) Role filter by
+            role: (optional) SisenseRole enum for the role of the user to filter by
             group: (optional) Group to filter by
             active: (optional) User state to filter by (true for active users, false for inactive users)
             origin: (optional) User origin to filter by (ad for active directory or sisense)
@@ -116,7 +116,7 @@ class UserMixIn:
             &#39;email&#39;: email,
             &#39;firstName&#39;: first_name,
             &#39;lastName&#39;: last_name,
-            &#39;role&#39;: self.get_role_id(role_name),
+            &#39;role&#39;: self.get_role_id(role),
             &#39;group&#39;: group,
             &#39;active&#39;: active,
             &#39;origin&#39;: origin,
@@ -214,7 +214,7 @@ class UserMixIn:
 
         Args:
             email: email address for user
-            role: role of user
+            role: SisenseRole enum for the role of the user
             user_name: (optional) User user name. Email used if None
             first_name: (optional) User first name
             last_name: (optional) User last name
@@ -249,7 +249,7 @@ class UserMixIn:
         resp_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/users&#39;, json_payload=user_obj)
         return PySenseUser.User(self, resp_json)
 
-    def get_users(self, *, user_name=None, email=None, first_name=None, last_name=None, role_name=None, group=None,
+    def get_users(self, *, user_name=None, email=None, first_name=None, last_name=None, role=None, group=None,
                   active=None, origin=None, ids=None, fields=[], sort=None, skip=None, limit=None, expand=None):
         &#34;&#34;&#34;Returns a list of users.
 
@@ -261,7 +261,7 @@ class UserMixIn:
             email: (optional) Email to filter by
             first_name: (optional) First name to filter by
             last_name: (optional) Last name to filter by
-            role_name: (optional) Role filter by
+            role: (optional) SisenseRole enum for the role of the user to filter by
             group: (optional) Group to filter by
             active: (optional) User state to filter by (true for active users, false for inactive users)
             origin: (optional) User origin to filter by (ad for active directory or sisense)
@@ -291,7 +291,7 @@ class UserMixIn:
             &#39;email&#39;: email,
             &#39;firstName&#39;: first_name,
             &#39;lastName&#39;: last_name,
-            &#39;role&#39;: self.get_role_id(role_name),
+            &#39;role&#39;: self.get_role_id(role),
             &#39;group&#39;: group,
             &#39;active&#39;: active,
             &#39;origin&#39;: origin,
@@ -378,7 +378,7 @@ class UserMixIn:
 <dt><strong><code>email</code></strong></dt>
 <dd>email address for user</dd>
 <dt><strong><code>role</code></strong></dt>
-<dd>role of user</dd>
+<dd>SisenseRole enum for the role of the user</dd>
 <dt><strong><code>user_name</code></strong></dt>
 <dd>(optional) User user name. Email used if None</dd>
 <dt><strong><code>first_name</code></strong></dt>
@@ -404,7 +404,7 @@ class UserMixIn:
 
     Args:
         email: email address for user
-        role: role of user
+        role: SisenseRole enum for the role of the user
         user_name: (optional) User user name. Email used if None
         first_name: (optional) User first name
         last_name: (optional) User last name
@@ -563,7 +563,7 @@ class UserMixIn:
 </details>
 </dd>
 <dt id="PySense.PySenseMixIns.UserMixIn.UserMixIn.get_users"><code class="name flex">
-<span>def <span class="ident">get_users</span></span>(<span>self, *, user_name=None, email=None, first_name=None, last_name=None, role_name=None, group=None, active=None, origin=None, ids=None, fields=[], sort=None, skip=None, limit=None, expand=None)</span>
+<span>def <span class="ident">get_users</span></span>(<span>self, *, user_name=None, email=None, first_name=None, last_name=None, role=None, group=None, active=None, origin=None, ids=None, fields=[], sort=None, skip=None, limit=None, expand=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Returns a list of users.</p>
@@ -579,8 +579,8 @@ The expandable fields for the user object are groups, adgroups and role.</p>
 <dd>(optional) First name to filter by</dd>
 <dt><strong><code>last_name</code></strong></dt>
 <dd>(optional) Last name to filter by</dd>
-<dt><strong><code>role_name</code></strong></dt>
-<dd>(optional) Role filter by</dd>
+<dt><strong><code>role</code></strong></dt>
+<dd>(optional) SisenseRole enum for the role of the user to filter by</dd>
 <dt><strong><code>group</code></strong></dt>
 <dd>(optional) Group to filter by</dd>
 <dt><strong><code>active</code></strong></dt>
@@ -611,7 +611,7 @@ May be nested using the resource.subResource format</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_users(self, *, user_name=None, email=None, first_name=None, last_name=None, role_name=None, group=None,
+<pre><code class="python">def get_users(self, *, user_name=None, email=None, first_name=None, last_name=None, role=None, group=None,
               active=None, origin=None, ids=None, fields=[], sort=None, skip=None, limit=None, expand=None):
     &#34;&#34;&#34;Returns a list of users.
 
@@ -623,7 +623,7 @@ May be nested using the resource.subResource format</dd>
         email: (optional) Email to filter by
         first_name: (optional) First name to filter by
         last_name: (optional) Last name to filter by
-        role_name: (optional) Role filter by
+        role: (optional) SisenseRole enum for the role of the user to filter by
         group: (optional) Group to filter by
         active: (optional) User state to filter by (true for active users, false for inactive users)
         origin: (optional) User origin to filter by (ad for active directory or sisense)
@@ -653,7 +653,7 @@ May be nested using the resource.subResource format</dd>
         &#39;email&#39;: email,
         &#39;firstName&#39;: first_name,
         &#39;lastName&#39;: last_name,
-        &#39;role&#39;: self.get_role_id(role_name),
+        &#39;role&#39;: self.get_role_id(role),
         &#39;group&#39;: group,
         &#39;active&#39;: active,
         &#39;origin&#39;: origin,

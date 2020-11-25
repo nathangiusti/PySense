@@ -95,6 +95,21 @@ def authenticate_by_file(config_file):
     return PySenseAuthentication.authenticate_by_file(config_file)
 
 
+def authenticate_custom_connector(version, connector):
+    &#34;&#34;&#34; Use a custom connector
+
+    Authenticate by setting up your own custom connector.
+
+    Args:
+        - version: &#39;Windows&#39; or &#39;Linux&#39;
+        - connector: The custom connector
+
+    Returns:
+        A new PySense client for the given credentials
+    &#34;&#34;&#34;
+    return PySense(None, None, version, connector=connector)
+
+
 class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, DashboardMixIn.DashboardMixIn,
               DataModelMixIn.DataModelMixIn, ElasticubeMixIn.ElasticubeMixIn, FolderMixIn.FolderMixIn,
               GroupMixIn.GroupMixIn, PluginMixIn.PluginMixIn, RoleMixIn.RoleMixIn, UserMixIn.UserMixIn):
@@ -107,7 +122,7 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
         connector: The PySenseRestConnector which runs the rest commands.
     &#34;&#34;&#34;
 
-    def __init__(self, host, token, version, *, debug=False, verify=True, param_dict=None):
+    def __init__(self, host, token, version, *, debug=False, verify=True, param_dict=None, connector=None):
         &#34;&#34;&#34; Initializes a PySense instance
 
         Args:
@@ -141,14 +156,16 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
             raise PySenseException.PySenseException(&#39;{} not a valid OS. Please select Linux or Windows&#39;.format(version))
 
         # Initiate PySense Connection
-        self.connector = PySenseRestConnector.RestConnector(host, token, debug, verify)
-
-        # Set up Roles
-        roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
-        self._roles = {}
-        for role in roles:
-            if role[&#39;name&#39;] in [&#39;dataDesigner&#39;, &#39;super&#39;, &#39;dataAdmin&#39;, &#39;admin&#39;, &#39;contributor&#39;, &#39;consumer&#39;]:
-                self._roles[SisenseRole.Role.from_str(role[&#39;name&#39;])] = role[&#39;_id&#39;]
+        if connector is not None:
+            self.connector = connector
+        else:
+            self.connector = PySenseRestConnector.RestConnector(host, token, debug, verify)
+            # Set up Roles
+            roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
+            self._roles = {}
+            for role in roles:
+                if role[&#39;name&#39;] in [&#39;dataDesigner&#39;, &#39;super&#39;, &#39;dataAdmin&#39;, &#39;admin&#39;, &#39;contributor&#39;, &#39;consumer&#39;]:
+                    self._roles[SisenseRole.Role.from_str(role[&#39;name&#39;])] = role[&#39;_id&#39;]
 
     def set_debug(self, debug):
         &#34;&#34;&#34;Enable or disable logging of REST api calls to std out.
@@ -284,6 +301,38 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
     return PySenseAuthentication.authenticate_by_token(host, token, version, debug, verify)</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySense.authenticate_custom_connector"><code class="name flex">
+<span>def <span class="ident">authenticate_custom_connector</span></span>(<span>version, connector)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Use a custom connector</p>
+<p>Authenticate by setting up your own custom connector.</p>
+<h2 id="args">Args</h2>
+<ul>
+<li>version: 'Windows' or 'Linux'</li>
+<li>connector: The custom connector</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<p>A new PySense client for the given credentials</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def authenticate_custom_connector(version, connector):
+    &#34;&#34;&#34; Use a custom connector
+
+    Authenticate by setting up your own custom connector.
+
+    Args:
+        - version: &#39;Windows&#39; or &#39;Linux&#39;
+        - connector: The custom connector
+
+    Returns:
+        A new PySense client for the given credentials
+    &#34;&#34;&#34;
+    return PySense(None, None, version, connector=connector)</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -291,7 +340,7 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <dl>
 <dt id="PySense.PySense.PySense"><code class="flex name class">
 <span>class <span class="ident">PySense</span></span>
-<span>(</span><span>host, token, version, *, debug=False, verify=True, param_dict=None)</span>
+<span>(</span><span>host, token, version, *, debug=False, verify=True, param_dict=None, connector=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The manager of connections to the PySense server</p>
@@ -333,7 +382,7 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
         connector: The PySenseRestConnector which runs the rest commands.
     &#34;&#34;&#34;
 
-    def __init__(self, host, token, version, *, debug=False, verify=True, param_dict=None):
+    def __init__(self, host, token, version, *, debug=False, verify=True, param_dict=None, connector=None):
         &#34;&#34;&#34; Initializes a PySense instance
 
         Args:
@@ -367,14 +416,16 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
             raise PySenseException.PySenseException(&#39;{} not a valid OS. Please select Linux or Windows&#39;.format(version))
 
         # Initiate PySense Connection
-        self.connector = PySenseRestConnector.RestConnector(host, token, debug, verify)
-
-        # Set up Roles
-        roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
-        self._roles = {}
-        for role in roles:
-            if role[&#39;name&#39;] in [&#39;dataDesigner&#39;, &#39;super&#39;, &#39;dataAdmin&#39;, &#39;admin&#39;, &#39;contributor&#39;, &#39;consumer&#39;]:
-                self._roles[SisenseRole.Role.from_str(role[&#39;name&#39;])] = role[&#39;_id&#39;]
+        if connector is not None:
+            self.connector = connector
+        else:
+            self.connector = PySenseRestConnector.RestConnector(host, token, debug, verify)
+            # Set up Roles
+            roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
+            self._roles = {}
+            for role in roles:
+                if role[&#39;name&#39;] in [&#39;dataDesigner&#39;, &#39;super&#39;, &#39;dataAdmin&#39;, &#39;admin&#39;, &#39;contributor&#39;, &#39;consumer&#39;]:
+                    self._roles[SisenseRole.Role.from_str(role[&#39;name&#39;])] = role[&#39;_id&#39;]
 
     def set_debug(self, debug):
         &#34;&#34;&#34;Enable or disable logging of REST api calls to std out.
@@ -557,6 +608,7 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <li><code><a title="PySense.PySense.authenticate_by_file" href="#PySense.PySense.authenticate_by_file">authenticate_by_file</a></code></li>
 <li><code><a title="PySense.PySense.authenticate_by_password" href="#PySense.PySense.authenticate_by_password">authenticate_by_password</a></code></li>
 <li><code><a title="PySense.PySense.authenticate_by_token" href="#PySense.PySense.authenticate_by_token">authenticate_by_token</a></code></li>
+<li><code><a title="PySense.PySense.authenticate_custom_connector" href="#PySense.PySense.authenticate_custom_connector">authenticate_custom_connector</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
