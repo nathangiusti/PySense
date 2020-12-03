@@ -1,19 +1,7 @@
-from PySense import PySenseAuthentication
-from PySense import PySenseException
-from PySense import PySenseRestConnector
-from PySense import SisenseRole
-from PySense import SisenseVersion
+from PySense import PySenseAuthentication, PySenseException, PySenseRestConnector, SisenseRole, SisenseVersion
 
-from PySense.PySenseMixIns import BrandingMixIn
-from PySense.PySenseMixIns import ConnectionMixIn
-from PySense.PySenseMixIns import DashboardMixIn
-from PySense.PySenseMixIns import DataModelMixIn
-from PySense.PySenseMixIns import ElasticubeMixIn
-from PySense.PySenseMixIns import FolderMixIn
-from PySense.PySenseMixIns import GroupMixIn
-from PySense.PySenseMixIns import RoleMixIn
-from PySense.PySenseMixIns import PluginMixIn
-from PySense.PySenseMixIns import UserMixIn
+from PySense.PySenseMixIns import BrandingMixIn, ConnectionMixIn, DashboardMixIn, DataModelMixIn, ElasticubeMixIn, \
+    FolderMixIn, GroupMixIn, RoleMixIn, SettingsMixIn, PluginMixIn, UserMixIn
 
 
 def authenticate_by_token(host, token, version, debug=False, verify=True):
@@ -84,7 +72,8 @@ def authenticate_custom_connector(version, connector):
 
 class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, DashboardMixIn.DashboardMixIn,
               DataModelMixIn.DataModelMixIn, ElasticubeMixIn.ElasticubeMixIn, FolderMixIn.FolderMixIn,
-              GroupMixIn.GroupMixIn, PluginMixIn.PluginMixIn, RoleMixIn.RoleMixIn, UserMixIn.UserMixIn):
+              GroupMixIn.GroupMixIn, PluginMixIn.PluginMixIn, RoleMixIn.RoleMixIn, SettingsMixIn.SettingsMixIn,
+              UserMixIn.UserMixIn):
 
     """The manager of connections to the PySense server
 

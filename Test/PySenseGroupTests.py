@@ -1,6 +1,6 @@
 import unittest
 
-import PySense.PySense as PySense
+from PySense import PySense
 
 
 class PySenseGroupTests(unittest.TestCase):

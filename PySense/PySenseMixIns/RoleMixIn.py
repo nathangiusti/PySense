@@ -1,5 +1,6 @@
 from PySense import PySenseException
 
+
 class RoleMixIn:
 
     def get_role_id(self, role):

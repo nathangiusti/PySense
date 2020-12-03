@@ -1,6 +1,4 @@
-from PySense import PySenseGroup
-from PySense import PySenseUser
-from PySense import PySenseUtils
+from PySense import PySenseGroup, PySenseUser, PySenseUtils
 
 
 class Rule:

@@ -148,7 +148,26 @@ class DataModel:
         }
         output_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
                                                           query_params=query_params)
-        return PySenseUtils.dump_json(output_json, path)</code></pre>
+        return PySenseUtils.dump_json(output_json, path)
+
+    def export_to_sdata(self, path):
+        &#34;&#34;&#34;Download datamodel as an sdata file.
+
+        Only supported on Linux
+
+        Args:
+            path: Path to save location of the sdata file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;export_to_sdata&#39;)
+
+        query_params = {
+            &#39;datamodelId&#39;: self.get_oid()
+        }
+        self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
+                                            query_params=query_params, path=path)</code></pre>
 </details>
 </section>
 <section>
@@ -285,7 +304,26 @@ class DataModel:
         }
         output_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
                                                           query_params=query_params)
-        return PySenseUtils.dump_json(output_json, path)</code></pre>
+        return PySenseUtils.dump_json(output_json, path)
+
+    def export_to_sdata(self, path):
+        &#34;&#34;&#34;Download datamodel as an sdata file.
+
+        Only supported on Linux
+
+        Args:
+            path: Path to save location of the sdata file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;export_to_sdata&#39;)
+
+        query_params = {
+            &#39;datamodelId&#39;: self.get_oid()
+        }
+        self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
+                                            query_params=query_params, path=path)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -324,6 +362,43 @@ class DataModel:
     }
 
     self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDataModel.DataModel.export_to_sdata"><code class="name flex">
+<span>def <span class="ident">export_to_sdata</span></span>(<span>self, path)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Download datamodel as an sdata file.</p>
+<p>Only supported on Linux</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong></dt>
+<dd>Path to save location of the sdata file. Ex: 'C:\Backups\mydatamodel.smodel'</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_to_sdata(self, path):
+    &#34;&#34;&#34;Download datamodel as an sdata file.
+
+    Only supported on Linux
+
+    Args:
+        path: Path to save location of the sdata file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;export_to_sdata&#39;)
+
+    query_params = {
+        &#39;datamodelId&#39;: self.get_oid()
+    }
+    self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
+                                        query_params=query_params, path=path)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataModel.DataModel.export_to_smodel"><code class="name flex">
@@ -527,6 +602,7 @@ class DataModel:
 <h4><code><a title="PySense.PySenseDataModel.DataModel" href="#PySense.PySenseDataModel.DataModel">DataModel</a></code></h4>
 <ul class="two-column">
 <li><code><a title="PySense.PySenseDataModel.DataModel.cancel_build" href="#PySense.PySenseDataModel.DataModel.cancel_build">cancel_build</a></code></li>
+<li><code><a title="PySense.PySenseDataModel.DataModel.export_to_sdata" href="#PySense.PySenseDataModel.DataModel.export_to_sdata">export_to_sdata</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.export_to_smodel" href="#PySense.PySenseDataModel.DataModel.export_to_smodel">export_to_smodel</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_data_sets" href="#PySense.PySenseDataModel.DataModel.get_data_sets">get_data_sets</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_json" href="#PySense.PySenseDataModel.DataModel.get_json">get_json</a></code></li>

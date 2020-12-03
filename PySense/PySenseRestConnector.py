@@ -1,8 +1,8 @@
 import requests
+import shutil
 import urllib.parse
 
-from PySense import PySenseException
-from PySense import PySenseUtils
+from PySense import PySenseException, PySenseUtils
 
 
 class RestConnector:
@@ -13,7 +13,8 @@ class RestConnector:
         self.verify = verify
         self._token = token
 
-    def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
+    def rest_call(self, action_type, url, *,
+                  data=None, json_payload=None, query_params=None, raw=False, path=None, file=None):
         """Run an arbitrary rest command against your Sisense instance and returns the JSON response
 
         Args:
@@ -23,9 +24,13 @@ class RestConnector:
             json_payload: (optional) The json portion of the payload
             query_params: (optional) A dictionary of query values to be added to the end of the url
             raw: (optional) True if raw content response wanted
+            path: (optional) If set, response will be downloaded to file path
+            file: (optional) Path to files to be uploaded. Only usable with post.
 
         Returns:
-            Returns the json content blob. If raw is set to true, returns the raw bytes of the content.
+            Returns the json content blob by default.
+            If raw is set to true, returns the raw bytes of the content.
+            If path is set, returns nothing
         """
 
         action_type = action_type.lower()
@@ -41,18 +46,34 @@ class RestConnector:
                 print('Data: {}'.format(data))
             if json_payload is not None:
                 print('JSON: {}'.format(json_payload))
-        response = requests.request(action_type, full_url,
-                                    headers=self._token, data=data, json=json_payload, verify=self.verify)
-        parse_response(response)
-        if len(response.content) == 0:
-            return None
-        elif raw:
-            return response.content
+
+        if file is not None:
+            if action_type != 'post':
+                raise PySenseException.PySenseException('Files can only be uploaded via post')
+            file = {'file': open(file, 'rb')}
+
+        if path is not None:
+            with requests.request(
+                action_type, full_url, stream=True,
+                headers=self._token, data=data, json=json_payload, verify=self.verify
+            ) as r:
+                with open(path, 'wb') as f:
+                    shutil.copyfileobj(r.raw, f)
         else:
-            try:
-                return response.json()
-            except ValueError as e:
+            response = requests.request(
+                action_type, full_url,
+                headers=self._token, data=data, json=json_payload, verify=self.verify, files=file
+            )
+            parse_response(response)
+            if len(response.content) == 0:
+                return None
+            elif raw:
                 return response.content
+            else:
+                try:
+                    return response.json()
+                except ValueError as e:
+                    return response.content
 
 
 def parse_response(response):

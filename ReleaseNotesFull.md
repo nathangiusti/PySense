@@ -1,3 +1,27 @@
+**V 0.3.7 Release Notes**
+
+- Breaking changes
+    - None
+    
+- Additions
+    - Download and upload sdata files. 
+        - py_client.import_sdata()
+        - datamodel.export_to_sdata()
+    - Manage your blox actions (endpoints not supported by Sisense)
+        - py_client.get_blox_action()
+        - py_client.add_blox_action()
+        - py_client.delete_blox_action()
+    - Manage UI settings
+        - py_client.get_ui_settings
+        - py_client.set_ui_settings
+              
+- Fixes
+    - Cleaned up imports
+
+- Known Issues
+    - REST API sometimes becomes unresponsive on Linux builds
+    - REST API sometimes fails uploading sdata files
+
 **V 0.3.6 Release Notes**
 
 - Breaking changes

@@ -26,7 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PySense import PySensePlugin
+<pre><code class="python">from PySense import PySenseBloxAction, PySensePlugin
 
 
 class PluginMixIn:
@@ -56,7 +56,59 @@ class PluginMixIn:
         ret_arr = []
         for plugin in resp_json[&#39;plugins&#39;]:
             ret_arr.append((PySensePlugin.Plugin(self, plugin)))
-        return ret_arr</code></pre>
+        return ret_arr
+
+    def get_blox_action(self, type):
+        &#34;&#34;&#34;Returns the blox action with the given type
+
+        Args:
+            type: The name of your blox action
+        &#34;&#34;&#34;
+        json_payload = {
+            &#34;type&#34;: type
+        }
+        resp = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/getActionByType/Blox&#39;, json_payload=json_payload)
+        return PySenseBloxAction.BloxAction(self, resp)
+
+    def create_blox_action(self, type, body, title):
+        &#34;&#34;&#34;Create a new PySense BloxAction object that can be imported
+
+        Running this method will only create the action locally.
+        The action must still be added to the server via add_blox_action
+
+        Args:
+            type: What you would like to call your blox action
+            body: The raw javascript of the blox action
+            title: The default text you would want to appear on a button using this action
+        &#34;&#34;&#34;
+        action_json = {
+            &#34;type&#34;: type,
+            &#34;body&#34;: body,
+            &#34;snippet&#34;: {
+                &#34;type&#34;: type,
+                &#34;title&#34;: title
+            }
+        }
+        return PySenseBloxAction.BloxAction(self, action_json)
+
+    def delete_blox_action(self, action_type):
+        &#34;&#34;&#34;Deletes the blox action with the given action_type
+
+        Args:
+            action_type: The type (name as it appears in blox) action to delete
+        &#34;&#34;&#34;
+        json_payload = {
+            &#34;type&#34;: action_type
+        }
+        self.connector.rest_call(&#39;post&#39;, &#39;api/v1/deleteCustomAction/Blox&#39;, json_payload=json_payload)
+
+    def add_blox_action(self, blox_action):
+        &#34;&#34;&#34;Add a new blox custom action
+
+        Args:
+           blox_action: The PySense BloxAction object to add. Must be an object, not raw JSON.
+        &#34;&#34;&#34;
+        self.connector.rest_call(&#39;post&#39;, &#39;/api/v1/saveCustomAction/BloX&#39;, json_payload=blox_action.get_json())</code></pre>
 </details>
 </section>
 <section>
@@ -104,7 +156,59 @@ class PluginMixIn:
         ret_arr = []
         for plugin in resp_json[&#39;plugins&#39;]:
             ret_arr.append((PySensePlugin.Plugin(self, plugin)))
-        return ret_arr</code></pre>
+        return ret_arr
+
+    def get_blox_action(self, type):
+        &#34;&#34;&#34;Returns the blox action with the given type
+
+        Args:
+            type: The name of your blox action
+        &#34;&#34;&#34;
+        json_payload = {
+            &#34;type&#34;: type
+        }
+        resp = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/getActionByType/Blox&#39;, json_payload=json_payload)
+        return PySenseBloxAction.BloxAction(self, resp)
+
+    def create_blox_action(self, type, body, title):
+        &#34;&#34;&#34;Create a new PySense BloxAction object that can be imported
+
+        Running this method will only create the action locally.
+        The action must still be added to the server via add_blox_action
+
+        Args:
+            type: What you would like to call your blox action
+            body: The raw javascript of the blox action
+            title: The default text you would want to appear on a button using this action
+        &#34;&#34;&#34;
+        action_json = {
+            &#34;type&#34;: type,
+            &#34;body&#34;: body,
+            &#34;snippet&#34;: {
+                &#34;type&#34;: type,
+                &#34;title&#34;: title
+            }
+        }
+        return PySenseBloxAction.BloxAction(self, action_json)
+
+    def delete_blox_action(self, action_type):
+        &#34;&#34;&#34;Deletes the blox action with the given action_type
+
+        Args:
+            action_type: The type (name as it appears in blox) action to delete
+        &#34;&#34;&#34;
+        json_payload = {
+            &#34;type&#34;: action_type
+        }
+        self.connector.rest_call(&#39;post&#39;, &#39;api/v1/deleteCustomAction/Blox&#39;, json_payload=json_payload)
+
+    def add_blox_action(self, blox_action):
+        &#34;&#34;&#34;Add a new blox custom action
+
+        Args:
+           blox_action: The PySense BloxAction object to add. Must be an object, not raw JSON.
+        &#34;&#34;&#34;
+        self.connector.rest_call(&#39;post&#39;, &#39;/api/v1/saveCustomAction/BloX&#39;, json_payload=blox_action.get_json())</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -112,6 +216,124 @@ class PluginMixIn:
 </ul>
 <h3>Methods</h3>
 <dl>
+<dt id="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.add_blox_action"><code class="name flex">
+<span>def <span class="ident">add_blox_action</span></span>(<span>self, blox_action)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add a new blox custom action</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>blox_action</code></strong></dt>
+<dd>The PySense BloxAction object to add. Must be an object, not raw JSON.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_blox_action(self, blox_action):
+    &#34;&#34;&#34;Add a new blox custom action
+
+    Args:
+       blox_action: The PySense BloxAction object to add. Must be an object, not raw JSON.
+    &#34;&#34;&#34;
+    self.connector.rest_call(&#39;post&#39;, &#39;/api/v1/saveCustomAction/BloX&#39;, json_payload=blox_action.get_json())</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.create_blox_action"><code class="name flex">
+<span>def <span class="ident">create_blox_action</span></span>(<span>self, type, body, title)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a new PySense BloxAction object that can be imported</p>
+<p>Running this method will only create the action locally.
+The action must still be added to the server via add_blox_action</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>type</code></strong></dt>
+<dd>What you would like to call your blox action</dd>
+<dt><strong><code>body</code></strong></dt>
+<dd>The raw javascript of the blox action</dd>
+<dt><strong><code>title</code></strong></dt>
+<dd>The default text you would want to appear on a button using this action</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_blox_action(self, type, body, title):
+    &#34;&#34;&#34;Create a new PySense BloxAction object that can be imported
+
+    Running this method will only create the action locally.
+    The action must still be added to the server via add_blox_action
+
+    Args:
+        type: What you would like to call your blox action
+        body: The raw javascript of the blox action
+        title: The default text you would want to appear on a button using this action
+    &#34;&#34;&#34;
+    action_json = {
+        &#34;type&#34;: type,
+        &#34;body&#34;: body,
+        &#34;snippet&#34;: {
+            &#34;type&#34;: type,
+            &#34;title&#34;: title
+        }
+    }
+    return PySenseBloxAction.BloxAction(self, action_json)</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.delete_blox_action"><code class="name flex">
+<span>def <span class="ident">delete_blox_action</span></span>(<span>self, action_type)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Deletes the blox action with the given action_type</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>action_type</code></strong></dt>
+<dd>The type (name as it appears in blox) action to delete</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delete_blox_action(self, action_type):
+    &#34;&#34;&#34;Deletes the blox action with the given action_type
+
+    Args:
+        action_type: The type (name as it appears in blox) action to delete
+    &#34;&#34;&#34;
+    json_payload = {
+        &#34;type&#34;: action_type
+    }
+    self.connector.rest_call(&#39;post&#39;, &#39;api/v1/deleteCustomAction/Blox&#39;, json_payload=json_payload)</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_blox_action"><code class="name flex">
+<span>def <span class="ident">get_blox_action</span></span>(<span>self, type)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the blox action with the given type</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>type</code></strong></dt>
+<dd>The name of your blox action</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_blox_action(self, type):
+    &#34;&#34;&#34;Returns the blox action with the given type
+
+    Args:
+        type: The name of your blox action
+    &#34;&#34;&#34;
+    json_payload = {
+        &#34;type&#34;: type
+    }
+    resp = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/getActionByType/Blox&#39;, json_payload=json_payload)
+    return PySenseBloxAction.BloxAction(self, resp)</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_plugins"><code class="name flex">
 <span>def <span class="ident">get_plugins</span></span>(<span>self, *, order_by=None, desc=None, search=None, skip=None, limit=None)</span>
 </code></dt>
@@ -186,6 +408,10 @@ Skip is to be used with the limit parameter for paging.</dd>
 <li>
 <h4><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn" href="#PySense.PySenseMixIns.PluginMixIn.PluginMixIn">PluginMixIn</a></code></h4>
 <ul class="">
+<li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.add_blox_action" href="#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.add_blox_action">add_blox_action</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.create_blox_action" href="#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.create_blox_action">create_blox_action</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.delete_blox_action" href="#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.delete_blox_action">delete_blox_action</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_blox_action" href="#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_blox_action">get_blox_action</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_plugins" href="#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_plugins">get_plugins</a></code></li>
 </ul>
 </li>

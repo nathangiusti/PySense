@@ -1,5 +1,4 @@
-from PySense import PySenseConnection
-from PySense import PySenseUtils
+from PySense import PySenseConnection, PySenseUtils
 
 
 class ConnectionMixIn:

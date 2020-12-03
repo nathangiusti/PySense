@@ -1,6 +1,4 @@
-from PySense import PySenseException
-from PySense import PySenseUser
-from PySense import PySenseUtils
+from PySense import PySenseException, PySenseUser, PySenseUtils
 
 
 class UserMixIn:

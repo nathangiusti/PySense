@@ -1,7 +1,6 @@
 import json
 
-from PySense import PySenseDashboard
-from PySense import PySenseUtils
+from PySense import PySenseDashboard, PySenseUtils
 
 
 class DashboardMixIn:

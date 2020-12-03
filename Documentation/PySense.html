@@ -26,22 +26,10 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PySense import PySenseAuthentication
-from PySense import PySenseException
-from PySense import PySenseRestConnector
-from PySense import SisenseRole
-from PySense import SisenseVersion
+<pre><code class="python">from PySense import PySenseAuthentication, PySenseException, PySenseRestConnector, SisenseRole, SisenseVersion
 
-from PySense.PySenseMixIns import BrandingMixIn
-from PySense.PySenseMixIns import ConnectionMixIn
-from PySense.PySenseMixIns import DashboardMixIn
-from PySense.PySenseMixIns import DataModelMixIn
-from PySense.PySenseMixIns import ElasticubeMixIn
-from PySense.PySenseMixIns import FolderMixIn
-from PySense.PySenseMixIns import GroupMixIn
-from PySense.PySenseMixIns import RoleMixIn
-from PySense.PySenseMixIns import PluginMixIn
-from PySense.PySenseMixIns import UserMixIn
+from PySense.PySenseMixIns import BrandingMixIn, ConnectionMixIn, DashboardMixIn, DataModelMixIn, ElasticubeMixIn, \
+    FolderMixIn, GroupMixIn, RoleMixIn, SettingsMixIn, PluginMixIn, UserMixIn
 
 
 def authenticate_by_token(host, token, version, debug=False, verify=True):
@@ -112,7 +100,8 @@ def authenticate_custom_connector(version, connector):
 
 class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, DashboardMixIn.DashboardMixIn,
               DataModelMixIn.DataModelMixIn, ElasticubeMixIn.ElasticubeMixIn, FolderMixIn.FolderMixIn,
-              GroupMixIn.GroupMixIn, PluginMixIn.PluginMixIn, RoleMixIn.RoleMixIn, UserMixIn.UserMixIn):
+              GroupMixIn.GroupMixIn, PluginMixIn.PluginMixIn, RoleMixIn.RoleMixIn, SettingsMixIn.SettingsMixIn,
+              UserMixIn.UserMixIn):
 
     &#34;&#34;&#34;The manager of connections to the PySense server
 
@@ -372,7 +361,8 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 </summary>
 <pre><code class="python">class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, DashboardMixIn.DashboardMixIn,
               DataModelMixIn.DataModelMixIn, ElasticubeMixIn.ElasticubeMixIn, FolderMixIn.FolderMixIn,
-              GroupMixIn.GroupMixIn, PluginMixIn.PluginMixIn, RoleMixIn.RoleMixIn, UserMixIn.UserMixIn):
+              GroupMixIn.GroupMixIn, PluginMixIn.PluginMixIn, RoleMixIn.RoleMixIn, SettingsMixIn.SettingsMixIn,
+              UserMixIn.UserMixIn):
 
     &#34;&#34;&#34;The manager of connections to the PySense server
 
@@ -456,6 +446,7 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <li><a title="PySense.PySenseMixIns.GroupMixIn.GroupMixIn" href="PySenseMixIns/GroupMixIn.html#PySense.PySenseMixIns.GroupMixIn.GroupMixIn">GroupMixIn</a></li>
 <li><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn" href="PySenseMixIns/PluginMixIn.html#PySense.PySenseMixIns.PluginMixIn.PluginMixIn">PluginMixIn</a></li>
 <li><a title="PySense.PySenseMixIns.RoleMixIn.RoleMixIn" href="PySenseMixIns/RoleMixIn.html#PySense.PySenseMixIns.RoleMixIn.RoleMixIn">RoleMixIn</a></li>
+<li><a title="PySense.PySenseMixIns.SettingsMixIn.SettingsMixIn" href="PySenseMixIns/SettingsMixIn.html#PySense.PySenseMixIns.SettingsMixIn.SettingsMixIn">SettingsMixIn</a></li>
 <li><a title="PySense.PySenseMixIns.UserMixIn.UserMixIn" href="PySenseMixIns/UserMixIn.html#PySense.PySenseMixIns.UserMixIn.UserMixIn">UserMixIn</a></li>
 </ul>
 <h3>Methods</h3>
@@ -544,6 +535,7 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.delete_data_model" href="PySenseMixIns/DataModelMixIn.html#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.delete_data_model">delete_data_model</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.get_data_models" href="PySenseMixIns/DataModelMixIn.html#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.get_data_models">get_data_models</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.import_schema" href="PySenseMixIns/DataModelMixIn.html#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.import_schema">import_schema</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.import_sdata" href="PySenseMixIns/DataModelMixIn.html#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.import_sdata">import_sdata</a></code></li>
 </ul>
 </li>
 <li><code><b><a title="PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn" href="PySenseMixIns/ElasticubeMixIn.html#PySense.PySenseMixIns.ElasticubeMixIn.ElasticubeMixIn">ElasticubeMixIn</a></b></code>:
@@ -569,12 +561,22 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 </li>
 <li><code><b><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn" href="PySenseMixIns/PluginMixIn.html#PySense.PySenseMixIns.PluginMixIn.PluginMixIn">PluginMixIn</a></b></code>:
 <ul class="hlist">
+<li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.add_blox_action" href="PySenseMixIns/PluginMixIn.html#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.add_blox_action">add_blox_action</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.create_blox_action" href="PySenseMixIns/PluginMixIn.html#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.create_blox_action">create_blox_action</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.delete_blox_action" href="PySenseMixIns/PluginMixIn.html#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.delete_blox_action">delete_blox_action</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_blox_action" href="PySenseMixIns/PluginMixIn.html#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_blox_action">get_blox_action</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_plugins" href="PySenseMixIns/PluginMixIn.html#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_plugins">get_plugins</a></code></li>
 </ul>
 </li>
 <li><code><b><a title="PySense.PySenseMixIns.RoleMixIn.RoleMixIn" href="PySenseMixIns/RoleMixIn.html#PySense.PySenseMixIns.RoleMixIn.RoleMixIn">RoleMixIn</a></b></code>:
 <ul class="hlist">
 <li><code><a title="PySense.PySenseMixIns.RoleMixIn.RoleMixIn.get_role_id" href="PySenseMixIns/RoleMixIn.html#PySense.PySenseMixIns.RoleMixIn.RoleMixIn.get_role_id">get_role_id</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="PySense.PySenseMixIns.SettingsMixIn.SettingsMixIn" href="PySenseMixIns/SettingsMixIn.html#PySense.PySenseMixIns.SettingsMixIn.SettingsMixIn">SettingsMixIn</a></b></code>:
+<ul class="hlist">
+<li><code><a title="PySense.PySenseMixIns.SettingsMixIn.SettingsMixIn.get_ui_settings" href="PySenseMixIns/SettingsMixIn.html#PySense.PySenseMixIns.SettingsMixIn.SettingsMixIn.get_ui_settings">get_ui_settings</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.SettingsMixIn.SettingsMixIn.set_ui_settings" href="PySenseMixIns/SettingsMixIn.html#PySense.PySenseMixIns.SettingsMixIn.SettingsMixIn.set_ui_settings">set_ui_settings</a></code></li>
 </ul>
 </li>
 <li><code><b><a title="PySense.PySenseMixIns.UserMixIn.UserMixIn" href="PySenseMixIns/UserMixIn.html#PySense.PySenseMixIns.UserMixIn.UserMixIn">UserMixIn</a></b></code>:

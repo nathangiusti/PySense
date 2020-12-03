@@ -1,7 +1,6 @@
 import unittest
 
-from PySense import PySense
-from PySense import SisenseRole
+from PySense import PySense, SisenseRole
 
 
 class PySenseUserTests(unittest.TestCase):

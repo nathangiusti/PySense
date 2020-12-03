@@ -1,5 +1,4 @@
-from PySense import PySenseGroup
-from PySense import PySenseUtils
+from PySense import PySenseGroup, PySenseUtils
 
 
 class GroupMixIn:

@@ -121,3 +121,24 @@ class DataModel:
         output_json = self._py_client.connector.rest_call('get', '/api/v2/datamodel-exports/schema',
                                                           query_params=query_params)
         return PySenseUtils.dump_json(output_json, path)
+
+    def export_to_sdata(self, path):
+        """Download datamodel as an sdata file.
+
+        Only supported on Linux
+
+        Args:
+            path: Path to save location of the sdata file. Ex: 'C:\\Backups\\mydatamodel.smodel'
+
+        Returns:
+            None
+        """
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, 'export_to_sdata')
+
+        query_params = {
+            'datamodelId': self.get_oid()
+        }
+        self._py_client.connector.rest_call('get', '/api/v2/datamodel-exports/stream/full',
+                                            query_params=query_params, path=path)
+
+

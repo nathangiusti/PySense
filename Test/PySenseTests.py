@@ -1,11 +1,7 @@
-import json
 import os
 import unittest
 
-from PySense import PySense
-from PySense import PySenseDashboard
-from PySense import PySenseDataModel
-from PySense import SisenseRole
+from PySense import PySense, PySenseDataModel, SisenseRole
 
 
 class PySenseTests(unittest.TestCase):
@@ -101,6 +97,11 @@ class PySenseTests(unittest.TestCase):
         branding = self.py_client_linux.get_branding()
         assert branding is not None
         self.py_client_linux.set_branding(branding)
+
+    def test_ui_settings(self):
+        settings = self.py_client.get_ui_settings()[0]
+        assert settings is not None
+        self.py_client.set_ui_settings(settings)
 
     def test_roles(self):
         assert self.py_client.get_role_id(SisenseRole.Role.VIEWER) is not None

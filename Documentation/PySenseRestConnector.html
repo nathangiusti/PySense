@@ -27,10 +27,10 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import requests
+import shutil
 import urllib.parse
 
-from PySense import PySenseException
-from PySense import PySenseUtils
+from PySense import PySenseException, PySenseUtils
 
 
 class RestConnector:
@@ -41,7 +41,8 @@ class RestConnector:
         self.verify = verify
         self._token = token
 
-    def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
+    def rest_call(self, action_type, url, *,
+                  data=None, json_payload=None, query_params=None, raw=False, path=None, file=None):
         &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response
 
         Args:
@@ -51,9 +52,13 @@ class RestConnector:
             json_payload: (optional) The json portion of the payload
             query_params: (optional) A dictionary of query values to be added to the end of the url
             raw: (optional) True if raw content response wanted
+            path: (optional) If set, response will be downloaded to file path
+            file: (optional) Path to files to be uploaded. Only usable with post.
 
         Returns:
-            Returns the json content blob. If raw is set to true, returns the raw bytes of the content.
+            Returns the json content blob by default.
+            If raw is set to true, returns the raw bytes of the content.
+            If path is set, returns nothing
         &#34;&#34;&#34;
 
         action_type = action_type.lower()
@@ -69,18 +74,34 @@ class RestConnector:
                 print(&#39;Data: {}&#39;.format(data))
             if json_payload is not None:
                 print(&#39;JSON: {}&#39;.format(json_payload))
-        response = requests.request(action_type, full_url,
-                                    headers=self._token, data=data, json=json_payload, verify=self.verify)
-        parse_response(response)
-        if len(response.content) == 0:
-            return None
-        elif raw:
-            return response.content
+
+        if file is not None:
+            if action_type != &#39;post&#39;:
+                raise PySenseException.PySenseException(&#39;Files can only be uploaded via post&#39;)
+            file = {&#39;file&#39;: open(file, &#39;rb&#39;)}
+
+        if path is not None:
+            with requests.request(
+                action_type, full_url, stream=True,
+                headers=self._token, data=data, json=json_payload, verify=self.verify
+            ) as r:
+                with open(path, &#39;wb&#39;) as f:
+                    shutil.copyfileobj(r.raw, f)
         else:
-            try:
-                return response.json()
-            except ValueError as e:
+            response = requests.request(
+                action_type, full_url,
+                headers=self._token, data=data, json=json_payload, verify=self.verify, files=file
+            )
+            parse_response(response)
+            if len(response.content) == 0:
+                return None
+            elif raw:
                 return response.content
+            else:
+                try:
+                    return response.json()
+                except ValueError as e:
+                    return response.content
 
 
 def parse_response(response):
@@ -197,7 +218,8 @@ def build_query_string(dictionary):
         self.verify = verify
         self._token = token
 
-    def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
+    def rest_call(self, action_type, url, *,
+                  data=None, json_payload=None, query_params=None, raw=False, path=None, file=None):
         &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response
 
         Args:
@@ -207,9 +229,13 @@ def build_query_string(dictionary):
             json_payload: (optional) The json portion of the payload
             query_params: (optional) A dictionary of query values to be added to the end of the url
             raw: (optional) True if raw content response wanted
+            path: (optional) If set, response will be downloaded to file path
+            file: (optional) Path to files to be uploaded. Only usable with post.
 
         Returns:
-            Returns the json content blob. If raw is set to true, returns the raw bytes of the content.
+            Returns the json content blob by default.
+            If raw is set to true, returns the raw bytes of the content.
+            If path is set, returns nothing
         &#34;&#34;&#34;
 
         action_type = action_type.lower()
@@ -225,23 +251,39 @@ def build_query_string(dictionary):
                 print(&#39;Data: {}&#39;.format(data))
             if json_payload is not None:
                 print(&#39;JSON: {}&#39;.format(json_payload))
-        response = requests.request(action_type, full_url,
-                                    headers=self._token, data=data, json=json_payload, verify=self.verify)
-        parse_response(response)
-        if len(response.content) == 0:
-            return None
-        elif raw:
-            return response.content
+
+        if file is not None:
+            if action_type != &#39;post&#39;:
+                raise PySenseException.PySenseException(&#39;Files can only be uploaded via post&#39;)
+            file = {&#39;file&#39;: open(file, &#39;rb&#39;)}
+
+        if path is not None:
+            with requests.request(
+                action_type, full_url, stream=True,
+                headers=self._token, data=data, json=json_payload, verify=self.verify
+            ) as r:
+                with open(path, &#39;wb&#39;) as f:
+                    shutil.copyfileobj(r.raw, f)
         else:
-            try:
-                return response.json()
-            except ValueError as e:
-                return response.content</code></pre>
+            response = requests.request(
+                action_type, full_url,
+                headers=self._token, data=data, json=json_payload, verify=self.verify, files=file
+            )
+            parse_response(response)
+            if len(response.content) == 0:
+                return None
+            elif raw:
+                return response.content
+            else:
+                try:
+                    return response.json()
+                except ValueError as e:
+                    return response.content</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="PySense.PySenseRestConnector.RestConnector.rest_call"><code class="name flex">
-<span>def <span class="ident">rest_call</span></span>(<span>self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False)</span>
+<span>def <span class="ident">rest_call</span></span>(<span>self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False, path=None, file=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Run an arbitrary rest command against your Sisense instance and returns the JSON response</p>
@@ -259,14 +301,21 @@ def build_query_string(dictionary):
 <dd>(optional) A dictionary of query values to be added to the end of the url</dd>
 <dt><strong><code>raw</code></strong></dt>
 <dd>(optional) True if raw content response wanted</dd>
+<dt><strong><code>path</code></strong></dt>
+<dd>(optional) If set, response will be downloaded to file path</dd>
+<dt><strong><code>file</code></strong></dt>
+<dd>(optional) Path to files to be uploaded. Only usable with post.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>Returns the json content blob. If raw is set to true, returns the raw bytes of the content.</p></div>
+<p>Returns the json content blob by default.
+If raw is set to true, returns the raw bytes of the content.
+If path is set, returns nothing</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def rest_call(self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False):
+<pre><code class="python">def rest_call(self, action_type, url, *,
+              data=None, json_payload=None, query_params=None, raw=False, path=None, file=None):
     &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response
 
     Args:
@@ -276,9 +325,13 @@ def build_query_string(dictionary):
         json_payload: (optional) The json portion of the payload
         query_params: (optional) A dictionary of query values to be added to the end of the url
         raw: (optional) True if raw content response wanted
+        path: (optional) If set, response will be downloaded to file path
+        file: (optional) Path to files to be uploaded. Only usable with post.
 
     Returns:
-        Returns the json content blob. If raw is set to true, returns the raw bytes of the content.
+        Returns the json content blob by default.
+        If raw is set to true, returns the raw bytes of the content.
+        If path is set, returns nothing
     &#34;&#34;&#34;
 
     action_type = action_type.lower()
@@ -294,18 +347,34 @@ def build_query_string(dictionary):
             print(&#39;Data: {}&#39;.format(data))
         if json_payload is not None:
             print(&#39;JSON: {}&#39;.format(json_payload))
-    response = requests.request(action_type, full_url,
-                                headers=self._token, data=data, json=json_payload, verify=self.verify)
-    parse_response(response)
-    if len(response.content) == 0:
-        return None
-    elif raw:
-        return response.content
+
+    if file is not None:
+        if action_type != &#39;post&#39;:
+            raise PySenseException.PySenseException(&#39;Files can only be uploaded via post&#39;)
+        file = {&#39;file&#39;: open(file, &#39;rb&#39;)}
+
+    if path is not None:
+        with requests.request(
+            action_type, full_url, stream=True,
+            headers=self._token, data=data, json=json_payload, verify=self.verify
+        ) as r:
+            with open(path, &#39;wb&#39;) as f:
+                shutil.copyfileobj(r.raw, f)
     else:
-        try:
-            return response.json()
-        except ValueError as e:
-            return response.content</code></pre>
+        response = requests.request(
+            action_type, full_url,
+            headers=self._token, data=data, json=json_payload, verify=self.verify, files=file
+        )
+        parse_response(response)
+        if len(response.content) == 0:
+            return None
+        elif raw:
+            return response.content
+        else:
+            try:
+                return response.json()
+            except ValueError as e:
+                return response.content</code></pre>
 </details>
 </dd>
 </dl>

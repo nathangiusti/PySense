@@ -1,6 +1,4 @@
-from PySense import PySenseDataModel
-from PySense import PySenseUtils
-from PySense import SisenseVersion
+from PySense import PySenseDataModel, PySenseUtils, SisenseVersion
 
 
 class DataModelMixIn:
@@ -105,10 +103,10 @@ class DataModelMixIn:
         Can be used to update an existing data model by adding it to target data model.
 
         To add a new model with a new title
-        add_data_model(path, title='New Title')
+        import_schema(path, title='New Title')
 
         To update an existing model
-        add_data_model(path, target_data_model=old_data_model)
+        import_schema(path, target_data_model=old_data_model)
 
         If updating an existing data model, no modifications to title will happen.
 
@@ -124,5 +122,38 @@ class DataModelMixIn:
         query_params = {'title': title, 'datamodelId': target_data_model_id}
         data_model_json = self.connector.rest_call('post', 'api/v2/datamodel-imports/schema',
                                                    query_params=query_params, json_payload=PySenseUtils.read_json(path))
+
+        return PySenseDataModel.DataModel(self, data_model_json)
+
+    def import_sdata(self, path, *, title=None, target_data_model=None):
+        """Import sdata file from path
+
+                Linux only
+
+                Can be used to update an existing data model by adding it to target data model.
+
+                To add a new model with a new title
+                import_sdata(path, title='New Title')
+
+                To update an existing model
+                import_sdata(path, target_data_model=old_data_model)
+
+                If updating an existing data model, no modifications to title will happen.
+
+                This method sometimes throws 500 errors.
+                If it does, try the file from UI to verify it is a PySense issue or a Sisense issue
+
+                Args:
+                    path: The path to the schema smodel file
+                    title: (optional) Title to give the data model
+                    target_data_model: (optional) The data model to update.
+                """
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, 'import_schema')
+
+        target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
+
+        query_params = {'title': title, 'datamodelId': target_data_model_id}
+        data_model_json = self.connector.rest_call('post', 'api/v2/datamodel-imports/stream/full',
+                                                   query_params=query_params, file=path)
 
         return PySenseDataModel.DataModel(self, data_model_json)

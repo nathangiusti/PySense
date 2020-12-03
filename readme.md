@@ -35,21 +35,27 @@ Install PySense with pip:
 
 [Tutorial Videos](https://www.youtube.com/playlist?list=PL0xO3VH5OF2JD2KiZs_41zvKvPyebg6MW)
 
-**V 0.3.6 Release Notes**
+**V 0.3.7 Release Notes**
 
 - Breaking changes
-    - get_users optional param has been modified
-        - role_name is now role
-        - Function accepts a Sisense.Role enum instead of a string
+    - None
     
 - Additions
-    - Authenticate by connector
-        - Pass in your own connector object, useful for testing
-        - Use PySense.authenticate_by_connector()
+    - Download and upload sdata files. 
+        - py_client.import_sdata()
+        - datamodel.export_to_sdata()
+    - Manage your blox actions (endpoints not supported by Sisense)
+        - py_client.get_blox_action()
+        - py_client.add_blox_action()
+        - py_client.delete_blox_action()
+    - Manage UI settings
+        - py_client.get_ui_settings
+        - py_client.set_ui_settings
               
 - Fixes
-    - None
+    - Cleaned up imports
 
 - Known Issues
     - REST API sometimes becomes unresponsive on Linux builds
+    - REST API sometimes fails uploading sdata files
     
