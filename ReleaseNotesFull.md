@@ -1,3 +1,21 @@
+**V 0.3.8 Release Notes**
+
+- Breaking changes
+    - None
+    
+- Additions
+    - Remap table/column names in your dashboard
+        - Dashboard.remap_field will update all widgets and filters in a dashboard
+        - Widget.remap_field will update the widget (including widget filters)
+        - DOES NOT SUPPORT DATE FIELDS (this will still need to be updated manually)
+        - Functionality is in beta. Please report any issues via git
+- Fixes
+    - Elasticube.get_data_model now correctly verifies version
+
+- Known Issues
+    - REST API sometimes becomes unresponsive on Linux builds
+    - REST API sometimes fails uploading sdata files
+    
 **V 0.3.7 Release Notes**
 
 - Breaking changes

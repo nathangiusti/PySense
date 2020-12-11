@@ -61,3 +61,10 @@ def validate_version(py_client, expected_version, function_name):
     if py_client.version != expected_version:
         raise PySenseException.PySenseException('{} is only supported on {}'
                                                 .format(function_name, expected_version))
+
+
+def update_jaql(old_table, old_column, new_table, new_column, jaql):
+    if jaql["table"] == old_table and jaql["column"] == old_column:
+        jaql["table"] = new_table
+        jaql["column"] = new_column
+        jaql["dim"] = "[{}.{}]".format(new_table, new_column)

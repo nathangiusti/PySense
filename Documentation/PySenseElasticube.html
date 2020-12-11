@@ -71,6 +71,8 @@ class Elasticube:
             A data model or the file path if the file path is set.
         &#34;&#34;&#34;
 
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;get_model&#39;)
+
         query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
         if path is not None:
             resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;,
@@ -566,6 +568,8 @@ class Elasticube:
         Returns:
             A data model or the file path if the file path is set.
         &#34;&#34;&#34;
+
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;get_model&#39;)
 
         query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
         if path is not None:
@@ -1421,6 +1425,8 @@ Set this to your server ip if this method fails without it set.</li>
     Returns:
         A data model or the file path if the file path is set.
     &#34;&#34;&#34;
+
+    PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;get_model&#39;)
 
     query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
     if path is not None:

@@ -417,3 +417,21 @@ class Dashboard:
     def get_created_date(self):
         """Returns the creation datetime of the dashboard"""
         return PySenseUtils.sisense_time_to_python(self._dashboard_json['created'])
+
+    def remap_field(self, old_table, old_column, new_table, new_column):
+        """Remaps all widgets and dimensions from the old table.column to the new table.column
+
+        Args:
+            old_table: The old table name
+            old_column: The old column name
+            new_table: The new table name
+            new_column: The new column name
+        """
+        for widget in self.get_widgets():
+            widget.remap_field(old_table, old_column, new_table, new_column)
+        filters = self._dashboard_json['filters']
+        for f in filters:
+            PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, f['jaql'])
+        payload = {"filters": filters}
+        self._py_client.connector.rest_call('patch', 'api/v1/dashboards/{}'.format(self.get_id()),
+                                            json_payload=payload)

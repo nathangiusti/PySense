@@ -1,3 +1,5 @@
+from PySense import PySenseUtils
+
 class Widget:
 
     def __init__(self, py_client, widget_json):
@@ -37,3 +39,39 @@ class Widget:
             return path
         else:
             return resp_content
+
+    def remap_field(self, old_table, old_column, new_table, new_column):
+        """Remaps all usages of old_table and old_column in a widget to new_table and new_column respectively
+
+        Args:
+            old_table: The old table name
+            old_column: The old column name
+            new_table: The new table name
+            new_column: The new column name
+        """
+        panels = self._widget_json["metadata"]["panels"]
+        for panel in panels:
+            items = panel["items"]
+            if panel["name"] == "rows":
+                for item in items:
+                    if "jaql" in item:
+                        PySenseUtils.update_jaql(old_table, old_column, new_table, new_column,  item["jaql"])
+                    if "field" in item and "id" in item["field"]:
+                        item["field"]["id"] = "[{}.{}]".format(new_table, new_column)
+            if panel["name"] == "values":
+                for item in items:
+                    if "jaql" in item and "context" in item["jaql"]:
+                        for context in item["jaql"]["context"]:
+                            PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item["jaql"]["context"][context])
+            if panel["name"] in ["columns", "filters"]:
+                for item in items:
+                    if "jaql" in item:
+                        PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item["jaql"])
+
+        update_json = {"metadata": self._widget_json["metadata"]}
+        self._py_client.connector.rest_call('patch', 'api/v1/dashboards/{}/widgets/{}'
+                                            .format(self.get_dashboard_id(), self.get_oid()),
+                                            json_payload=update_json, raw=True)
+
+
+

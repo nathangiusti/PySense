@@ -444,7 +444,25 @@ class Dashboard:
 
     def get_created_date(self):
         &#34;&#34;&#34;Returns the creation datetime of the dashboard&#34;&#34;&#34;
-        return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;created&#39;])</code></pre>
+        return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;created&#39;])
+
+    def remap_field(self, old_table, old_column, new_table, new_column):
+        &#34;&#34;&#34;Remaps all widgets and dimensions from the old table.column to the new table.column
+
+        Args:
+            old_table: The old table name
+            old_column: The old column name
+            new_table: The new table name
+            new_column: The new column name
+        &#34;&#34;&#34;
+        for widget in self.get_widgets():
+            widget.remap_field(old_table, old_column, new_table, new_column)
+        filters = self._dashboard_json[&#39;filters&#39;]
+        for f in filters:
+            PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, f[&#39;jaql&#39;])
+        payload = {&#34;filters&#34;: filters}
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
+                                            json_payload=payload)</code></pre>
 </details>
 </section>
 <section>
@@ -877,7 +895,25 @@ class Dashboard:
 
     def get_created_date(self):
         &#34;&#34;&#34;Returns the creation datetime of the dashboard&#34;&#34;&#34;
-        return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;created&#39;])</code></pre>
+        return PySenseUtils.sisense_time_to_python(self._dashboard_json[&#39;created&#39;])
+
+    def remap_field(self, old_table, old_column, new_table, new_column):
+        &#34;&#34;&#34;Remaps all widgets and dimensions from the old table.column to the new table.column
+
+        Args:
+            old_table: The old table name
+            old_column: The old column name
+            new_table: The new table name
+            new_column: The new column name
+        &#34;&#34;&#34;
+        for widget in self.get_widgets():
+            widget.remap_field(old_table, old_column, new_table, new_column)
+        filters = self._dashboard_json[&#39;filters&#39;]
+        for f in filters:
+            PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, f[&#39;jaql&#39;])
+        payload = {&#34;filters&#34;: filters}
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
+                                            json_payload=payload)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -1584,6 +1620,45 @@ parameter for paging</dd>
     self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/{}/publish&#39;.format(self.get_id()))</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseDashboard.Dashboard.remap_field"><code class="name flex">
+<span>def <span class="ident">remap_field</span></span>(<span>self, old_table, old_column, new_table, new_column)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Remaps all widgets and dimensions from the old table.column to the new table.column</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>old_table</code></strong></dt>
+<dd>The old table name</dd>
+<dt><strong><code>old_column</code></strong></dt>
+<dd>The old column name</dd>
+<dt><strong><code>new_table</code></strong></dt>
+<dd>The new table name</dd>
+<dt><strong><code>new_column</code></strong></dt>
+<dd>The new column name</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remap_field(self, old_table, old_column, new_table, new_column):
+    &#34;&#34;&#34;Remaps all widgets and dimensions from the old table.column to the new table.column
+
+    Args:
+        old_table: The old table name
+        old_column: The old column name
+        new_table: The new table name
+        new_column: The new column name
+    &#34;&#34;&#34;
+    for widget in self.get_widgets():
+        widget.remap_field(old_table, old_column, new_table, new_column)
+    filters = self._dashboard_json[&#39;filters&#39;]
+    for f in filters:
+        PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, f[&#39;jaql&#39;])
+    payload = {&#34;filters&#34;: filters}
+    self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}&#39;.format(self.get_id()),
+                                        json_payload=payload)</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySenseDashboard.Dashboard.remove_ghost_widgets"><code class="name flex">
 <span>def <span class="ident">remove_ghost_widgets</span></span>(<span>self)</span>
 </code></dt>
@@ -1700,6 +1775,7 @@ parameter for paging</dd>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.get_widgets" href="#PySense.PySenseDashboard.Dashboard.get_widgets">get_widgets</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.move_to_folder" href="#PySense.PySenseDashboard.Dashboard.move_to_folder">move_to_folder</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.publish" href="#PySense.PySenseDashboard.Dashboard.publish">publish</a></code></li>
+<li><code><a title="PySense.PySenseDashboard.Dashboard.remap_field" href="#PySense.PySenseDashboard.Dashboard.remap_field">remap_field</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.remove_ghost_widgets" href="#PySense.PySenseDashboard.Dashboard.remove_ghost_widgets">remove_ghost_widgets</a></code></li>
 <li><code><a title="PySense.PySenseDashboard.Dashboard.remove_shares" href="#PySense.PySenseDashboard.Dashboard.remove_shares">remove_shares</a></code></li>
 </ul>

@@ -88,7 +88,14 @@ def strip_json(input_json, keys_to_delete):
 def validate_version(py_client, expected_version, function_name):
     if py_client.version != expected_version:
         raise PySenseException.PySenseException(&#39;{} is only supported on {}&#39;
-                                                .format(function_name, expected_version))</code></pre>
+                                                .format(function_name, expected_version))
+
+
+def update_jaql(old_table, old_column, new_table, new_column, jaql):
+    if jaql[&#34;table&#34;] == old_table and jaql[&#34;column&#34;] == old_column:
+        jaql[&#34;table&#34;] = new_table
+        jaql[&#34;column&#34;] = new_column
+        jaql[&#34;dim&#34;] = &#34;[{}.{}]&#34;.format(new_table, new_column)</code></pre>
 </details>
 </section>
 <section>
@@ -213,6 +220,22 @@ def validate_version(py_client, expected_version, function_name):
     return input_json</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseUtils.update_jaql"><code class="name flex">
+<span>def <span class="ident">update_jaql</span></span>(<span>old_table, old_column, new_table, new_column, jaql)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_jaql(old_table, old_column, new_table, new_column, jaql):
+    if jaql[&#34;table&#34;] == old_table and jaql[&#34;column&#34;] == old_column:
+        jaql[&#34;table&#34;] = new_table
+        jaql[&#34;column&#34;] = new_column
+        jaql[&#34;dim&#34;] = &#34;[{}.{}]&#34;.format(new_table, new_column)</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySenseUtils.validate_version"><code class="name flex">
 <span>def <span class="ident">validate_version</span></span>(<span>py_client, expected_version, function_name)</span>
 </code></dt>
@@ -253,6 +276,7 @@ def validate_version(py_client, expected_version, function_name):
 <li><code><a title="PySense.PySenseUtils.read_json" href="#PySense.PySenseUtils.read_json">read_json</a></code></li>
 <li><code><a title="PySense.PySenseUtils.sisense_time_to_python" href="#PySense.PySenseUtils.sisense_time_to_python">sisense_time_to_python</a></code></li>
 <li><code><a title="PySense.PySenseUtils.strip_json" href="#PySense.PySenseUtils.strip_json">strip_json</a></code></li>
+<li><code><a title="PySense.PySenseUtils.update_jaql" href="#PySense.PySenseUtils.update_jaql">update_jaql</a></code></li>
 <li><code><a title="PySense.PySenseUtils.validate_version" href="#PySense.PySenseUtils.validate_version">validate_version</a></code></li>
 </ul>
 </li>

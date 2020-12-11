@@ -35,25 +35,19 @@ Install PySense with pip:
 
 [Tutorial Videos](https://www.youtube.com/playlist?list=PL0xO3VH5OF2JD2KiZs_41zvKvPyebg6MW)
 
-**V 0.3.7 Release Notes**
+**V 0.3.8 Release Notes**
 
 - Breaking changes
     - None
     
 - Additions
-    - Download and upload sdata files. 
-        - py_client.import_sdata()
-        - datamodel.export_to_sdata()
-    - Manage your blox actions (endpoints not supported by Sisense)
-        - py_client.get_blox_action()
-        - py_client.add_blox_action()
-        - py_client.delete_blox_action()
-    - Manage UI settings
-        - py_client.get_ui_settings
-        - py_client.set_ui_settings
-              
+    - Remap table/column names in your dashboard
+        - Dashboard.remap_field will update all widgets and filters in a dashboard
+        - Widget.remap_field will update the widget (including widget filters)
+        - DOES NOT SUPPORT DATE FIELDS (this will still need to be updated manually)
+        - Functionality is in beta. Please report any issues via git
 - Fixes
-    - Cleaned up imports
+    - Elasticube.get_data_model now correctly verifies version
 
 - Known Issues
     - REST API sometimes becomes unresponsive on Linux builds

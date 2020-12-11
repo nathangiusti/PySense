@@ -90,6 +90,20 @@ class PySenseDashboardTests(unittest.TestCase):
         assert len(dashboard.get_shares(admin_access=True)) == 1
         assert len(dashboard.get_share_users_groups(admin_access=True)) == 1
 
+    def test_remap_dashboard(self):
+        pre = self.py_client.get_dashboard_by_id(self.dashboard.get_id()).get_json()
+        pre['lastUpdated'] = ''
+        self.dashboard.remap_field('Fact', 'num', 'Fact_2', 'num2')
+        self.dashboard.remap_field('Fact', 'str', 'Fact_2', 'str2')
+        post = self.py_client.get_dashboard_by_id(self.dashboard.get_id()).get_json()
+        post['lastUpdated'] = ''
+        assert pre != post
+        self.dashboard.remap_field('Fact_2', 'num2', 'Fact', 'num')
+        self.dashboard.remap_field('Fact_2', 'str2', 'Fact', 'str')
+        post = self.py_client.get_dashboard_by_id(self.dashboard.get_id()).get_json()
+        post['lastUpdated'] = ''
+        assert pre == post
+
 
     @classmethod
     def tearDownClass(cls):

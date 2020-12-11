@@ -43,6 +43,8 @@ class Elasticube:
             A data model or the file path if the file path is set.
         """
 
+        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, 'get_model')
+
         query_params = {'datamodelId': self.get_oid(), 'type': 'schema-latest'}
         if path is not None:
             resp_content = self._py_client.connector.rest_call('get', 'api/v2/datamodel-exports/schema',

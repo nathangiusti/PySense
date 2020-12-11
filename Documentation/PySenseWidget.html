@@ -26,7 +26,9 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Widget:
+<pre><code class="python">from PySense import PySenseUtils
+
+class Widget:
 
     def __init__(self, py_client, widget_json):
         self._py_client = py_client
@@ -64,7 +66,40 @@
                 out_file.write(resp_content)
             return path
         else:
-            return resp_content</code></pre>
+            return resp_content
+
+    def remap_field(self, old_table, old_column, new_table, new_column):
+        &#34;&#34;&#34;Remaps all usages of old_table and old_column in a widget to new_table and new_column respectively
+
+        Args:
+            old_table: The old table name
+            old_column: The old column name
+            new_table: The new table name
+            new_column: The new column name
+        &#34;&#34;&#34;
+        panels = self._widget_json[&#34;metadata&#34;][&#34;panels&#34;]
+        for panel in panels:
+            items = panel[&#34;items&#34;]
+            if panel[&#34;name&#34;] == &#34;rows&#34;:
+                for item in items:
+                    if &#34;jaql&#34; in item:
+                        PySenseUtils.update_jaql(old_table, old_column, new_table, new_column,  item[&#34;jaql&#34;])
+                    if &#34;field&#34; in item and &#34;id&#34; in item[&#34;field&#34;]:
+                        item[&#34;field&#34;][&#34;id&#34;] = &#34;[{}.{}]&#34;.format(new_table, new_column)
+            if panel[&#34;name&#34;] == &#34;values&#34;:
+                for item in items:
+                    if &#34;jaql&#34; in item and &#34;context&#34; in item[&#34;jaql&#34;]:
+                        for context in item[&#34;jaql&#34;][&#34;context&#34;]:
+                            PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item[&#34;jaql&#34;][&#34;context&#34;][context])
+            if panel[&#34;name&#34;] in [&#34;columns&#34;, &#34;filters&#34;]:
+                for item in items:
+                    if &#34;jaql&#34; in item:
+                        PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item[&#34;jaql&#34;])
+
+        update_json = {&#34;metadata&#34;: self._widget_json[&#34;metadata&#34;]}
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
+                                            .format(self.get_dashboard_id(), self.get_oid()),
+                                            json_payload=update_json, raw=True)</code></pre>
 </details>
 </section>
 <section>
@@ -124,7 +159,40 @@
                 out_file.write(resp_content)
             return path
         else:
-            return resp_content</code></pre>
+            return resp_content
+
+    def remap_field(self, old_table, old_column, new_table, new_column):
+        &#34;&#34;&#34;Remaps all usages of old_table and old_column in a widget to new_table and new_column respectively
+
+        Args:
+            old_table: The old table name
+            old_column: The old column name
+            new_table: The new table name
+            new_column: The new column name
+        &#34;&#34;&#34;
+        panels = self._widget_json[&#34;metadata&#34;][&#34;panels&#34;]
+        for panel in panels:
+            items = panel[&#34;items&#34;]
+            if panel[&#34;name&#34;] == &#34;rows&#34;:
+                for item in items:
+                    if &#34;jaql&#34; in item:
+                        PySenseUtils.update_jaql(old_table, old_column, new_table, new_column,  item[&#34;jaql&#34;])
+                    if &#34;field&#34; in item and &#34;id&#34; in item[&#34;field&#34;]:
+                        item[&#34;field&#34;][&#34;id&#34;] = &#34;[{}.{}]&#34;.format(new_table, new_column)
+            if panel[&#34;name&#34;] == &#34;values&#34;:
+                for item in items:
+                    if &#34;jaql&#34; in item and &#34;context&#34; in item[&#34;jaql&#34;]:
+                        for context in item[&#34;jaql&#34;][&#34;context&#34;]:
+                            PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item[&#34;jaql&#34;][&#34;context&#34;][context])
+            if panel[&#34;name&#34;] in [&#34;columns&#34;, &#34;filters&#34;]:
+                for item in items:
+                    if &#34;jaql&#34; in item:
+                        PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item[&#34;jaql&#34;])
+
+        update_json = {&#34;metadata&#34;: self._widget_json[&#34;metadata&#34;]}
+        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
+                                            .format(self.get_dashboard_id(), self.get_oid()),
+                                            json_payload=update_json, raw=True)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -213,6 +281,60 @@
     return self._widget_json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseWidget.Widget.remap_field"><code class="name flex">
+<span>def <span class="ident">remap_field</span></span>(<span>self, old_table, old_column, new_table, new_column)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Remaps all usages of old_table and old_column in a widget to new_table and new_column respectively</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>old_table</code></strong></dt>
+<dd>The old table name</dd>
+<dt><strong><code>old_column</code></strong></dt>
+<dd>The old column name</dd>
+<dt><strong><code>new_table</code></strong></dt>
+<dd>The new table name</dd>
+<dt><strong><code>new_column</code></strong></dt>
+<dd>The new column name</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remap_field(self, old_table, old_column, new_table, new_column):
+    &#34;&#34;&#34;Remaps all usages of old_table and old_column in a widget to new_table and new_column respectively
+
+    Args:
+        old_table: The old table name
+        old_column: The old column name
+        new_table: The new table name
+        new_column: The new column name
+    &#34;&#34;&#34;
+    panels = self._widget_json[&#34;metadata&#34;][&#34;panels&#34;]
+    for panel in panels:
+        items = panel[&#34;items&#34;]
+        if panel[&#34;name&#34;] == &#34;rows&#34;:
+            for item in items:
+                if &#34;jaql&#34; in item:
+                    PySenseUtils.update_jaql(old_table, old_column, new_table, new_column,  item[&#34;jaql&#34;])
+                if &#34;field&#34; in item and &#34;id&#34; in item[&#34;field&#34;]:
+                    item[&#34;field&#34;][&#34;id&#34;] = &#34;[{}.{}]&#34;.format(new_table, new_column)
+        if panel[&#34;name&#34;] == &#34;values&#34;:
+            for item in items:
+                if &#34;jaql&#34; in item and &#34;context&#34; in item[&#34;jaql&#34;]:
+                    for context in item[&#34;jaql&#34;][&#34;context&#34;]:
+                        PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item[&#34;jaql&#34;][&#34;context&#34;][context])
+        if panel[&#34;name&#34;] in [&#34;columns&#34;, &#34;filters&#34;]:
+            for item in items:
+                if &#34;jaql&#34; in item:
+                    PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item[&#34;jaql&#34;])
+
+    update_json = {&#34;metadata&#34;: self._widget_json[&#34;metadata&#34;]}
+    self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
+                                        .format(self.get_dashboard_id(), self.get_oid()),
+                                        json_payload=update_json, raw=True)</code></pre>
+</details>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -238,6 +360,7 @@
 <li><code><a title="PySense.PySenseWidget.Widget.get_dashboard_id" href="#PySense.PySenseWidget.Widget.get_dashboard_id">get_dashboard_id</a></code></li>
 <li><code><a title="PySense.PySenseWidget.Widget.get_json" href="#PySense.PySenseWidget.Widget.get_json">get_json</a></code></li>
 <li><code><a title="PySense.PySenseWidget.Widget.get_oid" href="#PySense.PySenseWidget.Widget.get_oid">get_oid</a></code></li>
+<li><code><a title="PySense.PySenseWidget.Widget.remap_field" href="#PySense.PySenseWidget.Widget.remap_field">remap_field</a></code></li>
 </ul>
 </li>
 </ul>
