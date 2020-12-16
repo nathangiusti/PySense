@@ -32,6 +32,10 @@ from PySense import PySenseException
 
 
 class Role(Enum):
+    &#34;&#34;&#34;
+    Enumeration of the different user roles in Sisense
+    &#34;&#34;&#34;
+
     DATA_DESIGNER = &#39;dataDesigner&#39;
     SYS_ADMIN = &#39;super&#39;
     DATA_ADMIN = &#39;dataAdmin&#39;
@@ -41,6 +45,7 @@ class Role(Enum):
 
     @staticmethod
     def from_str(role):
+        &#34;&#34;&#34;Returns the Role for a given string&#34;&#34;&#34;
         role = role.lower().replace(&#34; &#34;, &#34;&#34;)
         if role in [&#39;datadesigner&#39;, &#39;data_designer&#39;]:
             return Role.DATA_DESIGNER
@@ -72,12 +77,16 @@ class Role(Enum):
 <span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>An enumeration.</p></div>
+<div class="desc"><p>Enumeration of the different user roles in Sisense</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Role(Enum):
+    &#34;&#34;&#34;
+    Enumeration of the different user roles in Sisense
+    &#34;&#34;&#34;
+
     DATA_DESIGNER = &#39;dataDesigner&#39;
     SYS_ADMIN = &#39;super&#39;
     DATA_ADMIN = &#39;dataAdmin&#39;
@@ -87,6 +96,7 @@ class Role(Enum):
 
     @staticmethod
     def from_str(role):
+        &#34;&#34;&#34;Returns the Role for a given string&#34;&#34;&#34;
         role = role.lower().replace(&#34; &#34;, &#34;&#34;)
         if role in [&#39;datadesigner&#39;, &#39;data_designer&#39;]:
             return Role.DATA_DESIGNER
@@ -140,13 +150,14 @@ class Role(Enum):
 <span>def <span class="ident">from_str</span></span>(<span>role)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the Role for a given string</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
 def from_str(role):
+    &#34;&#34;&#34;Returns the Role for a given string&#34;&#34;&#34;
     role = role.lower().replace(&#34; &#34;, &#34;&#34;)
     if role in [&#39;datadesigner&#39;, &#39;data_designer&#39;]:
         return Role.DATA_DESIGNER

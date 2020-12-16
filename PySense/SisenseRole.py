@@ -4,6 +4,10 @@ from PySense import PySenseException
 
 
 class Role(Enum):
+    """
+    Enumeration of the different user roles in Sisense
+    """
+
     DATA_DESIGNER = 'dataDesigner'
     SYS_ADMIN = 'super'
     DATA_ADMIN = 'dataAdmin'
@@ -13,6 +17,7 @@ class Role(Enum):
 
     @staticmethod
     def from_str(role):
+        """Returns the Role for a given string"""
         role = role.lower().replace(" ", "")
         if role in ['datadesigner', 'data_designer']:
             return Role.DATA_DESIGNER

@@ -7,11 +7,18 @@ from PySense import PySenseUtils
 
 
 def generate_token(host, username, password, verify=True):
-    """Generate a token from a host, username and password
+    """Creates a new PySense client with the username and password
+
+    Args:
+        host (str): The Sisense server address
+        username (str): Sisense username
+        password (str): Sisense password
+        verify (bool): SSL Verification
 
     Returns:
-        A JSON header
+        JSON: A json authorization header
     """
+
     host = PySenseUtils.format_host(host)
     data = {'username': username, 'password': password}
     resp = requests.post('{}/api/v1/authentication/login'.format(host), verify=verify, data=data)
@@ -23,6 +30,7 @@ def generate_token(host, username, password, verify=True):
 
 def authenticate_by_token(host, token, version, debug=False, verify=True, param_dict=None):
     """Do not call directly. Call from PySense"""
+
     host = PySenseUtils.format_host(host)
     token_json = {'authorization':  "Bearer " + token}
     return PySense.PySense(host, token_json, version, debug=debug, verify=verify, param_dict=param_dict)
@@ -30,6 +38,7 @@ def authenticate_by_token(host, token, version, debug=False, verify=True, param_
 
 def authenticate_by_password(host, username, password, version, debug=False, verify=True, param_dict=None):
     """Do not call directly. Call from PySense"""
+
     host = PySenseUtils.format_host(host)
     token = generate_token(host, username, password, verify=verify)
     return PySense.PySense(host, token, version, debug=debug, verify=verify, param_dict=param_dict)

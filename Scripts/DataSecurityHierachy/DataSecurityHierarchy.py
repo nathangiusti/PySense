@@ -8,7 +8,7 @@ cube = py_client.get_elasticube_by_name('Data Hierarchy')
 
 # Add default security rules for each level
 for i in range(1, 4):
-    cube.add_security_rule(
+    cube.add_data_security_rule(
         'Security_Table.csv', 'level' + str(i), 'text'
     )
 
@@ -23,7 +23,7 @@ with open('Security Groups.csv') as csv_file:
         group = py_client.add_groups(group_name)[0]  # Not needed if the group already exists. Just get the group.
         for i in range(1, 4):
             if i == int(row['level']):  # If this is the level to apply security at, we set the security rule
-                cube.add_security_rule(
+                cube.add_data_security_rule(
                     'Security_Table.csv', 'level' + str(i), 'text', shares=group, members=[row['value']]
                 )
             else:
@@ -31,6 +31,6 @@ with open('Security Groups.csv') as csv_file:
 
 # Here at the end we add our everything rules
 for i in range(1, 4):
-    cube.add_security_rule(
+    cube.add_data_security_rule(
         'Security_Table.csv', 'level' + str(i), 'text', shares=everything_rule_map['level' + str(i)], all_members=True
     )

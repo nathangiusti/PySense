@@ -28,45 +28,57 @@
 </summary>
 <pre><code class="python">from PySense import PySenseUtils
 
+
 class Widget:
+    &#34;&#34;&#34;A widget on a dashboard
+
+    A widget belongs to one dashboard.
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, widget_json):
-        self._py_client = py_client
-        self._widget_json = widget_json
+        &#34;&#34;&#34;
+
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            widget_json (JSON): The json for this object
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
+        self.json = widget_json
 
     def get_json(self):
         &#34;&#34;&#34;Returns the widget&#39;s JSON.&#34;&#34;&#34;
-        return self._widget_json
+
+        return self.json
 
     def get_dashboard_id(self):
         &#34;&#34;&#34;Returns the dashboard id of the widget.&#34;&#34;&#34;
-        return self._widget_json[&#39;dashboardid&#39;]
+        return self.json[&#39;dashboardid&#39;]
 
     def get_oid(self):
         &#34;&#34;&#34;Gets the widget&#39;s id&#34;&#34;&#34;
-        return self._widget_json[&#39;oid&#39;]
+        return self.json[&#39;oid&#39;]
 
-    def export_to_png(self, width, height, *, path=None):
+    def export_to_png(self, width, height, path):
         &#34;&#34;&#34;Export&#39;s widget to png.
 
         Args:
             width: Render width in pixels
             height: Render height in pixels
-            path: (optional) Path to save the file
+            path: Path to save the file
 
         Returns:
-            The path of the saved file if set, else the raw content
+            str: The path of the saved file
         &#34;&#34;&#34;
         query_params = {&#39;width&#39;: width, &#39;height&#39;: height}
-        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
-                                                           .format(self.get_dashboard_id(), self.get_oid()),
-                                                           query_params=query_params, raw=True)
-        if path is not None:
-            with open(path, &#39;wb&#39;) as out_file:
-                out_file.write(resp_content)
-            return path
-        else:
-            return resp_content
+        self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
+                                           .format(self.get_dashboard_id(), self.get_oid()),
+                                           query_params=query_params, path=path, raw=True)
+        return path
 
     def remap_field(self, old_table, old_column, new_table, new_column):
         &#34;&#34;&#34;Remaps all usages of old_table and old_column in a widget to new_table and new_column respectively
@@ -77,7 +89,7 @@ class Widget:
             new_table: The new table name
             new_column: The new column name
         &#34;&#34;&#34;
-        panels = self._widget_json[&#34;metadata&#34;][&#34;panels&#34;]
+        panels = self.json[&#34;metadata&#34;][&#34;panels&#34;]
         for panel in panels:
             items = panel[&#34;items&#34;]
             if panel[&#34;name&#34;] == &#34;rows&#34;:
@@ -90,16 +102,16 @@ class Widget:
                 for item in items:
                     if &#34;jaql&#34; in item and &#34;context&#34; in item[&#34;jaql&#34;]:
                         for context in item[&#34;jaql&#34;][&#34;context&#34;]:
-                            PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item[&#34;jaql&#34;][&#34;context&#34;][context])
+                            PySenseUtils.update_jaql(old_table, old_column, new_table, new_column,
+                                                     item[&#34;jaql&#34;][&#34;context&#34;][context])
             if panel[&#34;name&#34;] in [&#34;columns&#34;, &#34;filters&#34;]:
                 for item in items:
                     if &#34;jaql&#34; in item:
                         PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item[&#34;jaql&#34;])
 
-        update_json = {&#34;metadata&#34;: self._widget_json[&#34;metadata&#34;]}
-        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
-                                            .format(self.get_dashboard_id(), self.get_oid()),
-                                            json_payload=update_json, raw=True)</code></pre>
+        update_json = {&#34;metadata&#34;: self.json[&#34;metadata&#34;]}
+        self.py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
+                                           .format(self.get_dashboard_id(), self.get_oid()), json_payload=update_json)</code></pre>
 </details>
 </section>
 <section>
@@ -116,50 +128,76 @@ class Widget:
 <span>(</span><span>py_client, widget_json)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>A widget on a dashboard</p>
+<p>A widget belongs to one dashboard.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The JSON for this object</dd>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The connection to the Sisense server which owns this asset</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The PySense object for the server this asset belongs to</dd>
+<dt><strong><code>widget_json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The json for this object</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Widget:
+    &#34;&#34;&#34;A widget on a dashboard
+
+    A widget belongs to one dashboard.
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, widget_json):
-        self._py_client = py_client
-        self._widget_json = widget_json
+        &#34;&#34;&#34;
+
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            widget_json (JSON): The json for this object
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
+        self.json = widget_json
 
     def get_json(self):
         &#34;&#34;&#34;Returns the widget&#39;s JSON.&#34;&#34;&#34;
-        return self._widget_json
+
+        return self.json
 
     def get_dashboard_id(self):
         &#34;&#34;&#34;Returns the dashboard id of the widget.&#34;&#34;&#34;
-        return self._widget_json[&#39;dashboardid&#39;]
+        return self.json[&#39;dashboardid&#39;]
 
     def get_oid(self):
         &#34;&#34;&#34;Gets the widget&#39;s id&#34;&#34;&#34;
-        return self._widget_json[&#39;oid&#39;]
+        return self.json[&#39;oid&#39;]
 
-    def export_to_png(self, width, height, *, path=None):
+    def export_to_png(self, width, height, path):
         &#34;&#34;&#34;Export&#39;s widget to png.
 
         Args:
             width: Render width in pixels
             height: Render height in pixels
-            path: (optional) Path to save the file
+            path: Path to save the file
 
         Returns:
-            The path of the saved file if set, else the raw content
+            str: The path of the saved file
         &#34;&#34;&#34;
         query_params = {&#39;width&#39;: width, &#39;height&#39;: height}
-        resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
-                                                           .format(self.get_dashboard_id(), self.get_oid()),
-                                                           query_params=query_params, raw=True)
-        if path is not None:
-            with open(path, &#39;wb&#39;) as out_file:
-                out_file.write(resp_content)
-            return path
-        else:
-            return resp_content
+        self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
+                                           .format(self.get_dashboard_id(), self.get_oid()),
+                                           query_params=query_params, path=path, raw=True)
+        return path
 
     def remap_field(self, old_table, old_column, new_table, new_column):
         &#34;&#34;&#34;Remaps all usages of old_table and old_column in a widget to new_table and new_column respectively
@@ -170,7 +208,7 @@ class Widget:
             new_table: The new table name
             new_column: The new column name
         &#34;&#34;&#34;
-        panels = self._widget_json[&#34;metadata&#34;][&#34;panels&#34;]
+        panels = self.json[&#34;metadata&#34;][&#34;panels&#34;]
         for panel in panels:
             items = panel[&#34;items&#34;]
             if panel[&#34;name&#34;] == &#34;rows&#34;:
@@ -183,21 +221,21 @@ class Widget:
                 for item in items:
                     if &#34;jaql&#34; in item and &#34;context&#34; in item[&#34;jaql&#34;]:
                         for context in item[&#34;jaql&#34;][&#34;context&#34;]:
-                            PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item[&#34;jaql&#34;][&#34;context&#34;][context])
+                            PySenseUtils.update_jaql(old_table, old_column, new_table, new_column,
+                                                     item[&#34;jaql&#34;][&#34;context&#34;][context])
             if panel[&#34;name&#34;] in [&#34;columns&#34;, &#34;filters&#34;]:
                 for item in items:
                     if &#34;jaql&#34; in item:
                         PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item[&#34;jaql&#34;])
 
-        update_json = {&#34;metadata&#34;: self._widget_json[&#34;metadata&#34;]}
-        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
-                                            .format(self.get_dashboard_id(), self.get_oid()),
-                                            json_payload=update_json, raw=True)</code></pre>
+        update_json = {&#34;metadata&#34;: self.json[&#34;metadata&#34;]}
+        self.py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
+                                           .format(self.get_dashboard_id(), self.get_oid()), json_payload=update_json)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="PySense.PySenseWidget.Widget.export_to_png"><code class="name flex">
-<span>def <span class="ident">export_to_png</span></span>(<span>self, width, height, *, path=None)</span>
+<span>def <span class="ident">export_to_png</span></span>(<span>self, width, height, path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Export's widget to png.</p>
@@ -208,35 +246,33 @@ class Widget:
 <dt><strong><code>height</code></strong></dt>
 <dd>Render height in pixels</dd>
 <dt><strong><code>path</code></strong></dt>
-<dd>(optional) Path to save the file</dd>
+<dd>Path to save the file</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>The path of the saved file if set, else the raw content</p></div>
+<dl>
+<dt><code>str</code></dt>
+<dd>The path of the saved file</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def export_to_png(self, width, height, *, path=None):
+<pre><code class="python">def export_to_png(self, width, height, path):
     &#34;&#34;&#34;Export&#39;s widget to png.
 
     Args:
         width: Render width in pixels
         height: Render height in pixels
-        path: (optional) Path to save the file
+        path: Path to save the file
 
     Returns:
-        The path of the saved file if set, else the raw content
+        str: The path of the saved file
     &#34;&#34;&#34;
     query_params = {&#39;width&#39;: width, &#39;height&#39;: height}
-    resp_content = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
-                                                       .format(self.get_dashboard_id(), self.get_oid()),
-                                                       query_params=query_params, raw=True)
-    if path is not None:
-        with open(path, &#39;wb&#39;) as out_file:
-            out_file.write(resp_content)
-        return path
-    else:
-        return resp_content</code></pre>
+    self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/{}/widgets/{}/export/png&#39;
+                                       .format(self.get_dashboard_id(), self.get_oid()),
+                                       query_params=query_params, path=path, raw=True)
+    return path</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseWidget.Widget.get_dashboard_id"><code class="name flex">
@@ -250,7 +286,7 @@ class Widget:
 </summary>
 <pre><code class="python">def get_dashboard_id(self):
     &#34;&#34;&#34;Returns the dashboard id of the widget.&#34;&#34;&#34;
-    return self._widget_json[&#39;dashboardid&#39;]</code></pre>
+    return self.json[&#39;dashboardid&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseWidget.Widget.get_json"><code class="name flex">
@@ -264,7 +300,8 @@ class Widget:
 </summary>
 <pre><code class="python">def get_json(self):
     &#34;&#34;&#34;Returns the widget&#39;s JSON.&#34;&#34;&#34;
-    return self._widget_json</code></pre>
+
+    return self.json</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseWidget.Widget.get_oid"><code class="name flex">
@@ -278,7 +315,7 @@ class Widget:
 </summary>
 <pre><code class="python">def get_oid(self):
     &#34;&#34;&#34;Gets the widget&#39;s id&#34;&#34;&#34;
-    return self._widget_json[&#39;oid&#39;]</code></pre>
+    return self.json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseWidget.Widget.remap_field"><code class="name flex">
@@ -310,7 +347,7 @@ class Widget:
         new_table: The new table name
         new_column: The new column name
     &#34;&#34;&#34;
-    panels = self._widget_json[&#34;metadata&#34;][&#34;panels&#34;]
+    panels = self.json[&#34;metadata&#34;][&#34;panels&#34;]
     for panel in panels:
         items = panel[&#34;items&#34;]
         if panel[&#34;name&#34;] == &#34;rows&#34;:
@@ -323,16 +360,16 @@ class Widget:
             for item in items:
                 if &#34;jaql&#34; in item and &#34;context&#34; in item[&#34;jaql&#34;]:
                     for context in item[&#34;jaql&#34;][&#34;context&#34;]:
-                        PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item[&#34;jaql&#34;][&#34;context&#34;][context])
+                        PySenseUtils.update_jaql(old_table, old_column, new_table, new_column,
+                                                 item[&#34;jaql&#34;][&#34;context&#34;][context])
         if panel[&#34;name&#34;] in [&#34;columns&#34;, &#34;filters&#34;]:
             for item in items:
                 if &#34;jaql&#34; in item:
                     PySenseUtils.update_jaql(old_table, old_column, new_table, new_column, item[&#34;jaql&#34;])
 
-    update_json = {&#34;metadata&#34;: self._widget_json[&#34;metadata&#34;]}
-    self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
-                                        .format(self.get_dashboard_id(), self.get_oid()),
-                                        json_payload=update_json, raw=True)</code></pre>
+    update_json = {&#34;metadata&#34;: self.json[&#34;metadata&#34;]}
+    self.py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v1/dashboards/{}/widgets/{}&#39;
+                                       .format(self.get_dashboard_id(), self.get_oid()), json_payload=update_json)</code></pre>
 </details>
 </dd>
 </dl>

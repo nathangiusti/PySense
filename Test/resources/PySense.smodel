@@ -1,0 +1,236 @@
+{
+    "title": "PySense",
+    "type": "extract",
+    "relations": [],
+    "datasets": [
+        {
+            "oid": "9efa9849-dd2f-41bf-b7cc-c00197c62f5a",
+            "fullname": "CSV:CSV-9efa9849-dd2f-41bf-b7cc-c00197c62f5a",
+            "type": "extract",
+            "name": "CSV-9efa9849-dd2f-41bf-b7cc-c00197c62f5a",
+            "modelingTransformations": [],
+            "schema": {
+                "tables": [
+                    {
+                        "oid": "cf819fe1-0173-41ab-b98d-a91ce660a3a1",
+                        "id": "625b2a05-60cd-4b38-9088-974b10927eff.csv",
+                        "name": "Dim_Dates",
+                        "type": "base",
+                        "expression": null,
+                        "columns": [
+                            {
+                                "oid": "8cea613e-542d-4192-b0c9-0de139422416",
+                                "id": "Date",
+                                "name": "Date",
+                                "type": 19,
+                                "size": 65536,
+                                "precision": 16,
+                                "scale": 0,
+                                "hidden": false,
+                                "indexed": false,
+                                "description": null
+                            },
+                            {
+                                "oid": "7bc2f176-97b4-4642-85e6-ec6715ca31ad",
+                                "id": "BusinessDay",
+                                "name": "BusinessDay",
+                                "type": 8,
+                                "size": 65536,
+                                "precision": 16,
+                                "scale": 0,
+                                "hidden": false,
+                                "indexed": false,
+                                "description": null
+                            },
+                            {
+                                "oid": "c211b8d5-875c-4486-96f6-5af64d71c4f6",
+                                "id": "Business Value",
+                                "name": "Business Value",
+                                "type": 8,
+                                "size": 65536,
+                                "precision": 16,
+                                "scale": 0,
+                                "hidden": false,
+                                "indexed": false,
+                                "description": null
+                            }
+                        ],
+                        "buildBehavior": {
+                            "type": "sync",
+                            "accumulativeConfig": null
+                        },
+                        "tupleTransformations": [],
+                        "hidden": false,
+                        "vTag": "0c4ddfa7-cfdf-4411-8db0-4a714d120ce9",
+                        "configOptions": {
+                            "FileName": "US Dates With Business Values.csv",
+                            "ApiVersion": "2",
+                            "delimiter": ",",
+                            "hasHeader": true,
+                            "excludeIfBegins": "",
+                            "excludeIfContains": "",
+                            "stringQuote": "\"",
+                            "ignoreFirstRows": ""
+                        },
+                        "description": null,
+                        "tags": null
+                    }
+                ]
+            },
+            "connection": {
+                "id": "5fd3e01a647ea2716c4fe599",
+                "provider": "CSV",
+                "parameters": "Ez19SVnm88z7ACszXoh17uXMwYGyDIZdBBE2d/6prYf36rf1AETx1UZ+ZsDYX5UGQOQnhQVWPr+nUch2gpM7L15AFQ1ettY8hVrsjZo36qTpCVdElYODcAA5H+IqE4Wbl29Iu0QRQk+SLuRbPFRFw38BsigcAcu+Gr5ROdDrltkMBrMFiZmZT4Gis/oHlFJXaqcZs2uNIB1TmsWoxpoZsy2VhL00Auz8n9bVKOW/OHY=",
+                "schema": "C:\\ProgramData\\Sisense\\PrismServer\\FileUploads\\storage\\62\\625b2a05-60cd-4b38-9088-974b10927eff.csv",
+                "fileName": null,
+                "timeout": 300,
+                "autoRefresh": null,
+                "refreshRate": null,
+                "resultLimit": null,
+                "protectedParameters": [],
+                "uiParams": null,
+                "globalTableConfigOptions": null
+            }
+        },
+        {
+            "oid": "c349895e-a270-4139-a054-3ddbceebe35e",
+            "fullname": "custom-c349895e-a270-4139-a054-3ddbceebe35e",
+            "type": "custom",
+            "name": "custom-c349895e-a270-4139-a054-3ddbceebe35e",
+            "modelingTransformations": [],
+            "schema": {
+                "tables": [
+                    {
+                        "oid": "da4df8b2-c9ef-425a-9c65-ded2ff98aae5",
+                        "id": "Fact",
+                        "name": "Fact",
+                        "type": "custom",
+                        "expression": {
+                            "oid": "8049173c-c079-439d-ab53-e960ceb2b792",
+                            "expression": "SELECT CREATEDATE(2020,01,01) as DATE, 1 as num,'a' as str\nUNION ALL\nSELECT CREATEDATE(2020,01,02), 2, 'b'\nUNION ALL\nSELECT CREATEDATE(2020,01,03), 3, 'c'\nUNION ALL\nSELECT CREATEDATE(2020,01,04), 4, 'a'\nUNION ALL\nSELECT CREATEDATE(2020,01,05), 5, 'b'\nUNION ALL\nSELECT CREATEDATE(2020,01,06), 6, 'c'\n"
+                        },
+                        "columns": [
+                            {
+                                "oid": "97487168-617c-4fc6-9ac9-e8a5b3233f57",
+                                "id": "DATE",
+                                "name": "DATE",
+                                "type": 19,
+                                "size": 0,
+                                "precision": 0,
+                                "scale": 0,
+                                "hidden": false,
+                                "indexed": false,
+                                "description": null
+                            },
+                            {
+                                "oid": "420552c5-ff14-48f5-9936-125538ff68dc",
+                                "id": "num",
+                                "name": "num",
+                                "type": 8,
+                                "size": 0,
+                                "precision": 0,
+                                "scale": 0,
+                                "hidden": false,
+                                "indexed": false,
+                                "description": null
+                            },
+                            {
+                                "oid": "3930425a-3a96-4543-922f-a0ee946c29a5",
+                                "id": "str",
+                                "name": "str",
+                                "type": 18,
+                                "size": 65536,
+                                "precision": 0,
+                                "scale": 0,
+                                "hidden": false,
+                                "indexed": true,
+                                "description": null
+                            }
+                        ],
+                        "buildBehavior": {
+                            "type": "sync",
+                            "accumulativeConfig": null
+                        },
+                        "tupleTransformations": [],
+                        "hidden": false,
+                        "vTag": "e4f085c2-59f2-45aa-9489-5877a7f7795a",
+                        "configOptions": {},
+                        "description": null,
+                        "tags": null
+                    }
+                ]
+            },
+            "connection": null
+        },
+        {
+            "oid": "a68229d7-7a0b-4887-b5ad-bc273fbff34c",
+            "fullname": "custom-a68229d7-7a0b-4887-b5ad-bc273fbff34c",
+            "type": "custom",
+            "name": "custom-a68229d7-7a0b-4887-b5ad-bc273fbff34c",
+            "modelingTransformations": [],
+            "schema": {
+                "tables": [
+                    {
+                        "oid": "6789a165-16d4-451d-aef0-93183baa0f59",
+                        "id": "Fact_2",
+                        "name": "Fact_2",
+                        "type": "custom",
+                        "expression": {
+                            "oid": "12f2e7be-7563-4dcf-82f1-a324c61c0c56",
+                            "expression": "SELECT CREATEDATE(2020,01,01) as DATE2, 1 as num2,'a' as str2\nUNION ALL\nSELECT CREATEDATE(2020,01,02), 2, 'b'\nUNION ALL\nSELECT CREATEDATE(2020,01,03), 3, 'c'\nUNION ALL\nSELECT CREATEDATE(2020,01,04), 4, 'a'\nUNION ALL\nSELECT CREATEDATE(2020,01,05), 5, 'b'\nUNION ALL\nSELECT CREATEDATE(2020,01,06), 6, 'c'\n"
+                        },
+                        "columns": [
+                            {
+                                "oid": "c833dacc-d422-46b7-ada3-a8bc117b33d8",
+                                "id": "DATE2",
+                                "name": "DATE2",
+                                "type": 19,
+                                "size": 0,
+                                "precision": 0,
+                                "scale": 0,
+                                "hidden": false,
+                                "indexed": false,
+                                "description": null
+                            },
+                            {
+                                "oid": "e15175c0-ae52-41ac-bcf4-f6ae8520ff16",
+                                "id": "num2",
+                                "name": "num2",
+                                "type": 8,
+                                "size": 0,
+                                "precision": 0,
+                                "scale": 0,
+                                "hidden": false,
+                                "indexed": false,
+                                "description": null
+                            },
+                            {
+                                "oid": "d6aa3de4-816a-4f17-9dd5-35434baf0e18",
+                                "id": "str2",
+                                "name": "str2",
+                                "type": 18,
+                                "size": 65536,
+                                "precision": 0,
+                                "scale": 0,
+                                "hidden": false,
+                                "indexed": true,
+                                "description": null
+                            }
+                        ],
+                        "buildBehavior": {
+                            "type": "sync",
+                            "accumulativeConfig": null
+                        },
+                        "tupleTransformations": [],
+                        "hidden": false,
+                        "vTag": "47e36eec-2ca9-4d90-b3c8-f6209014e249",
+                        "configOptions": {},
+                        "description": null,
+                        "tags": null
+                    }
+                ]
+            },
+            "connection": null
+        }
+    ]
+}

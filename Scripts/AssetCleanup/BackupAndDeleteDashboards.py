@@ -25,8 +25,8 @@ lines = []
 for line in dash_list:
     dashboard = py_client.get_dashboard_by_id(line.strip(), admin_access=True)
     if backup_dashboards:
-        lines.append("{},{},{}\n".format(dashboard.get_id(), dashboard.get_title(), dashboard.get_owner().get_email()))
-        dashboard.export_to_dash(path='{}{}.dash'.format(path_to_backup, dashboard.get_id()), admin_access=True)
+        lines.append("{},{},{}\n".format(dashboard.get_oid(), dashboard.get_title(), dashboard.get_owner().get_email()))
+        dashboard.export_to_dash(path='{}{}.dash'.format(path_to_backup, dashboard.get_oid()), admin_access=True)
     py_client.delete_dashboards(dashboard, admin_access=True)
 
 if backup_dashboards:

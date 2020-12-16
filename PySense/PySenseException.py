@@ -1,3 +1,3 @@
 class PySenseException(Exception):
-    """The Exception returned when the API Fails"""
+    """The Exception returned by PySense, usually for REST API failures"""
     pass

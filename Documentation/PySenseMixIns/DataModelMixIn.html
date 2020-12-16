@@ -47,10 +47,14 @@ class DataModelMixIn:
         If updating an existing data model, no modifications to title will happen.
 
         Args:
-            data_model: The PySense DataModel object to import
-            title: (optional) Title to give the data model
-            target_data_model: (optional) The data model to update.
+            data_model (DataModel): The PySense DataModel object to import
+            title (str): (Optional) Title to give the data model
+            target_data_model (DataModel): (Optional) The data model to update.
+
+        Returns:
+            DataModel: The newly added data model
         &#34;&#34;&#34;
+
         PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;add_data_model&#39;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
@@ -64,7 +68,7 @@ class DataModelMixIn:
     def get_data_models(self, *, title=None, fields=None, sort=None, limit=None, skip=None):
         &#34;&#34;&#34;Gets data model schemas
 
-        Sisense does not support this in Windows
+        Linux Only
 
         If fields is specified, PySense may experience issues.
 
@@ -75,19 +79,17 @@ class DataModelMixIn:
         get_data_models(title=&#39;PySense&#39;)
 
         Args:
-            title: (optional) Datamodel Title to search for
-            fields: (optional) A whitelist of fields to return for each object in the response.
-            sort: (optional) A field by which the results should be sorted.
+            title (str): (Optional) Datamodel Title to search for
+            fields (list[str]): (Optional) A whitelist of fields to return for each object in the response.
+            sort (str): (Optional) A field by which the results should be sorted.
                 Results will be sorted in ascending order by default, or descending if the field name is prefixed by -.
-            limit: (optional) Number of results to be returned from the data set.
+            limit (int): (Optional) Number of results to be returned from the data set.
                 This field must be used with the skip parameter, and is intended for paging.
-            skip: (optional) Number of results to skip from the start of the data set.
+            skip (int): (Optional) Number of results to skip from the start of the data set.
                 This parameter must be used with the limit parameter, and is intended for paging.
 
         Returns:
-            If title is specified, a single data model will be returned if a matching data model is found,
-            otherwise None
-            If title is not specified an array will be returned.
+            list[DataModel]: The data models found
 
         &#34;&#34;&#34;
         PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;get_data_models&#39;)
@@ -103,7 +105,7 @@ class DataModelMixIn:
         data_models = self.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/schema&#39;, query_params=query_params)
         if title is not None:
             if data_models is not None and len(data_models) &gt; 0:
-                return PySenseDataModel.DataModel(self, data_models)
+                return [PySenseDataModel.DataModel(self, data_models)]
             else:
                 return None
         else:
@@ -140,8 +142,8 @@ class DataModelMixIn:
 
         Args:
             path: The path to the schema smodel file
-            title: (optional) Title to give the data model
-            target_data_model: (optional) The data model to update.
+            title: (Optional) Title to give the data model
+            target_data_model: (Optional) The data model to update.
         &#34;&#34;&#34;
         PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
 
@@ -156,26 +158,26 @@ class DataModelMixIn:
     def import_sdata(self, path, *, title=None, target_data_model=None):
         &#34;&#34;&#34;Import sdata file from path
 
-                Linux only
+        Linux only
 
-                Can be used to update an existing data model by adding it to target data model.
+        Can be used to update an existing data model by adding it to target data model.
 
-                To add a new model with a new title
-                import_sdata(path, title=&#39;New Title&#39;)
+        To add a new model with a new title
+        import_sdata(path, title=&#39;New Title&#39;)
 
-                To update an existing model
-                import_sdata(path, target_data_model=old_data_model)
+        To update an existing model
+        import_sdata(path, target_data_model=old_data_model)
 
-                If updating an existing data model, no modifications to title will happen.
+        If updating an existing data model, no modifications to title will happen.
 
-                This method sometimes throws 500 errors.
-                If it does, try the file from UI to verify it is a PySense issue or a Sisense issue
+        This method sometimes throws 500 errors.
+        If it does, try the file from UI to verify it is a PySense issue or a Sisense issue
 
-                Args:
-                    path: The path to the schema smodel file
-                    title: (optional) Title to give the data model
-                    target_data_model: (optional) The data model to update.
-                &#34;&#34;&#34;
+        Args:
+            path: The path to the schema smodel file
+            title: (Optional) Title to give the data model
+            target_data_model: (Optional) The data model to update.
+        &#34;&#34;&#34;
         PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
@@ -223,10 +225,14 @@ class DataModelMixIn:
         If updating an existing data model, no modifications to title will happen.
 
         Args:
-            data_model: The PySense DataModel object to import
-            title: (optional) Title to give the data model
-            target_data_model: (optional) The data model to update.
+            data_model (DataModel): The PySense DataModel object to import
+            title (str): (Optional) Title to give the data model
+            target_data_model (DataModel): (Optional) The data model to update.
+
+        Returns:
+            DataModel: The newly added data model
         &#34;&#34;&#34;
+
         PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;add_data_model&#39;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
@@ -240,7 +246,7 @@ class DataModelMixIn:
     def get_data_models(self, *, title=None, fields=None, sort=None, limit=None, skip=None):
         &#34;&#34;&#34;Gets data model schemas
 
-        Sisense does not support this in Windows
+        Linux Only
 
         If fields is specified, PySense may experience issues.
 
@@ -251,19 +257,17 @@ class DataModelMixIn:
         get_data_models(title=&#39;PySense&#39;)
 
         Args:
-            title: (optional) Datamodel Title to search for
-            fields: (optional) A whitelist of fields to return for each object in the response.
-            sort: (optional) A field by which the results should be sorted.
+            title (str): (Optional) Datamodel Title to search for
+            fields (list[str]): (Optional) A whitelist of fields to return for each object in the response.
+            sort (str): (Optional) A field by which the results should be sorted.
                 Results will be sorted in ascending order by default, or descending if the field name is prefixed by -.
-            limit: (optional) Number of results to be returned from the data set.
+            limit (int): (Optional) Number of results to be returned from the data set.
                 This field must be used with the skip parameter, and is intended for paging.
-            skip: (optional) Number of results to skip from the start of the data set.
+            skip (int): (Optional) Number of results to skip from the start of the data set.
                 This parameter must be used with the limit parameter, and is intended for paging.
 
         Returns:
-            If title is specified, a single data model will be returned if a matching data model is found,
-            otherwise None
-            If title is not specified an array will be returned.
+            list[DataModel]: The data models found
 
         &#34;&#34;&#34;
         PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;get_data_models&#39;)
@@ -279,7 +283,7 @@ class DataModelMixIn:
         data_models = self.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/schema&#39;, query_params=query_params)
         if title is not None:
             if data_models is not None and len(data_models) &gt; 0:
-                return PySenseDataModel.DataModel(self, data_models)
+                return [PySenseDataModel.DataModel(self, data_models)]
             else:
                 return None
         else:
@@ -316,8 +320,8 @@ class DataModelMixIn:
 
         Args:
             path: The path to the schema smodel file
-            title: (optional) Title to give the data model
-            target_data_model: (optional) The data model to update.
+            title: (Optional) Title to give the data model
+            target_data_model: (Optional) The data model to update.
         &#34;&#34;&#34;
         PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
 
@@ -332,26 +336,26 @@ class DataModelMixIn:
     def import_sdata(self, path, *, title=None, target_data_model=None):
         &#34;&#34;&#34;Import sdata file from path
 
-                Linux only
+        Linux only
 
-                Can be used to update an existing data model by adding it to target data model.
+        Can be used to update an existing data model by adding it to target data model.
 
-                To add a new model with a new title
-                import_sdata(path, title=&#39;New Title&#39;)
+        To add a new model with a new title
+        import_sdata(path, title=&#39;New Title&#39;)
 
-                To update an existing model
-                import_sdata(path, target_data_model=old_data_model)
+        To update an existing model
+        import_sdata(path, target_data_model=old_data_model)
 
-                If updating an existing data model, no modifications to title will happen.
+        If updating an existing data model, no modifications to title will happen.
 
-                This method sometimes throws 500 errors.
-                If it does, try the file from UI to verify it is a PySense issue or a Sisense issue
+        This method sometimes throws 500 errors.
+        If it does, try the file from UI to verify it is a PySense issue or a Sisense issue
 
-                Args:
-                    path: The path to the schema smodel file
-                    title: (optional) Title to give the data model
-                    target_data_model: (optional) The data model to update.
-                &#34;&#34;&#34;
+        Args:
+            path: The path to the schema smodel file
+            title: (Optional) Title to give the data model
+            target_data_model: (Optional) The data model to update.
+        &#34;&#34;&#34;
         PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
 
         target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
@@ -382,12 +386,17 @@ add_data_model(new_data_model, target_data_model=old_data_model)</p>
 <p>If updating an existing data model, no modifications to title will happen.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>data_model</code></strong></dt>
+<dt><strong><code>data_model</code></strong> :&ensp;<code>DataModel</code></dt>
 <dd>The PySense DataModel object to import</dd>
-<dt><strong><code>title</code></strong></dt>
-<dd>(optional) Title to give the data model</dd>
-<dt><strong><code>target_data_model</code></strong></dt>
-<dd>(optional) The data model to update.</dd>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Title to give the data model</dd>
+<dt><strong><code>target_data_model</code></strong> :&ensp;<code>DataModel</code></dt>
+<dd>(Optional) The data model to update.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>DataModel</code></dt>
+<dd>The newly added data model</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -409,10 +418,14 @@ add_data_model(new_data_model, target_data_model=old_data_model)</p>
     If updating an existing data model, no modifications to title will happen.
 
     Args:
-        data_model: The PySense DataModel object to import
-        title: (optional) Title to give the data model
-        target_data_model: (optional) The data model to update.
+        data_model (DataModel): The PySense DataModel object to import
+        title (str): (Optional) Title to give the data model
+        target_data_model (DataModel): (Optional) The data model to update.
+
+    Returns:
+        DataModel: The newly added data model
     &#34;&#34;&#34;
+
     PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;add_data_model&#39;)
 
     target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
@@ -455,7 +468,7 @@ add_data_model(new_data_model, target_data_model=old_data_model)</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets data model schemas</p>
-<p>Sisense does not support this in Windows</p>
+<p>Linux Only</p>
 <p>If fields is specified, PySense may experience issues.</p>
 <p>To get all data models:
 get_data_models()</p>
@@ -463,24 +476,25 @@ get_data_models()</p>
 get_data_models(title='PySense')</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>title</code></strong></dt>
-<dd>(optional) Datamodel Title to search for</dd>
-<dt><strong><code>fields</code></strong></dt>
-<dd>(optional) A whitelist of fields to return for each object in the response.</dd>
-<dt><strong><code>sort</code></strong></dt>
-<dd>(optional) A field by which the results should be sorted.
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Datamodel Title to search for</dd>
+<dt><strong><code>fields</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>(Optional) A whitelist of fields to return for each object in the response.</dd>
+<dt><strong><code>sort</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) A field by which the results should be sorted.
 Results will be sorted in ascending order by default, or descending if the field name is prefixed by -.</dd>
-<dt><strong><code>limit</code></strong></dt>
-<dd>(optional) Number of results to be returned from the data set.
+<dt><strong><code>limit</code></strong> :&ensp;<code>int</code></dt>
+<dd>(Optional) Number of results to be returned from the data set.
 This field must be used with the skip parameter, and is intended for paging.</dd>
-<dt><strong><code>skip</code></strong></dt>
-<dd>(optional) Number of results to skip from the start of the data set.
+<dt><strong><code>skip</code></strong> :&ensp;<code>int</code></dt>
+<dd>(Optional) Number of results to skip from the start of the data set.
 This parameter must be used with the limit parameter, and is intended for paging.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>If title is specified, a single data model will be returned if a matching data model is found,
-otherwise None
-If title is not specified an array will be returned.</p></div>
+<dl>
+<dt><code>list[DataModel]</code></dt>
+<dd>The data models found</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -488,7 +502,7 @@ If title is not specified an array will be returned.</p></div>
 <pre><code class="python">def get_data_models(self, *, title=None, fields=None, sort=None, limit=None, skip=None):
     &#34;&#34;&#34;Gets data model schemas
 
-    Sisense does not support this in Windows
+    Linux Only
 
     If fields is specified, PySense may experience issues.
 
@@ -499,19 +513,17 @@ If title is not specified an array will be returned.</p></div>
     get_data_models(title=&#39;PySense&#39;)
 
     Args:
-        title: (optional) Datamodel Title to search for
-        fields: (optional) A whitelist of fields to return for each object in the response.
-        sort: (optional) A field by which the results should be sorted.
+        title (str): (Optional) Datamodel Title to search for
+        fields (list[str]): (Optional) A whitelist of fields to return for each object in the response.
+        sort (str): (Optional) A field by which the results should be sorted.
             Results will be sorted in ascending order by default, or descending if the field name is prefixed by -.
-        limit: (optional) Number of results to be returned from the data set.
+        limit (int): (Optional) Number of results to be returned from the data set.
             This field must be used with the skip parameter, and is intended for paging.
-        skip: (optional) Number of results to skip from the start of the data set.
+        skip (int): (Optional) Number of results to skip from the start of the data set.
             This parameter must be used with the limit parameter, and is intended for paging.
 
     Returns:
-        If title is specified, a single data model will be returned if a matching data model is found,
-        otherwise None
-        If title is not specified an array will be returned.
+        list[DataModel]: The data models found
 
     &#34;&#34;&#34;
     PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;get_data_models&#39;)
@@ -527,7 +539,7 @@ If title is not specified an array will be returned.</p></div>
     data_models = self.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/schema&#39;, query_params=query_params)
     if title is not None:
         if data_models is not None and len(data_models) &gt; 0:
-            return PySenseDataModel.DataModel(self, data_models)
+            return [PySenseDataModel.DataModel(self, data_models)]
         else:
             return None
     else:
@@ -554,9 +566,9 @@ import_schema(path, target_data_model=old_data_model)</p>
 <dt><strong><code>path</code></strong></dt>
 <dd>The path to the schema smodel file</dd>
 <dt><strong><code>title</code></strong></dt>
-<dd>(optional) Title to give the data model</dd>
+<dd>(Optional) Title to give the data model</dd>
 <dt><strong><code>target_data_model</code></strong></dt>
-<dd>(optional) The data model to update.</dd>
+<dd>(Optional) The data model to update.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -579,8 +591,8 @@ import_schema(path, target_data_model=old_data_model)</p>
 
     Args:
         path: The path to the schema smodel file
-        title: (optional) Title to give the data model
-        target_data_model: (optional) The data model to update.
+        title: (Optional) Title to give the data model
+        target_data_model: (Optional) The data model to update.
     &#34;&#34;&#34;
     PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
 
@@ -612,9 +624,9 @@ If it does, try the file from UI to verify it is a PySense issue or a Sisense is
 <dt><strong><code>path</code></strong></dt>
 <dd>The path to the schema smodel file</dd>
 <dt><strong><code>title</code></strong></dt>
-<dd>(optional) Title to give the data model</dd>
+<dd>(Optional) Title to give the data model</dd>
 <dt><strong><code>target_data_model</code></strong></dt>
-<dd>(optional) The data model to update.</dd>
+<dd>(Optional) The data model to update.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -623,26 +635,26 @@ If it does, try the file from UI to verify it is a PySense issue or a Sisense is
 <pre><code class="python">def import_sdata(self, path, *, title=None, target_data_model=None):
     &#34;&#34;&#34;Import sdata file from path
 
-            Linux only
+    Linux only
 
-            Can be used to update an existing data model by adding it to target data model.
+    Can be used to update an existing data model by adding it to target data model.
 
-            To add a new model with a new title
-            import_sdata(path, title=&#39;New Title&#39;)
+    To add a new model with a new title
+    import_sdata(path, title=&#39;New Title&#39;)
 
-            To update an existing model
-            import_sdata(path, target_data_model=old_data_model)
+    To update an existing model
+    import_sdata(path, target_data_model=old_data_model)
 
-            If updating an existing data model, no modifications to title will happen.
+    If updating an existing data model, no modifications to title will happen.
 
-            This method sometimes throws 500 errors.
-            If it does, try the file from UI to verify it is a PySense issue or a Sisense issue
+    This method sometimes throws 500 errors.
+    If it does, try the file from UI to verify it is a PySense issue or a Sisense issue
 
-            Args:
-                path: The path to the schema smodel file
-                title: (optional) Title to give the data model
-                target_data_model: (optional) The data model to update.
-            &#34;&#34;&#34;
+    Args:
+        path: The path to the schema smodel file
+        title: (Optional) Title to give the data model
+        target_data_model: (Optional) The data model to update.
+    &#34;&#34;&#34;
     PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, &#39;import_schema&#39;)
 
     target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None

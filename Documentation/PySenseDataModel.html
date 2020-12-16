@@ -26,43 +26,54 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PySense import PySenseBuildTask
-from PySense import PySenseDataSet
-from PySense import PySenseException
-from PySense import PySenseUtils
-from PySense import SisenseVersion
+<pre><code class="python">from PySense import PySenseBuildTask, PySenseDataSet, PySenseException, PySenseUtils, SisenseVersion
 
 
 class DataModel:
+    &#34;&#34;&#34;A Data Model
+
+    A data model can represent either an Elasticube or a live model.
+    Each data model has 0 to many data sets which define the tables in the data model
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, data_model_json):
-        self._py_client = py_client
-        self._data_model_json = data_model_json
-        self._schema_json = None
-        if py_client.version == SisenseVersion.Version.LINUX:
-            self._schema_json = self.get_schema_json()
+        &#34;&#34;&#34;
 
-    def get_json(self):
-        &#34;&#34;&#34;Returns the data model&#39;s JSON&#34;&#34;&#34;
-        return self._data_model_json
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            data_model_json (JSON): The json for this object
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
+        self.json = data_model_json
 
     def get_title(self):
         &#34;&#34;&#34;Returns the data models title&#34;&#34;&#34;
-        return self._data_model_json[&#39;title&#39;]
+
+        return self.json[&#39;title&#39;]
 
     def get_oid(self):
         &#34;&#34;&#34;Returns the data models oid&#34;&#34;&#34;
-        return self._data_model_json[&#39;oid&#39;]
+
+        return self.json[&#39;oid&#39;]
 
     def get_data_sets(self, *, source=None):
         &#34;&#34;&#34;Returns the data sets for the model
 
         Args:
-            - (Optional) source: The source of the dataset to filter by (Examples: CSV, SQL)
+            source (str): (Optional) The source of the dataset to filter by (Examples: CSV, SQL)
+
+        Returns:
+            list[DataSet]: The data sets in the model
         &#34;&#34;&#34;
+
         ret_arr = []
-        for data_set_json in self._data_model_json[&#39;datasets&#39;]:
-            data_set = PySenseDataSet.DataSet(self._py_client, data_set_json, self)
+        for data_set_json in self.json[&#39;datasets&#39;]:
+            data_set = PySenseDataSet.DataSet(self.py_client, data_set_json, self)
             if source is not None:
                 if source.lower() == data_set.get_source():
                     ret_arr.append(data_set)
@@ -70,29 +81,19 @@ class DataModel:
                 ret_arr.append(data_set)
         return ret_arr
 
-    def get_schema_json(self):
-        &#34;&#34;&#34;Returns the schema json. Linux Only&#34;&#34;&#34;
-        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;get_schema_json&#39;)
-
-        if self._schema_json is None:
-            query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
-            schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;,
-                                                              query_params=query_params)
-            self._schema_json = schema_json
-        return self._schema_json
-
     def start_build(self, build_type, *, row_limit=None):
-        &#34;&#34;&#34; Initiates a build of the data model
+        &#34;&#34;&#34;Initiates a build of the data model
 
         Only supported on Linux
 
         Args:
-            - build_type: Type of build (schema_changes, by_table, full, publish)
-            - (Optional) row_limit: Number of rows to build
+            build_type (str): Type of build (schema_changes, by_table, full, publish)
+            row_limit (int): (Optional) Number of rows to build
         Returns:
-            A BuildTask object
+            BuildTask: The build task object for the build
         &#34;&#34;&#34;
-        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;start_build&#39;)
+
+        PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;start_build&#39;)
 
         build_type = build_type.lower()
         if build_type not in [&#39;schema_changes&#39;, &#39;by_table&#39;, &#39;full&#39;, &#39;publish&#39;]:
@@ -105,69 +106,69 @@ class DataModel:
         if row_limit is not None:
             json_payload[&#39;rowLimit&#39;] = row_limit
 
-        resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v2/builds&#39;,
-                                                        json_payload=json_payload)
+        resp_json = self.py_client.connector.rest_call(&#39;post&#39;, &#39;api/v2/builds&#39;,
+                                                       json_payload=json_payload)
 
-        return PySenseBuildTask.BuildTask(self._py_client, resp_json)
+        return PySenseBuildTask.BuildTask(self.py_client, resp_json)
 
     def cancel_build(self):
-        &#34;&#34;&#34; Cancels all builds for datamodel
+        &#34;&#34;&#34; Cancels all builds for data model
 
         Only supported on Linux
-
-        Args:
-            - build_type: Type of build (schema_changes, by_table, full, publish)
-            - (Optional) row_limit: Number of rows to build
-        Returns:
-            A BuildTask object
         &#34;&#34;&#34;
-        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;cancel_build&#39;)
+
+        PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;cancel_build&#39;)
 
         query_params = {
             &#39;datamodelId&#39;: self.get_oid()
         }
 
-        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)
+        self.py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)
 
     def export_to_smodel(self, path):
-        &#34;&#34;&#34;Download datamodel as an smodel file.
+        &#34;&#34;&#34;Download data model as an smodel file.
 
         Only supported on Linux
 
         Args:
-            path: Path to save location of the smodel file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
+            path (str): Path to save location of the smodel file.
 
         Returns:
-            The path of the created file
+            str: The path of the created file
         &#34;&#34;&#34;
-        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;export_to_smodel&#39;)
+
+        PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;export_to_smodel&#39;)
 
         query_params = {
             &#39;datamodelId&#39;: self.get_oid(),
             &#39;type&#39;: &#39;schema-latest&#39;
         }
-        output_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
-                                                          query_params=query_params)
-        return PySenseUtils.dump_json(output_json, path)
+        self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
+                                           query_params=query_params, path=path)
+
+        return path
 
     def export_to_sdata(self, path):
-        &#34;&#34;&#34;Download datamodel as an sdata file.
+        &#34;&#34;&#34;Download data model as an sdata file.
 
         Only supported on Linux
 
         Args:
-            path: Path to save location of the sdata file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
+            path (str): Path to save location of the sdata file.
 
         Returns:
-            None
+            str: The path of the created file
         &#34;&#34;&#34;
-        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;export_to_sdata&#39;)
+
+        PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;export_to_sdata&#39;)
 
         query_params = {
             &#39;datamodelId&#39;: self.get_oid()
         }
-        self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
-                                            query_params=query_params, path=path)</code></pre>
+        self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
+                                           query_params=query_params, path=path, raw=True)
+
+        return path</code></pre>
 </details>
 </section>
 <section>
@@ -184,41 +185,72 @@ class DataModel:
 <span>(</span><span>py_client, data_model_json)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>A Data Model</p>
+<p>A data model can represent either an Elasticube or a live model.
+Each data model has 0 to many data sets which define the tables in the data model</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The JSON for this object</dd>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The connection to the Sisense server which owns this asset</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The PySense object for the server this asset belongs to</dd>
+<dt><strong><code>data_model_json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The json for this object</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class DataModel:
+    &#34;&#34;&#34;A Data Model
+
+    A data model can represent either an Elasticube or a live model.
+    Each data model has 0 to many data sets which define the tables in the data model
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, data_model_json):
-        self._py_client = py_client
-        self._data_model_json = data_model_json
-        self._schema_json = None
-        if py_client.version == SisenseVersion.Version.LINUX:
-            self._schema_json = self.get_schema_json()
+        &#34;&#34;&#34;
 
-    def get_json(self):
-        &#34;&#34;&#34;Returns the data model&#39;s JSON&#34;&#34;&#34;
-        return self._data_model_json
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            data_model_json (JSON): The json for this object
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
+        self.json = data_model_json
 
     def get_title(self):
         &#34;&#34;&#34;Returns the data models title&#34;&#34;&#34;
-        return self._data_model_json[&#39;title&#39;]
+
+        return self.json[&#39;title&#39;]
 
     def get_oid(self):
         &#34;&#34;&#34;Returns the data models oid&#34;&#34;&#34;
-        return self._data_model_json[&#39;oid&#39;]
+
+        return self.json[&#39;oid&#39;]
 
     def get_data_sets(self, *, source=None):
         &#34;&#34;&#34;Returns the data sets for the model
 
         Args:
-            - (Optional) source: The source of the dataset to filter by (Examples: CSV, SQL)
+            source (str): (Optional) The source of the dataset to filter by (Examples: CSV, SQL)
+
+        Returns:
+            list[DataSet]: The data sets in the model
         &#34;&#34;&#34;
+
         ret_arr = []
-        for data_set_json in self._data_model_json[&#39;datasets&#39;]:
-            data_set = PySenseDataSet.DataSet(self._py_client, data_set_json, self)
+        for data_set_json in self.json[&#39;datasets&#39;]:
+            data_set = PySenseDataSet.DataSet(self.py_client, data_set_json, self)
             if source is not None:
                 if source.lower() == data_set.get_source():
                     ret_arr.append(data_set)
@@ -226,29 +258,19 @@ class DataModel:
                 ret_arr.append(data_set)
         return ret_arr
 
-    def get_schema_json(self):
-        &#34;&#34;&#34;Returns the schema json. Linux Only&#34;&#34;&#34;
-        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;get_schema_json&#39;)
-
-        if self._schema_json is None:
-            query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
-            schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;,
-                                                              query_params=query_params)
-            self._schema_json = schema_json
-        return self._schema_json
-
     def start_build(self, build_type, *, row_limit=None):
-        &#34;&#34;&#34; Initiates a build of the data model
+        &#34;&#34;&#34;Initiates a build of the data model
 
         Only supported on Linux
 
         Args:
-            - build_type: Type of build (schema_changes, by_table, full, publish)
-            - (Optional) row_limit: Number of rows to build
+            build_type (str): Type of build (schema_changes, by_table, full, publish)
+            row_limit (int): (Optional) Number of rows to build
         Returns:
-            A BuildTask object
+            BuildTask: The build task object for the build
         &#34;&#34;&#34;
-        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;start_build&#39;)
+
+        PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;start_build&#39;)
 
         build_type = build_type.lower()
         if build_type not in [&#39;schema_changes&#39;, &#39;by_table&#39;, &#39;full&#39;, &#39;publish&#39;]:
@@ -261,69 +283,69 @@ class DataModel:
         if row_limit is not None:
             json_payload[&#39;rowLimit&#39;] = row_limit
 
-        resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v2/builds&#39;,
-                                                        json_payload=json_payload)
+        resp_json = self.py_client.connector.rest_call(&#39;post&#39;, &#39;api/v2/builds&#39;,
+                                                       json_payload=json_payload)
 
-        return PySenseBuildTask.BuildTask(self._py_client, resp_json)
+        return PySenseBuildTask.BuildTask(self.py_client, resp_json)
 
     def cancel_build(self):
-        &#34;&#34;&#34; Cancels all builds for datamodel
+        &#34;&#34;&#34; Cancels all builds for data model
 
         Only supported on Linux
-
-        Args:
-            - build_type: Type of build (schema_changes, by_table, full, publish)
-            - (Optional) row_limit: Number of rows to build
-        Returns:
-            A BuildTask object
         &#34;&#34;&#34;
-        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;cancel_build&#39;)
+
+        PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;cancel_build&#39;)
 
         query_params = {
             &#39;datamodelId&#39;: self.get_oid()
         }
 
-        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)
+        self.py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)
 
     def export_to_smodel(self, path):
-        &#34;&#34;&#34;Download datamodel as an smodel file.
+        &#34;&#34;&#34;Download data model as an smodel file.
 
         Only supported on Linux
 
         Args:
-            path: Path to save location of the smodel file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
+            path (str): Path to save location of the smodel file.
 
         Returns:
-            The path of the created file
+            str: The path of the created file
         &#34;&#34;&#34;
-        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;export_to_smodel&#39;)
+
+        PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;export_to_smodel&#39;)
 
         query_params = {
             &#39;datamodelId&#39;: self.get_oid(),
             &#39;type&#39;: &#39;schema-latest&#39;
         }
-        output_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
-                                                          query_params=query_params)
-        return PySenseUtils.dump_json(output_json, path)
+        self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
+                                           query_params=query_params, path=path)
+
+        return path
 
     def export_to_sdata(self, path):
-        &#34;&#34;&#34;Download datamodel as an sdata file.
+        &#34;&#34;&#34;Download data model as an sdata file.
 
         Only supported on Linux
 
         Args:
-            path: Path to save location of the sdata file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
+            path (str): Path to save location of the sdata file.
 
         Returns:
-            None
+            str: The path of the created file
         &#34;&#34;&#34;
-        PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;export_to_sdata&#39;)
+
+        PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;export_to_sdata&#39;)
 
         query_params = {
             &#39;datamodelId&#39;: self.get_oid()
         }
-        self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
-                                            query_params=query_params, path=path)</code></pre>
+        self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
+                                           query_params=query_params, path=path, raw=True)
+
+        return path</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -331,113 +353,112 @@ class DataModel:
 <span>def <span class="ident">cancel_build</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Cancels all builds for datamodel</p>
-<p>Only supported on Linux</p>
-<h2 id="args">Args</h2>
-<ul>
-<li>build_type: Type of build (schema_changes, by_table, full, publish)</li>
-<li>(Optional) row_limit: Number of rows to build</li>
-</ul>
-<h2 id="returns">Returns</h2>
-<p>A BuildTask object</p></div>
+<div class="desc"><p>Cancels all builds for data model</p>
+<p>Only supported on Linux</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def cancel_build(self):
-    &#34;&#34;&#34; Cancels all builds for datamodel
+    &#34;&#34;&#34; Cancels all builds for data model
 
     Only supported on Linux
-
-    Args:
-        - build_type: Type of build (schema_changes, by_table, full, publish)
-        - (Optional) row_limit: Number of rows to build
-    Returns:
-        A BuildTask object
     &#34;&#34;&#34;
-    PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;cancel_build&#39;)
+
+    PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;cancel_build&#39;)
 
     query_params = {
         &#39;datamodelId&#39;: self.get_oid()
     }
 
-    self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)</code></pre>
+    self.py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds&#39;, query_params=query_params)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataModel.DataModel.export_to_sdata"><code class="name flex">
 <span>def <span class="ident">export_to_sdata</span></span>(<span>self, path)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Download datamodel as an sdata file.</p>
+<div class="desc"><p>Download data model as an sdata file.</p>
 <p>Only supported on Linux</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>path</code></strong></dt>
-<dd>Path to save location of the sdata file. Ex: 'C:\Backups\mydatamodel.smodel'</dd>
+<dt><strong><code>path</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to save location of the sdata file.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>None</p></div>
+<dl>
+<dt><code>str</code></dt>
+<dd>The path of the created file</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def export_to_sdata(self, path):
-    &#34;&#34;&#34;Download datamodel as an sdata file.
+    &#34;&#34;&#34;Download data model as an sdata file.
 
     Only supported on Linux
 
     Args:
-        path: Path to save location of the sdata file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
+        path (str): Path to save location of the sdata file.
 
     Returns:
-        None
+        str: The path of the created file
     &#34;&#34;&#34;
-    PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;export_to_sdata&#39;)
+
+    PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;export_to_sdata&#39;)
 
     query_params = {
         &#39;datamodelId&#39;: self.get_oid()
     }
-    self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
-                                        query_params=query_params, path=path)</code></pre>
+    self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
+                                       query_params=query_params, path=path, raw=True)
+
+    return path</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataModel.DataModel.export_to_smodel"><code class="name flex">
 <span>def <span class="ident">export_to_smodel</span></span>(<span>self, path)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Download datamodel as an smodel file.</p>
+<div class="desc"><p>Download data model as an smodel file.</p>
 <p>Only supported on Linux</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>path</code></strong></dt>
-<dd>Path to save location of the smodel file. Ex: 'C:\Backups\mydatamodel.smodel'</dd>
+<dt><strong><code>path</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to save location of the smodel file.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>The path of the created file</p></div>
+<dl>
+<dt><code>str</code></dt>
+<dd>The path of the created file</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def export_to_smodel(self, path):
-    &#34;&#34;&#34;Download datamodel as an smodel file.
+    &#34;&#34;&#34;Download data model as an smodel file.
 
     Only supported on Linux
 
     Args:
-        path: Path to save location of the smodel file. Ex: &#39;C:\\Backups\\mydatamodel.smodel&#39;
+        path (str): Path to save location of the smodel file.
 
     Returns:
-        The path of the created file
+        str: The path of the created file
     &#34;&#34;&#34;
-    PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;export_to_smodel&#39;)
+
+    PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;export_to_smodel&#39;)
 
     query_params = {
         &#39;datamodelId&#39;: self.get_oid(),
         &#39;type&#39;: &#39;schema-latest&#39;
     }
-    output_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
-                                                      query_params=query_params)
-    return PySenseUtils.dump_json(output_json, path)</code></pre>
+    self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
+                                       query_params=query_params, path=path)
+
+    return path</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataModel.DataModel.get_data_sets"><code class="name flex">
@@ -446,9 +467,15 @@ class DataModel:
 <dd>
 <div class="desc"><p>Returns the data sets for the model</p>
 <h2 id="args">Args</h2>
-<ul>
-<li>(Optional) source: The source of the dataset to filter by (Examples: CSV, SQL)</li>
-</ul></div>
+<dl>
+<dt><strong><code>source</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) The source of the dataset to filter by (Examples: CSV, SQL)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list[DataSet]</code></dt>
+<dd>The data sets in the model</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -457,31 +484,21 @@ class DataModel:
     &#34;&#34;&#34;Returns the data sets for the model
 
     Args:
-        - (Optional) source: The source of the dataset to filter by (Examples: CSV, SQL)
+        source (str): (Optional) The source of the dataset to filter by (Examples: CSV, SQL)
+
+    Returns:
+        list[DataSet]: The data sets in the model
     &#34;&#34;&#34;
+
     ret_arr = []
-    for data_set_json in self._data_model_json[&#39;datasets&#39;]:
-        data_set = PySenseDataSet.DataSet(self._py_client, data_set_json, self)
+    for data_set_json in self.json[&#39;datasets&#39;]:
+        data_set = PySenseDataSet.DataSet(self.py_client, data_set_json, self)
         if source is not None:
             if source.lower() == data_set.get_source():
                 ret_arr.append(data_set)
         else:
             ret_arr.append(data_set)
     return ret_arr</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseDataModel.DataModel.get_json"><code class="name flex">
-<span>def <span class="ident">get_json</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the data model's JSON</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_json(self):
-    &#34;&#34;&#34;Returns the data model&#39;s JSON&#34;&#34;&#34;
-    return self._data_model_json</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataModel.DataModel.get_oid"><code class="name flex">
@@ -495,28 +512,8 @@ class DataModel:
 </summary>
 <pre><code class="python">def get_oid(self):
     &#34;&#34;&#34;Returns the data models oid&#34;&#34;&#34;
-    return self._data_model_json[&#39;oid&#39;]</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseDataModel.DataModel.get_schema_json"><code class="name flex">
-<span>def <span class="ident">get_schema_json</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the schema json. Linux Only</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_schema_json(self):
-    &#34;&#34;&#34;Returns the schema json. Linux Only&#34;&#34;&#34;
-    PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;get_schema_json&#39;)
 
-    if self._schema_json is None:
-        query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
-        schema_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;,
-                                                          query_params=query_params)
-        self._schema_json = schema_json
-    return self._schema_json</code></pre>
+    return self.json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataModel.DataModel.get_title"><code class="name flex">
@@ -530,7 +527,8 @@ class DataModel:
 </summary>
 <pre><code class="python">def get_title(self):
     &#34;&#34;&#34;Returns the data models title&#34;&#34;&#34;
-    return self._data_model_json[&#39;title&#39;]</code></pre>
+
+    return self.json[&#39;title&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataModel.DataModel.start_build"><code class="name flex">
@@ -540,28 +538,34 @@ class DataModel:
 <div class="desc"><p>Initiates a build of the data model</p>
 <p>Only supported on Linux</p>
 <h2 id="args">Args</h2>
-<ul>
-<li>build_type: Type of build (schema_changes, by_table, full, publish)</li>
-<li>(Optional) row_limit: Number of rows to build</li>
-</ul>
+<dl>
+<dt><strong><code>build_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Type of build (schema_changes, by_table, full, publish)</dd>
+<dt><strong><code>row_limit</code></strong> :&ensp;<code>int</code></dt>
+<dd>(Optional) Number of rows to build</dd>
+</dl>
 <h2 id="returns">Returns</h2>
-<p>A BuildTask object</p></div>
+<dl>
+<dt><code>BuildTask</code></dt>
+<dd>The build task object for the build</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def start_build(self, build_type, *, row_limit=None):
-    &#34;&#34;&#34; Initiates a build of the data model
+    &#34;&#34;&#34;Initiates a build of the data model
 
     Only supported on Linux
 
     Args:
-        - build_type: Type of build (schema_changes, by_table, full, publish)
-        - (Optional) row_limit: Number of rows to build
+        build_type (str): Type of build (schema_changes, by_table, full, publish)
+        row_limit (int): (Optional) Number of rows to build
     Returns:
-        A BuildTask object
+        BuildTask: The build task object for the build
     &#34;&#34;&#34;
-    PySenseUtils.validate_version(self._py_client, SisenseVersion.Version.LINUX, &#39;start_build&#39;)
+
+    PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;start_build&#39;)
 
     build_type = build_type.lower()
     if build_type not in [&#39;schema_changes&#39;, &#39;by_table&#39;, &#39;full&#39;, &#39;publish&#39;]:
@@ -574,10 +578,10 @@ class DataModel:
     if row_limit is not None:
         json_payload[&#39;rowLimit&#39;] = row_limit
 
-    resp_json = self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/v2/builds&#39;,
-                                                    json_payload=json_payload)
+    resp_json = self.py_client.connector.rest_call(&#39;post&#39;, &#39;api/v2/builds&#39;,
+                                                   json_payload=json_payload)
 
-    return PySenseBuildTask.BuildTask(self._py_client, resp_json)</code></pre>
+    return PySenseBuildTask.BuildTask(self.py_client, resp_json)</code></pre>
 </details>
 </dd>
 </dl>
@@ -605,9 +609,7 @@ class DataModel:
 <li><code><a title="PySense.PySenseDataModel.DataModel.export_to_sdata" href="#PySense.PySenseDataModel.DataModel.export_to_sdata">export_to_sdata</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.export_to_smodel" href="#PySense.PySenseDataModel.DataModel.export_to_smodel">export_to_smodel</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_data_sets" href="#PySense.PySenseDataModel.DataModel.get_data_sets">get_data_sets</a></code></li>
-<li><code><a title="PySense.PySenseDataModel.DataModel.get_json" href="#PySense.PySenseDataModel.DataModel.get_json">get_json</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_oid" href="#PySense.PySenseDataModel.DataModel.get_oid">get_oid</a></code></li>
-<li><code><a title="PySense.PySenseDataModel.DataModel.get_schema_json" href="#PySense.PySenseDataModel.DataModel.get_schema_json">get_schema_json</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_title" href="#PySense.PySenseDataModel.DataModel.get_title">get_title</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.start_build" href="#PySense.PySenseDataModel.DataModel.start_build">start_build</a></code></li>
 </ul>

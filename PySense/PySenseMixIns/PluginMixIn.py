@@ -1,4 +1,4 @@
-from PySense import PySenseBloxAction, PySensePlugin
+from PySense import PySenseBloxAction, PySensePlugin, PySenseUtils
 
 
 class PluginMixIn:
@@ -7,16 +7,18 @@ class PluginMixIn:
         """Get all plugins installed.
 
         Args:
-            order_by: (optional) Filter by provided field
-            desc: (optional) Order by descending/ascending (boolean)
-            search: (optional) Filter according to provided string
-            skip: (optional) Number of results to skip from the start of the data set.
+            order_by (str): (Optional) Filter by provided field
+            desc (bool): (Optional) Order by descending/ascending (boolean)
+            search (str): (Optional) Filter according to provided string
+            skip (int): (Optional) Number of results to skip from the start of the data set.
                 Skip is to be used with the limit parameter for paging.
-            limit: (optional) How many results should be returned. limit is to be used with the skip parameter for paging
+            limit (int): (Optional) How many results should be returned.
+                Limit is to be used with the skip parameter for paging
 
         Returns:
-            An array of plugins
+            list[PlugIn]: Found plugins
         """
+
         query_params = {
             'orderby': order_by,
             'desc': desc,
@@ -30,54 +32,64 @@ class PluginMixIn:
             ret_arr.append((PySensePlugin.Plugin(self, plugin)))
         return ret_arr
 
-    def get_blox_action(self, type):
+    def get_blox_action(self, action_type):
         """Returns the blox action with the given type
 
         Args:
-            type: The name of your blox action
+            action_type (str): The name of your blox action
+
+        Returns:
+            BloxAction: The blox action with the given type
         """
+
         json_payload = {
-            "type": type
+            "type": action_type
         }
         resp = self.connector.rest_call('post', 'api/v1/getActionByType/Blox', json_payload=json_payload)
         return PySenseBloxAction.BloxAction(self, resp)
 
-    def create_blox_action(self, type, body, title):
-        """Create a new PySense BloxAction object that can be imported
-
-        Running this method will only create the action locally.
-        The action must still be added to the server via add_blox_action
+    def create_blox_action(self, action_type, body, title):
+        """Create a new PySense BloxAction object and adds it to server
 
         Args:
-            type: What you would like to call your blox action
-            body: The raw javascript of the blox action
-            title: The default text you would want to appear on a button using this action
+            action_type (str): What you would like to call your blox action
+            body (str): The raw javascript of the blox action
+            title (str): The default text you would want to appear on a button using this action
+
+        Returns:
+            BloxAction: The new BloxAction that has been added
         """
+
         action_json = {
-            "type": type,
+            "type": action_type,
             "body": body,
             "snippet": {
-                "type": type,
+                "type": action_type,
                 "title": title
             }
         }
-        return PySenseBloxAction.BloxAction(self, action_json)
+        blox_action = PySenseBloxAction.BloxAction(self, action_json)
+        self.connector.rest_call('post', '/api/v1/saveCustomAction/BloX', json_payload=blox_action.json)
+        return blox_action
 
-    def delete_blox_action(self, action_type):
-        """Deletes the blox action with the given action_type
+    def delete_blox_actions(self, actions):
+        """Deletes the blox actions
 
         Args:
-            action_type: The type (name as it appears in blox) action to delete
+            actions (list[BloxAction]): Actions to delete
         """
-        json_payload = {
-            "type": action_type
-        }
-        self.connector.rest_call('post', 'api/v1/deleteCustomAction/Blox', json_payload=json_payload)
+
+        for action in PySenseUtils.make_iterable(actions):
+            json_payload = {
+                "type": action.get_type()
+            }
+            self.connector.rest_call('post', 'api/v1/deleteCustomAction/Blox', json_payload=json_payload)
 
     def add_blox_action(self, blox_action):
         """Add a new blox custom action
 
         Args:
-           blox_action: The PySense BloxAction object to add. Must be an object, not raw JSON.
+           blox_action (BloxAction): The PySense BloxAction object to add. Must be an object, not raw JSON.
         """
-        self.connector.rest_call('post', '/api/v1/saveCustomAction/BloX', json_payload=blox_action.get_json())
+
+        self.connector.rest_call('post', '/api/v1/saveCustomAction/BloX', json_payload=blox_action.json)

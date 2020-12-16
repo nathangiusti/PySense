@@ -26,70 +26,103 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from PySense import PySenseConnection
-from PySense import PySenseTable
-from PySense import PySenseUtils
+<pre><code class="python">from PySense import PySenseConnection, PySenseTable, PySenseUtils
+
 
 class DataSet:
+    &#34;&#34;&#34;A Data Set
+
+    Each data set has a connector and a connection to one or more tables.
+    A model contains 0 to many data sets.
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisese server which owns this asset
+        data_model (DataModel): The data model this data set belongs to
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, data_set_json, data_model):
-        self._py_client = py_client
-        self._data_set_json = data_set_json
-        self._data_model = data_model
+        &#34;&#34;&#34;
 
-    def get_parent_data_model(self):
-        &#34;&#34;&#34;Returns the data model this data set belongs to as a PySense DataSet&#34;&#34;&#34;
-        return self._data_model
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            data_set_json (JSON): The json for this object
+            data_model (DataModel): The parent data model of the data set
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
+        self.json = data_set_json
+        self.data_model = data_model
 
     def get_oid(self):
         &#34;&#34;&#34;Returns data set oid&#34;&#34;&#34;
-        return self._data_set_json[&#39;oid&#39;]
+
+        return self.json[&#39;oid&#39;]
 
     def get_full_name(self):
         &#34;&#34;&#34;Returns data set full name&#34;&#34;&#34;
-        return self._data_set_json[&#39;fullname&#39;]
+
+        return self.json[&#39;fullname&#39;]
 
     def get_type(self):
         &#34;&#34;&#34;Returns data set type&#34;&#34;&#34;
-        return self._data_set_json[&#39;type&#39;]
+
+        return self.json[&#39;type&#39;]
 
     def get_source(self):
         &#34;&#34;&#34;Returns source of the dataset&#34;&#34;&#34;
+
         return self.get_full_name().split(&#34;:&#34;)[0].lower()
 
     def get_tables(self):
-        &#34;&#34;&#34;Returns the tables&#34;&#34;&#34;
-        resp = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables&#39;
-                                                   .format(self._data_model.get_oid(), self.get_oid()))
+        &#34;&#34;&#34;Returns the tables
+
+        Returns:
+            list[Table]: A list of tables in the data set
+        &#34;&#34;&#34;
+
+        resp = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables&#39;
+                                                  .format(self.data_model.get_oid(), self.get_oid()))
         ret_arr = []
         for table_json in resp:
-            ret_arr.append(PySenseTable.Table(self._py_client, table_json, self))
+            ret_arr.append(PySenseTable.Table(self.py_client, table_json, self))
         return ret_arr
 
     def get_connection(self):
-        &#34;&#34;&#34;Returns the connection&#34;&#34;&#34;
-        return PySenseConnection.Connection(self._py_client, self._data_set_json[&#39;connection&#39;])
+        &#34;&#34;&#34;Returns the connection
+
+        Returns:
+            Connection: A connection object for the data set
+        &#34;&#34;&#34;
+
+        return PySenseConnection.Connection(self.py_client, self.json[&#39;connection&#39;])
 
     def set_connection(self, connection):
-        &#34;&#34;&#34;Sets the connection.
-        Will update connection on server, local object may still store old connection&#34;&#34;&#34;
-        connection_json = connection.get_json()
+        &#34;&#34;&#34;Sets a new connection
+
+        Replaces the current connection with the new one. Use to change the source of a table.
+
+        Args:
+            connection (Connection): The new Connection object to set for this data set
+        &#34;&#34;&#34;
+        connection_json = connection.json
         PySenseUtils.strip_json(connection_json, [&#39;id&#39;, &#39;_id&#39;, &#39;owner&#39;, &#39;lastUpdated&#39;])
 
         json_payload = {&#39;name&#39;: self.get_full_name(),
                         &#39;type&#39;: self.get_type(),
                         &#39;connection&#39;: connection_json}
-        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}&#39;
-                                            .format(self._data_model.get_oid(), self.get_oid()),
-                                            json_payload=json_payload)
+        self.py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}&#39;
+                                           .format(self.data_model.get_oid(), self.get_oid()),
+                                           json_payload=json_payload)
         self._sync_data_set()
 
     def _sync_data_set(self):
-        self._data_set_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}&#39;
-                                            .format(self._data_model.get_oid(), self.get_oid()))
+        self.json = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}&#39;
+                                                       .format(self.data_model.get_oid(), self.get_oid()))
 
     def get_schema(self):
-        return self._data_set_json[&#39;schema&#39;]</code></pre>
+        &#34;&#34;&#34;Returns the schema for the data set&#34;&#34;&#34;
+        return self.json[&#39;schema&#39;]</code></pre>
 </details>
 </section>
 <section>
@@ -106,71 +139,125 @@ class DataSet:
 <span>(</span><span>py_client, data_set_json, data_model)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>A Data Set</p>
+<p>Each data set has a connector and a connection to one or more tables.
+A model contains 0 to many data sets.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The JSON for this object</dd>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The connection to the Sisese server which owns this asset</dd>
+<dt><strong><code>data_model</code></strong> :&ensp;<code>DataModel</code></dt>
+<dd>The data model this data set belongs to</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The PySense object for the server this asset belongs to</dd>
+<dt><strong><code>data_set_json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The json for this object</dd>
+<dt><strong><code>data_model</code></strong> :&ensp;<code>DataModel</code></dt>
+<dd>The parent data model of the data set</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class DataSet:
+    &#34;&#34;&#34;A Data Set
+
+    Each data set has a connector and a connection to one or more tables.
+    A model contains 0 to many data sets.
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisese server which owns this asset
+        data_model (DataModel): The data model this data set belongs to
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, data_set_json, data_model):
-        self._py_client = py_client
-        self._data_set_json = data_set_json
-        self._data_model = data_model
+        &#34;&#34;&#34;
 
-    def get_parent_data_model(self):
-        &#34;&#34;&#34;Returns the data model this data set belongs to as a PySense DataSet&#34;&#34;&#34;
-        return self._data_model
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            data_set_json (JSON): The json for this object
+            data_model (DataModel): The parent data model of the data set
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
+        self.json = data_set_json
+        self.data_model = data_model
 
     def get_oid(self):
         &#34;&#34;&#34;Returns data set oid&#34;&#34;&#34;
-        return self._data_set_json[&#39;oid&#39;]
+
+        return self.json[&#39;oid&#39;]
 
     def get_full_name(self):
         &#34;&#34;&#34;Returns data set full name&#34;&#34;&#34;
-        return self._data_set_json[&#39;fullname&#39;]
+
+        return self.json[&#39;fullname&#39;]
 
     def get_type(self):
         &#34;&#34;&#34;Returns data set type&#34;&#34;&#34;
-        return self._data_set_json[&#39;type&#39;]
+
+        return self.json[&#39;type&#39;]
 
     def get_source(self):
         &#34;&#34;&#34;Returns source of the dataset&#34;&#34;&#34;
+
         return self.get_full_name().split(&#34;:&#34;)[0].lower()
 
     def get_tables(self):
-        &#34;&#34;&#34;Returns the tables&#34;&#34;&#34;
-        resp = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables&#39;
-                                                   .format(self._data_model.get_oid(), self.get_oid()))
+        &#34;&#34;&#34;Returns the tables
+
+        Returns:
+            list[Table]: A list of tables in the data set
+        &#34;&#34;&#34;
+
+        resp = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables&#39;
+                                                  .format(self.data_model.get_oid(), self.get_oid()))
         ret_arr = []
         for table_json in resp:
-            ret_arr.append(PySenseTable.Table(self._py_client, table_json, self))
+            ret_arr.append(PySenseTable.Table(self.py_client, table_json, self))
         return ret_arr
 
     def get_connection(self):
-        &#34;&#34;&#34;Returns the connection&#34;&#34;&#34;
-        return PySenseConnection.Connection(self._py_client, self._data_set_json[&#39;connection&#39;])
+        &#34;&#34;&#34;Returns the connection
+
+        Returns:
+            Connection: A connection object for the data set
+        &#34;&#34;&#34;
+
+        return PySenseConnection.Connection(self.py_client, self.json[&#39;connection&#39;])
 
     def set_connection(self, connection):
-        &#34;&#34;&#34;Sets the connection.
-        Will update connection on server, local object may still store old connection&#34;&#34;&#34;
-        connection_json = connection.get_json()
+        &#34;&#34;&#34;Sets a new connection
+
+        Replaces the current connection with the new one. Use to change the source of a table.
+
+        Args:
+            connection (Connection): The new Connection object to set for this data set
+        &#34;&#34;&#34;
+        connection_json = connection.json
         PySenseUtils.strip_json(connection_json, [&#39;id&#39;, &#39;_id&#39;, &#39;owner&#39;, &#39;lastUpdated&#39;])
 
         json_payload = {&#39;name&#39;: self.get_full_name(),
                         &#39;type&#39;: self.get_type(),
                         &#39;connection&#39;: connection_json}
-        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}&#39;
-                                            .format(self._data_model.get_oid(), self.get_oid()),
-                                            json_payload=json_payload)
+        self.py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}&#39;
+                                           .format(self.data_model.get_oid(), self.get_oid()),
+                                           json_payload=json_payload)
         self._sync_data_set()
 
     def _sync_data_set(self):
-        self._data_set_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}&#39;
-                                            .format(self._data_model.get_oid(), self.get_oid()))
+        self.json = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}&#39;
+                                                       .format(self.data_model.get_oid(), self.get_oid()))
 
     def get_schema(self):
-        return self._data_set_json[&#39;schema&#39;]</code></pre>
+        &#34;&#34;&#34;Returns the schema for the data set&#34;&#34;&#34;
+        return self.json[&#39;schema&#39;]</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -178,14 +265,24 @@ class DataSet:
 <span>def <span class="ident">get_connection</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the connection</p></div>
+<div class="desc"><p>Returns the connection</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Connection</code></dt>
+<dd>A connection object for the data set</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_connection(self):
-    &#34;&#34;&#34;Returns the connection&#34;&#34;&#34;
-    return PySenseConnection.Connection(self._py_client, self._data_set_json[&#39;connection&#39;])</code></pre>
+    &#34;&#34;&#34;Returns the connection
+
+    Returns:
+        Connection: A connection object for the data set
+    &#34;&#34;&#34;
+
+    return PySenseConnection.Connection(self.py_client, self.json[&#39;connection&#39;])</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataSet.DataSet.get_full_name"><code class="name flex">
@@ -199,7 +296,8 @@ class DataSet:
 </summary>
 <pre><code class="python">def get_full_name(self):
     &#34;&#34;&#34;Returns data set full name&#34;&#34;&#34;
-    return self._data_set_json[&#39;fullname&#39;]</code></pre>
+
+    return self.json[&#39;fullname&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataSet.DataSet.get_oid"><code class="name flex">
@@ -213,34 +311,22 @@ class DataSet:
 </summary>
 <pre><code class="python">def get_oid(self):
     &#34;&#34;&#34;Returns data set oid&#34;&#34;&#34;
-    return self._data_set_json[&#39;oid&#39;]</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseDataSet.DataSet.get_parent_data_model"><code class="name flex">
-<span>def <span class="ident">get_parent_data_model</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the data model this data set belongs to as a PySense DataSet</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_parent_data_model(self):
-    &#34;&#34;&#34;Returns the data model this data set belongs to as a PySense DataSet&#34;&#34;&#34;
-    return self._data_model</code></pre>
+
+    return self.json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataSet.DataSet.get_schema"><code class="name flex">
 <span>def <span class="ident">get_schema</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the schema for the data set</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_schema(self):
-    return self._data_set_json[&#39;schema&#39;]</code></pre>
+    &#34;&#34;&#34;Returns the schema for the data set&#34;&#34;&#34;
+    return self.json[&#39;schema&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataSet.DataSet.get_source"><code class="name flex">
@@ -254,6 +340,7 @@ class DataSet:
 </summary>
 <pre><code class="python">def get_source(self):
     &#34;&#34;&#34;Returns source of the dataset&#34;&#34;&#34;
+
     return self.get_full_name().split(&#34;:&#34;)[0].lower()</code></pre>
 </details>
 </dd>
@@ -261,18 +348,28 @@ class DataSet:
 <span>def <span class="ident">get_tables</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the tables</p></div>
+<div class="desc"><p>Returns the tables</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list[Table]</code></dt>
+<dd>A list of tables in the data set</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_tables(self):
-    &#34;&#34;&#34;Returns the tables&#34;&#34;&#34;
-    resp = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables&#39;
-                                               .format(self._data_model.get_oid(), self.get_oid()))
+    &#34;&#34;&#34;Returns the tables
+
+    Returns:
+        list[Table]: A list of tables in the data set
+    &#34;&#34;&#34;
+
+    resp = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables&#39;
+                                              .format(self.data_model.get_oid(), self.get_oid()))
     ret_arr = []
     for table_json in resp:
-        ret_arr.append(PySenseTable.Table(self._py_client, table_json, self))
+        ret_arr.append(PySenseTable.Table(self.py_client, table_json, self))
     return ret_arr</code></pre>
 </details>
 </dd>
@@ -287,31 +384,42 @@ class DataSet:
 </summary>
 <pre><code class="python">def get_type(self):
     &#34;&#34;&#34;Returns data set type&#34;&#34;&#34;
-    return self._data_set_json[&#39;type&#39;]</code></pre>
+
+    return self.json[&#39;type&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataSet.DataSet.set_connection"><code class="name flex">
 <span>def <span class="ident">set_connection</span></span>(<span>self, connection)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Sets the connection.
-Will update connection on server, local object may still store old connection</p></div>
+<div class="desc"><p>Sets a new connection</p>
+<p>Replaces the current connection with the new one. Use to change the source of a table.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>connection</code></strong> :&ensp;<code>Connection</code></dt>
+<dd>The new Connection object to set for this data set</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_connection(self, connection):
-    &#34;&#34;&#34;Sets the connection.
-    Will update connection on server, local object may still store old connection&#34;&#34;&#34;
-    connection_json = connection.get_json()
+    &#34;&#34;&#34;Sets a new connection
+
+    Replaces the current connection with the new one. Use to change the source of a table.
+
+    Args:
+        connection (Connection): The new Connection object to set for this data set
+    &#34;&#34;&#34;
+    connection_json = connection.json
     PySenseUtils.strip_json(connection_json, [&#39;id&#39;, &#39;_id&#39;, &#39;owner&#39;, &#39;lastUpdated&#39;])
 
     json_payload = {&#39;name&#39;: self.get_full_name(),
                     &#39;type&#39;: self.get_type(),
                     &#39;connection&#39;: connection_json}
-    self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}&#39;
-                                        .format(self._data_model.get_oid(), self.get_oid()),
-                                        json_payload=json_payload)
+    self.py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}&#39;
+                                       .format(self.data_model.get_oid(), self.get_oid()),
+                                       json_payload=json_payload)
     self._sync_data_set()</code></pre>
 </details>
 </dd>
@@ -335,11 +443,10 @@ Will update connection on server, local object may still store old connection</p
 <ul>
 <li>
 <h4><code><a title="PySense.PySenseDataSet.DataSet" href="#PySense.PySenseDataSet.DataSet">DataSet</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="PySense.PySenseDataSet.DataSet.get_connection" href="#PySense.PySenseDataSet.DataSet.get_connection">get_connection</a></code></li>
 <li><code><a title="PySense.PySenseDataSet.DataSet.get_full_name" href="#PySense.PySenseDataSet.DataSet.get_full_name">get_full_name</a></code></li>
 <li><code><a title="PySense.PySenseDataSet.DataSet.get_oid" href="#PySense.PySenseDataSet.DataSet.get_oid">get_oid</a></code></li>
-<li><code><a title="PySense.PySenseDataSet.DataSet.get_parent_data_model" href="#PySense.PySenseDataSet.DataSet.get_parent_data_model">get_parent_data_model</a></code></li>
 <li><code><a title="PySense.PySenseDataSet.DataSet.get_schema" href="#PySense.PySenseDataSet.DataSet.get_schema">get_schema</a></code></li>
 <li><code><a title="PySense.PySenseDataSet.DataSet.get_source" href="#PySense.PySenseDataSet.DataSet.get_source">get_source</a></code></li>
 <li><code><a title="PySense.PySenseDataSet.DataSet.get_tables" href="#PySense.PySenseDataSet.DataSet.get_tables">get_tables</a></code></li>

@@ -12,12 +12,12 @@ elasticube = py_client.get_elasticube_by_name(elasticube_name)
 
 # Delete the current rules on the column
 try:
-    elasticube.delete_rule(table, column)
+    elasticube.delete_data_security_rule(table, column)
 except PySense.PySenseException.PySenseException:
     pass
 
 # Create the default security rule
-elasticube.add_security_rule(table, column, data_type)
+elasticube.add_data_security_rule(table, column, data_type)
 
 with open('DataSecurityRules.csv') as csv_file:
     reader = csv.DictReader(csv_file)
@@ -29,11 +29,11 @@ with open('DataSecurityRules.csv') as csv_file:
         values = row['values'].split('|')
 
         if values[0] == 'Nothing':  # Nothing
-            elasticube.add_security_rule(table, column, data_type, shares=groups)
+            elasticube.add_data_security_rule(table, column, data_type, shares=groups)
         elif values[0] == 'Everything':  # Everything
-            elasticube.add_security_rule(table, column, data_type, shares=groups, all_members=True)
+            elasticube.add_data_security_rule(table, column, data_type, shares=groups, all_members=True)
         else:
-            elasticube.add_security_rule(table, column, data_type, shares=groups, members=values)
+            elasticube.add_data_security_rule(table, column, data_type, shares=groups, members=values)
 
 
 

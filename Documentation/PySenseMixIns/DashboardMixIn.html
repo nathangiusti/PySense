@@ -38,17 +38,17 @@ class DashboardMixIn:
         &#34;&#34;&#34;Get all dashboards.
 
         Args:
-            parent_folder: Parent folder to filter by
-            name: Name to filter by
-            data_source_title: Data source name to filter by
-            data_source_address: Data source address to filter by
-            fields: Whitelist of fields to return for each document.
+            parent_folder (Folder): (Optional) Parent folder to filter by
+            name (str): (Optional) Name to filter by
+            data_source_title (str): (Optional) Data source name to filter by
+            data_source_address (str): (Optional) Data source address to filter by
+            fields (list[str]): (Optional) Whitelist of fields to return for each document.
                Can also exclude by prefixing field names with -
-            sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-            expand: List of fields that should be expanded
+            sort (str): (Optional) Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+            expand (list[str]): (Optional) List of fields that should be expanded
 
         Returns:
-            An array of all found dashboards
+            list[Dashboard]: A list of the found dashboards
         &#34;&#34;&#34;
 
         folder_id = None
@@ -74,31 +74,31 @@ class DashboardMixIn:
     def get_dashboards_admin(self, *, dashboard_type=None, owner_info=None, dash_id=None, parent_folder=None, name=None,
                              data_source_title=None, data_source_address=None, ownership_type=None, search=None,
                              fields=None, sort=None, skip=None, limit=None, expand=None):
-        &#34;&#34;&#34;Get all dashboards.
+        &#34;&#34;&#34;Get all dashboards as an admin
 
         Args:
-            dashboard_type: (Optional) Dashboard instance type to filter by. Must be &#39;owner&#39;, &#39;user&#39;, or &#39;proxy&#39;
-            owner_info: (Optional) Dashboard owner information. True or False
-            dash_id: (optional) Dashboard ID to filter by
-            parent_folder: (Optional) PySense Folder to filter on
-            name: (Optional) Name to filter by
-            data_source_title: (Optional) Data source name to filter by
-            data_source_address: (Optional) Data source address to filter by
-            ownership_type: (Optional) Dashboard ownership type to filter by, rewrites “dashboardType” filter.
-            Values are: allRoot root owner shared sharedroot ownerAndShared ownerAndSharedByLastOpen
-            search: (Optional) Search by dashboard title query string or advanced search
-            fields: (Optional) Whitelist of fields to return for each document.
+            dashboard_type (str): (Optional) Dashboard instance type to filter by. Must be &#39;owner&#39;, &#39;user&#39;, or &#39;proxy&#39;
+            owner_info (bool): (Optional) Whether to return owner_info
+            dash_id (str): (Optional) Dashboard ID to filter by
+            parent_folder (Folder): (Optional) PySense Folder to filter on
+            name (str): (Optional) Name to filter by
+            data_source_title (str): (Optional) Data source name to filter by
+            data_source_address (str): (Optional) Data source address to filter by
+            ownership_type (str): (Optional) Dashboard ownership type to filter by, rewrites “dashboardType” filter.
+                Values are: allRoot root owner shared sharedroot ownerAndShared ownerAndSharedByLastOpen
+            search (str): (Optional) Search by dashboard title query string or advanced search
+            fields (list[str]): (Optional) Whitelist of fields to return for each document.
                Can also exclude by prefixing field names with -
-            sort: (optional) Field by which the results should be sorted.
+            sort (str): (Optional) Field by which the results should be sorted.
                 Ascending by default, descending if prefixed by -
-            skip: (optional) Number of results to skip from the start of the data set.
+            skip (int): (Optional) Number of results to skip from the start of the data set.
                 Skip is to be used with the limit parameter for paging
-            limit: (optional) How many results should be returned.
+            limit (int): (Optional) How many results should be returned.
                 limit is to be used with the skip parameter for paging
-            expand: (Optional) List of fields that should be expanded
+            expand (list[str]): (Optional) List of fields that should be expanded
 
         Returns:
-            An array of all found dashboards
+            list[Dashboard]: An array of all found dashboards
         &#34;&#34;&#34;
 
         folder_id = None
@@ -132,14 +132,14 @@ class DashboardMixIn:
         &#34;&#34;&#34;Returns a specific dashboard object by ID.
 
         Args:
-            dashboard_id: The ID of the dashboard to get
-            fields: (optional) Whitelist of fields to return for each document.
+            dashboard_id (str): The ID of the dashboard to get
+            fields (list[str]): (Optional) Whitelist of fields to return for each document.
                 Fields Can also define which fields to exclude by prefixing field names with -
-            expand: (optional) List of fields that should be expanded (substitues their IDs with actual objects).
+            expand (list[str]): (Optional) List of fields that should be expanded (substitues their IDs with actual objects).
                 May be nested using the resource.subResource format
-            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+            admin_access (bool): (Optional) Set to true if logged in as admin and getting unowned dashboard
         Returns:
-             Dashboard with the given id.
+             Dashboard: Dashboard with the given id.
         &#34;&#34;&#34;
 
         query_params = {
@@ -161,14 +161,15 @@ class DashboardMixIn:
         &#34;&#34;&#34;Import given dashboards.
 
         Args:
-            dashboards: One to many PySense dashboard to import
+            dashboards (list[Dashboard]): Dashboards to import to Sisense
 
         Returns:
-            An array of new dashboards
+            list[Dashboard]: The new dashboards
         &#34;&#34;&#34;
+
         ret_arr = []
         for dashboard in PySenseUtils.make_iterable(dashboards):
-            resp = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards&#39;, json_payload=dashboard.get_json())
+            resp = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards&#39;, json_payload=dashboard.json)
             ret_arr.append(PySenseDashboard.Dashboard(self, resp))
         return ret_arr
 
@@ -176,25 +177,26 @@ class DashboardMixIn:
         &#34;&#34;&#34;Delete dashboards.
 
         Args:
-            dashboards: Dashboards to delete
-            admin_access: (Optional) Set to true if logged in as admin and deleting unowned dashboard
+            dashboards (list[Dashboard]): Dashboards to delete
+            admin_access (bool): (Optional) Set to true if logged in as admin and deleting unowned dashboard
         &#34;&#34;&#34;
+
         for dashboard in PySenseUtils.make_iterable(dashboards):
             if admin_access is True:
                 query_params = {&#39;adminAccess&#39;: admin_access}
-                self.connector.rest_call(&#39;delete&#39;, &#39;api/dashboards/{}&#39;.format(dashboard.get_id()),
+                self.connector.rest_call(&#39;delete&#39;, &#39;api/dashboards/{}&#39;.format(dashboard.get_oid()),
                                          query_params=query_params)
             else:
-                self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard.get_id()))
+                self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard.get_oid()))
 
     def create_dashboard(self, title):
-        &#34;&#34;&#34;Create a new dashboard.
+        &#34;&#34;&#34;Create a new default dashboard.
 
         Args:
-            title: The title of the dashboard
+            title (str): The title of the dashboard
 
         Returns:
-            The new dashboard
+            Dashboard: The new dashboard
         &#34;&#34;&#34;
 
         dashboard_json = json.loads(&#39;{&#34;title&#34;:&#34;&#39; + title + &#39;&#34;,&#34;datasource&#34;:{&#34;title&#34;:&#34;Sample ECommerce&#34;,&#34;fullname&#34;:&#39; \
@@ -212,9 +214,12 @@ class DashboardMixIn:
         Can be used to update an existing dashboard.
 
         Args:
-            path: The path to the dash file
-            action: Determines if the dashboard should be overwritten
-            republish: Republishes dashboards on target server after copying
+            path (str): The path to the dash file
+            action (str): Determines if the dashboard should be overwritten
+            republish (bool): Whether to republish after import
+
+        Returns:
+            list[Dashboard]: The newly added dashboards
         &#34;&#34;&#34;
 
         query_params = {&#39;action&#39;: action, &#39;republish&#39;: republish}
@@ -224,6 +229,7 @@ class DashboardMixIn:
             json_array = json_obj
         else:
             json_array = [json_obj]
+
         result_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/import/bulk&#39;,
                                                query_params=query_params, json_payload=json_array)
         ret_arr = []
@@ -231,28 +237,24 @@ class DashboardMixIn:
             ret_arr.append(PySenseDashboard.Dashboard(self, dashboard_json))
         return ret_arr
 
-    def bulk_export_dashboards(self, dashboards, *, path=None, admin_access=None):
+    def export_dashboards(self, dashboards, path, *, admin_access=None):
         &#34;&#34;&#34;Get dashboard as dash file.
 
         Args:
-            dashboards: One to many dashboards to back up to dash file
-            path: (optional) Path to save location of dash file
-            admin_access: (Optional) Set to true if logged in as admin and exporting unowned dashboard
+            dashboards (list[Dashboard]): One to many dashboards to back up to dash file
+            path (str): Path to save location of dash file
+            admin_access (bool): (Optional) Set to true if logged in as admin and exporting unowned dashboard
         Returns:
-            The path of the created file if path provided, else the raw content
+            str: The path of the created file
         &#34;&#34;&#34;
+
         query_params = {&#39;dashboardIds&#39;: [], &#39;adminAccess&#39;: admin_access}
         for dashboard in PySenseUtils.make_iterable(dashboards):
-            query_params[&#39;dashboardIds&#39;].append(dashboard.get_id())
+            query_params[&#39;dashboardIds&#39;].append(dashboard.get_oid())
 
-        resp_content = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/export&#39;, raw=True, query_params=query_params)
+        self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/export&#39;, path=path, query_params=query_params)
 
-        if path is not None:
-            with open(path, &#39;wb&#39;) as out_file:
-                out_file.write(resp_content)
-            return path
-        else:
-            return resp_content</code></pre>
+        return path</code></pre>
 </details>
 </section>
 <section>
@@ -280,17 +282,17 @@ class DashboardMixIn:
         &#34;&#34;&#34;Get all dashboards.
 
         Args:
-            parent_folder: Parent folder to filter by
-            name: Name to filter by
-            data_source_title: Data source name to filter by
-            data_source_address: Data source address to filter by
-            fields: Whitelist of fields to return for each document.
+            parent_folder (Folder): (Optional) Parent folder to filter by
+            name (str): (Optional) Name to filter by
+            data_source_title (str): (Optional) Data source name to filter by
+            data_source_address (str): (Optional) Data source address to filter by
+            fields (list[str]): (Optional) Whitelist of fields to return for each document.
                Can also exclude by prefixing field names with -
-            sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-            expand: List of fields that should be expanded
+            sort (str): (Optional) Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+            expand (list[str]): (Optional) List of fields that should be expanded
 
         Returns:
-            An array of all found dashboards
+            list[Dashboard]: A list of the found dashboards
         &#34;&#34;&#34;
 
         folder_id = None
@@ -316,31 +318,31 @@ class DashboardMixIn:
     def get_dashboards_admin(self, *, dashboard_type=None, owner_info=None, dash_id=None, parent_folder=None, name=None,
                              data_source_title=None, data_source_address=None, ownership_type=None, search=None,
                              fields=None, sort=None, skip=None, limit=None, expand=None):
-        &#34;&#34;&#34;Get all dashboards.
+        &#34;&#34;&#34;Get all dashboards as an admin
 
         Args:
-            dashboard_type: (Optional) Dashboard instance type to filter by. Must be &#39;owner&#39;, &#39;user&#39;, or &#39;proxy&#39;
-            owner_info: (Optional) Dashboard owner information. True or False
-            dash_id: (optional) Dashboard ID to filter by
-            parent_folder: (Optional) PySense Folder to filter on
-            name: (Optional) Name to filter by
-            data_source_title: (Optional) Data source name to filter by
-            data_source_address: (Optional) Data source address to filter by
-            ownership_type: (Optional) Dashboard ownership type to filter by, rewrites “dashboardType” filter.
-            Values are: allRoot root owner shared sharedroot ownerAndShared ownerAndSharedByLastOpen
-            search: (Optional) Search by dashboard title query string or advanced search
-            fields: (Optional) Whitelist of fields to return for each document.
+            dashboard_type (str): (Optional) Dashboard instance type to filter by. Must be &#39;owner&#39;, &#39;user&#39;, or &#39;proxy&#39;
+            owner_info (bool): (Optional) Whether to return owner_info
+            dash_id (str): (Optional) Dashboard ID to filter by
+            parent_folder (Folder): (Optional) PySense Folder to filter on
+            name (str): (Optional) Name to filter by
+            data_source_title (str): (Optional) Data source name to filter by
+            data_source_address (str): (Optional) Data source address to filter by
+            ownership_type (str): (Optional) Dashboard ownership type to filter by, rewrites “dashboardType” filter.
+                Values are: allRoot root owner shared sharedroot ownerAndShared ownerAndSharedByLastOpen
+            search (str): (Optional) Search by dashboard title query string or advanced search
+            fields (list[str]): (Optional) Whitelist of fields to return for each document.
                Can also exclude by prefixing field names with -
-            sort: (optional) Field by which the results should be sorted.
+            sort (str): (Optional) Field by which the results should be sorted.
                 Ascending by default, descending if prefixed by -
-            skip: (optional) Number of results to skip from the start of the data set.
+            skip (int): (Optional) Number of results to skip from the start of the data set.
                 Skip is to be used with the limit parameter for paging
-            limit: (optional) How many results should be returned.
+            limit (int): (Optional) How many results should be returned.
                 limit is to be used with the skip parameter for paging
-            expand: (Optional) List of fields that should be expanded
+            expand (list[str]): (Optional) List of fields that should be expanded
 
         Returns:
-            An array of all found dashboards
+            list[Dashboard]: An array of all found dashboards
         &#34;&#34;&#34;
 
         folder_id = None
@@ -374,14 +376,14 @@ class DashboardMixIn:
         &#34;&#34;&#34;Returns a specific dashboard object by ID.
 
         Args:
-            dashboard_id: The ID of the dashboard to get
-            fields: (optional) Whitelist of fields to return for each document.
+            dashboard_id (str): The ID of the dashboard to get
+            fields (list[str]): (Optional) Whitelist of fields to return for each document.
                 Fields Can also define which fields to exclude by prefixing field names with -
-            expand: (optional) List of fields that should be expanded (substitues their IDs with actual objects).
+            expand (list[str]): (Optional) List of fields that should be expanded (substitues their IDs with actual objects).
                 May be nested using the resource.subResource format
-            admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+            admin_access (bool): (Optional) Set to true if logged in as admin and getting unowned dashboard
         Returns:
-             Dashboard with the given id.
+             Dashboard: Dashboard with the given id.
         &#34;&#34;&#34;
 
         query_params = {
@@ -403,14 +405,15 @@ class DashboardMixIn:
         &#34;&#34;&#34;Import given dashboards.
 
         Args:
-            dashboards: One to many PySense dashboard to import
+            dashboards (list[Dashboard]): Dashboards to import to Sisense
 
         Returns:
-            An array of new dashboards
+            list[Dashboard]: The new dashboards
         &#34;&#34;&#34;
+
         ret_arr = []
         for dashboard in PySenseUtils.make_iterable(dashboards):
-            resp = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards&#39;, json_payload=dashboard.get_json())
+            resp = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards&#39;, json_payload=dashboard.json)
             ret_arr.append(PySenseDashboard.Dashboard(self, resp))
         return ret_arr
 
@@ -418,25 +421,26 @@ class DashboardMixIn:
         &#34;&#34;&#34;Delete dashboards.
 
         Args:
-            dashboards: Dashboards to delete
-            admin_access: (Optional) Set to true if logged in as admin and deleting unowned dashboard
+            dashboards (list[Dashboard]): Dashboards to delete
+            admin_access (bool): (Optional) Set to true if logged in as admin and deleting unowned dashboard
         &#34;&#34;&#34;
+
         for dashboard in PySenseUtils.make_iterable(dashboards):
             if admin_access is True:
                 query_params = {&#39;adminAccess&#39;: admin_access}
-                self.connector.rest_call(&#39;delete&#39;, &#39;api/dashboards/{}&#39;.format(dashboard.get_id()),
+                self.connector.rest_call(&#39;delete&#39;, &#39;api/dashboards/{}&#39;.format(dashboard.get_oid()),
                                          query_params=query_params)
             else:
-                self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard.get_id()))
+                self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard.get_oid()))
 
     def create_dashboard(self, title):
-        &#34;&#34;&#34;Create a new dashboard.
+        &#34;&#34;&#34;Create a new default dashboard.
 
         Args:
-            title: The title of the dashboard
+            title (str): The title of the dashboard
 
         Returns:
-            The new dashboard
+            Dashboard: The new dashboard
         &#34;&#34;&#34;
 
         dashboard_json = json.loads(&#39;{&#34;title&#34;:&#34;&#39; + title + &#39;&#34;,&#34;datasource&#34;:{&#34;title&#34;:&#34;Sample ECommerce&#34;,&#34;fullname&#34;:&#39; \
@@ -454,9 +458,12 @@ class DashboardMixIn:
         Can be used to update an existing dashboard.
 
         Args:
-            path: The path to the dash file
-            action: Determines if the dashboard should be overwritten
-            republish: Republishes dashboards on target server after copying
+            path (str): The path to the dash file
+            action (str): Determines if the dashboard should be overwritten
+            republish (bool): Whether to republish after import
+
+        Returns:
+            list[Dashboard]: The newly added dashboards
         &#34;&#34;&#34;
 
         query_params = {&#39;action&#39;: action, &#39;republish&#39;: republish}
@@ -466,6 +473,7 @@ class DashboardMixIn:
             json_array = json_obj
         else:
             json_array = [json_obj]
+
         result_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/import/bulk&#39;,
                                                query_params=query_params, json_payload=json_array)
         ret_arr = []
@@ -473,28 +481,24 @@ class DashboardMixIn:
             ret_arr.append(PySenseDashboard.Dashboard(self, dashboard_json))
         return ret_arr
 
-    def bulk_export_dashboards(self, dashboards, *, path=None, admin_access=None):
+    def export_dashboards(self, dashboards, path, *, admin_access=None):
         &#34;&#34;&#34;Get dashboard as dash file.
 
         Args:
-            dashboards: One to many dashboards to back up to dash file
-            path: (optional) Path to save location of dash file
-            admin_access: (Optional) Set to true if logged in as admin and exporting unowned dashboard
+            dashboards (list[Dashboard]): One to many dashboards to back up to dash file
+            path (str): Path to save location of dash file
+            admin_access (bool): (Optional) Set to true if logged in as admin and exporting unowned dashboard
         Returns:
-            The path of the created file if path provided, else the raw content
+            str: The path of the created file
         &#34;&#34;&#34;
+
         query_params = {&#39;dashboardIds&#39;: [], &#39;adminAccess&#39;: admin_access}
         for dashboard in PySenseUtils.make_iterable(dashboards):
-            query_params[&#39;dashboardIds&#39;].append(dashboard.get_id())
+            query_params[&#39;dashboardIds&#39;].append(dashboard.get_oid())
 
-        resp_content = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/export&#39;, raw=True, query_params=query_params)
+        self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/export&#39;, path=path, query_params=query_params)
 
-        if path is not None:
-            with open(path, &#39;wb&#39;) as out_file:
-                out_file.write(resp_content)
-            return path
-        else:
-            return resp_content</code></pre>
+        return path</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -509,11 +513,14 @@ class DashboardMixIn:
 <div class="desc"><p>Import given dashboards.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>dashboards</code></strong></dt>
-<dd>One to many PySense dashboard to import</dd>
+<dt><strong><code>dashboards</code></strong> :&ensp;<code>list[Dashboard]</code></dt>
+<dd>Dashboards to import to Sisense</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>An array of new dashboards</p></div>
+<dl>
+<dt><code>list[Dashboard]</code></dt>
+<dd>The new dashboards</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -522,86 +529,46 @@ class DashboardMixIn:
     &#34;&#34;&#34;Import given dashboards.
 
     Args:
-        dashboards: One to many PySense dashboard to import
+        dashboards (list[Dashboard]): Dashboards to import to Sisense
 
     Returns:
-        An array of new dashboards
+        list[Dashboard]: The new dashboards
     &#34;&#34;&#34;
+
     ret_arr = []
     for dashboard in PySenseUtils.make_iterable(dashboards):
-        resp = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards&#39;, json_payload=dashboard.get_json())
+        resp = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards&#39;, json_payload=dashboard.json)
         ret_arr.append(PySenseDashboard.Dashboard(self, resp))
     return ret_arr</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.bulk_export_dashboards"><code class="name flex">
-<span>def <span class="ident">bulk_export_dashboards</span></span>(<span>self, dashboards, *, path=None, admin_access=None)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get dashboard as dash file.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>dashboards</code></strong></dt>
-<dd>One to many dashboards to back up to dash file</dd>
-<dt><strong><code>path</code></strong></dt>
-<dd>(optional) Path to save location of dash file</dd>
-<dt><strong><code>admin_access</code></strong></dt>
-<dd>(Optional) Set to true if logged in as admin and exporting unowned dashboard</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<p>The path of the created file if path provided, else the raw content</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def bulk_export_dashboards(self, dashboards, *, path=None, admin_access=None):
-    &#34;&#34;&#34;Get dashboard as dash file.
-
-    Args:
-        dashboards: One to many dashboards to back up to dash file
-        path: (optional) Path to save location of dash file
-        admin_access: (Optional) Set to true if logged in as admin and exporting unowned dashboard
-    Returns:
-        The path of the created file if path provided, else the raw content
-    &#34;&#34;&#34;
-    query_params = {&#39;dashboardIds&#39;: [], &#39;adminAccess&#39;: admin_access}
-    for dashboard in PySenseUtils.make_iterable(dashboards):
-        query_params[&#39;dashboardIds&#39;].append(dashboard.get_id())
-
-    resp_content = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/export&#39;, raw=True, query_params=query_params)
-
-    if path is not None:
-        with open(path, &#39;wb&#39;) as out_file:
-            out_file.write(resp_content)
-        return path
-    else:
-        return resp_content</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.create_dashboard"><code class="name flex">
 <span>def <span class="ident">create_dashboard</span></span>(<span>self, title)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Create a new dashboard.</p>
+<div class="desc"><p>Create a new default dashboard.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>title</code></strong></dt>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
 <dd>The title of the dashboard</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>The new dashboard</p></div>
+<dl>
+<dt><code>Dashboard</code></dt>
+<dd>The new dashboard</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def create_dashboard(self, title):
-    &#34;&#34;&#34;Create a new dashboard.
+    &#34;&#34;&#34;Create a new default dashboard.
 
     Args:
-        title: The title of the dashboard
+        title (str): The title of the dashboard
 
     Returns:
-        The new dashboard
+        Dashboard: The new dashboard
     &#34;&#34;&#34;
 
     dashboard_json = json.loads(&#39;{&#34;title&#34;:&#34;&#39; + title + &#39;&#34;,&#34;datasource&#34;:{&#34;title&#34;:&#34;Sample ECommerce&#34;,&#34;fullname&#34;:&#39; \
@@ -621,9 +588,9 @@ class DashboardMixIn:
 <div class="desc"><p>Delete dashboards.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>dashboards</code></strong></dt>
+<dt><strong><code>dashboards</code></strong> :&ensp;<code>list[Dashboard]</code></dt>
 <dd>Dashboards to delete</dd>
-<dt><strong><code>admin_access</code></strong></dt>
+<dt><strong><code>admin_access</code></strong> :&ensp;<code>bool</code></dt>
 <dd>(Optional) Set to true if logged in as admin and deleting unowned dashboard</dd>
 </dl></div>
 <details class="source">
@@ -634,16 +601,60 @@ class DashboardMixIn:
     &#34;&#34;&#34;Delete dashboards.
 
     Args:
-        dashboards: Dashboards to delete
-        admin_access: (Optional) Set to true if logged in as admin and deleting unowned dashboard
+        dashboards (list[Dashboard]): Dashboards to delete
+        admin_access (bool): (Optional) Set to true if logged in as admin and deleting unowned dashboard
     &#34;&#34;&#34;
+
     for dashboard in PySenseUtils.make_iterable(dashboards):
         if admin_access is True:
             query_params = {&#39;adminAccess&#39;: admin_access}
-            self.connector.rest_call(&#39;delete&#39;, &#39;api/dashboards/{}&#39;.format(dashboard.get_id()),
+            self.connector.rest_call(&#39;delete&#39;, &#39;api/dashboards/{}&#39;.format(dashboard.get_oid()),
                                      query_params=query_params)
         else:
-            self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard.get_id()))</code></pre>
+            self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/dashboards/{}&#39;.format(dashboard.get_oid()))</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.export_dashboards"><code class="name flex">
+<span>def <span class="ident">export_dashboards</span></span>(<span>self, dashboards, path, *, admin_access=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get dashboard as dash file.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>dashboards</code></strong> :&ensp;<code>list[Dashboard]</code></dt>
+<dd>One to many dashboards to back up to dash file</dd>
+<dt><strong><code>path</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to save location of dash file</dd>
+<dt><strong><code>admin_access</code></strong> :&ensp;<code>bool</code></dt>
+<dd>(Optional) Set to true if logged in as admin and exporting unowned dashboard</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The path of the created file</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_dashboards(self, dashboards, path, *, admin_access=None):
+    &#34;&#34;&#34;Get dashboard as dash file.
+
+    Args:
+        dashboards (list[Dashboard]): One to many dashboards to back up to dash file
+        path (str): Path to save location of dash file
+        admin_access (bool): (Optional) Set to true if logged in as admin and exporting unowned dashboard
+    Returns:
+        str: The path of the created file
+    &#34;&#34;&#34;
+
+    query_params = {&#39;dashboardIds&#39;: [], &#39;adminAccess&#39;: admin_access}
+    for dashboard in PySenseUtils.make_iterable(dashboards):
+        query_params[&#39;dashboardIds&#39;].append(dashboard.get_oid())
+
+    self.connector.rest_call(&#39;get&#39;, &#39;api/v1/dashboards/export&#39;, path=path, query_params=query_params)
+
+    return path</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboard_by_id"><code class="name flex">
@@ -653,19 +664,22 @@ class DashboardMixIn:
 <div class="desc"><p>Returns a specific dashboard object by ID.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>dashboard_id</code></strong></dt>
+<dt><strong><code>dashboard_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>The ID of the dashboard to get</dd>
-<dt><strong><code>fields</code></strong></dt>
-<dd>(optional) Whitelist of fields to return for each document.
+<dt><strong><code>fields</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>(Optional) Whitelist of fields to return for each document.
 Fields Can also define which fields to exclude by prefixing field names with -</dd>
-<dt><strong><code>expand</code></strong></dt>
-<dd>(optional) List of fields that should be expanded (substitues their IDs with actual objects).
+<dt><strong><code>expand</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>(Optional) List of fields that should be expanded (substitues their IDs with actual objects).
 May be nested using the resource.subResource format</dd>
-<dt><strong><code>admin_access</code></strong></dt>
+<dt><strong><code>admin_access</code></strong> :&ensp;<code>bool</code></dt>
 <dd>(Optional) Set to true if logged in as admin and getting unowned dashboard</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>Dashboard with the given id.</p></div>
+<dl>
+<dt><code>Dashboard</code></dt>
+<dd>Dashboard with the given id.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -674,14 +688,14 @@ May be nested using the resource.subResource format</dd>
     &#34;&#34;&#34;Returns a specific dashboard object by ID.
 
     Args:
-        dashboard_id: The ID of the dashboard to get
-        fields: (optional) Whitelist of fields to return for each document.
+        dashboard_id (str): The ID of the dashboard to get
+        fields (list[str]): (Optional) Whitelist of fields to return for each document.
             Fields Can also define which fields to exclude by prefixing field names with -
-        expand: (optional) List of fields that should be expanded (substitues their IDs with actual objects).
+        expand (list[str]): (Optional) List of fields that should be expanded (substitues their IDs with actual objects).
             May be nested using the resource.subResource format
-        admin_access: (Optional) Set to true if logged in as admin and getting unowned dashboard
+        admin_access (bool): (Optional) Set to true if logged in as admin and getting unowned dashboard
     Returns:
-         Dashboard with the given id.
+         Dashboard: Dashboard with the given id.
     &#34;&#34;&#34;
 
     query_params = {
@@ -707,24 +721,27 @@ May be nested using the resource.subResource format</dd>
 <div class="desc"><p>Get all dashboards.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>parent_folder</code></strong></dt>
-<dd>Parent folder to filter by</dd>
-<dt><strong><code>name</code></strong></dt>
-<dd>Name to filter by</dd>
-<dt><strong><code>data_source_title</code></strong></dt>
-<dd>Data source name to filter by</dd>
-<dt><strong><code>data_source_address</code></strong></dt>
-<dd>Data source address to filter by</dd>
-<dt><strong><code>fields</code></strong></dt>
-<dd>Whitelist of fields to return for each document.
+<dt><strong><code>parent_folder</code></strong> :&ensp;<code>Folder</code></dt>
+<dd>(Optional) Parent folder to filter by</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Name to filter by</dd>
+<dt><strong><code>data_source_title</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Data source name to filter by</dd>
+<dt><strong><code>data_source_address</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Data source address to filter by</dd>
+<dt><strong><code>fields</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>(Optional) Whitelist of fields to return for each document.
 Can also exclude by prefixing field names with -</dd>
-<dt><strong><code>sort</code></strong></dt>
-<dd>Field by which the results should be sorted. Ascending by default, descending if prefixed by -</dd>
-<dt><strong><code>expand</code></strong></dt>
-<dd>List of fields that should be expanded</dd>
+<dt><strong><code>sort</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Field by which the results should be sorted. Ascending by default, descending if prefixed by -</dd>
+<dt><strong><code>expand</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>(Optional) List of fields that should be expanded</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>An array of all found dashboards</p></div>
+<dl>
+<dt><code>list[Dashboard]</code></dt>
+<dd>A list of the found dashboards</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -734,17 +751,17 @@ Can also exclude by prefixing field names with -</dd>
     &#34;&#34;&#34;Get all dashboards.
 
     Args:
-        parent_folder: Parent folder to filter by
-        name: Name to filter by
-        data_source_title: Data source name to filter by
-        data_source_address: Data source address to filter by
-        fields: Whitelist of fields to return for each document.
+        parent_folder (Folder): (Optional) Parent folder to filter by
+        name (str): (Optional) Name to filter by
+        data_source_title (str): (Optional) Data source name to filter by
+        data_source_address (str): (Optional) Data source address to filter by
+        fields (list[str]): (Optional) Whitelist of fields to return for each document.
            Can also exclude by prefixing field names with -
-        sort: Field by which the results should be sorted. Ascending by default, descending if prefixed by -
-        expand: List of fields that should be expanded
+        sort (str): (Optional) Field by which the results should be sorted. Ascending by default, descending if prefixed by -
+        expand (list[str]): (Optional) List of fields that should be expanded
 
     Returns:
-        An array of all found dashboards
+        list[Dashboard]: A list of the found dashboards
     &#34;&#34;&#34;
 
     folder_id = None
@@ -772,45 +789,48 @@ Can also exclude by prefixing field names with -</dd>
 <span>def <span class="ident">get_dashboards_admin</span></span>(<span>self, *, dashboard_type=None, owner_info=None, dash_id=None, parent_folder=None, name=None, data_source_title=None, data_source_address=None, ownership_type=None, search=None, fields=None, sort=None, skip=None, limit=None, expand=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Get all dashboards.</p>
+<div class="desc"><p>Get all dashboards as an admin</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>dashboard_type</code></strong></dt>
+<dt><strong><code>dashboard_type</code></strong> :&ensp;<code>str</code></dt>
 <dd>(Optional) Dashboard instance type to filter by. Must be 'owner', 'user', or 'proxy'</dd>
-<dt><strong><code>owner_info</code></strong></dt>
-<dd>(Optional) Dashboard owner information. True or False</dd>
-<dt><strong><code>dash_id</code></strong></dt>
-<dd>(optional) Dashboard ID to filter by</dd>
-<dt><strong><code>parent_folder</code></strong></dt>
+<dt><strong><code>owner_info</code></strong> :&ensp;<code>bool</code></dt>
+<dd>(Optional) Whether to return owner_info</dd>
+<dt><strong><code>dash_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Dashboard ID to filter by</dd>
+<dt><strong><code>parent_folder</code></strong> :&ensp;<code>Folder</code></dt>
 <dd>(Optional) PySense Folder to filter on</dd>
-<dt><strong><code>name</code></strong></dt>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
 <dd>(Optional) Name to filter by</dd>
-<dt><strong><code>data_source_title</code></strong></dt>
+<dt><strong><code>data_source_title</code></strong> :&ensp;<code>str</code></dt>
 <dd>(Optional) Data source name to filter by</dd>
-<dt><strong><code>data_source_address</code></strong></dt>
+<dt><strong><code>data_source_address</code></strong> :&ensp;<code>str</code></dt>
 <dd>(Optional) Data source address to filter by</dd>
-<dt><strong><code>ownership_type</code></strong></dt>
-<dd>(Optional) Dashboard ownership type to filter by, rewrites “dashboardType” filter.</dd>
-<dt>Values are: allRoot root owner shared sharedroot ownerAndShared ownerAndSharedByLastOpen</dt>
-<dt><strong><code>search</code></strong></dt>
+<dt><strong><code>ownership_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Dashboard ownership type to filter by, rewrites “dashboardType” filter.
+Values are: allRoot root owner shared sharedroot ownerAndShared ownerAndSharedByLastOpen</dd>
+<dt><strong><code>search</code></strong> :&ensp;<code>str</code></dt>
 <dd>(Optional) Search by dashboard title query string or advanced search</dd>
-<dt><strong><code>fields</code></strong></dt>
+<dt><strong><code>fields</code></strong> :&ensp;<code>list[str]</code></dt>
 <dd>(Optional) Whitelist of fields to return for each document.
 Can also exclude by prefixing field names with -</dd>
-<dt><strong><code>sort</code></strong></dt>
-<dd>(optional) Field by which the results should be sorted.
+<dt><strong><code>sort</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Field by which the results should be sorted.
 Ascending by default, descending if prefixed by -</dd>
-<dt><strong><code>skip</code></strong></dt>
-<dd>(optional) Number of results to skip from the start of the data set.
+<dt><strong><code>skip</code></strong> :&ensp;<code>int</code></dt>
+<dd>(Optional) Number of results to skip from the start of the data set.
 Skip is to be used with the limit parameter for paging</dd>
-<dt><strong><code>limit</code></strong></dt>
-<dd>(optional) How many results should be returned.
+<dt><strong><code>limit</code></strong> :&ensp;<code>int</code></dt>
+<dd>(Optional) How many results should be returned.
 limit is to be used with the skip parameter for paging</dd>
-<dt><strong><code>expand</code></strong></dt>
+<dt><strong><code>expand</code></strong> :&ensp;<code>list[str]</code></dt>
 <dd>(Optional) List of fields that should be expanded</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>An array of all found dashboards</p></div>
+<dl>
+<dt><code>list[Dashboard]</code></dt>
+<dd>An array of all found dashboards</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -818,31 +838,31 @@ limit is to be used with the skip parameter for paging</dd>
 <pre><code class="python">def get_dashboards_admin(self, *, dashboard_type=None, owner_info=None, dash_id=None, parent_folder=None, name=None,
                          data_source_title=None, data_source_address=None, ownership_type=None, search=None,
                          fields=None, sort=None, skip=None, limit=None, expand=None):
-    &#34;&#34;&#34;Get all dashboards.
+    &#34;&#34;&#34;Get all dashboards as an admin
 
     Args:
-        dashboard_type: (Optional) Dashboard instance type to filter by. Must be &#39;owner&#39;, &#39;user&#39;, or &#39;proxy&#39;
-        owner_info: (Optional) Dashboard owner information. True or False
-        dash_id: (optional) Dashboard ID to filter by
-        parent_folder: (Optional) PySense Folder to filter on
-        name: (Optional) Name to filter by
-        data_source_title: (Optional) Data source name to filter by
-        data_source_address: (Optional) Data source address to filter by
-        ownership_type: (Optional) Dashboard ownership type to filter by, rewrites “dashboardType” filter.
-        Values are: allRoot root owner shared sharedroot ownerAndShared ownerAndSharedByLastOpen
-        search: (Optional) Search by dashboard title query string or advanced search
-        fields: (Optional) Whitelist of fields to return for each document.
+        dashboard_type (str): (Optional) Dashboard instance type to filter by. Must be &#39;owner&#39;, &#39;user&#39;, or &#39;proxy&#39;
+        owner_info (bool): (Optional) Whether to return owner_info
+        dash_id (str): (Optional) Dashboard ID to filter by
+        parent_folder (Folder): (Optional) PySense Folder to filter on
+        name (str): (Optional) Name to filter by
+        data_source_title (str): (Optional) Data source name to filter by
+        data_source_address (str): (Optional) Data source address to filter by
+        ownership_type (str): (Optional) Dashboard ownership type to filter by, rewrites “dashboardType” filter.
+            Values are: allRoot root owner shared sharedroot ownerAndShared ownerAndSharedByLastOpen
+        search (str): (Optional) Search by dashboard title query string or advanced search
+        fields (list[str]): (Optional) Whitelist of fields to return for each document.
            Can also exclude by prefixing field names with -
-        sort: (optional) Field by which the results should be sorted.
+        sort (str): (Optional) Field by which the results should be sorted.
             Ascending by default, descending if prefixed by -
-        skip: (optional) Number of results to skip from the start of the data set.
+        skip (int): (Optional) Number of results to skip from the start of the data set.
             Skip is to be used with the limit parameter for paging
-        limit: (optional) How many results should be returned.
+        limit (int): (Optional) How many results should be returned.
             limit is to be used with the skip parameter for paging
-        expand: (Optional) List of fields that should be expanded
+        expand (list[str]): (Optional) List of fields that should be expanded
 
     Returns:
-        An array of all found dashboards
+        list[Dashboard]: An array of all found dashboards
     &#34;&#34;&#34;
 
     folder_id = None
@@ -881,12 +901,17 @@ limit is to be used with the skip parameter for paging</dd>
 <p>Can be used to update an existing dashboard.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>path</code></strong></dt>
+<dt><strong><code>path</code></strong> :&ensp;<code>str</code></dt>
 <dd>The path to the dash file</dd>
-<dt><strong><code>action</code></strong></dt>
+<dt><strong><code>action</code></strong> :&ensp;<code>str</code></dt>
 <dd>Determines if the dashboard should be overwritten</dd>
-<dt><strong><code>republish</code></strong></dt>
-<dd>Republishes dashboards on target server after copying</dd>
+<dt><strong><code>republish</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether to republish after import</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list[Dashboard]</code></dt>
+<dd>The newly added dashboards</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -898,9 +923,12 @@ limit is to be used with the skip parameter for paging</dd>
     Can be used to update an existing dashboard.
 
     Args:
-        path: The path to the dash file
-        action: Determines if the dashboard should be overwritten
-        republish: Republishes dashboards on target server after copying
+        path (str): The path to the dash file
+        action (str): Determines if the dashboard should be overwritten
+        republish (bool): Whether to republish after import
+
+    Returns:
+        list[Dashboard]: The newly added dashboards
     &#34;&#34;&#34;
 
     query_params = {&#39;action&#39;: action, &#39;republish&#39;: republish}
@@ -910,6 +938,7 @@ limit is to be used with the skip parameter for paging</dd>
         json_array = json_obj
     else:
         json_array = [json_obj]
+
     result_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/dashboards/import/bulk&#39;,
                                            query_params=query_params, json_payload=json_array)
     ret_arr = []
@@ -940,9 +969,9 @@ limit is to be used with the skip parameter for paging</dd>
 <h4><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn">DashboardMixIn</a></code></h4>
 <ul class="">
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.add_dashboards" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.add_dashboards">add_dashboards</a></code></li>
-<li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.bulk_export_dashboards" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.bulk_export_dashboards">bulk_export_dashboards</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.create_dashboard" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.create_dashboard">create_dashboard</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.delete_dashboards" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.delete_dashboards">delete_dashboards</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.export_dashboards" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.export_dashboards">export_dashboards</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboard_by_id" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboard_by_id">get_dashboard_by_id</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards">get_dashboards</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards_admin" href="#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards_admin">get_dashboards_admin</a></code></li>

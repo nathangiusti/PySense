@@ -27,25 +27,46 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class BuildTask:
+    &#34;&#34;&#34;Build Task
+
+    Spawned when a build is triggered. Object is used to track and control an in progress build.
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, build_task_json):
-        self._build_task_json = build_task_json
-        self._py_client = py_client
+        &#34;&#34;&#34;
+
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            build_task_json (JSON): The json for this object
+        &#34;&#34;&#34;
+
+        self.json = build_task_json
+        self.py_client = py_client
 
     def get_oid(self):
-        return self._build_task_json[&#39;oid&#39;]
+        &#34;&#34;&#34;Returns the oid of the build task&#34;&#34;&#34;
+
+        return self.json[&#39;oid&#39;]
 
     def get_status(self):
+        &#34;&#34;&#34;Updates and returns the current status of the build object&#34;&#34;&#34;
+
         self.update()
-        return self._build_task_json[&#39;status&#39;]
+        return self.json[&#39;status&#39;]
 
     def update(self):
         &#34;&#34;&#34;Updates the build task with latest information from server&#34;&#34;&#34;
-        self._build_task_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/builds/{}&#39;.format(self.get_oid()))
+
+        self.json = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/builds/{}&#39;.format(self.get_oid()))
 
     def cancel_build(self):
         &#34;&#34;&#34;Cancels build&#34;&#34;&#34;
-        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds/{}&#39;.format(self.get_oid()))</code></pre>
+
+        self.py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds/{}&#39;.format(self.get_oid()))</code></pre>
 </details>
 </section>
 <section>
@@ -62,31 +83,67 @@
 <span>(</span><span>py_client, build_task_json)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Build Task</p>
+<p>Spawned when a build is triggered. Object is used to track and control an in progress build.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The JSON for this object</dd>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The connection to the Sisense server which owns this asset</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The PySense object for the server this asset belongs to</dd>
+<dt><strong><code>build_task_json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The json for this object</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class BuildTask:
+    &#34;&#34;&#34;Build Task
+
+    Spawned when a build is triggered. Object is used to track and control an in progress build.
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, build_task_json):
-        self._build_task_json = build_task_json
-        self._py_client = py_client
+        &#34;&#34;&#34;
+
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            build_task_json (JSON): The json for this object
+        &#34;&#34;&#34;
+
+        self.json = build_task_json
+        self.py_client = py_client
 
     def get_oid(self):
-        return self._build_task_json[&#39;oid&#39;]
+        &#34;&#34;&#34;Returns the oid of the build task&#34;&#34;&#34;
+
+        return self.json[&#39;oid&#39;]
 
     def get_status(self):
+        &#34;&#34;&#34;Updates and returns the current status of the build object&#34;&#34;&#34;
+
         self.update()
-        return self._build_task_json[&#39;status&#39;]
+        return self.json[&#39;status&#39;]
 
     def update(self):
         &#34;&#34;&#34;Updates the build task with latest information from server&#34;&#34;&#34;
-        self._build_task_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/builds/{}&#39;.format(self.get_oid()))
+
+        self.json = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/builds/{}&#39;.format(self.get_oid()))
 
     def cancel_build(self):
         &#34;&#34;&#34;Cancels build&#34;&#34;&#34;
-        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds/{}&#39;.format(self.get_oid()))</code></pre>
+
+        self.py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds/{}&#39;.format(self.get_oid()))</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -101,34 +158,39 @@
 </summary>
 <pre><code class="python">def cancel_build(self):
     &#34;&#34;&#34;Cancels build&#34;&#34;&#34;
-    self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds/{}&#39;.format(self.get_oid()))</code></pre>
+
+    self.py_client.connector.rest_call(&#39;delete&#39;, &#39;api/v2/builds/{}&#39;.format(self.get_oid()))</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseBuildTask.BuildTask.get_oid"><code class="name flex">
 <span>def <span class="ident">get_oid</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the oid of the build task</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_oid(self):
-    return self._build_task_json[&#39;oid&#39;]</code></pre>
+    &#34;&#34;&#34;Returns the oid of the build task&#34;&#34;&#34;
+
+    return self.json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseBuildTask.BuildTask.get_status"><code class="name flex">
 <span>def <span class="ident">get_status</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Updates and returns the current status of the build object</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_status(self):
+    &#34;&#34;&#34;Updates and returns the current status of the build object&#34;&#34;&#34;
+
     self.update()
-    return self._build_task_json[&#39;status&#39;]</code></pre>
+    return self.json[&#39;status&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseBuildTask.BuildTask.update"><code class="name flex">
@@ -142,7 +204,8 @@
 </summary>
 <pre><code class="python">def update(self):
     &#34;&#34;&#34;Updates the build task with latest information from server&#34;&#34;&#34;
-    self._build_task_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/builds/{}&#39;.format(self.get_oid()))</code></pre>
+
+    self.json = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/v2/builds/{}&#39;.format(self.get_oid()))</code></pre>
 </details>
 </dd>
 </dl>

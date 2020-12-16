@@ -30,8 +30,26 @@
 
 
 class Rule:
+    &#34;&#34;&#34;A data security rule
+
+    A rule belongs to a single table.column
+    A column may have multiple rules. A rule belongs to a single table.column
+    Each rule has a list of groups and users that the rule applies to
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
+
     def __init__(self, py_client, rule_json):
-        self._py_client = py_client
+        &#34;&#34;&#34;
+
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            rule_json (JSON): The json for this object
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
         self._reset(rule_json)
 
     def _reset(self, rule_json):
@@ -41,36 +59,58 @@ class Rule:
                 share[&#39;party&#39;] = share.pop(&#39;partyId&#39;)
         self._rule_json = rule_json
 
-    def get_shares(self):
-        &#34;&#34;&#34;Returns the rules shares&#34;&#34;&#34;
+    def get_shares_json(self):
+        &#34;&#34;&#34;Returns the rules shares as JSON&#34;&#34;&#34;
+
         return self._rule_json[&#39;shares&#39;]
+
+    def get_shares_user_groups(self):
+        &#34;&#34;&#34;Returns the rules shares as users and groups
+
+        Returns:
+            list[User,Group]: Users and groups this rule is applied to
+        &#34;&#34;&#34;
+        ret_arr = []
+        for share in self._rule_json[&#39;shares&#39;]:
+            if share[&#39;type&#39;] == &#39;user&#39;:
+                ret_arr.append(self.py_client.get_user_by_id(share[&#39;party&#39;]))
+            elif share[&#39;type&#39;] == &#39;group&#39;:
+                ret_arr.append(self.py_client.get_group_by_id(share[&#39;party&#39;]))
+        return ret_arr
 
     def get_id(self):
         &#34;&#34;&#34;Gets the rule id.&#34;&#34;&#34;
+
         return self._rule_json[&#39;_id&#39;]
 
     def get_column(self):
         &#34;&#34;&#34;Gets the column for which the rule applies&#34;&#34;&#34;
+
         return self._rule_json[&#39;column&#39;]
 
     def get_table(self):
-        &#34;&#34;&#34; Gets the table for which the rule applies.&#34;&#34;&#34;
+        &#34;&#34;&#34;Gets the table for which the rule applies.&#34;&#34;&#34;
+
         return self._rule_json[&#39;table&#39;]
 
     def get_members(self):
         &#34;&#34;&#34;Gets the member values.&#34;&#34;&#34;
+
         return self._rule_json[&#39;members&#39;]
 
     def get_data_type(self):
         &#34;&#34;&#34;Gets the data type for which the rule applies.&#34;&#34;&#34;
+
         return self._rule_json[&#39;datatype&#39;]
 
     def get_exclusionary(self):
         &#34;&#34;&#34;Returns whether or not the rule is exclusionary&#34;&#34;&#34;
+
         return self._rule_json[&#39;exclusionary&#39;]
 
     def get_all_members(self):
         &#34;&#34;&#34;Returns whether or not the rule is for all members.&#34;&#34;&#34;
+
         return self._rule_json[&#39;exclusionary&#39;]
 
     def update_rule(self, *, table=None, column=None, data_type=None, shares=&#39;&#39;, members=&#39;&#39;,
@@ -80,14 +120,15 @@ class Rule:
         Any arguments given will replace the current value and update the rule in place
 
         Args:
-            shares: (optional) Array of users and groups to share the rule with
-            table: (optional) Table of the data security rule
-            column: (optional) Column of the data security rule
-            data_type: (optional) Data security rule data type
-            members: (optional) The values to specify in the rule. If blank, will use nothing
-            exclusionary: (optional) Set to true to make an exclusionary rule
-            all_members: (optional) Set to true for a rule to allow user to see all values
+            shares (list[User,Group]): (Optional) Array of users and groups to share the rule with
+            table (str): (Optional) Table of the data security rule
+            column (str): (Optional) Column of the data security rule
+            data_type (str): (Optional) Data security rule data type
+            members (list[str]): (Optional) The values to specify in the rule. If blank, will use nothing
+            exclusionary (bool): (Optional) Set to true to make an exclusionary rule
+            all_members (bool): (Optional) Set to true for a rule to allow user to see all values
         &#34;&#34;&#34;
+
         rule_json = {
             &#34;column&#34;: column if column is not None else self.get_column(),
             &#34;datatype&#34;: data_type if data_type is not None else self.get_data_type(),
@@ -104,7 +145,7 @@ class Rule:
                     shares_json.append({&#39;party&#39;: party.get_id(), &#39;type&#39;: &#39;group&#39;})
             rule_json[&#39;shares&#39;] = shares_json
         else:
-            rule_json[&#39;shares&#39;] = self.get_shares()
+            rule_json[&#39;shares&#39;] = self.get_shares_json()
 
         if members != &#39;&#39;:
             if members is None:
@@ -119,8 +160,8 @@ class Rule:
         else:
             rule_json[&#39;members&#39;] = self.get_members()
 
-        resp_json = self._py_client.connector.rest_call(&#39;put&#39;, &#39;api/elasticubes/datasecurity/{}&#39;.format(self.get_id()),
-                                                        json_payload=rule_json)
+        resp_json = self.py_client.connector.rest_call(&#39;put&#39;, &#39;api/elasticubes/datasecurity/{}&#39;.format(self.get_id()),
+                                                       json_payload=rule_json)
         self._reset(resp_json)</code></pre>
 </details>
 </section>
@@ -138,14 +179,49 @@ class Rule:
 <span>(</span><span>py_client, rule_json)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>A data security rule</p>
+<p>A rule belongs to a single table.column
+A column may have multiple rules. A rule belongs to a single table.column
+Each rule has a list of groups and users that the rule applies to</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The JSON for this object</dd>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The connection to the Sisense server which owns this asset</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The PySense object for the server this asset belongs to</dd>
+<dt><strong><code>rule_json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The json for this object</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Rule:
+    &#34;&#34;&#34;A data security rule
+
+    A rule belongs to a single table.column
+    A column may have multiple rules. A rule belongs to a single table.column
+    Each rule has a list of groups and users that the rule applies to
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
+
     def __init__(self, py_client, rule_json):
-        self._py_client = py_client
+        &#34;&#34;&#34;
+
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            rule_json (JSON): The json for this object
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
         self._reset(rule_json)
 
     def _reset(self, rule_json):
@@ -155,36 +231,58 @@ class Rule:
                 share[&#39;party&#39;] = share.pop(&#39;partyId&#39;)
         self._rule_json = rule_json
 
-    def get_shares(self):
-        &#34;&#34;&#34;Returns the rules shares&#34;&#34;&#34;
+    def get_shares_json(self):
+        &#34;&#34;&#34;Returns the rules shares as JSON&#34;&#34;&#34;
+
         return self._rule_json[&#39;shares&#39;]
+
+    def get_shares_user_groups(self):
+        &#34;&#34;&#34;Returns the rules shares as users and groups
+
+        Returns:
+            list[User,Group]: Users and groups this rule is applied to
+        &#34;&#34;&#34;
+        ret_arr = []
+        for share in self._rule_json[&#39;shares&#39;]:
+            if share[&#39;type&#39;] == &#39;user&#39;:
+                ret_arr.append(self.py_client.get_user_by_id(share[&#39;party&#39;]))
+            elif share[&#39;type&#39;] == &#39;group&#39;:
+                ret_arr.append(self.py_client.get_group_by_id(share[&#39;party&#39;]))
+        return ret_arr
 
     def get_id(self):
         &#34;&#34;&#34;Gets the rule id.&#34;&#34;&#34;
+
         return self._rule_json[&#39;_id&#39;]
 
     def get_column(self):
         &#34;&#34;&#34;Gets the column for which the rule applies&#34;&#34;&#34;
+
         return self._rule_json[&#39;column&#39;]
 
     def get_table(self):
-        &#34;&#34;&#34; Gets the table for which the rule applies.&#34;&#34;&#34;
+        &#34;&#34;&#34;Gets the table for which the rule applies.&#34;&#34;&#34;
+
         return self._rule_json[&#39;table&#39;]
 
     def get_members(self):
         &#34;&#34;&#34;Gets the member values.&#34;&#34;&#34;
+
         return self._rule_json[&#39;members&#39;]
 
     def get_data_type(self):
         &#34;&#34;&#34;Gets the data type for which the rule applies.&#34;&#34;&#34;
+
         return self._rule_json[&#39;datatype&#39;]
 
     def get_exclusionary(self):
         &#34;&#34;&#34;Returns whether or not the rule is exclusionary&#34;&#34;&#34;
+
         return self._rule_json[&#39;exclusionary&#39;]
 
     def get_all_members(self):
         &#34;&#34;&#34;Returns whether or not the rule is for all members.&#34;&#34;&#34;
+
         return self._rule_json[&#39;exclusionary&#39;]
 
     def update_rule(self, *, table=None, column=None, data_type=None, shares=&#39;&#39;, members=&#39;&#39;,
@@ -194,14 +292,15 @@ class Rule:
         Any arguments given will replace the current value and update the rule in place
 
         Args:
-            shares: (optional) Array of users and groups to share the rule with
-            table: (optional) Table of the data security rule
-            column: (optional) Column of the data security rule
-            data_type: (optional) Data security rule data type
-            members: (optional) The values to specify in the rule. If blank, will use nothing
-            exclusionary: (optional) Set to true to make an exclusionary rule
-            all_members: (optional) Set to true for a rule to allow user to see all values
+            shares (list[User,Group]): (Optional) Array of users and groups to share the rule with
+            table (str): (Optional) Table of the data security rule
+            column (str): (Optional) Column of the data security rule
+            data_type (str): (Optional) Data security rule data type
+            members (list[str]): (Optional) The values to specify in the rule. If blank, will use nothing
+            exclusionary (bool): (Optional) Set to true to make an exclusionary rule
+            all_members (bool): (Optional) Set to true for a rule to allow user to see all values
         &#34;&#34;&#34;
+
         rule_json = {
             &#34;column&#34;: column if column is not None else self.get_column(),
             &#34;datatype&#34;: data_type if data_type is not None else self.get_data_type(),
@@ -218,7 +317,7 @@ class Rule:
                     shares_json.append({&#39;party&#39;: party.get_id(), &#39;type&#39;: &#39;group&#39;})
             rule_json[&#39;shares&#39;] = shares_json
         else:
-            rule_json[&#39;shares&#39;] = self.get_shares()
+            rule_json[&#39;shares&#39;] = self.get_shares_json()
 
         if members != &#39;&#39;:
             if members is None:
@@ -233,8 +332,8 @@ class Rule:
         else:
             rule_json[&#39;members&#39;] = self.get_members()
 
-        resp_json = self._py_client.connector.rest_call(&#39;put&#39;, &#39;api/elasticubes/datasecurity/{}&#39;.format(self.get_id()),
-                                                        json_payload=rule_json)
+        resp_json = self.py_client.connector.rest_call(&#39;put&#39;, &#39;api/elasticubes/datasecurity/{}&#39;.format(self.get_id()),
+                                                       json_payload=rule_json)
         self._reset(resp_json)</code></pre>
 </details>
 <h3>Methods</h3>
@@ -250,6 +349,7 @@ class Rule:
 </summary>
 <pre><code class="python">def get_all_members(self):
     &#34;&#34;&#34;Returns whether or not the rule is for all members.&#34;&#34;&#34;
+
     return self._rule_json[&#39;exclusionary&#39;]</code></pre>
 </details>
 </dd>
@@ -264,6 +364,7 @@ class Rule:
 </summary>
 <pre><code class="python">def get_column(self):
     &#34;&#34;&#34;Gets the column for which the rule applies&#34;&#34;&#34;
+
     return self._rule_json[&#39;column&#39;]</code></pre>
 </details>
 </dd>
@@ -278,6 +379,7 @@ class Rule:
 </summary>
 <pre><code class="python">def get_data_type(self):
     &#34;&#34;&#34;Gets the data type for which the rule applies.&#34;&#34;&#34;
+
     return self._rule_json[&#39;datatype&#39;]</code></pre>
 </details>
 </dd>
@@ -292,6 +394,7 @@ class Rule:
 </summary>
 <pre><code class="python">def get_exclusionary(self):
     &#34;&#34;&#34;Returns whether or not the rule is exclusionary&#34;&#34;&#34;
+
     return self._rule_json[&#39;exclusionary&#39;]</code></pre>
 </details>
 </dd>
@@ -306,6 +409,7 @@ class Rule:
 </summary>
 <pre><code class="python">def get_id(self):
     &#34;&#34;&#34;Gets the rule id.&#34;&#34;&#34;
+
     return self._rule_json[&#39;_id&#39;]</code></pre>
 </details>
 </dd>
@@ -320,21 +424,52 @@ class Rule:
 </summary>
 <pre><code class="python">def get_members(self):
     &#34;&#34;&#34;Gets the member values.&#34;&#34;&#34;
+
     return self._rule_json[&#39;members&#39;]</code></pre>
 </details>
 </dd>
-<dt id="PySense.PySenseRule.Rule.get_shares"><code class="name flex">
-<span>def <span class="ident">get_shares</span></span>(<span>self)</span>
+<dt id="PySense.PySenseRule.Rule.get_shares_json"><code class="name flex">
+<span>def <span class="ident">get_shares_json</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the rules shares</p></div>
+<div class="desc"><p>Returns the rules shares as JSON</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_shares(self):
-    &#34;&#34;&#34;Returns the rules shares&#34;&#34;&#34;
+<pre><code class="python">def get_shares_json(self):
+    &#34;&#34;&#34;Returns the rules shares as JSON&#34;&#34;&#34;
+
     return self._rule_json[&#39;shares&#39;]</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseRule.Rule.get_shares_user_groups"><code class="name flex">
+<span>def <span class="ident">get_shares_user_groups</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the rules shares as users and groups</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list[User,Group]</code></dt>
+<dd>Users and groups this rule is applied to</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_shares_user_groups(self):
+    &#34;&#34;&#34;Returns the rules shares as users and groups
+
+    Returns:
+        list[User,Group]: Users and groups this rule is applied to
+    &#34;&#34;&#34;
+    ret_arr = []
+    for share in self._rule_json[&#39;shares&#39;]:
+        if share[&#39;type&#39;] == &#39;user&#39;:
+            ret_arr.append(self.py_client.get_user_by_id(share[&#39;party&#39;]))
+        elif share[&#39;type&#39;] == &#39;group&#39;:
+            ret_arr.append(self.py_client.get_group_by_id(share[&#39;party&#39;]))
+    return ret_arr</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseRule.Rule.get_table"><code class="name flex">
@@ -347,7 +482,8 @@ class Rule:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_table(self):
-    &#34;&#34;&#34; Gets the table for which the rule applies.&#34;&#34;&#34;
+    &#34;&#34;&#34;Gets the table for which the rule applies.&#34;&#34;&#34;
+
     return self._rule_json[&#39;table&#39;]</code></pre>
 </details>
 </dd>
@@ -359,20 +495,20 @@ class Rule:
 <p>Any arguments given will replace the current value and update the rule in place</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>shares</code></strong></dt>
-<dd>(optional) Array of users and groups to share the rule with</dd>
-<dt><strong><code>table</code></strong></dt>
-<dd>(optional) Table of the data security rule</dd>
-<dt><strong><code>column</code></strong></dt>
-<dd>(optional) Column of the data security rule</dd>
-<dt><strong><code>data_type</code></strong></dt>
-<dd>(optional) Data security rule data type</dd>
-<dt><strong><code>members</code></strong></dt>
-<dd>(optional) The values to specify in the rule. If blank, will use nothing</dd>
-<dt><strong><code>exclusionary</code></strong></dt>
-<dd>(optional) Set to true to make an exclusionary rule</dd>
-<dt><strong><code>all_members</code></strong></dt>
-<dd>(optional) Set to true for a rule to allow user to see all values</dd>
+<dt><strong><code>shares</code></strong> :&ensp;<code>list[User,Group]</code></dt>
+<dd>(Optional) Array of users and groups to share the rule with</dd>
+<dt><strong><code>table</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Table of the data security rule</dd>
+<dt><strong><code>column</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Column of the data security rule</dd>
+<dt><strong><code>data_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Data security rule data type</dd>
+<dt><strong><code>members</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>(Optional) The values to specify in the rule. If blank, will use nothing</dd>
+<dt><strong><code>exclusionary</code></strong> :&ensp;<code>bool</code></dt>
+<dd>(Optional) Set to true to make an exclusionary rule</dd>
+<dt><strong><code>all_members</code></strong> :&ensp;<code>bool</code></dt>
+<dd>(Optional) Set to true for a rule to allow user to see all values</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -385,14 +521,15 @@ class Rule:
     Any arguments given will replace the current value and update the rule in place
 
     Args:
-        shares: (optional) Array of users and groups to share the rule with
-        table: (optional) Table of the data security rule
-        column: (optional) Column of the data security rule
-        data_type: (optional) Data security rule data type
-        members: (optional) The values to specify in the rule. If blank, will use nothing
-        exclusionary: (optional) Set to true to make an exclusionary rule
-        all_members: (optional) Set to true for a rule to allow user to see all values
+        shares (list[User,Group]): (Optional) Array of users and groups to share the rule with
+        table (str): (Optional) Table of the data security rule
+        column (str): (Optional) Column of the data security rule
+        data_type (str): (Optional) Data security rule data type
+        members (list[str]): (Optional) The values to specify in the rule. If blank, will use nothing
+        exclusionary (bool): (Optional) Set to true to make an exclusionary rule
+        all_members (bool): (Optional) Set to true for a rule to allow user to see all values
     &#34;&#34;&#34;
+
     rule_json = {
         &#34;column&#34;: column if column is not None else self.get_column(),
         &#34;datatype&#34;: data_type if data_type is not None else self.get_data_type(),
@@ -409,7 +546,7 @@ class Rule:
                 shares_json.append({&#39;party&#39;: party.get_id(), &#39;type&#39;: &#39;group&#39;})
         rule_json[&#39;shares&#39;] = shares_json
     else:
-        rule_json[&#39;shares&#39;] = self.get_shares()
+        rule_json[&#39;shares&#39;] = self.get_shares_json()
 
     if members != &#39;&#39;:
         if members is None:
@@ -424,8 +561,8 @@ class Rule:
     else:
         rule_json[&#39;members&#39;] = self.get_members()
 
-    resp_json = self._py_client.connector.rest_call(&#39;put&#39;, &#39;api/elasticubes/datasecurity/{}&#39;.format(self.get_id()),
-                                                    json_payload=rule_json)
+    resp_json = self.py_client.connector.rest_call(&#39;put&#39;, &#39;api/elasticubes/datasecurity/{}&#39;.format(self.get_id()),
+                                                   json_payload=rule_json)
     self._reset(resp_json)</code></pre>
 </details>
 </dd>
@@ -449,14 +586,15 @@ class Rule:
 <ul>
 <li>
 <h4><code><a title="PySense.PySenseRule.Rule" href="#PySense.PySenseRule.Rule">Rule</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="PySense.PySenseRule.Rule.get_all_members" href="#PySense.PySenseRule.Rule.get_all_members">get_all_members</a></code></li>
 <li><code><a title="PySense.PySenseRule.Rule.get_column" href="#PySense.PySenseRule.Rule.get_column">get_column</a></code></li>
 <li><code><a title="PySense.PySenseRule.Rule.get_data_type" href="#PySense.PySenseRule.Rule.get_data_type">get_data_type</a></code></li>
 <li><code><a title="PySense.PySenseRule.Rule.get_exclusionary" href="#PySense.PySenseRule.Rule.get_exclusionary">get_exclusionary</a></code></li>
 <li><code><a title="PySense.PySenseRule.Rule.get_id" href="#PySense.PySenseRule.Rule.get_id">get_id</a></code></li>
 <li><code><a title="PySense.PySenseRule.Rule.get_members" href="#PySense.PySenseRule.Rule.get_members">get_members</a></code></li>
-<li><code><a title="PySense.PySenseRule.Rule.get_shares" href="#PySense.PySenseRule.Rule.get_shares">get_shares</a></code></li>
+<li><code><a title="PySense.PySenseRule.Rule.get_shares_json" href="#PySense.PySenseRule.Rule.get_shares_json">get_shares_json</a></code></li>
+<li><code><a title="PySense.PySenseRule.Rule.get_shares_user_groups" href="#PySense.PySenseRule.Rule.get_shares_user_groups">get_shares_user_groups</a></code></li>
 <li><code><a title="PySense.PySenseRule.Rule.get_table" href="#PySense.PySenseRule.Rule.get_table">get_table</a></code></li>
 <li><code><a title="PySense.PySenseRule.Rule.update_rule" href="#PySense.PySenseRule.Rule.update_rule">update_rule</a></code></li>
 </ul>

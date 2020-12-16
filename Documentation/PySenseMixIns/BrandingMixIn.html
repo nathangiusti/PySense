@@ -32,14 +32,16 @@
 class BrandingMixIn:
     def get_branding(self):
         &#34;&#34;&#34;Returns the current branding&#34;&#34;&#34;
+        
         return PySenseBranding.Branding(self.connector, self.connector.rest_call(&#39;get&#39;, &#39;api/branding&#39;))
 
     def set_branding(self, branding):
         &#34;&#34;&#34;Update the branding
         Args:
-            - branding: The PySense Branding object
+            branding (Branding): The PySense Branding object
         &#34;&#34;&#34;
-        self.connector.rest_call(&#39;post&#39;, &#39;api/branding&#39;, json_payload=branding.get_json())</code></pre>
+
+        self.connector.rest_call(&#39;post&#39;, &#39;api/branding&#39;, json_payload=branding.json)</code></pre>
 </details>
 </section>
 <section>
@@ -63,14 +65,16 @@ class BrandingMixIn:
 <pre><code class="python">class BrandingMixIn:
     def get_branding(self):
         &#34;&#34;&#34;Returns the current branding&#34;&#34;&#34;
+        
         return PySenseBranding.Branding(self.connector, self.connector.rest_call(&#39;get&#39;, &#39;api/branding&#39;))
 
     def set_branding(self, branding):
         &#34;&#34;&#34;Update the branding
         Args:
-            - branding: The PySense Branding object
+            branding (Branding): The PySense Branding object
         &#34;&#34;&#34;
-        self.connector.rest_call(&#39;post&#39;, &#39;api/branding&#39;, json_payload=branding.get_json())</code></pre>
+
+        self.connector.rest_call(&#39;post&#39;, &#39;api/branding&#39;, json_payload=branding.json)</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -89,6 +93,7 @@ class BrandingMixIn:
 </summary>
 <pre><code class="python">def get_branding(self):
     &#34;&#34;&#34;Returns the current branding&#34;&#34;&#34;
+    
     return PySenseBranding.Branding(self.connector, self.connector.rest_call(&#39;get&#39;, &#39;api/branding&#39;))</code></pre>
 </details>
 </dd>
@@ -98,9 +103,10 @@ class BrandingMixIn:
 <dd>
 <div class="desc"><p>Update the branding</p>
 <h2 id="args">Args</h2>
-<ul>
-<li>branding: The PySense Branding object</li>
-</ul></div>
+<dl>
+<dt><strong><code>branding</code></strong> :&ensp;<code>Branding</code></dt>
+<dd>The PySense Branding object</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -108,9 +114,10 @@ class BrandingMixIn:
 <pre><code class="python">def set_branding(self, branding):
     &#34;&#34;&#34;Update the branding
     Args:
-        - branding: The PySense Branding object
+        branding (Branding): The PySense Branding object
     &#34;&#34;&#34;
-    self.connector.rest_call(&#39;post&#39;, &#39;api/branding&#39;, json_payload=branding.get_json())</code></pre>
+
+    self.connector.rest_call(&#39;post&#39;, &#39;api/branding&#39;, json_payload=branding.json)</code></pre>
 </details>
 </dd>
 </dl>

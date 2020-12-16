@@ -36,15 +36,30 @@ class RoleMixIn:
         from PySense import SisenseRole
 
         py_client.get_role_id(SisenseRole.Role.VIEWER)
+
+        Args:
+            role (Role): A role enum
+
+        Returns:
+            str: The role id for the role
         &#34;&#34;&#34;
 
-        if role in self._roles:
-            return self._roles[role]
+        if role in self.roles:
+            return self.roles[role]
         return None
 
     def get_role_by_id(self, role_id):
-        for role in self._roles:
-            if self._roles[role] == role_id:
+        &#34;&#34;&#34;Get role from id
+
+        Args:
+            role_id (str): The role id for the role to find
+
+        Returns:
+            Role: The role with the given role id
+        &#34;&#34;&#34;
+
+        for role in self.roles:
+            if self.roles[role] == role_id:
                 return role
         raise PySenseException.PySenseException(&#39;No role with id {} found&#39;.format(role_id))</code></pre>
 </details>
@@ -74,15 +89,30 @@ class RoleMixIn:
         from PySense import SisenseRole
 
         py_client.get_role_id(SisenseRole.Role.VIEWER)
+
+        Args:
+            role (Role): A role enum
+
+        Returns:
+            str: The role id for the role
         &#34;&#34;&#34;
 
-        if role in self._roles:
-            return self._roles[role]
+        if role in self.roles:
+            return self.roles[role]
         return None
 
     def get_role_by_id(self, role_id):
-        for role in self._roles:
-            if self._roles[role] == role_id:
+        &#34;&#34;&#34;Get role from id
+
+        Args:
+            role_id (str): The role id for the role to find
+
+        Returns:
+            Role: The role with the given role id
+        &#34;&#34;&#34;
+
+        for role in self.roles:
+            if self.roles[role] == role_id:
                 return role
         raise PySenseException.PySenseException(&#39;No role with id {} found&#39;.format(role_id))</code></pre>
 </details>
@@ -96,14 +126,33 @@ class RoleMixIn:
 <span>def <span class="ident">get_role_by_id</span></span>(<span>self, role_id)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Get role from id</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>role_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The role id for the role to find</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Role</code></dt>
+<dd>The role with the given role id</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_role_by_id(self, role_id):
-    for role in self._roles:
-        if self._roles[role] == role_id:
+    &#34;&#34;&#34;Get role from id
+
+    Args:
+        role_id (str): The role id for the role to find
+
+    Returns:
+        Role: The role with the given role id
+    &#34;&#34;&#34;
+
+    for role in self.roles:
+        if self.roles[role] == role_id:
             return role
     raise PySenseException.PySenseException(&#39;No role with id {} found&#39;.format(role_id))</code></pre>
 </details>
@@ -114,7 +163,17 @@ class RoleMixIn:
 <dd>
 <div class="desc"><p>Get the role id for the given role name. Use the SisenseRole.Role as a parameter
 from PySense import SisenseRole</p>
-<p>py_client.get_role_id(SisenseRole.Role.VIEWER)</p></div>
+<p>py_client.get_role_id(SisenseRole.Role.VIEWER)</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>role</code></strong> :&ensp;<code>Role</code></dt>
+<dd>A role enum</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The role id for the role</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -124,10 +183,16 @@ from PySense import SisenseRole</p>
     from PySense import SisenseRole
 
     py_client.get_role_id(SisenseRole.Role.VIEWER)
+
+    Args:
+        role (Role): A role enum
+
+    Returns:
+        str: The role id for the role
     &#34;&#34;&#34;
 
-    if role in self._roles:
-        return self._roles[role]
+    if role in self.roles:
+        return self.roles[role]
     return None</code></pre>
 </details>
 </dd>

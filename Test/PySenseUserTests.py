@@ -7,11 +7,8 @@ class PySenseUserTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
-        cls.user = cls.py_client.get_user_by_email('testuser@sisense.com')
-        if cls.user is None:
-            cls.user = cls.py_client.add_user('testuser@sisense.com', SisenseRole.Role.VIEWER,
-                                              first_name='Test', last_name='User')
+        cls.py_client = PySense.authenticate_by_file('resources//WindowsConfig.yaml')
+        cls.user = cls.py_client.get_user_by_email('pysensetest@sisense.com')
         cls.group = cls.py_client.get_groups(name='PySense')[0]
 
     def test_getters(self):
@@ -20,7 +17,7 @@ class PySenseUserTests(unittest.TestCase):
         assert self.user.get_email() is not None
         assert self.user.get_first_name() is not None
         assert self.user.get_last_name() is not None
-        assert self.user.get_role() == SisenseRole.Role.VIEWER
+        assert self.user.get_role() == SisenseRole.Role.DESIGNER
 
     def test_update_user(self):
         self.user.update(first_name='PySense', last_name='User', groups=[])

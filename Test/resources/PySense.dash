@@ -1,0 +1,391 @@
+[
+  {
+    "title": "PySense",
+    "desc": "",
+    "source": null,
+    "type": "dashboard",
+    "style": {
+      "name": "vivid",
+      "palette": {
+        "colors": [
+          "#00cee6",
+          "#9b9bd7",
+          "#6EDA55",
+          "#fc7570",
+          "#fbb755",
+          "#218A8C"
+        ],
+        "name": "Vivid",
+        "sortOrder": 10,
+        "isSystem": true,
+        "systemDefault": true
+      }
+    },
+    "layout": {
+      "instanceid": "1996F-25A4-DA",
+      "type": "columnar",
+      "columns": [
+        {
+          "width": 100,
+          "cells": [
+            {
+              "subcells": [
+                {
+                  "elements": [
+                    {
+                      "minHeight": 128,
+                      "maxHeight": 2048,
+                      "minWidth": 128,
+                      "maxWidth": 2048,
+                      "height": "140px",
+                      "defaultWidth": 512,
+                      "widgetid": "5fd3c248b98b256ae45a49c2",
+                      "autoHeight": "140px"
+                    }
+                  ],
+                  "width": 100,
+                  "stretchable": false,
+                  "pxlWidth": 959,
+                  "index": 0
+                }
+              ]
+            }
+          ],
+          "pxlWidth": 959,
+          "index": 0
+        }
+      ],
+      "container": {
+        "sizzle1607713605371": {
+          "undefined": {
+            "parentNode": [
+              666.973520410535,
+              87,
+              true
+            ]
+          }
+        }
+      }
+    },
+    "oid": "5fd3c237b98b256ae45a49bf",
+    "dataExploration": false,
+    "datasource": {
+      "title": "PySense",
+      "fullname": "LocalHost/PySense",
+      "id": "aLOCALHOST_aPYSENSE",
+      "address": "LocalHost",
+      "database": "aPySense"
+    },
+    "filters": [
+      {
+        "jaql": {
+          "table": "Fact",
+          "column": "num",
+          "dim": "[Fact.num]",
+          "datatype": "numeric",
+          "title": "num",
+          "collapsed": false,
+          "datasource": {
+            "title": "PySense",
+            "fullname": "LocalHost/PySense",
+            "id": "aLOCALHOST_aPYSENSE",
+            "address": "LocalHost",
+            "database": "aPySense",
+            "lastBuildTime": "2020-12-11T19:01:57.585Z"
+          },
+          "filter": {
+            "explicit": false,
+            "multiSelection": true,
+            "all": true
+          }
+        },
+        "instanceid": "9748E-05D0-46",
+        "isCascading": false
+      },
+      {
+        "jaql": {
+          "table": "Fact",
+          "column": "str",
+          "dim": "[Fact.str]",
+          "datatype": "text",
+          "merged": true,
+          "title": "str",
+          "filter": {
+            "explicit": false,
+            "multiSelection": true,
+            "all": true
+          },
+          "collapsed": false,
+          "datasource": {
+            "title": "PySense",
+            "fullname": "LocalHost/PySense",
+            "id": "aLOCALHOST_aPYSENSE",
+            "address": "LocalHost",
+            "database": "aPySense",
+            "lastBuildTime": "2020-12-11T19:01:57.585Z"
+          }
+        },
+        "instanceid": "76D11-16C4-E2",
+        "isCascading": false
+      }
+    ],
+    "editing": true,
+    "parentFolder": null,
+    "settings": {
+      "autoUpdateOnFiltersChange": true
+    },
+    "filterToDatasourceMapping": {},
+    "subscription": null,
+    "isPublic": null,
+    "previewLayout": [],
+    "hasPrevioiusVersion": true,
+    "widgets": [
+      {
+        "title": "",
+        "type": "pivot",
+        "subtype": "pivot",
+        "oid": "5fd3c248b98b256ae45a49c2",
+        "desc": null,
+        "source": null,
+        "datasource": {
+          "title": "PySense",
+          "fullname": "LocalHost/PySense",
+          "id": "aLOCALHOST_aPYSENSE",
+          "address": "LocalHost",
+          "database": "aPySense",
+          "lastBuildTime": "2020-12-11T14:01:57"
+        },
+        "selection": null,
+        "metadata": {
+          "ignore": {
+            "dimensions": [],
+            "all": false
+          },
+          "panels": [
+            {
+              "name": "rows",
+              "items": [
+                {
+                  "jaql": {
+                    "table": "Fact",
+                    "column": "str",
+                    "dim": "[Fact.str]",
+                    "datatype": "text",
+                    "merged": true,
+                    "title": "str"
+                  },
+                  "field": {
+                    "id": "[Fact.str]",
+                    "index": 0
+                  }
+                }
+              ]
+            },
+            {
+              "name": "values",
+              "items": [
+                {
+                  "jaql": {
+                    "type": "measure",
+                    "formula": "AVG(([1B44C-3AB]), SUM([A34C0-186]))",
+                    "context": {
+                      "[A34C0-186]": {
+                        "table": "Fact",
+                        "column": "num",
+                        "dim": "[Fact.num]",
+                        "datatype": "numeric",
+                        "title": "num"
+                      },
+                      "[1B44C-3AB]": {
+                        "table": "Fact",
+                        "column": "str",
+                        "dim": "[Fact.str]",
+                        "datatype": "text",
+                        "merged": true,
+                        "title": "str"
+                      }
+                    },
+                    "title": "Calc"
+                  },
+                  "format": {
+                    "mask": {
+                      "type": "number",
+                      "t": true,
+                      "b": true,
+                      "separated": true,
+                      "decimals": "auto",
+                      "isdefault": true
+                    },
+                    "color": {
+                      "type": "color",
+                      "color": "transparent"
+                    }
+                  },
+                  "field": {
+                    "id": "AVG(([1B44C-3AB]), SUM([A34C0-186]))",
+                    "index": 2
+                  }
+                }
+              ]
+            },
+            {
+              "name": "columns",
+              "items": [
+                {
+                  "jaql": {
+                    "table": "Fact",
+                    "column": "num",
+                    "dim": "[Fact.num]",
+                    "datatype": "numeric",
+                    "title": "num"
+                  },
+                  "field": {
+                    "id": "[Fact.num]",
+                    "index": 1
+                  }
+                }
+              ]
+            },
+            {
+              "name": "filters",
+              "items": [
+                {
+                  "jaql": {
+                    "table": "Fact",
+                    "column": "str",
+                    "dim": "[Fact.str]",
+                    "datatype": "text",
+                    "merged": true,
+                    "title": "str",
+                    "filter": {
+                      "explicit": false,
+                      "multiSelection": true,
+                      "all": true
+                    },
+                    "collapsed": false,
+                    "datasource": {
+                      "title": "PySense",
+                      "fullname": "LocalHost/PySense",
+                      "id": "aLOCALHOST_aPYSENSE",
+                      "address": "LocalHost",
+                      "database": "aPySense",
+                      "lastBuildTime": "2020-12-11T14:01:57"
+                    }
+                  },
+                  "disabled": false
+                },
+                {
+                  "jaql": {
+                    "table": "Fact",
+                    "column": "num",
+                    "dim": "[Fact.num]",
+                    "datatype": "numeric",
+                    "title": "num",
+                    "filter": {
+                      "explicit": false,
+                      "multiSelection": true,
+                      "all": true
+                    },
+                    "collapsed": false,
+                    "datasource": {
+                      "title": "PySense",
+                      "fullname": "LocalHost/PySense",
+                      "id": "aLOCALHOST_aPYSENSE",
+                      "address": "LocalHost",
+                      "database": "aPySense",
+                      "lastBuildTime": "2020-12-11T14:01:57"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "iconSmall": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAYCAYAAAC8/X7cAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkFDOTk4NjMxNzU1MTExRTM4QkE0QjUwRjg4NjAzOUM1IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkFDOTk4NjMyNzU1MTExRTM4QkE0QjUwRjg4NjAzOUM1Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6QUM5OTg2MkY3NTUxMTFFMzhCQTRCNTBGODg2MDM5QzUiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6QUM5OTg2MzA3NTUxMTFFMzhCQTRCNTBGODg2MDM5QzUiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4Ed6mDAAACVUlEQVR42uyYzytmURjHXWPCbsTkHxAyG1Ga1SSr2chWJFnIu2AW76zFQkqzkCl2RLGXpYVSFhZIfkzZyMbPMRYkkVyfh0P3feec+97z3iMppz6d4znnfu/z3POcHy/P9/2ct1xyc956kRmAev+xVL/EO77UNtSDD9Wufc+LKfCRqgxEZ9fzvEvHgafob68uXDpJIXEc+mkewx/YgH/YJqDYhePwnz62CSiOFQAOfqCagz4oCnTlQwcsM6YkhvMZ9RlTEmcGfsD3kH6Z8pEYE2Cln2f4yoVKSKZrhNzeD3QnIjjRjEYPz50ZvnKKPrltrY9GD/WZaREPQFK1v8FXFVgBVXnE7bkKlmz0ccpa35RClYF2RaB9Z5EKYWOd6ZsCkByTLUuO6cEnIylxQ7UZQVzGbYX0a/VJJWt9bQA4Ok/1WXYB2r/Sun9HeMEUz52bOnH0WZ92Vvo8d25cxCqIK6orTde4yts2w6Nr8DOTBzjgRD83w57fCutwCDNQSmAy7e3QLadjYPhfGJKXM+Yi4p7fCutwCDNQSmAZ9RlzEbqNKuebqKYDphZZcNjrcFAW0KigDi3ROVH2qAeWVh97HQ4+66tD60Ff2VNK2F2oU2OrhRpYCaTaaZYHViR9nD7N9jpdYLDnO7qrOdEPC2BWYzsIfp2YxYl+WABjMAy36u8daCRlrh0FoNUnZaz0w7ZRWTBJFmkv9ae0+1DsohZkkkX6oJ92H8o6gAQOH5l+/ViUPQKe1NgTOHxk2JWs9Al4UhdAl6MPvAi6AJzre+//lXjlci/AAOnMDanQIR59AAAAAElFTkSuQmCC",
+        "iconSmallWizard": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAYCAYAAAC8/X7cAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkFDOTk4NjMxNzU1MTExRTM4QkE0QjUwRjg4NjAzOUM1IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkFDOTk4NjMyNzU1MTExRTM4QkE0QjUwRjg4NjAzOUM1Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6QUM5OTg2MkY3NTUxMTFFMzhCQTRCNTBGODg2MDM5QzUiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6QUM5OTg2MzA3NTUxMTFFMzhCQTRCNTBGODg2MDM5QzUiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4Ed6mDAAACVUlEQVR42uyYzytmURjHXWPCbsTkHxAyG1Ga1SSr2chWJFnIu2AW76zFQkqzkCl2RLGXpYVSFhZIfkzZyMbPMRYkkVyfh0P3feec+97z3iMppz6d4znnfu/z3POcHy/P9/2ct1xyc956kRmAev+xVL/EO77UNtSDD9Wufc+LKfCRqgxEZ9fzvEvHgafob68uXDpJIXEc+mkewx/YgH/YJqDYhePwnz62CSiOFQAOfqCagz4oCnTlQwcsM6YkhvMZ9RlTEmcGfsD3kH6Z8pEYE2Cln2f4yoVKSKZrhNzeD3QnIjjRjEYPz50ZvnKKPrltrY9GD/WZaREPQFK1v8FXFVgBVXnE7bkKlmz0ccpa35RClYF2RaB9Z5EKYWOd6ZsCkByTLUuO6cEnIylxQ7UZQVzGbYX0a/VJJWt9bQA4Ok/1WXYB2r/Sun9HeMEUz52bOnH0WZ92Vvo8d25cxCqIK6orTde4yts2w6Nr8DOTBzjgRD83w57fCutwCDNQSmAy7e3QLadjYPhfGJKXM+Yi4p7fCutwCDNQSmAZ9RlzEbqNKuebqKYDphZZcNjrcFAW0KigDi3ROVH2qAeWVh97HQ4+66tD60Ff2VNK2F2oU2OrhRpYCaTaaZYHViR9nD7N9jpdYLDnO7qrOdEPC2BWYzsIfp2YxYl+WABjMAy36u8daCRlrh0FoNUnZaz0w7ZRWTBJFmkv9ae0+1DsohZkkkX6oJ92H8o6gAQOH5l+/ViUPQKe1NgTOHxk2JWs9Al4UhdAl6MPvAi6AJzre+//lXjlci/AAOnMDanQIR59AAAAAElFTkSuQmCC",
+        "style": {
+          "pageSize": 25,
+          "automaticHeight": true,
+          "colors": {
+            "rows": true,
+            "columns": false,
+            "headers": false,
+            "members": false,
+            "totals": false
+          },
+          "narration": {
+            "enabled": false,
+            "display": "above",
+            "format": "bullets",
+            "verbosity": "medium",
+            "up_sentiment": "good",
+            "aggregation": "sum",
+            "labels": [
+              {
+                "id": "str",
+                "title": "str",
+                "singular": "str",
+                "plural": "str"
+              },
+              {
+                "id": "num",
+                "title": "num",
+                "singular": "num",
+                "plural": "num"
+              }
+            ]
+          }
+        },
+        "instanceid": "99433-D935-BD",
+        "queryStartTime": "2020-12-11T15:00:58",
+        "drawing": true,
+        "widgetTimingLoged": false,
+        "drillToDashboardConfig": {
+          "drilledDashboardPrefix": "_drill",
+          "drilledDashboardsFolderPrefix": "",
+          "displayFilterPane": true,
+          "displayDashboardsPane": true,
+          "displayToolbarRow": true,
+          "displayHeaderRow": true,
+          "volatile": false,
+          "hideDrilledDashboards": true,
+          "hideSharedDashboardsForNonOwner": true,
+          "drillToDashboardMenuCaption": "Jump to dashboard",
+          "drillToDashboardRightMenuCaption": "Jump to ",
+          "drillToDashboardNavigateType": 2,
+          "drillToDashboardNavigateTypePivot": 2,
+          "drillToDashboardNavigateTypeCharts": 1,
+          "drillToDashboardNavigateTypeOthers": 3,
+          "excludeFilterDims": [],
+          "includeFilterDims": [],
+          "drilledDashboardDisplayType": 2,
+          "dashboardIds": [],
+          "modalWindowResize": false,
+          "showFolderNameOnMenuSelection": false,
+          "resetDashFiltersAfterJTD": false,
+          "sameCubeRestriction": true,
+          "showJTDIcon": true,
+          "sendPieChartMeasureFiltersOnClick": true,
+          "forceZeroInsteadNull": false,
+          "mergeTargetDashboardFilters": false,
+          "drillToDashboardByName": false
+        },
+        "realTimeRefreshing": false,
+        "options": {
+          "dashboardFiltersMode": "filter",
+          "selector": false,
+          "triggersDomready": true,
+          "drillToAnywhere": true,
+          "autoUpdateOnEveryChange": true
+        },
+        "dashboardid": "5fd3c237b98b256ae45a49bf",
+        "viewState": {
+          "activeTab": "filters"
+        },
+        "canEditFilters": true,
+        "script_old": null,
+        "script": null
+      }
+    ]
+  }
+]

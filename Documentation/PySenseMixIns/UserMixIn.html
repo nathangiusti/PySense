@@ -32,22 +32,24 @@
 class UserMixIn:
 
     def add_user(self, email, role, *, user_name=None, first_name=None, last_name=None,
-                 groups=[], preferences={}, ui_settings={}):
+                 groups=[], preferences={}, ui_settings={}, password=None):
         &#34;&#34;&#34;Creates a user in Sisense.
 
         Args:
-            email: email address for user
-            role: SisenseRole enum for the role of the user
-            user_name: (optional) User user name. Email used if None
-            first_name: (optional) User first name
-            last_name: (optional) User last name
-            groups: (optional) The groups to add the user to
-            preferences: (optional) User preferences
-            ui_settings: (optional) User ui settings
+            email (str): email address for user
+            role (Role): SisenseRole enum for the role of the user
+            user_name (str): (Optional) User user name. Email used if None
+            first_name (str): (Optional) User first name
+            last_name (str): (Optional) User last name
+            groups (str): (Optional) The groups to add the user to
+            preferences (str): (Optional) User preferences
+            ui_settings (JSON): (Optional) User ui settings
+            password (str): (Optional) The password to set for the user
 
         Returns:
-             Newly created user object
+             User: Newly created user object
         &#34;&#34;&#34;
+
         user_obj = {
             &#39;email&#39;: email,
             &#39;username&#39;: user_name if user_name is not None else email,
@@ -68,6 +70,8 @@ class UserMixIn:
             user_obj[&#39;preferences&#39;] = preferences
         if ui_settings is not None:
             user_obj[&#39;uiSettings&#39;] = ui_settings
+        if password is not None:
+            user_obj[&#39;password&#39;] = password
 
         resp_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/users&#39;, json_payload=user_obj)
         return PySenseUser.User(self, resp_json)
@@ -80,34 +84,37 @@ class UserMixIn:
         The expandable fields for the user object are groups, adgroups and role.
 
         Args:
-            user_name: (optional) Username to filter by
-            email: (optional) Email to filter by
-            first_name: (optional) First name to filter by
-            last_name: (optional) Last name to filter by
-            role: (optional) SisenseRole enum for the role of the user to filter by
-            group: (optional) Group to filter by
-            active: (optional) User state to filter by (true for active users, false for inactive users)
-            origin: (optional) User origin to filter by (ad for active directory or sisense)
-            ids: (optional) Array of user ids to get
-            fields: (optional) An array of fields to return for each document.
+            user_name (str): (Optional) Username to filter by
+            email (str): (Optional) Email to filter by
+            first_name (str): (Optional) First name to filter by
+            last_name (str): (Optional) Last name to filter by
+            role (Role): (Optional) SisenseRole enum for the role of the user to filter by
+            group (Group): (Optional) Group to filter by
+            active (bool): (Optional) User state to filter by (true for active users, false for inactive users)
+            origin (str): (Optional) User origin to filter by (ad for active directory or sisense)
+            ids (list[str]): (Optional) User ids to get
+            fields (list[str]): (Optional) An array of fields to return for each document.
                 Fields can also define which fields to exclude by prefixing field names with -
-            sort: (optional) Field by which the results should be sorted.
+            sort (str): (Optional) Field by which the results should be sorted.
                 Ascending by default, descending if prefixed by -
-            skip: (optional) Number of results to skip from the start of the data set.
+            skip (int): (Optional) Number of results to skip from the start of the data set.
                 Skip is to be used with the limit parameter for paging
-            limit: (optional) How many results should be returned.
+            limit (int): (Optional) How many results should be returned.
                 limit is to be used with the skip parameter for paging
-            expand: (optional) List of fields that should be expanded (substitutes their IDs with actual objects).
+            expand (list[str]): (Optional) List of fields that should be expanded
                 May be nested using the resource.subResource format
 
         Returns:
-             An array of PySenseUser.User objects
+             list[User]: Users found
         &#34;&#34;&#34;
 
         fields = PySenseUtils.make_iterable(fields)
+
+        # Ensure we get the fields we need to manage the user even if fields is set
         fields.extend(
             [&#39;_id&#39;, &#39;lastLogin&#39;, &#39;groups&#39;, &#39;email&#39;, &#39;userName&#39;, &#39;firstName&#39;, &#39;lastName&#39;, &#39;roleId&#39;, &#39;preferences&#39;]
         )
+
         fields = list(dict.fromkeys(fields))
         query_params = {
             &#39;userName&#39;: user_name,
@@ -115,7 +122,7 @@ class UserMixIn:
             &#39;firstName&#39;: first_name,
             &#39;lastName&#39;: last_name,
             &#39;role&#39;: self.get_role_id(role),
-            &#39;group&#39;: group,
+            &#39;group&#39;: None if group is None else group.get_id(),
             &#39;active&#39;: active,
             &#39;origin&#39;: origin,
             &#39;ids&#39;: ids,
@@ -132,7 +139,14 @@ class UserMixIn:
         return ret_arr
 
     def get_user_by_email(self, email):
-        &#34;&#34;&#34;Returns a single user based on email&#34;&#34;&#34;
+        &#34;&#34;&#34;Returns a single user based on email
+
+        Args:
+            email (str): The email of the user to get
+
+        Returns:
+            User: The user with the email address
+        &#34;&#34;&#34;
         users = self.get_users(email=email)
         if len(users) == 0:
             None
@@ -142,16 +156,25 @@ class UserMixIn:
             return users[0]
 
     def get_user_by_id(self, user_id):
-        &#34;&#34;&#34;Returns a single user based on id&#34;&#34;&#34;
+        &#34;&#34;&#34;Returns a single user based on id
+
+        Args:
+            user_id (str): The user_id of the user to fetch
+
+        Returns:
+            User: The user with the given id
+        &#34;&#34;&#34;
+
         resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/users/{}&#39;.format(user_id))
         return PySenseUser.User(self, resp_json)
 
     def delete_users(self, users):
-        &#34;&#34;&#34;Deletes the specified user or users
+        &#34;&#34;&#34;Deletes the specified users
 
         Args:
-            users: One to many users to delete
+            users: Users to delete
         &#34;&#34;&#34;
+
         for user in PySenseUtils.make_iterable(users):
             self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/users/{}&#39;.format(user.get_id()))
 
@@ -161,7 +184,7 @@ class UserMixIn:
         Beta: May have issues
 
         Args:
-            users: A json array of active directory user blobs
+            users (JSON): A json array of active directory user blobs
 
         Ex:
         [
@@ -180,7 +203,8 @@ class UserMixIn:
           }
         ]
 
-        Returns the JSON response
+        Returns:
+             JSON: the JSON response
         &#34;&#34;&#34;
 
         return self.connector.rest_call(&#39;post&#39;, &#39;api/v1/users/ad/bulk&#39;, json_payload=users)</code></pre>
@@ -207,22 +231,24 @@ class UserMixIn:
 <pre><code class="python">class UserMixIn:
 
     def add_user(self, email, role, *, user_name=None, first_name=None, last_name=None,
-                 groups=[], preferences={}, ui_settings={}):
+                 groups=[], preferences={}, ui_settings={}, password=None):
         &#34;&#34;&#34;Creates a user in Sisense.
 
         Args:
-            email: email address for user
-            role: SisenseRole enum for the role of the user
-            user_name: (optional) User user name. Email used if None
-            first_name: (optional) User first name
-            last_name: (optional) User last name
-            groups: (optional) The groups to add the user to
-            preferences: (optional) User preferences
-            ui_settings: (optional) User ui settings
+            email (str): email address for user
+            role (Role): SisenseRole enum for the role of the user
+            user_name (str): (Optional) User user name. Email used if None
+            first_name (str): (Optional) User first name
+            last_name (str): (Optional) User last name
+            groups (str): (Optional) The groups to add the user to
+            preferences (str): (Optional) User preferences
+            ui_settings (JSON): (Optional) User ui settings
+            password (str): (Optional) The password to set for the user
 
         Returns:
-             Newly created user object
+             User: Newly created user object
         &#34;&#34;&#34;
+
         user_obj = {
             &#39;email&#39;: email,
             &#39;username&#39;: user_name if user_name is not None else email,
@@ -243,6 +269,8 @@ class UserMixIn:
             user_obj[&#39;preferences&#39;] = preferences
         if ui_settings is not None:
             user_obj[&#39;uiSettings&#39;] = ui_settings
+        if password is not None:
+            user_obj[&#39;password&#39;] = password
 
         resp_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/users&#39;, json_payload=user_obj)
         return PySenseUser.User(self, resp_json)
@@ -255,34 +283,37 @@ class UserMixIn:
         The expandable fields for the user object are groups, adgroups and role.
 
         Args:
-            user_name: (optional) Username to filter by
-            email: (optional) Email to filter by
-            first_name: (optional) First name to filter by
-            last_name: (optional) Last name to filter by
-            role: (optional) SisenseRole enum for the role of the user to filter by
-            group: (optional) Group to filter by
-            active: (optional) User state to filter by (true for active users, false for inactive users)
-            origin: (optional) User origin to filter by (ad for active directory or sisense)
-            ids: (optional) Array of user ids to get
-            fields: (optional) An array of fields to return for each document.
+            user_name (str): (Optional) Username to filter by
+            email (str): (Optional) Email to filter by
+            first_name (str): (Optional) First name to filter by
+            last_name (str): (Optional) Last name to filter by
+            role (Role): (Optional) SisenseRole enum for the role of the user to filter by
+            group (Group): (Optional) Group to filter by
+            active (bool): (Optional) User state to filter by (true for active users, false for inactive users)
+            origin (str): (Optional) User origin to filter by (ad for active directory or sisense)
+            ids (list[str]): (Optional) User ids to get
+            fields (list[str]): (Optional) An array of fields to return for each document.
                 Fields can also define which fields to exclude by prefixing field names with -
-            sort: (optional) Field by which the results should be sorted.
+            sort (str): (Optional) Field by which the results should be sorted.
                 Ascending by default, descending if prefixed by -
-            skip: (optional) Number of results to skip from the start of the data set.
+            skip (int): (Optional) Number of results to skip from the start of the data set.
                 Skip is to be used with the limit parameter for paging
-            limit: (optional) How many results should be returned.
+            limit (int): (Optional) How many results should be returned.
                 limit is to be used with the skip parameter for paging
-            expand: (optional) List of fields that should be expanded (substitutes their IDs with actual objects).
+            expand (list[str]): (Optional) List of fields that should be expanded
                 May be nested using the resource.subResource format
 
         Returns:
-             An array of PySenseUser.User objects
+             list[User]: Users found
         &#34;&#34;&#34;
 
         fields = PySenseUtils.make_iterable(fields)
+
+        # Ensure we get the fields we need to manage the user even if fields is set
         fields.extend(
             [&#39;_id&#39;, &#39;lastLogin&#39;, &#39;groups&#39;, &#39;email&#39;, &#39;userName&#39;, &#39;firstName&#39;, &#39;lastName&#39;, &#39;roleId&#39;, &#39;preferences&#39;]
         )
+
         fields = list(dict.fromkeys(fields))
         query_params = {
             &#39;userName&#39;: user_name,
@@ -290,7 +321,7 @@ class UserMixIn:
             &#39;firstName&#39;: first_name,
             &#39;lastName&#39;: last_name,
             &#39;role&#39;: self.get_role_id(role),
-            &#39;group&#39;: group,
+            &#39;group&#39;: None if group is None else group.get_id(),
             &#39;active&#39;: active,
             &#39;origin&#39;: origin,
             &#39;ids&#39;: ids,
@@ -307,7 +338,14 @@ class UserMixIn:
         return ret_arr
 
     def get_user_by_email(self, email):
-        &#34;&#34;&#34;Returns a single user based on email&#34;&#34;&#34;
+        &#34;&#34;&#34;Returns a single user based on email
+
+        Args:
+            email (str): The email of the user to get
+
+        Returns:
+            User: The user with the email address
+        &#34;&#34;&#34;
         users = self.get_users(email=email)
         if len(users) == 0:
             None
@@ -317,16 +355,25 @@ class UserMixIn:
             return users[0]
 
     def get_user_by_id(self, user_id):
-        &#34;&#34;&#34;Returns a single user based on id&#34;&#34;&#34;
+        &#34;&#34;&#34;Returns a single user based on id
+
+        Args:
+            user_id (str): The user_id of the user to fetch
+
+        Returns:
+            User: The user with the given id
+        &#34;&#34;&#34;
+
         resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/users/{}&#39;.format(user_id))
         return PySenseUser.User(self, resp_json)
 
     def delete_users(self, users):
-        &#34;&#34;&#34;Deletes the specified user or users
+        &#34;&#34;&#34;Deletes the specified users
 
         Args:
-            users: One to many users to delete
+            users: Users to delete
         &#34;&#34;&#34;
+
         for user in PySenseUtils.make_iterable(users):
             self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/users/{}&#39;.format(user.get_id()))
 
@@ -336,7 +383,7 @@ class UserMixIn:
         Beta: May have issues
 
         Args:
-            users: A json array of active directory user blobs
+            users (JSON): A json array of active directory user blobs
 
         Ex:
         [
@@ -355,7 +402,8 @@ class UserMixIn:
           }
         ]
 
-        Returns the JSON response
+        Returns:
+             JSON: the JSON response
         &#34;&#34;&#34;
 
         return self.connector.rest_call(&#39;post&#39;, &#39;api/v1/users/ad/bulk&#39;, json_payload=users)</code></pre>
@@ -367,52 +415,59 @@ class UserMixIn:
 <h3>Methods</h3>
 <dl>
 <dt id="PySense.PySenseMixIns.UserMixIn.UserMixIn.add_user"><code class="name flex">
-<span>def <span class="ident">add_user</span></span>(<span>self, email, role, *, user_name=None, first_name=None, last_name=None, groups=[], preferences={}, ui_settings={})</span>
+<span>def <span class="ident">add_user</span></span>(<span>self, email, role, *, user_name=None, first_name=None, last_name=None, groups=[], preferences={}, ui_settings={}, password=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a user in Sisense.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>email</code></strong></dt>
+<dt><strong><code>email</code></strong> :&ensp;<code>str</code></dt>
 <dd>email address for user</dd>
-<dt><strong><code>role</code></strong></dt>
+<dt><strong><code>role</code></strong> :&ensp;<code>Role</code></dt>
 <dd>SisenseRole enum for the role of the user</dd>
-<dt><strong><code>user_name</code></strong></dt>
-<dd>(optional) User user name. Email used if None</dd>
-<dt><strong><code>first_name</code></strong></dt>
-<dd>(optional) User first name</dd>
-<dt><strong><code>last_name</code></strong></dt>
-<dd>(optional) User last name</dd>
-<dt><strong><code>groups</code></strong></dt>
-<dd>(optional) The groups to add the user to</dd>
-<dt><strong><code>preferences</code></strong></dt>
-<dd>(optional) User preferences</dd>
-<dt><strong><code>ui_settings</code></strong></dt>
-<dd>(optional) User ui settings</dd>
+<dt><strong><code>user_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) User user name. Email used if None</dd>
+<dt><strong><code>first_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) User first name</dd>
+<dt><strong><code>last_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) User last name</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) The groups to add the user to</dd>
+<dt><strong><code>preferences</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) User preferences</dd>
+<dt><strong><code>ui_settings</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>(Optional) User ui settings</dd>
+<dt><strong><code>password</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) The password to set for the user</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>Newly created user object</p></div>
+<dl>
+<dt><code>User</code></dt>
+<dd>Newly created user object</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def add_user(self, email, role, *, user_name=None, first_name=None, last_name=None,
-             groups=[], preferences={}, ui_settings={}):
+             groups=[], preferences={}, ui_settings={}, password=None):
     &#34;&#34;&#34;Creates a user in Sisense.
 
     Args:
-        email: email address for user
-        role: SisenseRole enum for the role of the user
-        user_name: (optional) User user name. Email used if None
-        first_name: (optional) User first name
-        last_name: (optional) User last name
-        groups: (optional) The groups to add the user to
-        preferences: (optional) User preferences
-        ui_settings: (optional) User ui settings
+        email (str): email address for user
+        role (Role): SisenseRole enum for the role of the user
+        user_name (str): (Optional) User user name. Email used if None
+        first_name (str): (Optional) User first name
+        last_name (str): (Optional) User last name
+        groups (str): (Optional) The groups to add the user to
+        preferences (str): (Optional) User preferences
+        ui_settings (JSON): (Optional) User ui settings
+        password (str): (Optional) The password to set for the user
 
     Returns:
-         Newly created user object
+         User: Newly created user object
     &#34;&#34;&#34;
+
     user_obj = {
         &#39;email&#39;: email,
         &#39;username&#39;: user_name if user_name is not None else email,
@@ -433,6 +488,8 @@ class UserMixIn:
         user_obj[&#39;preferences&#39;] = preferences
     if ui_settings is not None:
         user_obj[&#39;uiSettings&#39;] = ui_settings
+    if password is not None:
+        user_obj[&#39;password&#39;] = password
 
     resp_json = self.connector.rest_call(&#39;post&#39;, &#39;api/v1/users&#39;, json_payload=user_obj)
     return PySenseUser.User(self, resp_json)</code></pre>
@@ -446,7 +503,7 @@ class UserMixIn:
 <p>Beta: May have issues</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>users</code></strong></dt>
+<dt><strong><code>users</code></strong> :&ensp;<code>JSON</code></dt>
 <dd>A json array of active directory user blobs</dd>
 </dl>
 <p>Ex:
@@ -465,7 +522,11 @@ class UserMixIn:
 "uiSettings": {}
 }
 ]</p>
-<p>Returns the JSON response</p></div>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>JSON</code></dt>
+<dd>the JSON response</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -476,7 +537,7 @@ class UserMixIn:
     Beta: May have issues
 
     Args:
-        users: A json array of active directory user blobs
+        users (JSON): A json array of active directory user blobs
 
     Ex:
     [
@@ -495,7 +556,8 @@ class UserMixIn:
       }
     ]
 
-    Returns the JSON response
+    Returns:
+         JSON: the JSON response
     &#34;&#34;&#34;
 
     return self.connector.rest_call(&#39;post&#39;, &#39;api/v1/users/ad/bulk&#39;, json_payload=users)</code></pre>
@@ -505,22 +567,23 @@ class UserMixIn:
 <span>def <span class="ident">delete_users</span></span>(<span>self, users)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Deletes the specified user or users</p>
+<div class="desc"><p>Deletes the specified users</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>users</code></strong></dt>
-<dd>One to many users to delete</dd>
+<dd>Users to delete</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def delete_users(self, users):
-    &#34;&#34;&#34;Deletes the specified user or users
+    &#34;&#34;&#34;Deletes the specified users
 
     Args:
-        users: One to many users to delete
+        users: Users to delete
     &#34;&#34;&#34;
+
     for user in PySenseUtils.make_iterable(users):
         self.connector.rest_call(&#39;delete&#39;, &#39;api/v1/users/{}&#39;.format(user.get_id()))</code></pre>
 </details>
@@ -529,13 +592,30 @@ class UserMixIn:
 <span>def <span class="ident">get_user_by_email</span></span>(<span>self, email)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns a single user based on email</p></div>
+<div class="desc"><p>Returns a single user based on email</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>email</code></strong> :&ensp;<code>str</code></dt>
+<dd>The email of the user to get</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>User</code></dt>
+<dd>The user with the email address</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_user_by_email(self, email):
-    &#34;&#34;&#34;Returns a single user based on email&#34;&#34;&#34;
+    &#34;&#34;&#34;Returns a single user based on email
+
+    Args:
+        email (str): The email of the user to get
+
+    Returns:
+        User: The user with the email address
+    &#34;&#34;&#34;
     users = self.get_users(email=email)
     if len(users) == 0:
         None
@@ -549,13 +629,31 @@ class UserMixIn:
 <span>def <span class="ident">get_user_by_id</span></span>(<span>self, user_id)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns a single user based on id</p></div>
+<div class="desc"><p>Returns a single user based on id</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>user_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The user_id of the user to fetch</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>User</code></dt>
+<dd>The user with the given id</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_user_by_id(self, user_id):
-    &#34;&#34;&#34;Returns a single user based on id&#34;&#34;&#34;
+    &#34;&#34;&#34;Returns a single user based on id
+
+    Args:
+        user_id (str): The user_id of the user to fetch
+
+    Returns:
+        User: The user with the given id
+    &#34;&#34;&#34;
+
     resp_json = self.connector.rest_call(&#39;get&#39;, &#39;api/v1/users/{}&#39;.format(user_id))
     return PySenseUser.User(self, resp_json)</code></pre>
 </details>
@@ -569,42 +667,45 @@ class UserMixIn:
 The expandable fields for the user object are groups, adgroups and role.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>user_name</code></strong></dt>
-<dd>(optional) Username to filter by</dd>
-<dt><strong><code>email</code></strong></dt>
-<dd>(optional) Email to filter by</dd>
-<dt><strong><code>first_name</code></strong></dt>
-<dd>(optional) First name to filter by</dd>
-<dt><strong><code>last_name</code></strong></dt>
-<dd>(optional) Last name to filter by</dd>
-<dt><strong><code>role</code></strong></dt>
-<dd>(optional) SisenseRole enum for the role of the user to filter by</dd>
-<dt><strong><code>group</code></strong></dt>
-<dd>(optional) Group to filter by</dd>
-<dt><strong><code>active</code></strong></dt>
-<dd>(optional) User state to filter by (true for active users, false for inactive users)</dd>
-<dt><strong><code>origin</code></strong></dt>
-<dd>(optional) User origin to filter by (ad for active directory or sisense)</dd>
-<dt><strong><code>ids</code></strong></dt>
-<dd>(optional) Array of user ids to get</dd>
-<dt><strong><code>fields</code></strong></dt>
-<dd>(optional) An array of fields to return for each document.
+<dt><strong><code>user_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Username to filter by</dd>
+<dt><strong><code>email</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Email to filter by</dd>
+<dt><strong><code>first_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) First name to filter by</dd>
+<dt><strong><code>last_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Last name to filter by</dd>
+<dt><strong><code>role</code></strong> :&ensp;<code>Role</code></dt>
+<dd>(Optional) SisenseRole enum for the role of the user to filter by</dd>
+<dt><strong><code>group</code></strong> :&ensp;<code>Group</code></dt>
+<dd>(Optional) Group to filter by</dd>
+<dt><strong><code>active</code></strong> :&ensp;<code>bool</code></dt>
+<dd>(Optional) User state to filter by (true for active users, false for inactive users)</dd>
+<dt><strong><code>origin</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) User origin to filter by (ad for active directory or sisense)</dd>
+<dt><strong><code>ids</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>(Optional) User ids to get</dd>
+<dt><strong><code>fields</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>(Optional) An array of fields to return for each document.
 Fields can also define which fields to exclude by prefixing field names with -</dd>
-<dt><strong><code>sort</code></strong></dt>
-<dd>(optional) Field by which the results should be sorted.
+<dt><strong><code>sort</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Field by which the results should be sorted.
 Ascending by default, descending if prefixed by -</dd>
-<dt><strong><code>skip</code></strong></dt>
-<dd>(optional) Number of results to skip from the start of the data set.
+<dt><strong><code>skip</code></strong> :&ensp;<code>int</code></dt>
+<dd>(Optional) Number of results to skip from the start of the data set.
 Skip is to be used with the limit parameter for paging</dd>
-<dt><strong><code>limit</code></strong></dt>
-<dd>(optional) How many results should be returned.
+<dt><strong><code>limit</code></strong> :&ensp;<code>int</code></dt>
+<dd>(Optional) How many results should be returned.
 limit is to be used with the skip parameter for paging</dd>
-<dt><strong><code>expand</code></strong></dt>
-<dd>(optional) List of fields that should be expanded (substitutes their IDs with actual objects).
+<dt><strong><code>expand</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>(Optional) List of fields that should be expanded
 May be nested using the resource.subResource format</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>An array of PySenseUser.User objects</p></div>
+<dl>
+<dt><code>list[User]</code></dt>
+<dd>Users found</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -617,34 +718,37 @@ May be nested using the resource.subResource format</dd>
     The expandable fields for the user object are groups, adgroups and role.
 
     Args:
-        user_name: (optional) Username to filter by
-        email: (optional) Email to filter by
-        first_name: (optional) First name to filter by
-        last_name: (optional) Last name to filter by
-        role: (optional) SisenseRole enum for the role of the user to filter by
-        group: (optional) Group to filter by
-        active: (optional) User state to filter by (true for active users, false for inactive users)
-        origin: (optional) User origin to filter by (ad for active directory or sisense)
-        ids: (optional) Array of user ids to get
-        fields: (optional) An array of fields to return for each document.
+        user_name (str): (Optional) Username to filter by
+        email (str): (Optional) Email to filter by
+        first_name (str): (Optional) First name to filter by
+        last_name (str): (Optional) Last name to filter by
+        role (Role): (Optional) SisenseRole enum for the role of the user to filter by
+        group (Group): (Optional) Group to filter by
+        active (bool): (Optional) User state to filter by (true for active users, false for inactive users)
+        origin (str): (Optional) User origin to filter by (ad for active directory or sisense)
+        ids (list[str]): (Optional) User ids to get
+        fields (list[str]): (Optional) An array of fields to return for each document.
             Fields can also define which fields to exclude by prefixing field names with -
-        sort: (optional) Field by which the results should be sorted.
+        sort (str): (Optional) Field by which the results should be sorted.
             Ascending by default, descending if prefixed by -
-        skip: (optional) Number of results to skip from the start of the data set.
+        skip (int): (Optional) Number of results to skip from the start of the data set.
             Skip is to be used with the limit parameter for paging
-        limit: (optional) How many results should be returned.
+        limit (int): (Optional) How many results should be returned.
             limit is to be used with the skip parameter for paging
-        expand: (optional) List of fields that should be expanded (substitutes their IDs with actual objects).
+        expand (list[str]): (Optional) List of fields that should be expanded
             May be nested using the resource.subResource format
 
     Returns:
-         An array of PySenseUser.User objects
+         list[User]: Users found
     &#34;&#34;&#34;
 
     fields = PySenseUtils.make_iterable(fields)
+
+    # Ensure we get the fields we need to manage the user even if fields is set
     fields.extend(
         [&#39;_id&#39;, &#39;lastLogin&#39;, &#39;groups&#39;, &#39;email&#39;, &#39;userName&#39;, &#39;firstName&#39;, &#39;lastName&#39;, &#39;roleId&#39;, &#39;preferences&#39;]
     )
+
     fields = list(dict.fromkeys(fields))
     query_params = {
         &#39;userName&#39;: user_name,
@@ -652,7 +756,7 @@ May be nested using the resource.subResource format</dd>
         &#39;firstName&#39;: first_name,
         &#39;lastName&#39;: last_name,
         &#39;role&#39;: self.get_role_id(role),
-        &#39;group&#39;: group,
+        &#39;group&#39;: None if group is None else group.get_id(),
         &#39;active&#39;: active,
         &#39;origin&#39;: origin,
         &#39;ids&#39;: ids,

@@ -27,26 +27,41 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Table:
+    &#34;&#34;&#34;An table in a data model
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+        dataset (DataSet): The data set this table belongs to
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, table_json, dataset):
-        self._py_client = py_client
-        self._table_json = table_json
-        self._dataset = dataset
+        &#34;&#34;&#34;
+
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            table_json (JSON): The json for this object
+            dataset (DataSet): Parent data set
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
+        self.json = table_json
+        self.dataset = dataset
 
     def get_config_option(self, config_option):
         &#34;&#34;&#34;Returns the config option
 
         Args:
-            - config_option: The option to return the value for
+            config_option (str): The option to return the value for
 
         Returns:
-            The config option if the option is set, None if the option does not exist
+            str: The config option if the option is set, empty string if no value found
         &#34;&#34;&#34;
 
-        if self._table_json[&#39;configOptions&#39;] is not None and config_option in self._table_json[&#39;configOptions&#39;]:
-            return self._table_json[&#39;configOptions&#39;][config_option]
+        if self.json[&#39;configOptions&#39;] is not None and config_option in self.json[&#39;configOptions&#39;]:
+            return self.json[&#39;configOptions&#39;][config_option]
         else:
-            return None
+            return &#34;&#34;
 
     def update_build_behavior(self, build_json):
         &#34;&#34;&#34;Update the build behavior for the table
@@ -69,35 +84,42 @@
         {&#39;type&#39;: &#39;sync&#39;, &#39;accumulativeConfig&#39;: None}
 
         &#34;&#34;&#34;
-        self._table_json[&#39;buildBehavior&#39;] = build_json
-        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables/{}&#39;
-                                            .format(self._dataset.get_parent_data_model().get_oid(),
-                                                    self._dataset.get_oid(), self.get_oid()),
-                                            json_payload=self._table_json)
+
+        self.json[&#39;buildBehavior&#39;] = build_json
+        self.py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables/{}&#39;
+                                           .format(self.dataset.data_model.get_oid(),
+                                                   self.dataset.get_oid(), self.get_oid()),
+                                           json_payload=self.json)
 
     def get_config_options(self):
         &#34;&#34;&#34;Returns a dictionary of the config options&#34;&#34;&#34;
-        return self._table_json[&#39;configOptions&#39;]
+
+        return self.json[&#39;configOptions&#39;]
 
     def get_oid(self):
         &#34;&#34;&#34;Return oid&#34;&#34;&#34;
-        return self._table_json[&#39;oid&#39;]
+
+        return self.json[&#39;oid&#39;]
 
     def get_id(self):
         &#34;&#34;&#34;Return id&#34;&#34;&#34;
-        return self._table_json[&#39;id&#39;]
+
+        return self.json[&#39;id&#39;]
 
     def get_type(self):
         &#34;&#34;&#34;Return type&#34;&#34;&#34;
-        return self._table_json[&#39;type&#39;]
+
+        return self.json[&#39;type&#39;]
 
     def get_json(self):
         &#34;&#34;&#34;Return table json&#34;&#34;&#34;
-        return self._table_json
+
+        return self.json
 
     def get_name(self):
         &#34;&#34;&#34;Return the table name&#34;&#34;&#34;
-        return self._table_json[&#39;name&#39;]</code></pre>
+
+        return self.json[&#39;name&#39;]</code></pre>
 </details>
 </section>
 <section>
@@ -114,32 +136,65 @@
 <span>(</span><span>py_client, table_json, dataset)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>An table in a data model</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The JSON for this object</dd>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The connection to the Sisense server which owns this asset</dd>
+<dt><strong><code>dataset</code></strong> :&ensp;<code>DataSet</code></dt>
+<dd>The data set this table belongs to</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The PySense object for the server this asset belongs to</dd>
+<dt><strong><code>table_json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The json for this object</dd>
+<dt><strong><code>dataset</code></strong> :&ensp;<code>DataSet</code></dt>
+<dd>Parent data set</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Table:
+    &#34;&#34;&#34;An table in a data model
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+        dataset (DataSet): The data set this table belongs to
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, table_json, dataset):
-        self._py_client = py_client
-        self._table_json = table_json
-        self._dataset = dataset
+        &#34;&#34;&#34;
+
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            table_json (JSON): The json for this object
+            dataset (DataSet): Parent data set
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
+        self.json = table_json
+        self.dataset = dataset
 
     def get_config_option(self, config_option):
         &#34;&#34;&#34;Returns the config option
 
         Args:
-            - config_option: The option to return the value for
+            config_option (str): The option to return the value for
 
         Returns:
-            The config option if the option is set, None if the option does not exist
+            str: The config option if the option is set, empty string if no value found
         &#34;&#34;&#34;
 
-        if self._table_json[&#39;configOptions&#39;] is not None and config_option in self._table_json[&#39;configOptions&#39;]:
-            return self._table_json[&#39;configOptions&#39;][config_option]
+        if self.json[&#39;configOptions&#39;] is not None and config_option in self.json[&#39;configOptions&#39;]:
+            return self.json[&#39;configOptions&#39;][config_option]
         else:
-            return None
+            return &#34;&#34;
 
     def update_build_behavior(self, build_json):
         &#34;&#34;&#34;Update the build behavior for the table
@@ -162,35 +217,42 @@
         {&#39;type&#39;: &#39;sync&#39;, &#39;accumulativeConfig&#39;: None}
 
         &#34;&#34;&#34;
-        self._table_json[&#39;buildBehavior&#39;] = build_json
-        self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables/{}&#39;
-                                            .format(self._dataset.get_parent_data_model().get_oid(),
-                                                    self._dataset.get_oid(), self.get_oid()),
-                                            json_payload=self._table_json)
+
+        self.json[&#39;buildBehavior&#39;] = build_json
+        self.py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables/{}&#39;
+                                           .format(self.dataset.data_model.get_oid(),
+                                                   self.dataset.get_oid(), self.get_oid()),
+                                           json_payload=self.json)
 
     def get_config_options(self):
         &#34;&#34;&#34;Returns a dictionary of the config options&#34;&#34;&#34;
-        return self._table_json[&#39;configOptions&#39;]
+
+        return self.json[&#39;configOptions&#39;]
 
     def get_oid(self):
         &#34;&#34;&#34;Return oid&#34;&#34;&#34;
-        return self._table_json[&#39;oid&#39;]
+
+        return self.json[&#39;oid&#39;]
 
     def get_id(self):
         &#34;&#34;&#34;Return id&#34;&#34;&#34;
-        return self._table_json[&#39;id&#39;]
+
+        return self.json[&#39;id&#39;]
 
     def get_type(self):
         &#34;&#34;&#34;Return type&#34;&#34;&#34;
-        return self._table_json[&#39;type&#39;]
+
+        return self.json[&#39;type&#39;]
 
     def get_json(self):
         &#34;&#34;&#34;Return table json&#34;&#34;&#34;
-        return self._table_json
+
+        return self.json
 
     def get_name(self):
         &#34;&#34;&#34;Return the table name&#34;&#34;&#34;
-        return self._table_json[&#39;name&#39;]</code></pre>
+
+        return self.json[&#39;name&#39;]</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -200,11 +262,15 @@
 <dd>
 <div class="desc"><p>Returns the config option</p>
 <h2 id="args">Args</h2>
-<ul>
-<li>config_option: The option to return the value for</li>
-</ul>
+<dl>
+<dt><strong><code>config_option</code></strong> :&ensp;<code>str</code></dt>
+<dd>The option to return the value for</dd>
+</dl>
 <h2 id="returns">Returns</h2>
-<p>The config option if the option is set, None if the option does not exist</p></div>
+<dl>
+<dt><code>str</code></dt>
+<dd>The config option if the option is set, empty string if no value found</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -213,16 +279,16 @@
     &#34;&#34;&#34;Returns the config option
 
     Args:
-        - config_option: The option to return the value for
+        config_option (str): The option to return the value for
 
     Returns:
-        The config option if the option is set, None if the option does not exist
+        str: The config option if the option is set, empty string if no value found
     &#34;&#34;&#34;
 
-    if self._table_json[&#39;configOptions&#39;] is not None and config_option in self._table_json[&#39;configOptions&#39;]:
-        return self._table_json[&#39;configOptions&#39;][config_option]
+    if self.json[&#39;configOptions&#39;] is not None and config_option in self.json[&#39;configOptions&#39;]:
+        return self.json[&#39;configOptions&#39;][config_option]
     else:
-        return None</code></pre>
+        return &#34;&#34;</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseTable.Table.get_config_options"><code class="name flex">
@@ -236,7 +302,8 @@
 </summary>
 <pre><code class="python">def get_config_options(self):
     &#34;&#34;&#34;Returns a dictionary of the config options&#34;&#34;&#34;
-    return self._table_json[&#39;configOptions&#39;]</code></pre>
+
+    return self.json[&#39;configOptions&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseTable.Table.get_id"><code class="name flex">
@@ -250,7 +317,8 @@
 </summary>
 <pre><code class="python">def get_id(self):
     &#34;&#34;&#34;Return id&#34;&#34;&#34;
-    return self._table_json[&#39;id&#39;]</code></pre>
+
+    return self.json[&#39;id&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseTable.Table.get_json"><code class="name flex">
@@ -264,7 +332,8 @@
 </summary>
 <pre><code class="python">def get_json(self):
     &#34;&#34;&#34;Return table json&#34;&#34;&#34;
-    return self._table_json</code></pre>
+
+    return self.json</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseTable.Table.get_name"><code class="name flex">
@@ -278,7 +347,8 @@
 </summary>
 <pre><code class="python">def get_name(self):
     &#34;&#34;&#34;Return the table name&#34;&#34;&#34;
-    return self._table_json[&#39;name&#39;]</code></pre>
+
+    return self.json[&#39;name&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseTable.Table.get_oid"><code class="name flex">
@@ -292,7 +362,8 @@
 </summary>
 <pre><code class="python">def get_oid(self):
     &#34;&#34;&#34;Return oid&#34;&#34;&#34;
-    return self._table_json[&#39;oid&#39;]</code></pre>
+
+    return self.json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseTable.Table.get_type"><code class="name flex">
@@ -306,7 +377,8 @@
 </summary>
 <pre><code class="python">def get_type(self):
     &#34;&#34;&#34;Return type&#34;&#34;&#34;
-    return self._table_json[&#39;type&#39;]</code></pre>
+
+    return self.json[&#39;type&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseTable.Table.update_build_behavior"><code class="name flex">
@@ -356,11 +428,12 @@
     {&#39;type&#39;: &#39;sync&#39;, &#39;accumulativeConfig&#39;: None}
 
     &#34;&#34;&#34;
-    self._table_json[&#39;buildBehavior&#39;] = build_json
-    self._py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables/{}&#39;
-                                        .format(self._dataset.get_parent_data_model().get_oid(),
-                                                self._dataset.get_oid(), self.get_oid()),
-                                        json_payload=self._table_json)</code></pre>
+
+    self.json[&#39;buildBehavior&#39;] = build_json
+    self.py_client.connector.rest_call(&#39;patch&#39;, &#39;api/v2/datamodels/{}/schema/datasets/{}/tables/{}&#39;
+                                       .format(self.dataset.data_model.get_oid(),
+                                               self.dataset.get_oid(), self.get_oid()),
+                                       json_payload=self.json)</code></pre>
 </details>
 </dd>
 </dl>

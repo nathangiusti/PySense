@@ -8,8 +8,8 @@ class PySenseDashboardTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
-        cls.sample_path = '//Users//nathan.giusti//Documents//PySense//'
+        cls.py_client = PySense.authenticate_by_file('resources//WindowsConfig.yaml')
+        cls.sample_path = 'tmp//'
         cls.dashboard = cls.py_client.get_dashboards(name='PySense')[0]
 
     def test_getters(self):
@@ -17,14 +17,14 @@ class PySenseDashboardTests(unittest.TestCase):
         assert self.dashboard.get_datasource().get_title() == 'PySense'
 
     def test_get_dashboard_export_png(self):
-        path = self.sample_path + '\\' + self.dashboard.get_id() + '.png'
+        path = self.sample_path + self.dashboard.get_oid() + '.png'
         assert self.dashboard.export_to_png(
-            path=self.sample_path + '\\' + self.dashboard.get_id() + '.png',
+            path=self.sample_path + self.dashboard.get_oid() + '.png',
             include_title='true', include_filters=True, include_ds=False, width=1000) == path
         os.remove(path)
 
     def test_get_dashboard_export_pdf(self):
-        path = self.sample_path + '\\' + self.dashboard.get_id() + '.dash'
+        path = self.sample_path + self.dashboard.get_oid() + '.pdf'
         assert self.dashboard.export_to_pdf('A4', 'portrait', 'asis', path=path,
                                             include_title=True, include_filters=False, include_ds=True,
                                             widget_id=None, preview=True, row_count=None, show_title=True,
@@ -33,7 +33,7 @@ class PySenseDashboardTests(unittest.TestCase):
         os.remove(path)
 
     def test_get_dashboard_dash_export(self):
-        path = self.sample_path + '\\' + self.dashboard.get_id() + '.dash'
+        path = self.sample_path + self.dashboard.get_oid() + '.dash'
         assert self.dashboard.export_to_dash(path=path) == path
         os.remove(path)
 
@@ -48,19 +48,18 @@ class PySenseDashboardTests(unittest.TestCase):
         assert len(self.dashboard.get_widgets()) == 1
 
     def test_dashboard_shares(self):
-        user = self.py_client.get_users(email='testuser@sisense.com')[0]
+        user = self.py_client.get_users(email='pysensetest@sisense.com')[0]
         group = self.py_client.get_groups(name='PySense')[0]
         self.dashboard.add_share([user, group], 'view', 'false')
         assert len(self.dashboard.get_share_users_groups()) == 3
-        assert len(self.dashboard.get_shares()['sharesTo']) == 3
+        assert len(self.dashboard.get_shares_json()['sharesTo']) == 3
         self.dashboard.remove_shares([user, group])
         self.dashboard.get_datasource().remove_shares([user, group])
-        assert len(self.dashboard.get_datasource().get_shares()['shares']) == 1
-        assert len(self.dashboard.get_shares()['sharesTo']) == 1
+        assert len(self.dashboard.get_datasource().get_shares_json()) == 1
+        assert len(self.dashboard.get_shares_json()['sharesTo']) == 1
 
     def test_move_to_folder(self):
         folder = self.py_client.get_folders(name='PySense')[0]
-        self.dashboard.move_to_folder(None)
         assert self.dashboard.get_folder() is None
         self.dashboard.move_to_folder(folder)
         assert self.dashboard.get_folder().get_oid() == folder.get_oid()
@@ -73,37 +72,37 @@ class PySenseDashboardTests(unittest.TestCase):
 
     def test_bulk_export_import(self):
         path = self.sample_path + 'bulkExport.dash'
-        folder = self.py_client.get_folders(name='PySense')[0]
-        dashboards = self.py_client.get_dashboards(parent_folder=folder)
-        self.py_client.bulk_export_dashboards(dashboards, path=path)
+        self.py_client.export_dashboards(self.dashboard, path=path)
         self.py_client.import_dashboards(path, republish=False)
+        os.remove(path)
 
     def test_share_unowned_dash(self):
-        dashboard = self.py_client.get_dashboard_by_id('5f7c79ae26e1201818bf479b', admin_access=True)
-        user = self.py_client.get_users(first_name='nathan.giusti')
-        assert len(dashboard.get_shares(admin_access=True)['sharesTo']) == 1
-        assert len(dashboard.get_share_users_groups(admin_access=True)) == 1
-        dashboard.add_share(user, 'view', False, admin_access=True)
-        assert len(dashboard.get_shares(admin_access=True)['sharesTo']) == 2
+        dashboard = self.py_client.import_dashboards('resources//AnotherDash.dash')[0]
+        dashboard.change_owner(self.py_client.get_users(email='pysensetest@sisense.com')[0], admin_access=True)
+        user = self.py_client.get_users(email='pysensetest2@sisense.com')[0]
+        assert len(dashboard.get_shares_json(admin_access=True)['sharesTo']) == 2
         assert len(dashboard.get_share_users_groups(admin_access=True)) == 2
+        dashboard.add_share(user, 'view', False, admin_access=True)
+        assert len(dashboard.get_shares_json(admin_access=True)['sharesTo']) == 3
+        assert len(dashboard.get_share_users_groups(admin_access=True)) == 3
         dashboard.remove_shares(user, admin_access=True)
-        assert len(dashboard.get_shares(admin_access=True)) == 1
-        assert len(dashboard.get_share_users_groups(admin_access=True)) == 1
+        assert len(dashboard.get_shares_json(admin_access=True)['sharesTo']) == 2
+        assert len(dashboard.get_share_users_groups(admin_access=True)) == 2
+        self.py_client.delete_dashboards(dashboard, admin_access=True)
 
     def test_remap_dashboard(self):
-        pre = self.py_client.get_dashboard_by_id(self.dashboard.get_id()).get_json()
+        pre = self.py_client.get_dashboard_by_id(self.dashboard.get_oid()).json
         pre['lastUpdated'] = ''
         self.dashboard.remap_field('Fact', 'num', 'Fact_2', 'num2')
         self.dashboard.remap_field('Fact', 'str', 'Fact_2', 'str2')
-        post = self.py_client.get_dashboard_by_id(self.dashboard.get_id()).get_json()
+        post = self.py_client.get_dashboard_by_id(self.dashboard.get_oid()).json
         post['lastUpdated'] = ''
         assert pre != post
         self.dashboard.remap_field('Fact_2', 'num2', 'Fact', 'num')
         self.dashboard.remap_field('Fact_2', 'str2', 'Fact', 'str')
-        post = self.py_client.get_dashboard_by_id(self.dashboard.get_id()).get_json()
+        post = self.py_client.get_dashboard_by_id(self.dashboard.get_oid()).json
         post['lastUpdated'] = ''
         assert pre == post
-
 
     @classmethod
     def tearDownClass(cls):

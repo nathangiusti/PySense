@@ -27,17 +27,23 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Branding:
+    &#34;&#34;&#34;Branding Settings
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
+
     def __init__(self, py_client, branding_json):
-        self._branding_json = branding_json
-        self._py_client = py_client
+        &#34;&#34;&#34;
 
-    def get_json(self):
-        &#34;&#34;&#34;Return branding JSON&#34;&#34;&#34;
-        return self._branding_json
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            branding_json (JSON): The json for this object
+        &#34;&#34;&#34;
 
-    def set_json(self, branding_json):
-        &#34;&#34;&#34;Set branding JSON&#34;&#34;&#34;
-        self._branding_json = branding_json</code></pre>
+        self.json = branding_json
+        self.py_client = py_client</code></pre>
 </details>
 </section>
 <section>
@@ -54,55 +60,44 @@
 <span>(</span><span>py_client, branding_json)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Branding Settings</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The JSON for this object</dd>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The connection to the Sisense server which owns this asset</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The PySense object for the server this asset belongs to</dd>
+<dt><strong><code>branding_json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The json for this object</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Branding:
+    &#34;&#34;&#34;Branding Settings
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
+
     def __init__(self, py_client, branding_json):
-        self._branding_json = branding_json
-        self._py_client = py_client
+        &#34;&#34;&#34;
 
-    def get_json(self):
-        &#34;&#34;&#34;Return branding JSON&#34;&#34;&#34;
-        return self._branding_json
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            branding_json (JSON): The json for this object
+        &#34;&#34;&#34;
 
-    def set_json(self, branding_json):
-        &#34;&#34;&#34;Set branding JSON&#34;&#34;&#34;
-        self._branding_json = branding_json</code></pre>
+        self.json = branding_json
+        self.py_client = py_client</code></pre>
 </details>
-<h3>Methods</h3>
-<dl>
-<dt id="PySense.PySenseBranding.Branding.get_json"><code class="name flex">
-<span>def <span class="ident">get_json</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Return branding JSON</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_json(self):
-    &#34;&#34;&#34;Return branding JSON&#34;&#34;&#34;
-    return self._branding_json</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseBranding.Branding.set_json"><code class="name flex">
-<span>def <span class="ident">set_json</span></span>(<span>self, branding_json)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Set branding JSON</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_json(self, branding_json):
-    &#34;&#34;&#34;Set branding JSON&#34;&#34;&#34;
-    self._branding_json = branding_json</code></pre>
-</details>
-</dd>
-</dl>
 </dd>
 </dl>
 </section>
@@ -122,10 +117,6 @@
 <ul>
 <li>
 <h4><code><a title="PySense.PySenseBranding.Branding" href="#PySense.PySenseBranding.Branding">Branding</a></code></h4>
-<ul class="">
-<li><code><a title="PySense.PySenseBranding.Branding.get_json" href="#PySense.PySenseBranding.Branding.get_json">get_json</a></code></li>
-<li><code><a title="PySense.PySenseBranding.Branding.set_json" href="#PySense.PySenseBranding.Branding.set_json">set_json</a></code></li>
-</ul>
 </li>
 </ul>
 </li>

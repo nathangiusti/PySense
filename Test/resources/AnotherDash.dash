@@ -1,0 +1,41 @@
+[
+  {
+    "title": "AnotherDash",
+    "oid": "5fd567060cf05013bc747791",
+    "desc": "",
+    "source": null,
+    "type": "dashboard",
+    "style": {
+      "name": "vivid",
+      "palette": {
+        "colors": [
+          "#00cee6",
+          "#9b9bd7",
+          "#6EDA55",
+          "#fc7570",
+          "#fbb755",
+          "#218A8C"
+        ],
+        "name": "Vivid",
+        "sortOrder": 10,
+        "isSystem": true,
+        "systemDefault": true
+      }
+    },
+    "layout": {},
+    "dataExploration": false,
+    "datasource": {
+      "title": "PySense",
+      "fullname": "LocalHost/PySense",
+      "id": "aLOCALHOST_aPYSENSE",
+      "address": "LocalHost",
+      "database": "aPySense"
+    },
+    "filters": [],
+    "editing": true,
+    "settings": {
+      "autoUpdateOnFiltersChange": true
+    },
+    "widgets": []
+  }
+]

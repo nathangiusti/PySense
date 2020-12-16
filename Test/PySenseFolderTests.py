@@ -7,7 +7,7 @@ class PySenseFolderTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('resources//WindowsConfig.yaml')
         cls.folder = cls.py_client.get_folders(name='PySense')[0]
 
     def test_getters(self):

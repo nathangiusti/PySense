@@ -30,13 +30,15 @@
 
     def get_ui_settings(self):
         &#34;&#34;&#34;Returns the current ui settings as raw JSON&#34;&#34;&#34;
+
         return self.connector.rest_call(&#39;get&#39;, &#39;api/v1/settings/ui&#39;)
 
     def set_ui_settings(self, ui_settings):
         &#34;&#34;&#34;Update the ui settings
         Args:
-            - ui_settings: A json blob of ui settings
+            ui_settings (JSON): A json blob of ui settings
         &#34;&#34;&#34;
+
         self.connector.rest_call(&#39;post&#39;, &#39;api/v1/settings/ui/common&#39;, json_payload=ui_settings)</code></pre>
 </details>
 </section>
@@ -62,13 +64,15 @@
 
     def get_ui_settings(self):
         &#34;&#34;&#34;Returns the current ui settings as raw JSON&#34;&#34;&#34;
+
         return self.connector.rest_call(&#39;get&#39;, &#39;api/v1/settings/ui&#39;)
 
     def set_ui_settings(self, ui_settings):
         &#34;&#34;&#34;Update the ui settings
         Args:
-            - ui_settings: A json blob of ui settings
+            ui_settings (JSON): A json blob of ui settings
         &#34;&#34;&#34;
+
         self.connector.rest_call(&#39;post&#39;, &#39;api/v1/settings/ui/common&#39;, json_payload=ui_settings)</code></pre>
 </details>
 <h3>Subclasses</h3>
@@ -88,6 +92,7 @@
 </summary>
 <pre><code class="python">def get_ui_settings(self):
     &#34;&#34;&#34;Returns the current ui settings as raw JSON&#34;&#34;&#34;
+
     return self.connector.rest_call(&#39;get&#39;, &#39;api/v1/settings/ui&#39;)</code></pre>
 </details>
 </dd>
@@ -97,9 +102,10 @@
 <dd>
 <div class="desc"><p>Update the ui settings</p>
 <h2 id="args">Args</h2>
-<ul>
-<li>ui_settings: A json blob of ui settings</li>
-</ul></div>
+<dl>
+<dt><strong><code>ui_settings</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>A json blob of ui settings</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -107,8 +113,9 @@
 <pre><code class="python">def set_ui_settings(self, ui_settings):
     &#34;&#34;&#34;Update the ui settings
     Args:
-        - ui_settings: A json blob of ui settings
+        ui_settings (JSON): A json blob of ui settings
     &#34;&#34;&#34;
+
     self.connector.rest_call(&#39;post&#39;, &#39;api/v1/settings/ui/common&#39;, json_payload=ui_settings)</code></pre>
 </details>
 </dd>

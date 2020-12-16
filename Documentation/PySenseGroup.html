@@ -30,43 +30,74 @@
 
 
 class Group:
+    &#34;&#34;&#34;A group of users
+
+    Groups contain 0 to many users
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, group_json):
-        self._py_client = py_client
-        self._group_json = group_json
+        &#34;&#34;&#34;
+
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            group_json (JSON): The json for this object
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
+        self.json = group_json
 
     def get_name(self):
         &#34;&#34;&#34;Get groups name&#34;&#34;&#34;
-        return self._group_json[&#39;name&#39;]
+
+        return self.json[&#39;name&#39;]
 
     def get_id(self):
         &#34;&#34;&#34;Get groups id.&#34;&#34;&#34;
 
-        return self._group_json[&#39;_id&#39;]
+        return self.json[&#39;_id&#39;]
 
     def get_users(self):
-        &#34;&#34;&#34;Returns the members of the group.&#34;&#34;&#34;
-        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()))
+        &#34;&#34;&#34;Returns the members of the group.
+
+        Returns:
+            list[User]: The users in the group
+        &#34;&#34;&#34;
+
+        resp_json = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()))
         ret_arr = []
         for user in resp_json:
-            ret_arr.append(self._py_client.get_user_by_email(user[&#39;email&#39;]))
+            ret_arr.append(self.py_client.get_user_by_email(user[&#39;email&#39;]))
         return ret_arr
 
     def add_user(self, users):
-        &#34;&#34;&#34;Adds users to group.&#34;&#34;&#34;
+        &#34;&#34;&#34;Adds users to group.
+
+        Args:
+            users (list[User]): The users to add to the group
+        &#34;&#34;&#34;
+
         payload = []
         for user in PySenseUtils.make_iterable(users):
             payload.append(user.get_id())
 
-        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()), json_payload=payload)
+        self.py_client.connector.rest_call(&#39;post&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()), json_payload=payload)
 
     def remove_user(self, users):
-        &#34;&#34;&#34;Remove users from group&#34;&#34;&#34;
+        &#34;&#34;&#34;Remove users from group
+
+        Args:
+            users (list[User]): Users to remove from the group
+        &#34;&#34;&#34;
+
         payload = []
         for user in PySenseUtils.make_iterable(users):
             payload.append(user.get_id())
 
-        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()), json_payload=payload)</code></pre>
+        self.py_client.connector.rest_call(&#39;delete&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()), json_payload=payload)</code></pre>
 </details>
 </section>
 <section>
@@ -83,49 +114,95 @@ class Group:
 <span>(</span><span>py_client, group_json)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>A group of users</p>
+<p>Groups contain 0 to many users</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The JSON for this object</dd>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The connection to the Sisense server which owns this asset</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The PySense object for the server this asset belongs to</dd>
+<dt><strong><code>group_json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The json for this object</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Group:
+    &#34;&#34;&#34;A group of users
+
+    Groups contain 0 to many users
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, group_json):
-        self._py_client = py_client
-        self._group_json = group_json
+        &#34;&#34;&#34;
+
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            group_json (JSON): The json for this object
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
+        self.json = group_json
 
     def get_name(self):
         &#34;&#34;&#34;Get groups name&#34;&#34;&#34;
-        return self._group_json[&#39;name&#39;]
+
+        return self.json[&#39;name&#39;]
 
     def get_id(self):
         &#34;&#34;&#34;Get groups id.&#34;&#34;&#34;
 
-        return self._group_json[&#39;_id&#39;]
+        return self.json[&#39;_id&#39;]
 
     def get_users(self):
-        &#34;&#34;&#34;Returns the members of the group.&#34;&#34;&#34;
-        resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()))
+        &#34;&#34;&#34;Returns the members of the group.
+
+        Returns:
+            list[User]: The users in the group
+        &#34;&#34;&#34;
+
+        resp_json = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()))
         ret_arr = []
         for user in resp_json:
-            ret_arr.append(self._py_client.get_user_by_email(user[&#39;email&#39;]))
+            ret_arr.append(self.py_client.get_user_by_email(user[&#39;email&#39;]))
         return ret_arr
 
     def add_user(self, users):
-        &#34;&#34;&#34;Adds users to group.&#34;&#34;&#34;
+        &#34;&#34;&#34;Adds users to group.
+
+        Args:
+            users (list[User]): The users to add to the group
+        &#34;&#34;&#34;
+
         payload = []
         for user in PySenseUtils.make_iterable(users):
             payload.append(user.get_id())
 
-        self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()), json_payload=payload)
+        self.py_client.connector.rest_call(&#39;post&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()), json_payload=payload)
 
     def remove_user(self, users):
-        &#34;&#34;&#34;Remove users from group&#34;&#34;&#34;
+        &#34;&#34;&#34;Remove users from group
+
+        Args:
+            users (list[User]): Users to remove from the group
+        &#34;&#34;&#34;
+
         payload = []
         for user in PySenseUtils.make_iterable(users):
             payload.append(user.get_id())
 
-        self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()), json_payload=payload)</code></pre>
+        self.py_client.connector.rest_call(&#39;delete&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()), json_payload=payload)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -133,18 +210,28 @@ class Group:
 <span>def <span class="ident">add_user</span></span>(<span>self, users)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Adds users to group.</p></div>
+<div class="desc"><p>Adds users to group.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>users</code></strong> :&ensp;<code>list[User]</code></dt>
+<dd>The users to add to the group</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def add_user(self, users):
-    &#34;&#34;&#34;Adds users to group.&#34;&#34;&#34;
+    &#34;&#34;&#34;Adds users to group.
+
+    Args:
+        users (list[User]): The users to add to the group
+    &#34;&#34;&#34;
+
     payload = []
     for user in PySenseUtils.make_iterable(users):
         payload.append(user.get_id())
 
-    self._py_client.connector.rest_call(&#39;post&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()), json_payload=payload)</code></pre>
+    self.py_client.connector.rest_call(&#39;post&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()), json_payload=payload)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseGroup.Group.get_id"><code class="name flex">
@@ -159,7 +246,7 @@ class Group:
 <pre><code class="python">def get_id(self):
     &#34;&#34;&#34;Get groups id.&#34;&#34;&#34;
 
-    return self._group_json[&#39;_id&#39;]</code></pre>
+    return self.json[&#39;_id&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseGroup.Group.get_name"><code class="name flex">
@@ -173,24 +260,35 @@ class Group:
 </summary>
 <pre><code class="python">def get_name(self):
     &#34;&#34;&#34;Get groups name&#34;&#34;&#34;
-    return self._group_json[&#39;name&#39;]</code></pre>
+
+    return self.json[&#39;name&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseGroup.Group.get_users"><code class="name flex">
 <span>def <span class="ident">get_users</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the members of the group.</p></div>
+<div class="desc"><p>Returns the members of the group.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list[User]</code></dt>
+<dd>The users in the group</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_users(self):
-    &#34;&#34;&#34;Returns the members of the group.&#34;&#34;&#34;
-    resp_json = self._py_client.connector.rest_call(&#39;get&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()))
+    &#34;&#34;&#34;Returns the members of the group.
+
+    Returns:
+        list[User]: The users in the group
+    &#34;&#34;&#34;
+
+    resp_json = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()))
     ret_arr = []
     for user in resp_json:
-        ret_arr.append(self._py_client.get_user_by_email(user[&#39;email&#39;]))
+        ret_arr.append(self.py_client.get_user_by_email(user[&#39;email&#39;]))
     return ret_arr</code></pre>
 </details>
 </dd>
@@ -198,18 +296,28 @@ class Group:
 <span>def <span class="ident">remove_user</span></span>(<span>self, users)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Remove users from group</p></div>
+<div class="desc"><p>Remove users from group</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>users</code></strong> :&ensp;<code>list[User]</code></dt>
+<dd>Users to remove from the group</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def remove_user(self, users):
-    &#34;&#34;&#34;Remove users from group&#34;&#34;&#34;
+    &#34;&#34;&#34;Remove users from group
+
+    Args:
+        users (list[User]): Users to remove from the group
+    &#34;&#34;&#34;
+
     payload = []
     for user in PySenseUtils.make_iterable(users):
         payload.append(user.get_id())
 
-    self._py_client.connector.rest_call(&#39;delete&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()), json_payload=payload)</code></pre>
+    self.py_client.connector.rest_call(&#39;delete&#39;, &#39;api/groups/{}/users&#39;.format(self.get_id()), json_payload=payload)</code></pre>
 </details>
 </dd>
 </dl>

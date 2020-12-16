@@ -5,6 +5,7 @@ from datetime import datetime
 
 from PySense import PySenseException
 
+
 def format_host(host):
     """Formats host for PySense"""
     if not host.startswith('http'):

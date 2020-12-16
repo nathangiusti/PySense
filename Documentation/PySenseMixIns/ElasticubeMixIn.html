@@ -38,9 +38,18 @@ class ElasticubeMixIn:
 
     def get_elasticubes(self, flush_cache=False):
         &#34;&#34;&#34;Gets elasticubes
+
+        This method is called frequently so we cache the results to prevent it from being called too often.
+        The time we hold the cube is stored in the param dict under &#39;CUBE_CACHE_TIMEOUT_SECONDS&#39;
+        CUBE_CACHE_TIMEOUT_SECONDS is an integer indicating how long before we refresh our list of cubes
+
         Args:
-            flush_cache: (Optional) Ignores cache and pull fresh data from Mongo
+            flush_cache (bool): (Optional) Ignores cache and pull fresh data from Mongo
+
+        Returns:
+            list[Elasticube]: The found elasticubes
         &#34;&#34;&#34;
+
         if (datetime.datetime.now() - self.last_run_time).total_seconds() &gt; \
                 self.param_dict[&#39;CUBE_CACHE_TIMEOUT_SECONDS&#39;] \
                 or self.elasticubes is None \
@@ -55,7 +64,16 @@ class ElasticubeMixIn:
         return self.elasticubes
 
     def get_elasticube_by_name(self, name, *, flush_cache=False):
-        &#34;&#34;&#34;Gets elasticube with given name&#34;&#34;&#34;
+        &#34;&#34;&#34;Gets elasticube with given name
+
+        Args:
+            name (str): The name of the elasticube
+            flush_cache (bool): (Optional) Ignores cache and pull fresh data from Mongo
+
+        Returns:
+            Elasticube: The Elasticube with the given name
+        &#34;&#34;&#34;
+
         cubes = self.get_elasticubes(flush_cache=flush_cache)
         for cube in cubes:
             if cube.get_title() == name:
@@ -112,9 +130,18 @@ class ElasticubeMixIn:
 
     def get_elasticubes(self, flush_cache=False):
         &#34;&#34;&#34;Gets elasticubes
+
+        This method is called frequently so we cache the results to prevent it from being called too often.
+        The time we hold the cube is stored in the param dict under &#39;CUBE_CACHE_TIMEOUT_SECONDS&#39;
+        CUBE_CACHE_TIMEOUT_SECONDS is an integer indicating how long before we refresh our list of cubes
+
         Args:
-            flush_cache: (Optional) Ignores cache and pull fresh data from Mongo
+            flush_cache (bool): (Optional) Ignores cache and pull fresh data from Mongo
+
+        Returns:
+            list[Elasticube]: The found elasticubes
         &#34;&#34;&#34;
+
         if (datetime.datetime.now() - self.last_run_time).total_seconds() &gt; \
                 self.param_dict[&#39;CUBE_CACHE_TIMEOUT_SECONDS&#39;] \
                 or self.elasticubes is None \
@@ -129,7 +156,16 @@ class ElasticubeMixIn:
         return self.elasticubes
 
     def get_elasticube_by_name(self, name, *, flush_cache=False):
-        &#34;&#34;&#34;Gets elasticube with given name&#34;&#34;&#34;
+        &#34;&#34;&#34;Gets elasticube with given name
+
+        Args:
+            name (str): The name of the elasticube
+            flush_cache (bool): (Optional) Ignores cache and pull fresh data from Mongo
+
+        Returns:
+            Elasticube: The Elasticube with the given name
+        &#34;&#34;&#34;
+
         cubes = self.get_elasticubes(flush_cache=flush_cache)
         for cube in cubes:
             if cube.get_title() == name:
@@ -160,13 +196,34 @@ class ElasticubeMixIn:
 <span>def <span class="ident">get_elasticube_by_name</span></span>(<span>self, name, *, flush_cache=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Gets elasticube with given name</p></div>
+<div class="desc"><p>Gets elasticube with given name</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the elasticube</dd>
+<dt><strong><code>flush_cache</code></strong> :&ensp;<code>bool</code></dt>
+<dd>(Optional) Ignores cache and pull fresh data from Mongo</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Elasticube</code></dt>
+<dd>The Elasticube with the given name</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_elasticube_by_name(self, name, *, flush_cache=False):
-    &#34;&#34;&#34;Gets elasticube with given name&#34;&#34;&#34;
+    &#34;&#34;&#34;Gets elasticube with given name
+
+    Args:
+        name (str): The name of the elasticube
+        flush_cache (bool): (Optional) Ignores cache and pull fresh data from Mongo
+
+    Returns:
+        Elasticube: The Elasticube with the given name
+    &#34;&#34;&#34;
+
     cubes = self.get_elasticubes(flush_cache=flush_cache)
     for cube in cubes:
         if cube.get_title() == name:
@@ -179,10 +236,18 @@ class ElasticubeMixIn:
 </code></dt>
 <dd>
 <div class="desc"><p>Gets elasticubes</p>
+<p>This method is called frequently so we cache the results to prevent it from being called too often.
+The time we hold the cube is stored in the param dict under 'CUBE_CACHE_TIMEOUT_SECONDS'
+CUBE_CACHE_TIMEOUT_SECONDS is an integer indicating how long before we refresh our list of cubes</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>flush_cache</code></strong></dt>
+<dt><strong><code>flush_cache</code></strong> :&ensp;<code>bool</code></dt>
 <dd>(Optional) Ignores cache and pull fresh data from Mongo</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list[Elasticube]</code></dt>
+<dd>The found elasticubes</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -190,9 +255,18 @@ class ElasticubeMixIn:
 </summary>
 <pre><code class="python">def get_elasticubes(self, flush_cache=False):
     &#34;&#34;&#34;Gets elasticubes
+
+    This method is called frequently so we cache the results to prevent it from being called too often.
+    The time we hold the cube is stored in the param dict under &#39;CUBE_CACHE_TIMEOUT_SECONDS&#39;
+    CUBE_CACHE_TIMEOUT_SECONDS is an integer indicating how long before we refresh our list of cubes
+
     Args:
-        flush_cache: (Optional) Ignores cache and pull fresh data from Mongo
+        flush_cache (bool): (Optional) Ignores cache and pull fresh data from Mongo
+
+    Returns:
+        list[Elasticube]: The found elasticubes
     &#34;&#34;&#34;
+
     if (datetime.datetime.now() - self.last_run_time).total_seconds() &gt; \
             self.param_dict[&#39;CUBE_CACHE_TIMEOUT_SECONDS&#39;] \
             or self.elasticubes is None \

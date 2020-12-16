@@ -1,12 +1,18 @@
 class Branding:
+    """Branding Settings
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    """
+
     def __init__(self, py_client, branding_json):
-        self._branding_json = branding_json
-        self._py_client = py_client
+        """
 
-    def get_json(self):
-        """Return branding JSON"""
-        return self._branding_json
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            branding_json (JSON): The json for this object
+        """
 
-    def set_json(self, branding_json):
-        """Set branding JSON"""
-        self._branding_json = branding_json
+        self.json = branding_json
+        self.py_client = py_client

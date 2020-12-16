@@ -15,7 +15,7 @@ dashboard = py_client.get_dashboard_by_id('mydashboardid')
 dashboard.get_name()
 
 # Get dashboard id
-dashboard.get_id()
+dashboard.get_oid()
 
 # Get dashboards from a folder
 my_folder = py_client.get_folders(name='MyFolder')[0]

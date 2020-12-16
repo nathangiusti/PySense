@@ -4,22 +4,24 @@ from PySense import PySenseException, PySenseUser, PySenseUtils
 class UserMixIn:
 
     def add_user(self, email, role, *, user_name=None, first_name=None, last_name=None,
-                 groups=[], preferences={}, ui_settings={}):
+                 groups=[], preferences={}, ui_settings={}, password=None):
         """Creates a user in Sisense.
 
         Args:
-            email: email address for user
-            role: SisenseRole enum for the role of the user
-            user_name: (optional) User user name. Email used if None
-            first_name: (optional) User first name
-            last_name: (optional) User last name
-            groups: (optional) The groups to add the user to
-            preferences: (optional) User preferences
-            ui_settings: (optional) User ui settings
+            email (str): email address for user
+            role (Role): SisenseRole enum for the role of the user
+            user_name (str): (Optional) User user name. Email used if None
+            first_name (str): (Optional) User first name
+            last_name (str): (Optional) User last name
+            groups (str): (Optional) The groups to add the user to
+            preferences (str): (Optional) User preferences
+            ui_settings (JSON): (Optional) User ui settings
+            password (str): (Optional) The password to set for the user
 
         Returns:
-             Newly created user object
+             User: Newly created user object
         """
+
         user_obj = {
             'email': email,
             'username': user_name if user_name is not None else email,
@@ -40,6 +42,8 @@ class UserMixIn:
             user_obj['preferences'] = preferences
         if ui_settings is not None:
             user_obj['uiSettings'] = ui_settings
+        if password is not None:
+            user_obj['password'] = password
 
         resp_json = self.connector.rest_call('post', 'api/v1/users', json_payload=user_obj)
         return PySenseUser.User(self, resp_json)
@@ -52,34 +56,37 @@ class UserMixIn:
         The expandable fields for the user object are groups, adgroups and role.
 
         Args:
-            user_name: (optional) Username to filter by
-            email: (optional) Email to filter by
-            first_name: (optional) First name to filter by
-            last_name: (optional) Last name to filter by
-            role: (optional) SisenseRole enum for the role of the user to filter by
-            group: (optional) Group to filter by
-            active: (optional) User state to filter by (true for active users, false for inactive users)
-            origin: (optional) User origin to filter by (ad for active directory or sisense)
-            ids: (optional) Array of user ids to get
-            fields: (optional) An array of fields to return for each document.
+            user_name (str): (Optional) Username to filter by
+            email (str): (Optional) Email to filter by
+            first_name (str): (Optional) First name to filter by
+            last_name (str): (Optional) Last name to filter by
+            role (Role): (Optional) SisenseRole enum for the role of the user to filter by
+            group (Group): (Optional) Group to filter by
+            active (bool): (Optional) User state to filter by (true for active users, false for inactive users)
+            origin (str): (Optional) User origin to filter by (ad for active directory or sisense)
+            ids (list[str]): (Optional) User ids to get
+            fields (list[str]): (Optional) An array of fields to return for each document.
                 Fields can also define which fields to exclude by prefixing field names with -
-            sort: (optional) Field by which the results should be sorted.
+            sort (str): (Optional) Field by which the results should be sorted.
                 Ascending by default, descending if prefixed by -
-            skip: (optional) Number of results to skip from the start of the data set.
+            skip (int): (Optional) Number of results to skip from the start of the data set.
                 Skip is to be used with the limit parameter for paging
-            limit: (optional) How many results should be returned.
+            limit (int): (Optional) How many results should be returned.
                 limit is to be used with the skip parameter for paging
-            expand: (optional) List of fields that should be expanded (substitutes their IDs with actual objects).
+            expand (list[str]): (Optional) List of fields that should be expanded
                 May be nested using the resource.subResource format
 
         Returns:
-             An array of PySenseUser.User objects
+             list[User]: Users found
         """
 
         fields = PySenseUtils.make_iterable(fields)
+
+        # Ensure we get the fields we need to manage the user even if fields is set
         fields.extend(
             ['_id', 'lastLogin', 'groups', 'email', 'userName', 'firstName', 'lastName', 'roleId', 'preferences']
         )
+
         fields = list(dict.fromkeys(fields))
         query_params = {
             'userName': user_name,
@@ -87,7 +94,7 @@ class UserMixIn:
             'firstName': first_name,
             'lastName': last_name,
             'role': self.get_role_id(role),
-            'group': group,
+            'group': None if group is None else group.get_id(),
             'active': active,
             'origin': origin,
             'ids': ids,
@@ -104,7 +111,14 @@ class UserMixIn:
         return ret_arr
 
     def get_user_by_email(self, email):
-        """Returns a single user based on email"""
+        """Returns a single user based on email
+
+        Args:
+            email (str): The email of the user to get
+
+        Returns:
+            User: The user with the email address
+        """
         users = self.get_users(email=email)
         if len(users) == 0:
             None
@@ -114,16 +128,25 @@ class UserMixIn:
             return users[0]
 
     def get_user_by_id(self, user_id):
-        """Returns a single user based on id"""
+        """Returns a single user based on id
+
+        Args:
+            user_id (str): The user_id of the user to fetch
+
+        Returns:
+            User: The user with the given id
+        """
+
         resp_json = self.connector.rest_call('get', 'api/v1/users/{}'.format(user_id))
         return PySenseUser.User(self, resp_json)
 
     def delete_users(self, users):
-        """Deletes the specified user or users
+        """Deletes the specified users
 
         Args:
-            users: One to many users to delete
+            users: Users to delete
         """
+
         for user in PySenseUtils.make_iterable(users):
             self.connector.rest_call('delete', 'api/v1/users/{}'.format(user.get_id()))
 
@@ -133,7 +156,7 @@ class UserMixIn:
         Beta: May have issues
 
         Args:
-            users: A json array of active directory user blobs
+            users (JSON): A json array of active directory user blobs
 
         Ex:
         [
@@ -152,7 +175,8 @@ class UserMixIn:
           }
         ]
 
-        Returns the JSON response
+        Returns:
+             JSON: the JSON response
         """
 
         return self.connector.rest_call('post', 'api/v1/users/ad/bulk', json_payload=users)

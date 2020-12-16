@@ -8,16 +8,17 @@ def authenticate_by_token(host, token, version, debug=False, verify=True):
     """Creates a new PySense client with the token
 
     Args:
-        - host: The Sisense server address
-        - token: A Sisense user token
-        - version: 'Windows' or 'Linux'
-        - debug: (Optional) True to enable debugging. False by default.
-        - verify: (Optional) False to disable SSL certificate verification. True by default.
+        host (str): The Sisense server address
+        token (str): A Sisense user token
+        version (str): 'Windows' or 'Linux'
+        debug (bool): (Optional) True to enable debugging. False by default.
+        verify (bool): (Optional) False to disable SSL certificate verification. True by default.
 
 
     Returns:
-        A new PySense client for the given credentials
+        PySense: A new PySense client for the given credentials
     """
+
     return PySenseAuthentication.authenticate_by_token(host, token, version, debug, verify)
 
 
@@ -25,17 +26,18 @@ def authenticate_by_password(host, username, password, version, debug=False, ver
     """Creates a new PySense client with the username and password
 
     Args:
-        - host: The Sisense server address
-        - username: Sisense username
-        - password: Sisense password
-        - version: 'Windows' or 'Linux'
-        - debug: (Optional) True to enable debugging. False by default.
-        - verify: (Optional) False to disable SSL certificate verification. True by default.
+        host (str): The Sisense server address
+        username (str): Sisense username
+        password (str): Sisense password
+        version (str): 'Windows' or 'Linux'
+        debug (bool): (Optional) True to enable debugging. False by default.
+        verify (bool): (Optional) False to disable SSL certificate verification. True by default.
 
 
     Returns:
-        A new PySense client for the given credentials
+        PySense: A new PySense client for the given credentials
     """
+
     return PySenseAuthentication.authenticate_by_password(host, username, password, version, debug, verify)
 
 
@@ -47,11 +49,12 @@ def authenticate_by_file(config_file):
     See sample config in Snippets/SampleConfig.yaml
 
     Args:
-        config_file: Yaml file with credentials
+        config_file (str): Yaml file with credentials
 
     Returns:
-        A new PySense client for the given credentials
+        PySense: A new PySense client for the given credentials
     """
+
     return PySenseAuthentication.authenticate_by_file(config_file)
 
 
@@ -61,12 +64,13 @@ def authenticate_custom_connector(version, connector):
     Authenticate by setting up your own custom connector.
 
     Args:
-        - version: 'Windows' or 'Linux'
-        - connector: The custom connector
+        version (str): 'Windows' or 'Linux'
+        connector (RestConnector): The custom connector
 
     Returns:
-        A new PySense client for the given credentials
+        PySense: A new PySense client for the given credentials
     """
+
     return PySense(None, None, version, connector=connector)
 
 
@@ -80,21 +84,26 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
     This class is for sever level changes like getting, adding, and removing dashboards, elasticubes, users, etc
 
     Attributes:
-        connector: The PySenseRestConnector which runs the rest commands.
+        connector (RestConnector): The connection to the Sisense Server
+        param_dict (dict): Key value store for various configuration options
+        version (SisenseVersion): Track whether we are connecting to Windows or Linux Sisense
+        roles (dict[SisenseRole,str]): An array of SienseRoles and their role_ids
     """
 
     def __init__(self, host, token, version, *, debug=False, verify=True, param_dict=None, connector=None):
         """ Initializes a PySense instance
 
         Args:
-            host: host address
-            token: a json bearer token with format
+            host (str): host address
+            token (json): a json bearer token with format
                 {'authorization':  "Bearer yourlongaccesstokenstringthatyougotfromapreviouslogin"}
-            version: version (either 'Windows' or 'Linux')
-            debug: If true, prints detailed REST API logs to console. False by default.
-            verify: If false, disables SSL Certification. True by default.
-            param_dict: For passing in additional parameters
+            version (str): version (either 'Windows' or 'Linux')
+            debug (bool): (Optional) If true, prints detailed REST API logs to console. False by default.
+            verify (bool): (Optional) If false, disables SSL Certification. True by default.
+            param_dict (dict): (Optional) For passing in additional parameters
+            connector (RestConnector): (Optional) Pass in your own connector (normally used for mock tests)
         """
+
         if param_dict is None:
             self.param_dict = {}
         else:
@@ -123,17 +132,10 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
             self.connector = PySenseRestConnector.RestConnector(host, token, debug, verify)
             # Set up Roles
             roles = self.connector.rest_call('get', 'api/roles')
-            self._roles = {}
+            self.roles = {}
             for role in roles:
                 if role['name'] in ['dataDesigner', 'super', 'dataAdmin', 'admin', 'contributor', 'consumer']:
-                    self._roles[SisenseRole.Role.from_str(role['name'])] = role['_id']
-
-    def set_debug(self, debug):
-        """Enable or disable logging of REST api calls to std out.
-
-        Use for debugging. Debug is false by default.
-        """
-        self.connector.debug = debug
+                    self.roles[SisenseRole.Role.from_str(role['name'])] = role['_id']
 
     def get_param(self, param):
         """Get the value in the param dictionary for the given parameter. Returns None if not found"""

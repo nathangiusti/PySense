@@ -27,18 +27,35 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Folder:
+    &#34;&#34;&#34;A folder of dashboards
+
+    Each folder can have 0 to many dashboards or folders inside of it
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, folder_json):
-        self._py_client = py_client
-        self._folder_json = folder_json
+        &#34;&#34;&#34;
+
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            folder_json (JSON): The json for this object
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
+        self.json = folder_json
 
     def get_oid(self):
         &#34;&#34;&#34;Returns the folder&#39;s oid.&#34;&#34;&#34;
-        return self._folder_json[&#39;oid&#39;]
+
+        return self.json[&#39;oid&#39;]
 
     def get_name(self):
         &#34;&#34;&#34;Returns the folder&#39;s name&#34;&#34;&#34;
-        return self._folder_json[&#39;name&#39;]</code></pre>
+
+        return self.json[&#39;name&#39;]</code></pre>
 </details>
 </section>
 <section>
@@ -55,24 +72,56 @@
 <span>(</span><span>py_client, folder_json)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>A folder of dashboards</p>
+<p>Each folder can have 0 to many dashboards or folders inside of it</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The JSON for this object</dd>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The connection to the Sisense server which owns this asset</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>py_client</code></strong> :&ensp;<code><a title="PySense" href="index.html">PySense</a></code></dt>
+<dd>The PySense object for the server this asset belongs to</dd>
+<dt><strong><code>folder_json</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The json for this object</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Folder:
+    &#34;&#34;&#34;A folder of dashboards
+
+    Each folder can have 0 to many dashboards or folders inside of it
+
+    Attributes:
+        json (JSON): The JSON for this object
+        py_client (PySense): The connection to the Sisense server which owns this asset
+    &#34;&#34;&#34;
 
     def __init__(self, py_client, folder_json):
-        self._py_client = py_client
-        self._folder_json = folder_json
+        &#34;&#34;&#34;
+
+        Args:
+            py_client (PySense): The PySense object for the server this asset belongs to
+            folder_json (JSON): The json for this object
+        &#34;&#34;&#34;
+
+        self.py_client = py_client
+        self.json = folder_json
 
     def get_oid(self):
         &#34;&#34;&#34;Returns the folder&#39;s oid.&#34;&#34;&#34;
-        return self._folder_json[&#39;oid&#39;]
+
+        return self.json[&#39;oid&#39;]
 
     def get_name(self):
         &#34;&#34;&#34;Returns the folder&#39;s name&#34;&#34;&#34;
-        return self._folder_json[&#39;name&#39;]</code></pre>
+
+        return self.json[&#39;name&#39;]</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -87,7 +136,8 @@
 </summary>
 <pre><code class="python">def get_name(self):
     &#34;&#34;&#34;Returns the folder&#39;s name&#34;&#34;&#34;
-    return self._folder_json[&#39;name&#39;]</code></pre>
+
+    return self.json[&#39;name&#39;]</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseFolder.Folder.get_oid"><code class="name flex">
@@ -101,7 +151,8 @@
 </summary>
 <pre><code class="python">def get_oid(self):
     &#34;&#34;&#34;Returns the folder&#39;s oid.&#34;&#34;&#34;
-    return self._folder_json[&#39;oid&#39;]</code></pre>
+
+    return self.json[&#39;oid&#39;]</code></pre>
 </details>
 </dd>
 </dl>

@@ -34,31 +34,48 @@ from PySense import PySenseException, PySenseUtils
 
 
 class RestConnector:
+    &#34;&#34;&#34;The REST Wrapper for PySense
+
+    Use the rest_call method to make calls to the API
+
+    Attributes:
+        host (str): The host string, the base of the url to call
+        debug (bool): Whether to print debug messages about rest requests
+        verify (bool): Whether to use SSL Certificate Verification
+        token (JSON): The authorization header
+    &#34;&#34;&#34;
 
     def __init__(self, host, token, debug, verify):
-        self._host = PySenseUtils.format_host(host)
-        self.debug = debug
-        self.verify = verify
-        self._token = token
-
-    def rest_call(self, action_type, url, *,
-                  data=None, json_payload=None, query_params=None, raw=False, path=None, file=None):
-        &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response
+        &#34;&#34;&#34;
 
         Args:
-            action_type: REST request type
-            url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding
-            data: (optional) The data portion of the payload
-            json_payload: (optional) The json portion of the payload
-            query_params: (optional) A dictionary of query values to be added to the end of the url
-            raw: (optional) True if raw content response wanted
-            path: (optional) If set, response will be downloaded to file path
-            file: (optional) Path to files to be uploaded. Only usable with post.
+            host (str): The host string, the base of the url to call
+            debug (bool): Whether to print debug messages about rest requests
+            verify (bool): Whether to use SSL Certificate Verification
+            token (JSON): The authorization header
+        &#34;&#34;&#34;
+        self.host = PySenseUtils.format_host(host)
+        self.debug = debug
+        self.verify = verify
+        self.token = token
+
+    def rest_call(self, action_type, url, *,
+                  data=None, json_payload=None, query_params=None, path=None, file=None, raw=False):
+        &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance
+
+        Args:
+            action_type (str): REST request type (get, post, patch, put, delete)
+            url (str): api end point, example api/v1/app_database/encrypt_database_password or api/branding
+            data (Any): (Optional) The data portion of the payload
+            json_payload (JSON): (Optional) The JSON portion of the payload
+            query_params (dict[Str,Any]): (Optional) A dictionary of query values to be added to the end of the url
+                Method will strip out None dictionary values.
+            path (str): (Optional) If set, response will be downloaded to file path
+            file (str): (Optional) Path to files to be uploaded. Only usable with post.
+            raw (bool): (Optional) If true, write raw data to file. Writes JSON by default
 
         Returns:
-            Returns the json content blob by default.
-            If raw is set to true, returns the raw bytes of the content.
-            If path is set, returns nothing
+            JSON: Returns the json content blob by default. If path is set, returns nothing
         &#34;&#34;&#34;
 
         action_type = action_type.lower()
@@ -66,7 +83,7 @@ class RestConnector:
             query_string = build_query_string(query_params)
         else:
             query_string = &#39;&#39;
-        full_url = &#39;{}/{}{}&#39;.format(self._host, url, query_string)
+        full_url = &#39;{}/{}{}&#39;.format(self.host, url, query_string)
 
         if self.debug:
             print(&#39;{}: {}&#39;.format(action_type, full_url))
@@ -83,20 +100,21 @@ class RestConnector:
         if path is not None:
             with requests.request(
                 action_type, full_url, stream=True,
-                headers=self._token, data=data, json=json_payload, verify=self.verify
-            ) as r:
-                with open(path, &#39;wb&#39;) as f:
-                    shutil.copyfileobj(r.raw, f)
+                headers=self.token, data=data, json=json_payload, verify=self.verify
+            ) as response:
+                if raw:
+                    with open(path, &#39;wb&#39;) as f:
+                        shutil.copyfileobj(response.raw, f)
+                else:
+                    PySenseUtils.dump_json(response.json(), path)
         else:
             response = requests.request(
                 action_type, full_url,
-                headers=self._token, data=data, json=json_payload, verify=self.verify, files=file
+                headers=self.token, data=data, json=json_payload, verify=self.verify, files=file
             )
             parse_response(response)
             if len(response.content) == 0:
                 return None
-            elif raw:
-                return response.content
             else:
                 try:
                     return response.json()
@@ -106,6 +124,7 @@ class RestConnector:
 
 def parse_response(response):
     &#34;&#34;&#34;Parses response and throw exception if not successful.&#34;&#34;&#34;
+
     if response.status_code not in [200, 201, 204]:
         raise PySenseException.PySenseException(&#39;ERROR: {}: {}\nURL: {}&#39;
                                                 .format(response.status_code, response.content, response.url))
@@ -113,6 +132,7 @@ def parse_response(response):
 
 def build_query_string(dictionary):
     &#34;&#34;&#34;Builds a query string based on the dictionary passed in&#34;&#34;&#34;
+
     ret_arr = []
     separator = &#39;&amp;&#39;
     for key, value in dictionary.items():
@@ -155,6 +175,7 @@ def build_query_string(dictionary):
 </summary>
 <pre><code class="python">def build_query_string(dictionary):
     &#34;&#34;&#34;Builds a query string based on the dictionary passed in&#34;&#34;&#34;
+
     ret_arr = []
     separator = &#39;&amp;&#39;
     for key, value in dictionary.items():
@@ -190,6 +211,7 @@ def build_query_string(dictionary):
 </summary>
 <pre><code class="python">def parse_response(response):
     &#34;&#34;&#34;Parses response and throw exception if not successful.&#34;&#34;&#34;
+
     if response.status_code not in [200, 201, 204]:
         raise PySenseException.PySenseException(&#39;ERROR: {}: {}\nURL: {}&#39;
                                                 .format(response.status_code, response.content, response.url))</code></pre>
@@ -205,37 +227,77 @@ def build_query_string(dictionary):
 <span>(</span><span>host, token, debug, verify)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>The REST Wrapper for PySense</p>
+<p>Use the rest_call method to make calls to the API</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>host</code></strong> :&ensp;<code>str</code></dt>
+<dd>The host string, the base of the url to call</dd>
+<dt><strong><code>debug</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether to print debug messages about rest requests</dd>
+<dt><strong><code>verify</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether to use SSL Certificate Verification</dd>
+<dt><strong><code>token</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The authorization header</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>host</code></strong> :&ensp;<code>str</code></dt>
+<dd>The host string, the base of the url to call</dd>
+<dt><strong><code>debug</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether to print debug messages about rest requests</dd>
+<dt><strong><code>verify</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether to use SSL Certificate Verification</dd>
+<dt><strong><code>token</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>The authorization header</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class RestConnector:
+    &#34;&#34;&#34;The REST Wrapper for PySense
+
+    Use the rest_call method to make calls to the API
+
+    Attributes:
+        host (str): The host string, the base of the url to call
+        debug (bool): Whether to print debug messages about rest requests
+        verify (bool): Whether to use SSL Certificate Verification
+        token (JSON): The authorization header
+    &#34;&#34;&#34;
 
     def __init__(self, host, token, debug, verify):
-        self._host = PySenseUtils.format_host(host)
-        self.debug = debug
-        self.verify = verify
-        self._token = token
-
-    def rest_call(self, action_type, url, *,
-                  data=None, json_payload=None, query_params=None, raw=False, path=None, file=None):
-        &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response
+        &#34;&#34;&#34;
 
         Args:
-            action_type: REST request type
-            url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding
-            data: (optional) The data portion of the payload
-            json_payload: (optional) The json portion of the payload
-            query_params: (optional) A dictionary of query values to be added to the end of the url
-            raw: (optional) True if raw content response wanted
-            path: (optional) If set, response will be downloaded to file path
-            file: (optional) Path to files to be uploaded. Only usable with post.
+            host (str): The host string, the base of the url to call
+            debug (bool): Whether to print debug messages about rest requests
+            verify (bool): Whether to use SSL Certificate Verification
+            token (JSON): The authorization header
+        &#34;&#34;&#34;
+        self.host = PySenseUtils.format_host(host)
+        self.debug = debug
+        self.verify = verify
+        self.token = token
+
+    def rest_call(self, action_type, url, *,
+                  data=None, json_payload=None, query_params=None, path=None, file=None, raw=False):
+        &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance
+
+        Args:
+            action_type (str): REST request type (get, post, patch, put, delete)
+            url (str): api end point, example api/v1/app_database/encrypt_database_password or api/branding
+            data (Any): (Optional) The data portion of the payload
+            json_payload (JSON): (Optional) The JSON portion of the payload
+            query_params (dict[Str,Any]): (Optional) A dictionary of query values to be added to the end of the url
+                Method will strip out None dictionary values.
+            path (str): (Optional) If set, response will be downloaded to file path
+            file (str): (Optional) Path to files to be uploaded. Only usable with post.
+            raw (bool): (Optional) If true, write raw data to file. Writes JSON by default
 
         Returns:
-            Returns the json content blob by default.
-            If raw is set to true, returns the raw bytes of the content.
-            If path is set, returns nothing
+            JSON: Returns the json content blob by default. If path is set, returns nothing
         &#34;&#34;&#34;
 
         action_type = action_type.lower()
@@ -243,7 +305,7 @@ def build_query_string(dictionary):
             query_string = build_query_string(query_params)
         else:
             query_string = &#39;&#39;
-        full_url = &#39;{}/{}{}&#39;.format(self._host, url, query_string)
+        full_url = &#39;{}/{}{}&#39;.format(self.host, url, query_string)
 
         if self.debug:
             print(&#39;{}: {}&#39;.format(action_type, full_url))
@@ -260,20 +322,21 @@ def build_query_string(dictionary):
         if path is not None:
             with requests.request(
                 action_type, full_url, stream=True,
-                headers=self._token, data=data, json=json_payload, verify=self.verify
-            ) as r:
-                with open(path, &#39;wb&#39;) as f:
-                    shutil.copyfileobj(r.raw, f)
+                headers=self.token, data=data, json=json_payload, verify=self.verify
+            ) as response:
+                if raw:
+                    with open(path, &#39;wb&#39;) as f:
+                        shutil.copyfileobj(response.raw, f)
+                else:
+                    PySenseUtils.dump_json(response.json(), path)
         else:
             response = requests.request(
                 action_type, full_url,
-                headers=self._token, data=data, json=json_payload, verify=self.verify, files=file
+                headers=self.token, data=data, json=json_payload, verify=self.verify, files=file
             )
             parse_response(response)
             if len(response.content) == 0:
                 return None
-            elif raw:
-                return response.content
             else:
                 try:
                     return response.json()
@@ -283,55 +346,56 @@ def build_query_string(dictionary):
 <h3>Methods</h3>
 <dl>
 <dt id="PySense.PySenseRestConnector.RestConnector.rest_call"><code class="name flex">
-<span>def <span class="ident">rest_call</span></span>(<span>self, action_type, url, *, data=None, json_payload=None, query_params=None, raw=False, path=None, file=None)</span>
+<span>def <span class="ident">rest_call</span></span>(<span>self, action_type, url, *, data=None, json_payload=None, query_params=None, path=None, file=None, raw=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Run an arbitrary rest command against your Sisense instance and returns the JSON response</p>
+<div class="desc"><p>Run an arbitrary rest command against your Sisense instance</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>action_type</code></strong></dt>
-<dd>REST request type</dd>
-<dt><strong><code>url</code></strong></dt>
-<dd>url to hit, example api/v1/app_database/encrypt_database_password or api/branding</dd>
-<dt><strong><code>data</code></strong></dt>
-<dd>(optional) The data portion of the payload</dd>
-<dt><strong><code>json_payload</code></strong></dt>
-<dd>(optional) The json portion of the payload</dd>
-<dt><strong><code>query_params</code></strong></dt>
-<dd>(optional) A dictionary of query values to be added to the end of the url</dd>
-<dt><strong><code>raw</code></strong></dt>
-<dd>(optional) True if raw content response wanted</dd>
-<dt><strong><code>path</code></strong></dt>
-<dd>(optional) If set, response will be downloaded to file path</dd>
-<dt><strong><code>file</code></strong></dt>
-<dd>(optional) Path to files to be uploaded. Only usable with post.</dd>
+<dt><strong><code>action_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>REST request type (get, post, patch, put, delete)</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>api end point, example api/v1/app_database/encrypt_database_password or api/branding</dd>
+<dt><strong><code>data</code></strong> :&ensp;<code>Any</code></dt>
+<dd>(Optional) The data portion of the payload</dd>
+<dt><strong><code>json_payload</code></strong> :&ensp;<code>JSON</code></dt>
+<dd>(Optional) The JSON portion of the payload</dd>
+<dt><strong><code>query_params</code></strong> :&ensp;<code>dict[Str,Any]</code></dt>
+<dd>(Optional) A dictionary of query values to be added to the end of the url
+Method will strip out None dictionary values.</dd>
+<dt><strong><code>path</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) If set, response will be downloaded to file path</dd>
+<dt><strong><code>file</code></strong> :&ensp;<code>str</code></dt>
+<dd>(Optional) Path to files to be uploaded. Only usable with post.</dd>
+<dt><strong><code>raw</code></strong> :&ensp;<code>bool</code></dt>
+<dd>(Optional) If true, write raw data to file. Writes JSON by default</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>Returns the json content blob by default.
-If raw is set to true, returns the raw bytes of the content.
-If path is set, returns nothing</p></div>
+<dl>
+<dt><code>JSON</code></dt>
+<dd>Returns the json content blob by default. If path is set, returns nothing</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def rest_call(self, action_type, url, *,
-              data=None, json_payload=None, query_params=None, raw=False, path=None, file=None):
-    &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance and returns the JSON response
+              data=None, json_payload=None, query_params=None, path=None, file=None, raw=False):
+    &#34;&#34;&#34;Run an arbitrary rest command against your Sisense instance
 
     Args:
-        action_type: REST request type
-        url: url to hit, example api/v1/app_database/encrypt_database_password or api/branding
-        data: (optional) The data portion of the payload
-        json_payload: (optional) The json portion of the payload
-        query_params: (optional) A dictionary of query values to be added to the end of the url
-        raw: (optional) True if raw content response wanted
-        path: (optional) If set, response will be downloaded to file path
-        file: (optional) Path to files to be uploaded. Only usable with post.
+        action_type (str): REST request type (get, post, patch, put, delete)
+        url (str): api end point, example api/v1/app_database/encrypt_database_password or api/branding
+        data (Any): (Optional) The data portion of the payload
+        json_payload (JSON): (Optional) The JSON portion of the payload
+        query_params (dict[Str,Any]): (Optional) A dictionary of query values to be added to the end of the url
+            Method will strip out None dictionary values.
+        path (str): (Optional) If set, response will be downloaded to file path
+        file (str): (Optional) Path to files to be uploaded. Only usable with post.
+        raw (bool): (Optional) If true, write raw data to file. Writes JSON by default
 
     Returns:
-        Returns the json content blob by default.
-        If raw is set to true, returns the raw bytes of the content.
-        If path is set, returns nothing
+        JSON: Returns the json content blob by default. If path is set, returns nothing
     &#34;&#34;&#34;
 
     action_type = action_type.lower()
@@ -339,7 +403,7 @@ If path is set, returns nothing</p></div>
         query_string = build_query_string(query_params)
     else:
         query_string = &#39;&#39;
-    full_url = &#39;{}/{}{}&#39;.format(self._host, url, query_string)
+    full_url = &#39;{}/{}{}&#39;.format(self.host, url, query_string)
 
     if self.debug:
         print(&#39;{}: {}&#39;.format(action_type, full_url))
@@ -356,20 +420,21 @@ If path is set, returns nothing</p></div>
     if path is not None:
         with requests.request(
             action_type, full_url, stream=True,
-            headers=self._token, data=data, json=json_payload, verify=self.verify
-        ) as r:
-            with open(path, &#39;wb&#39;) as f:
-                shutil.copyfileobj(r.raw, f)
+            headers=self.token, data=data, json=json_payload, verify=self.verify
+        ) as response:
+            if raw:
+                with open(path, &#39;wb&#39;) as f:
+                    shutil.copyfileobj(response.raw, f)
+            else:
+                PySenseUtils.dump_json(response.json(), path)
     else:
         response = requests.request(
             action_type, full_url,
-            headers=self._token, data=data, json=json_payload, verify=self.verify, files=file
+            headers=self.token, data=data, json=json_payload, verify=self.verify, files=file
         )
         parse_response(response)
         if len(response.content) == 0:
             return None
-        elif raw:
-            return response.content
         else:
             try:
                 return response.json()

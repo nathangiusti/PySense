@@ -26,24 +26,24 @@ owner_dashboards = py_client.get_dashboards_admin(dashboard_type='owner')
 length = len(owner_dashboards)
 x = 0
 for owner_dashboard in owner_dashboards:
-    viewer_dashboards = py_client.get_dashboards_admin(dash_id=owner_dashboard.get_id())
+    viewer_dashboards = py_client.get_dashboards_admin(dash_id=owner_dashboard.get_oid())
     for dashboard in viewer_dashboards:
-        if dashboard.get_id() in report_map:
+        if dashboard.get_oid() in report_map:
             if dashboard.get_last_opened() is not None:
                 if dashboard.get_last_opened().date() > comp_date:
-                    report_map[dashboard.get_id()][4] = report_map[dashboard.get_id()][4] + 1
-                if dashboard.get_last_opened().date() > report_map[dashboard.get_id()][5]:
-                    report_map[dashboard.get_id()][5] = dashboard.get_last_opened().date()
+                    report_map[dashboard.get_oid()][4] = report_map[dashboard.get_oid()][4] + 1
+                if dashboard.get_last_opened().date() > report_map[dashboard.get_oid()][5]:
+                    report_map[dashboard.get_oid()][5] = dashboard.get_last_opened().date()
         else:
             if dashboard.get_last_opened() is not None:
                 val = 1 if dashboard.get_last_opened().date() > comp_date else 0
-                report_map[dashboard.get_id()] = [dashboard.get_title(), dashboard.get_id(),
-                                                  dashboard.get_owner().get_email(), dashboard.get_created_date(),
-                                                  val, dashboard.get_last_opened().date()]
+                report_map[dashboard.get_oid()] = [dashboard.get_title(), dashboard.get_oid(),
+                                                   dashboard.get_owner().get_email(), dashboard.get_created_date(),
+                                                   val, dashboard.get_last_opened().date()]
             else:
-                report_map[dashboard.get_id()] = [dashboard.get_title(), dashboard.get_id(),
-                                                  dashboard.get_owner().get_email(), dashboard.get_created_date(),
-                                                  0, datetime.datetime(1970, 1, 1).date()]
+                report_map[dashboard.get_oid()] = [dashboard.get_title(), dashboard.get_oid(),
+                                                   dashboard.get_owner().get_email(), dashboard.get_created_date(),
+                                                   0, datetime.datetime(1970, 1, 1).date()]
     x = x + 1
     print("{}/{}".format(x, length), end='\r')
 

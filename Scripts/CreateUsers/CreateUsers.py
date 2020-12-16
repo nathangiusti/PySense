@@ -50,7 +50,7 @@ with open('new_users.csv') as csv_file:
         user = py_client.get_user_by_email(row['email'])
         if user is not None:
             if action_on_found_user == 'Update':
-                user.update(role_name=SisenseRole.Role.from_str(row['role']), first_name=row['first_name'],
+                user.update(role=SisenseRole.Role.from_str(row['role']), first_name=row['first_name'],
                             last_name=row['last_name'], groups=user_groups)
             elif action_on_found_user == 'Skip':
                 continue

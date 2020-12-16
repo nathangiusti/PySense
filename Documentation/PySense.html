@@ -36,16 +36,17 @@ def authenticate_by_token(host, token, version, debug=False, verify=True):
     &#34;&#34;&#34;Creates a new PySense client with the token
 
     Args:
-        - host: The Sisense server address
-        - token: A Sisense user token
-        - version: &#39;Windows&#39; or &#39;Linux&#39;
-        - debug: (Optional) True to enable debugging. False by default.
-        - verify: (Optional) False to disable SSL certificate verification. True by default.
+        host (str): The Sisense server address
+        token (str): A Sisense user token
+        version (str): &#39;Windows&#39; or &#39;Linux&#39;
+        debug (bool): (Optional) True to enable debugging. False by default.
+        verify (bool): (Optional) False to disable SSL certificate verification. True by default.
 
 
     Returns:
-        A new PySense client for the given credentials
+        PySense: A new PySense client for the given credentials
     &#34;&#34;&#34;
+
     return PySenseAuthentication.authenticate_by_token(host, token, version, debug, verify)
 
 
@@ -53,17 +54,18 @@ def authenticate_by_password(host, username, password, version, debug=False, ver
     &#34;&#34;&#34;Creates a new PySense client with the username and password
 
     Args:
-        - host: The Sisense server address
-        - username: Sisense username
-        - password: Sisense password
-        - version: &#39;Windows&#39; or &#39;Linux&#39;
-        - debug: (Optional) True to enable debugging. False by default.
-        - verify: (Optional) False to disable SSL certificate verification. True by default.
+        host (str): The Sisense server address
+        username (str): Sisense username
+        password (str): Sisense password
+        version (str): &#39;Windows&#39; or &#39;Linux&#39;
+        debug (bool): (Optional) True to enable debugging. False by default.
+        verify (bool): (Optional) False to disable SSL certificate verification. True by default.
 
 
     Returns:
-        A new PySense client for the given credentials
+        PySense: A new PySense client for the given credentials
     &#34;&#34;&#34;
+
     return PySenseAuthentication.authenticate_by_password(host, username, password, version, debug, verify)
 
 
@@ -75,11 +77,12 @@ def authenticate_by_file(config_file):
     See sample config in Snippets/SampleConfig.yaml
 
     Args:
-        config_file: Yaml file with credentials
+        config_file (str): Yaml file with credentials
 
     Returns:
-        A new PySense client for the given credentials
+        PySense: A new PySense client for the given credentials
     &#34;&#34;&#34;
+
     return PySenseAuthentication.authenticate_by_file(config_file)
 
 
@@ -89,12 +92,13 @@ def authenticate_custom_connector(version, connector):
     Authenticate by setting up your own custom connector.
 
     Args:
-        - version: &#39;Windows&#39; or &#39;Linux&#39;
-        - connector: The custom connector
+        version (str): &#39;Windows&#39; or &#39;Linux&#39;
+        connector (RestConnector): The custom connector
 
     Returns:
-        A new PySense client for the given credentials
+        PySense: A new PySense client for the given credentials
     &#34;&#34;&#34;
+
     return PySense(None, None, version, connector=connector)
 
 
@@ -108,21 +112,26 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
     This class is for sever level changes like getting, adding, and removing dashboards, elasticubes, users, etc
 
     Attributes:
-        connector: The PySenseRestConnector which runs the rest commands.
+        connector (RestConnector): The connection to the Sisense Server
+        param_dict (dict): Key value store for various configuration options
+        version (SisenseVersion): Track whether we are connecting to Windows or Linux Sisense
+        roles (dict[SisenseRole,str]): An array of SienseRoles and their role_ids
     &#34;&#34;&#34;
 
     def __init__(self, host, token, version, *, debug=False, verify=True, param_dict=None, connector=None):
         &#34;&#34;&#34; Initializes a PySense instance
 
         Args:
-            host: host address
-            token: a json bearer token with format
+            host (str): host address
+            token (json): a json bearer token with format
                 {&#39;authorization&#39;:  &#34;Bearer yourlongaccesstokenstringthatyougotfromapreviouslogin&#34;}
-            version: version (either &#39;Windows&#39; or &#39;Linux&#39;)
-            debug: If true, prints detailed REST API logs to console. False by default.
-            verify: If false, disables SSL Certification. True by default.
-            param_dict: For passing in additional parameters
+            version (str): version (either &#39;Windows&#39; or &#39;Linux&#39;)
+            debug (bool): (Optional) If true, prints detailed REST API logs to console. False by default.
+            verify (bool): (Optional) If false, disables SSL Certification. True by default.
+            param_dict (dict): (Optional) For passing in additional parameters
+            connector (RestConnector): (Optional) Pass in your own connector (normally used for mock tests)
         &#34;&#34;&#34;
+
         if param_dict is None:
             self.param_dict = {}
         else:
@@ -151,17 +160,10 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
             self.connector = PySenseRestConnector.RestConnector(host, token, debug, verify)
             # Set up Roles
             roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
-            self._roles = {}
+            self.roles = {}
             for role in roles:
                 if role[&#39;name&#39;] in [&#39;dataDesigner&#39;, &#39;super&#39;, &#39;dataAdmin&#39;, &#39;admin&#39;, &#39;contributor&#39;, &#39;consumer&#39;]:
-                    self._roles[SisenseRole.Role.from_str(role[&#39;name&#39;])] = role[&#39;_id&#39;]
-
-    def set_debug(self, debug):
-        &#34;&#34;&#34;Enable or disable logging of REST api calls to std out.
-
-        Use for debugging. Debug is false by default.
-        &#34;&#34;&#34;
-        self.connector.debug = debug
+                    self.roles[SisenseRole.Role.from_str(role[&#39;name&#39;])] = role[&#39;_id&#39;]
 
     def get_param(self, param):
         &#34;&#34;&#34;Get the value in the param dictionary for the given parameter. Returns None if not found&#34;&#34;&#34;
@@ -191,11 +193,14 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <p>See sample config in Snippets/SampleConfig.yaml</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>config_file</code></strong></dt>
+<dt><strong><code>config_file</code></strong> :&ensp;<code>str</code></dt>
 <dd>Yaml file with credentials</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>A new PySense client for the given credentials</p></div>
+<dl>
+<dt><code><a title="PySense.PySense.PySense" href="#PySense.PySense.PySense">PySense</a></code></dt>
+<dd>A new PySense client for the given credentials</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -208,11 +213,12 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
     See sample config in Snippets/SampleConfig.yaml
 
     Args:
-        config_file: Yaml file with credentials
+        config_file (str): Yaml file with credentials
 
     Returns:
-        A new PySense client for the given credentials
+        PySense: A new PySense client for the given credentials
     &#34;&#34;&#34;
+
     return PySenseAuthentication.authenticate_by_file(config_file)</code></pre>
 </details>
 </dd>
@@ -222,16 +228,25 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <dd>
 <div class="desc"><p>Creates a new PySense client with the username and password</p>
 <h2 id="args">Args</h2>
-<ul>
-<li>host: The Sisense server address</li>
-<li>username: Sisense username</li>
-<li>password: Sisense password</li>
-<li>version: 'Windows' or 'Linux'</li>
-<li>debug: (Optional) True to enable debugging. False by default.</li>
-<li>verify: (Optional) False to disable SSL certificate verification. True by default.</li>
-</ul>
+<dl>
+<dt><strong><code>host</code></strong> :&ensp;<code>str</code></dt>
+<dd>The Sisense server address</dd>
+<dt><strong><code>username</code></strong> :&ensp;<code>str</code></dt>
+<dd>Sisense username</dd>
+<dt><strong><code>password</code></strong> :&ensp;<code>str</code></dt>
+<dd>Sisense password</dd>
+<dt><strong><code>version</code></strong> :&ensp;<code>str</code></dt>
+<dd>'Windows' or 'Linux'</dd>
+<dt><strong><code>debug</code></strong> :&ensp;<code>bool</code></dt>
+<dd>(Optional) True to enable debugging. False by default.</dd>
+<dt><strong><code>verify</code></strong> :&ensp;<code>bool</code></dt>
+<dd>(Optional) False to disable SSL certificate verification. True by default.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
-<p>A new PySense client for the given credentials</p></div>
+<dl>
+<dt><code><a title="PySense.PySense.PySense" href="#PySense.PySense.PySense">PySense</a></code></dt>
+<dd>A new PySense client for the given credentials</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -240,17 +255,18 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
     &#34;&#34;&#34;Creates a new PySense client with the username and password
 
     Args:
-        - host: The Sisense server address
-        - username: Sisense username
-        - password: Sisense password
-        - version: &#39;Windows&#39; or &#39;Linux&#39;
-        - debug: (Optional) True to enable debugging. False by default.
-        - verify: (Optional) False to disable SSL certificate verification. True by default.
+        host (str): The Sisense server address
+        username (str): Sisense username
+        password (str): Sisense password
+        version (str): &#39;Windows&#39; or &#39;Linux&#39;
+        debug (bool): (Optional) True to enable debugging. False by default.
+        verify (bool): (Optional) False to disable SSL certificate verification. True by default.
 
 
     Returns:
-        A new PySense client for the given credentials
+        PySense: A new PySense client for the given credentials
     &#34;&#34;&#34;
+
     return PySenseAuthentication.authenticate_by_password(host, username, password, version, debug, verify)</code></pre>
 </details>
 </dd>
@@ -260,15 +276,23 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <dd>
 <div class="desc"><p>Creates a new PySense client with the token</p>
 <h2 id="args">Args</h2>
-<ul>
-<li>host: The Sisense server address</li>
-<li>token: A Sisense user token</li>
-<li>version: 'Windows' or 'Linux'</li>
-<li>debug: (Optional) True to enable debugging. False by default.</li>
-<li>verify: (Optional) False to disable SSL certificate verification. True by default.</li>
-</ul>
+<dl>
+<dt><strong><code>host</code></strong> :&ensp;<code>str</code></dt>
+<dd>The Sisense server address</dd>
+<dt><strong><code>token</code></strong> :&ensp;<code>str</code></dt>
+<dd>A Sisense user token</dd>
+<dt><strong><code>version</code></strong> :&ensp;<code>str</code></dt>
+<dd>'Windows' or 'Linux'</dd>
+<dt><strong><code>debug</code></strong> :&ensp;<code>bool</code></dt>
+<dd>(Optional) True to enable debugging. False by default.</dd>
+<dt><strong><code>verify</code></strong> :&ensp;<code>bool</code></dt>
+<dd>(Optional) False to disable SSL certificate verification. True by default.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
-<p>A new PySense client for the given credentials</p></div>
+<dl>
+<dt><code><a title="PySense.PySense.PySense" href="#PySense.PySense.PySense">PySense</a></code></dt>
+<dd>A new PySense client for the given credentials</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -277,16 +301,17 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
     &#34;&#34;&#34;Creates a new PySense client with the token
 
     Args:
-        - host: The Sisense server address
-        - token: A Sisense user token
-        - version: &#39;Windows&#39; or &#39;Linux&#39;
-        - debug: (Optional) True to enable debugging. False by default.
-        - verify: (Optional) False to disable SSL certificate verification. True by default.
+        host (str): The Sisense server address
+        token (str): A Sisense user token
+        version (str): &#39;Windows&#39; or &#39;Linux&#39;
+        debug (bool): (Optional) True to enable debugging. False by default.
+        verify (bool): (Optional) False to disable SSL certificate verification. True by default.
 
 
     Returns:
-        A new PySense client for the given credentials
+        PySense: A new PySense client for the given credentials
     &#34;&#34;&#34;
+
     return PySenseAuthentication.authenticate_by_token(host, token, version, debug, verify)</code></pre>
 </details>
 </dd>
@@ -297,12 +322,17 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <div class="desc"><p>Use a custom connector</p>
 <p>Authenticate by setting up your own custom connector.</p>
 <h2 id="args">Args</h2>
-<ul>
-<li>version: 'Windows' or 'Linux'</li>
-<li>connector: The custom connector</li>
-</ul>
+<dl>
+<dt><strong><code>version</code></strong> :&ensp;<code>str</code></dt>
+<dd>'Windows' or 'Linux'</dd>
+<dt><strong><code>connector</code></strong> :&ensp;<code>RestConnector</code></dt>
+<dd>The custom connector</dd>
+</dl>
 <h2 id="returns">Returns</h2>
-<p>A new PySense client for the given credentials</p></div>
+<dl>
+<dt><code><a title="PySense.PySense.PySense" href="#PySense.PySense.PySense">PySense</a></code></dt>
+<dd>A new PySense client for the given credentials</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -313,12 +343,13 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
     Authenticate by setting up your own custom connector.
 
     Args:
-        - version: &#39;Windows&#39; or &#39;Linux&#39;
-        - connector: The custom connector
+        version (str): &#39;Windows&#39; or &#39;Linux&#39;
+        connector (RestConnector): The custom connector
 
     Returns:
-        A new PySense client for the given credentials
+        PySense: A new PySense client for the given credentials
     &#34;&#34;&#34;
+
     return PySense(None, None, version, connector=connector)</code></pre>
 </details>
 </dd>
@@ -336,24 +367,32 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <p>This class is for sever level changes like getting, adding, and removing dashboards, elasticubes, users, etc</p>
 <h2 id="attributes">Attributes</h2>
 <dl>
-<dt><strong><code>connector</code></strong></dt>
-<dd>The PySenseRestConnector which runs the rest commands.</dd>
+<dt><strong><code>connector</code></strong> :&ensp;<code>RestConnector</code></dt>
+<dd>The connection to the Sisense Server</dd>
+<dt><strong><code>param_dict</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Key value store for various configuration options</dd>
+<dt><strong><code>version</code></strong> :&ensp;<code>SisenseVersion</code></dt>
+<dd>Track whether we are connecting to Windows or Linux Sisense</dd>
+<dt><strong><code>roles</code></strong> :&ensp;<code>dict[SisenseRole,str]</code></dt>
+<dd>An array of SienseRoles and their role_ids</dd>
 </dl>
 <p>Initializes a PySense instance</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>host</code></strong></dt>
+<dt><strong><code>host</code></strong> :&ensp;<code>str</code></dt>
 <dd>host address</dd>
-<dt><strong><code>token</code></strong></dt>
+<dt><strong><code>token</code></strong> :&ensp;<code>json</code></dt>
 <dd _Bearer="&quot;Bearer" _authorization_:="'authorization':" yourlongaccesstokenstringthatyougotfromapreviouslogin_="yourlongaccesstokenstringthatyougotfromapreviouslogin&quot;">a json bearer token with format</dd>
-<dt><strong><code>version</code></strong></dt>
+<dt><strong><code>version</code></strong> :&ensp;<code>str</code></dt>
 <dd>version (either 'Windows' or 'Linux')</dd>
-<dt><strong><code>debug</code></strong></dt>
-<dd>If true, prints detailed REST API logs to console. False by default.</dd>
-<dt><strong><code>verify</code></strong></dt>
-<dd>If false, disables SSL Certification. True by default.</dd>
-<dt><strong><code>param_dict</code></strong></dt>
-<dd>For passing in additional parameters</dd>
+<dt><strong><code>debug</code></strong> :&ensp;<code>bool</code></dt>
+<dd>(Optional) If true, prints detailed REST API logs to console. False by default.</dd>
+<dt><strong><code>verify</code></strong> :&ensp;<code>bool</code></dt>
+<dd>(Optional) If false, disables SSL Certification. True by default.</dd>
+<dt><strong><code>param_dict</code></strong> :&ensp;<code>dict</code></dt>
+<dd>(Optional) For passing in additional parameters</dd>
+<dt><strong><code>connector</code></strong> :&ensp;<code>RestConnector</code></dt>
+<dd>(Optional) Pass in your own connector (normally used for mock tests)</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -369,21 +408,26 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
     This class is for sever level changes like getting, adding, and removing dashboards, elasticubes, users, etc
 
     Attributes:
-        connector: The PySenseRestConnector which runs the rest commands.
+        connector (RestConnector): The connection to the Sisense Server
+        param_dict (dict): Key value store for various configuration options
+        version (SisenseVersion): Track whether we are connecting to Windows or Linux Sisense
+        roles (dict[SisenseRole,str]): An array of SienseRoles and their role_ids
     &#34;&#34;&#34;
 
     def __init__(self, host, token, version, *, debug=False, verify=True, param_dict=None, connector=None):
         &#34;&#34;&#34; Initializes a PySense instance
 
         Args:
-            host: host address
-            token: a json bearer token with format
+            host (str): host address
+            token (json): a json bearer token with format
                 {&#39;authorization&#39;:  &#34;Bearer yourlongaccesstokenstringthatyougotfromapreviouslogin&#34;}
-            version: version (either &#39;Windows&#39; or &#39;Linux&#39;)
-            debug: If true, prints detailed REST API logs to console. False by default.
-            verify: If false, disables SSL Certification. True by default.
-            param_dict: For passing in additional parameters
+            version (str): version (either &#39;Windows&#39; or &#39;Linux&#39;)
+            debug (bool): (Optional) If true, prints detailed REST API logs to console. False by default.
+            verify (bool): (Optional) If false, disables SSL Certification. True by default.
+            param_dict (dict): (Optional) For passing in additional parameters
+            connector (RestConnector): (Optional) Pass in your own connector (normally used for mock tests)
         &#34;&#34;&#34;
+
         if param_dict is None:
             self.param_dict = {}
         else:
@@ -412,17 +456,10 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
             self.connector = PySenseRestConnector.RestConnector(host, token, debug, verify)
             # Set up Roles
             roles = self.connector.rest_call(&#39;get&#39;, &#39;api/roles&#39;)
-            self._roles = {}
+            self.roles = {}
             for role in roles:
                 if role[&#39;name&#39;] in [&#39;dataDesigner&#39;, &#39;super&#39;, &#39;dataAdmin&#39;, &#39;admin&#39;, &#39;contributor&#39;, &#39;consumer&#39;]:
-                    self._roles[SisenseRole.Role.from_str(role[&#39;name&#39;])] = role[&#39;_id&#39;]
-
-    def set_debug(self, debug):
-        &#34;&#34;&#34;Enable or disable logging of REST api calls to std out.
-
-        Use for debugging. Debug is false by default.
-        &#34;&#34;&#34;
-        self.connector.debug = debug
+                    self.roles[SisenseRole.Role.from_str(role[&#39;name&#39;])] = role[&#39;_id&#39;]
 
     def get_param(self, param):
         &#34;&#34;&#34;Get the value in the param dictionary for the given parameter. Returns None if not found&#34;&#34;&#34;
@@ -468,24 +505,6 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
         None</code></pre>
 </details>
 </dd>
-<dt id="PySense.PySense.PySense.set_debug"><code class="name flex">
-<span>def <span class="ident">set_debug</span></span>(<span>self, debug)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Enable or disable logging of REST api calls to std out.</p>
-<p>Use for debugging. Debug is false by default.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_debug(self, debug):
-    &#34;&#34;&#34;Enable or disable logging of REST api calls to std out.
-
-    Use for debugging. Debug is false by default.
-    &#34;&#34;&#34;
-    self.connector.debug = debug</code></pre>
-</details>
-</dd>
 <dt id="PySense.PySense.PySense.set_param"><code class="name flex">
 <span>def <span class="ident">set_param</span></span>(<span>self, param, value)</span>
 </code></dt>
@@ -520,9 +539,9 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <li><code><b><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn">DashboardMixIn</a></b></code>:
 <ul class="hlist">
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.add_dashboards" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.add_dashboards">add_dashboards</a></code></li>
-<li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.bulk_export_dashboards" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.bulk_export_dashboards">bulk_export_dashboards</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.create_dashboard" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.create_dashboard">create_dashboard</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.delete_dashboards" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.delete_dashboards">delete_dashboards</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.export_dashboards" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.export_dashboards">export_dashboards</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboard_by_id" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboard_by_id">get_dashboard_by_id</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards">get_dashboards</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards_admin" href="PySenseMixIns/DashboardMixIn.html#PySense.PySenseMixIns.DashboardMixIn.DashboardMixIn.get_dashboards_admin">get_dashboards_admin</a></code></li>
@@ -546,6 +565,8 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 </li>
 <li><code><b><a title="PySense.PySenseMixIns.FolderMixIn.FolderMixIn" href="PySenseMixIns/FolderMixIn.html#PySense.PySenseMixIns.FolderMixIn.FolderMixIn">FolderMixIn</a></b></code>:
 <ul class="hlist">
+<li><code><a title="PySense.PySenseMixIns.FolderMixIn.FolderMixIn.add_folder" href="PySenseMixIns/FolderMixIn.html#PySense.PySenseMixIns.FolderMixIn.FolderMixIn.add_folder">add_folder</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.FolderMixIn.FolderMixIn.delete_folders" href="PySenseMixIns/FolderMixIn.html#PySense.PySenseMixIns.FolderMixIn.FolderMixIn.delete_folders">delete_folders</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.FolderMixIn.FolderMixIn.get_folder_by_id" href="PySenseMixIns/FolderMixIn.html#PySense.PySenseMixIns.FolderMixIn.FolderMixIn.get_folder_by_id">get_folder_by_id</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.FolderMixIn.FolderMixIn.get_folders" href="PySenseMixIns/FolderMixIn.html#PySense.PySenseMixIns.FolderMixIn.FolderMixIn.get_folders">get_folders</a></code></li>
 </ul>
@@ -563,13 +584,14 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <ul class="hlist">
 <li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.add_blox_action" href="PySenseMixIns/PluginMixIn.html#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.add_blox_action">add_blox_action</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.create_blox_action" href="PySenseMixIns/PluginMixIn.html#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.create_blox_action">create_blox_action</a></code></li>
-<li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.delete_blox_action" href="PySenseMixIns/PluginMixIn.html#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.delete_blox_action">delete_blox_action</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.delete_blox_actions" href="PySenseMixIns/PluginMixIn.html#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.delete_blox_actions">delete_blox_actions</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_blox_action" href="PySenseMixIns/PluginMixIn.html#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_blox_action">get_blox_action</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_plugins" href="PySenseMixIns/PluginMixIn.html#PySense.PySenseMixIns.PluginMixIn.PluginMixIn.get_plugins">get_plugins</a></code></li>
 </ul>
 </li>
 <li><code><b><a title="PySense.PySenseMixIns.RoleMixIn.RoleMixIn" href="PySenseMixIns/RoleMixIn.html#PySense.PySenseMixIns.RoleMixIn.RoleMixIn">RoleMixIn</a></b></code>:
 <ul class="hlist">
+<li><code><a title="PySense.PySenseMixIns.RoleMixIn.RoleMixIn.get_role_by_id" href="PySenseMixIns/RoleMixIn.html#PySense.PySenseMixIns.RoleMixIn.RoleMixIn.get_role_by_id">get_role_by_id</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.RoleMixIn.RoleMixIn.get_role_id" href="PySenseMixIns/RoleMixIn.html#PySense.PySenseMixIns.RoleMixIn.RoleMixIn.get_role_id">get_role_id</a></code></li>
 </ul>
 </li>
@@ -619,7 +641,6 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
 <h4><code><a title="PySense.PySense.PySense" href="#PySense.PySense.PySense">PySense</a></code></h4>
 <ul class="">
 <li><code><a title="PySense.PySense.PySense.get_param" href="#PySense.PySense.PySense.get_param">get_param</a></code></li>
-<li><code><a title="PySense.PySense.PySense.set_debug" href="#PySense.PySense.PySense.set_debug">set_debug</a></code></li>
 <li><code><a title="PySense.PySense.PySense.set_param" href="#PySense.PySense.PySense.set_param">set_param</a></code></li>
 </ul>
 </li>
