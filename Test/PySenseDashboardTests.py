@@ -25,7 +25,7 @@ class PySenseDashboardTests(unittest.TestCase):
 
     def test_get_dashboard_export_pdf(self):
         path = self.sample_path + self.dashboard.get_oid() + '.pdf'
-        assert self.dashboard.export_to_pdf('A4', 'portrait', 'asis', path=path,
+        assert self.dashboard.export_to_pdf('A4', 'portrait', 'asis', path,
                                             include_title=True, include_filters=False, include_ds=True,
                                             widget_id=None, preview=True, row_count=None, show_title=True,
                                             show_footer=False, title='Hello World', title_size='medium',

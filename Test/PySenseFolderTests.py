@@ -13,3 +13,4 @@ class PySenseFolderTests(unittest.TestCase):
     def test_getters(self):
         assert self.folder.get_name() is not None
         assert self.folder.get_oid() is not None
+

@@ -1,7 +1,7 @@
 import unittest
 import urllib3
 
-from PySense import PySense, SisenseRole
+from PySense import PySense, PySenseException, SisenseRole
 from Test.PySenseDashboardTests import PySenseDashboardTests
 from Test.PySenseDataModelTests import PySenseDataModelTests
 from Test.PySenseDataSetTests import PySenseDataSetTests
@@ -39,9 +39,11 @@ def test_scale_suite():
     # Set up linux instance for testing
     py_client = PySense.authenticate_by_file('resources//LinuxConfig.yaml')
 
-    model = py_client.get_data_models(title='PySense')
-    if model is None:
+    try:
+        model = py_client.get_data_models(title='PySense')
+    except PySenseException.PySenseException:
         model = py_client.import_schema('resources//PySense.smodel', title='PySense')
+
     dash = py_client.import_dashboards('resources//PySense.dash')
 
     # Set up windows instance for testing
