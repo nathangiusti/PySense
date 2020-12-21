@@ -168,7 +168,15 @@ class DataModel:
         self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
                                            query_params=query_params, path=path, raw=True)
 
-        return path</code></pre>
+        return path
+
+    def get_creator(self):
+        &#34;&#34;&#34;Get the creator of the data model
+
+        Returns:
+            User: The user who created the data model
+        &#34;&#34;&#34;
+        return self.py_client.get_user_by_id(self.json[&#39;creator&#39;][&#39;id&#39;])</code></pre>
 </details>
 </section>
 <section>
@@ -345,7 +353,15 @@ Each data model has 0 to many data sets which define the tables in the data mode
         self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
                                            query_params=query_params, path=path, raw=True)
 
-        return path</code></pre>
+        return path
+
+    def get_creator(self):
+        &#34;&#34;&#34;Get the creator of the data model
+
+        Returns:
+            User: The user who created the data model
+        &#34;&#34;&#34;
+        return self.py_client.get_user_by_id(self.json[&#39;creator&#39;][&#39;id&#39;])</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -459,6 +475,29 @@ Each data model has 0 to many data sets which define the tables in the data mode
                                        query_params=query_params, path=path)
 
     return path</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseDataModel.DataModel.get_creator"><code class="name flex">
+<span>def <span class="ident">get_creator</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the creator of the data model</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>User</code></dt>
+<dd>The user who created the data model</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_creator(self):
+    &#34;&#34;&#34;Get the creator of the data model
+
+    Returns:
+        User: The user who created the data model
+    &#34;&#34;&#34;
+    return self.py_client.get_user_by_id(self.json[&#39;creator&#39;][&#39;id&#39;])</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataModel.DataModel.get_data_sets"><code class="name flex">
@@ -608,6 +647,7 @@ Each data model has 0 to many data sets which define the tables in the data mode
 <li><code><a title="PySense.PySenseDataModel.DataModel.cancel_build" href="#PySense.PySenseDataModel.DataModel.cancel_build">cancel_build</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.export_to_sdata" href="#PySense.PySenseDataModel.DataModel.export_to_sdata">export_to_sdata</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.export_to_smodel" href="#PySense.PySenseDataModel.DataModel.export_to_smodel">export_to_smodel</a></code></li>
+<li><code><a title="PySense.PySenseDataModel.DataModel.get_creator" href="#PySense.PySenseDataModel.DataModel.get_creator">get_creator</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_data_sets" href="#PySense.PySenseDataModel.DataModel.get_data_sets">get_data_sets</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_oid" href="#PySense.PySenseDataModel.DataModel.get_oid">get_oid</a></code></li>
 <li><code><a title="PySense.PySenseDataModel.DataModel.get_title" href="#PySense.PySenseDataModel.DataModel.get_title">get_title</a></code></li>

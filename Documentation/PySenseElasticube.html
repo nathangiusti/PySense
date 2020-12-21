@@ -75,7 +75,7 @@ class Elasticube:
         else:
             raise PySenseException(&#39;Cube {} is not currently running so this action cannot be performed&#39;)
 
-    def get_model(self):
+    def get_data_model(self):
         &#34;&#34;&#34;Returns the data model object for the cube.
 
         Linux only
@@ -255,31 +255,6 @@ class Elasticube:
         resp_json = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity/{}/{}&#39;
                                                        .format(server_address, self.get_title(url_encoded=True),
                                                                 table, column))
-        ret_arr = []
-        for rule in resp_json:
-            ret_arr.append(PySenseRule.Rule(self.py_client, rule))
-        return ret_arr
-
-    def get_data_security_for_user(self, user, *, server_address=None):
-        &#34;&#34;&#34;Returns an array of rules for the user on this cube
-
-        Warning: There may be a Sisense side issue with this endpoint.
-
-        Args:
-            user (User): The user to fetch data security for
-            server_address (str): (Optional) The server address of the ElastiCube.
-                Set this to your server ip if this method fails without it set.
-
-        Returns:
-            list[Rule]: The data security rules for this user
-        &#34;&#34;&#34;
-
-        server_address = server_address if server_address else self.server_address
-        user_id = user.get_id()
-
-        resp_json = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/{}/datasecurity&#39;
-                                                       .format(server_address, self.get_title(url_encoded=True),
-                                                               user_id))
         ret_arr = []
         for rule in resp_json:
             ret_arr.append(PySenseRule.Rule(self.py_client, rule))
@@ -508,7 +483,15 @@ class Elasticube:
                 ret_arr.append(self.py_client.get_user_by_id(share[&#39;partyId&#39;]))
             elif share[&#39;type&#39;] == &#39;group&#39;:
                 ret_arr.append(self.py_client.get_group_by_id(share[&#39;partyId&#39;]))
-        return ret_arr</code></pre>
+        return ret_arr
+
+    def get_creator(self):
+        &#34;&#34;&#34;Get the creator of the elasticube
+
+        Returns:
+            User: The user who created the elasticube
+        &#34;&#34;&#34;
+        return self.py_client.get_user_by_id(self.json[&#39;creator&#39;])</code></pre>
 </details>
 </section>
 <section>
@@ -594,7 +577,7 @@ After object creation, feel free to set the server_address manually.</p>
         else:
             raise PySenseException(&#39;Cube {} is not currently running so this action cannot be performed&#39;)
 
-    def get_model(self):
+    def get_data_model(self):
         &#34;&#34;&#34;Returns the data model object for the cube.
 
         Linux only
@@ -774,31 +757,6 @@ After object creation, feel free to set the server_address manually.</p>
         resp_json = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/datasecurity/{}/{}&#39;
                                                        .format(server_address, self.get_title(url_encoded=True),
                                                                 table, column))
-        ret_arr = []
-        for rule in resp_json:
-            ret_arr.append(PySenseRule.Rule(self.py_client, rule))
-        return ret_arr
-
-    def get_data_security_for_user(self, user, *, server_address=None):
-        &#34;&#34;&#34;Returns an array of rules for the user on this cube
-
-        Warning: There may be a Sisense side issue with this endpoint.
-
-        Args:
-            user (User): The user to fetch data security for
-            server_address (str): (Optional) The server address of the ElastiCube.
-                Set this to your server ip if this method fails without it set.
-
-        Returns:
-            list[Rule]: The data security rules for this user
-        &#34;&#34;&#34;
-
-        server_address = server_address if server_address else self.server_address
-        user_id = user.get_id()
-
-        resp_json = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/{}/datasecurity&#39;
-                                                       .format(server_address, self.get_title(url_encoded=True),
-                                                               user_id))
         ret_arr = []
         for rule in resp_json:
             ret_arr.append(PySenseRule.Rule(self.py_client, rule))
@@ -1027,7 +985,15 @@ After object creation, feel free to set the server_address manually.</p>
                 ret_arr.append(self.py_client.get_user_by_id(share[&#39;partyId&#39;]))
             elif share[&#39;type&#39;] == &#39;group&#39;:
                 ret_arr.append(self.py_client.get_group_by_id(share[&#39;partyId&#39;]))
-        return ret_arr</code></pre>
+        return ret_arr
+
+    def get_creator(self):
+        &#34;&#34;&#34;Get the creator of the elasticube
+
+        Returns:
+            User: The user who created the elasticube
+        &#34;&#34;&#34;
+        return self.py_client.get_user_by_id(self.json[&#39;creator&#39;])</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -1230,6 +1196,65 @@ Use 'Set' for Elasticube Set. Required for elasticube sets.</dd>
                                        query_params=query_params)</code></pre>
 </details>
 </dd>
+<dt id="PySense.PySenseElasticube.Elasticube.get_creator"><code class="name flex">
+<span>def <span class="ident">get_creator</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the creator of the elasticube</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>User</code></dt>
+<dd>The user who created the elasticube</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_creator(self):
+    &#34;&#34;&#34;Get the creator of the elasticube
+
+    Returns:
+        User: The user who created the elasticube
+    &#34;&#34;&#34;
+    return self.py_client.get_user_by_id(self.json[&#39;creator&#39;])</code></pre>
+</details>
+</dd>
+<dt id="PySense.PySenseElasticube.Elasticube.get_data_model"><code class="name flex">
+<span>def <span class="ident">get_data_model</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the data model object for the cube.</p>
+<p>Linux only</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>DataModel</code></dt>
+<dd>The data model for the cube</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_data_model(self):
+    &#34;&#34;&#34;Returns the data model object for the cube.
+
+    Linux only
+
+    Returns:
+        DataModel: The data model for the cube
+    &#34;&#34;&#34;
+
+    PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;get_model&#39;)
+
+    query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
+
+    data_model_json = self.py_client.connector.rest_call(
+        &#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;, query_params=query_params)
+
+    data_model_json[&#39;oid&#39;] = self.get_oid()
+
+    return PySenseDataModel.DataModel(self.py_client, data_model_json)</code></pre>
+</details>
+</dd>
 <dt id="PySense.PySenseElasticube.Elasticube.get_data_security"><code class="name flex">
 <span>def <span class="ident">get_data_security</span></span>(<span>self, *, server_address=None)</span>
 </code></dt>
@@ -1325,55 +1350,6 @@ Use 'Set' for Elasticube Set. Required for elasticube sets.</dd>
     return ret_arr</code></pre>
 </details>
 </dd>
-<dt id="PySense.PySenseElasticube.Elasticube.get_data_security_for_user"><code class="name flex">
-<span>def <span class="ident">get_data_security_for_user</span></span>(<span>self, user, *, server_address=None)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns an array of rules for the user on this cube</p>
-<p>Warning: There may be a Sisense side issue with this endpoint.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>user</code></strong> :&ensp;<code>User</code></dt>
-<dd>The user to fetch data security for</dd>
-<dt><strong><code>server_address</code></strong> :&ensp;<code>str</code></dt>
-<dd>(Optional) The server address of the ElastiCube.
-Set this to your server ip if this method fails without it set.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>list[Rule]</code></dt>
-<dd>The data security rules for this user</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_data_security_for_user(self, user, *, server_address=None):
-    &#34;&#34;&#34;Returns an array of rules for the user on this cube
-
-    Warning: There may be a Sisense side issue with this endpoint.
-
-    Args:
-        user (User): The user to fetch data security for
-        server_address (str): (Optional) The server address of the ElastiCube.
-            Set this to your server ip if this method fails without it set.
-
-    Returns:
-        list[Rule]: The data security rules for this user
-    &#34;&#34;&#34;
-
-    server_address = server_address if server_address else self.server_address
-    user_id = user.get_id()
-
-    resp_json = self.py_client.connector.rest_call(&#39;get&#39;, &#39;api/elasticubes/{}/{}/{}/datasecurity&#39;
-                                                   .format(server_address, self.get_title(url_encoded=True),
-                                                           user_id))
-    ret_arr = []
-    for rule in resp_json:
-        ret_arr.append(PySenseRule.Rule(self.py_client, rule))
-    return ret_arr</code></pre>
-</details>
-</dd>
 <dt id="PySense.PySenseElasticube.Elasticube.get_metadata"><code class="name flex">
 <span>def <span class="ident">get_metadata</span></span>(<span>self)</span>
 </code></dt>
@@ -1398,42 +1374,6 @@ Set this to your server ip if this method fails without it set.</dd>
             &#34;database&#34;: &#34;&#34;
         }
     return resp_json[0]</code></pre>
-</details>
-</dd>
-<dt id="PySense.PySenseElasticube.Elasticube.get_model"><code class="name flex">
-<span>def <span class="ident">get_model</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the data model object for the cube.</p>
-<p>Linux only</p>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>DataModel</code></dt>
-<dd>The data model for the cube</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_model(self):
-    &#34;&#34;&#34;Returns the data model object for the cube.
-
-    Linux only
-
-    Returns:
-        DataModel: The data model for the cube
-    &#34;&#34;&#34;
-
-    PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;get_model&#39;)
-
-    query_params = {&#39;datamodelId&#39;: self.get_oid(), &#39;type&#39;: &#39;schema-latest&#39;}
-
-    data_model_json = self.py_client.connector.rest_call(
-        &#39;get&#39;, &#39;api/v2/datamodel-exports/schema&#39;, query_params=query_params)
-
-    data_model_json[&#39;oid&#39;] = self.get_oid()
-
-    return PySenseDataModel.DataModel(self.py_client, data_model_json)</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseElasticube.Elasticube.get_oid"><code class="name flex">
@@ -1862,11 +1802,11 @@ Set this to your server ip if this method fails without it set.</dd>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.add_data_security_rule" href="#PySense.PySenseElasticube.Elasticube.add_data_security_rule">add_data_security_rule</a></code></li>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.add_share" href="#PySense.PySenseElasticube.Elasticube.add_share">add_share</a></code></li>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.delete_data_security_rule" href="#PySense.PySenseElasticube.Elasticube.delete_data_security_rule">delete_data_security_rule</a></code></li>
+<li><code><a title="PySense.PySenseElasticube.Elasticube.get_creator" href="#PySense.PySenseElasticube.Elasticube.get_creator">get_creator</a></code></li>
+<li><code><a title="PySense.PySenseElasticube.Elasticube.get_data_model" href="#PySense.PySenseElasticube.Elasticube.get_data_model">get_data_model</a></code></li>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.get_data_security" href="#PySense.PySenseElasticube.Elasticube.get_data_security">get_data_security</a></code></li>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.get_data_security_by_table_column" href="#PySense.PySenseElasticube.Elasticube.get_data_security_by_table_column">get_data_security_by_table_column</a></code></li>
-<li><code><a title="PySense.PySenseElasticube.Elasticube.get_data_security_for_user" href="#PySense.PySenseElasticube.Elasticube.get_data_security_for_user">get_data_security_for_user</a></code></li>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.get_metadata" href="#PySense.PySenseElasticube.Elasticube.get_metadata">get_metadata</a></code></li>
-<li><code><a title="PySense.PySenseElasticube.Elasticube.get_model" href="#PySense.PySenseElasticube.Elasticube.get_model">get_model</a></code></li>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.get_oid" href="#PySense.PySenseElasticube.Elasticube.get_oid">get_oid</a></code></li>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.get_shares_json" href="#PySense.PySenseElasticube.Elasticube.get_shares_json">get_shares_json</a></code></li>
 <li><code><a title="PySense.PySenseElasticube.Elasticube.get_shares_user_group" href="#PySense.PySenseElasticube.Elasticube.get_shares_user_group">get_shares_user_group</a></code></li>

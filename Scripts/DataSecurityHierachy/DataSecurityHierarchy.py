@@ -2,9 +2,12 @@ import csv
 
 from PySense import PySense
 
-py_client = PySense.authenticate_by_file('//Users//nathan.giusti//Documents//PySense//VmConfig.yaml')
+config_file_location = 'path//SampleConfig.yaml'
+elasticube_name = 'Data Hierarchy'
 
-cube = py_client.get_elasticube_by_name('Data Hierarchy')
+py_client = PySense.authenticate_by_file(config_file_location)
+
+cube = py_client.get_elasticube_by_name(elasticube_name)
 
 # Add default security rules for each level
 for i in range(1, 4):

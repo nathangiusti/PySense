@@ -13,8 +13,8 @@ from PySense import PySense
 
 """Configuration"""
 recency_in_days = 30
-report_name = '/Users/DashboardRecencyReport.csv'
-config_file_location = '/Users/Documents/PySense/VmConfig.yaml'
+report_name = 'path//DashboardRecencyReport.csv'
+config_file_location = 'path//SampleConfig.yaml'
 """End Configuration"""
 
 py_client = PySense.authenticate_by_file(config_file_location)

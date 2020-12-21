@@ -141,3 +141,12 @@ class DataModel:
                                            query_params=query_params, path=path, raw=True)
 
         return path
+
+    def get_creator(self):
+        """Get the creator of the data model
+
+        Returns:
+            User: The user who created the data model
+        """
+        return self.py_client.get_user_by_id(self.json['creator']['id'])
+

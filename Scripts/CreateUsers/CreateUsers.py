@@ -29,10 +29,12 @@ import csv
 from PySense import PySense
 from PySense import SisenseRole
 
-py_client = PySense.authenticate_by_file('SampleConfig.yaml')
 
+config_file_location = 'path//SampleConfig.yaml'
 create_group = False
 action_on_found_user = 'Update'
+
+py_client = PySense.authenticate_by_file(config_file_location)
 
 with open('new_users.csv') as csv_file:
     reader = csv.DictReader(csv_file)

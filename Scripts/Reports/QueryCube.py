@@ -12,7 +12,7 @@ cube_name = 'My Cube Name'
 query = "SELECT date, category, sum([Net Revenue]) " \
         "FROM [FACT Revenue] f " \
         "GROUP BY date, category"
-path_to_save = 'C:\\PySense\\MyQuery.csv'
+path_to_save = 'path//MyQuery.csv'
 
 py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
 

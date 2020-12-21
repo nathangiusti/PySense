@@ -40,8 +40,11 @@ To use this script update the following values:
 
 from PySense import PySense
 
-dev_client = PySense.authenticate_by_file('C:\\PySense\\PySenseDev.yaml')
-prod_client = PySense.authenticate_by_file('C:\\PySense\\PySenseProd.yaml')
+dev_config_file_location = 'path//PySenseDev.yaml'
+prod_config_file_location = 'path//PySenseProd.yaml'
+
+dev_client = PySense.authenticate_by_file(dev_config_file_location)
+prod_client = PySense.authenticate_by_file(prod_config_file_location)
 
 data_model_to_migrate = 'Dev Data Model'
 data_model_to_overwrite = 'Prod Data Model'

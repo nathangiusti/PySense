@@ -7,7 +7,7 @@ class PySenseGroupTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('resources//WindowsConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('resources//TestConfig.yaml')
         cls.sample_path = 'tmp//'
         cls.group = cls.py_client.get_groups(name='PySense')[0]
 

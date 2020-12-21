@@ -14,10 +14,11 @@ import time
 from PySense import PySense
 from PySense import PySenseUtils
 
+config_file_location = 'path//SampleConfig.yaml'
 wait_time_seconds = 5
 build_type = 'full'
 
-py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseLinux.yaml')
+py_client = PySense.authenticate_by_file(config_file_location)
 
 data_models = py_client.get_data_models()
 

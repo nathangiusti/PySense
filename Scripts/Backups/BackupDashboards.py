@@ -7,8 +7,8 @@ path_to_backup: A path to your backup directory. End the path with '\\' as seen 
 """
 from PySense import PySense
 
-config_file_location = 'C:\\PySense\\PySenseConfig.yaml'
-path_to_backup = 'C:\\PySense\\Backups\\'
+config_file_location = 'path//SampleConfig.yaml'
+path_to_backup = 'path//Backups//'
 
 py_client = PySense.authenticate_by_file(config_file_location)
 

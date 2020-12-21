@@ -9,14 +9,13 @@ class PySenseElasticubeTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('resources//WindowsConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('resources//TestConfig.yaml')
         cls.elasticube = cls.py_client.get_elasticube_by_name('PySense')
-        cls.linux_client = PySense.authenticate_by_file('resources//LinuxConfig.yaml')
-        cls.linux_elasticube = cls.linux_client.get_elasticube_by_name('PySense')
         cls.tmp = 'tmp//'
 
     def test_getters(self):
         assert self.elasticube.get_title() is not None
+        assert self.elasticube.get_creator() is not None
 
     def test_shares(self):
         shares = self.py_client.get_users(email='pysensetest@sisense.com')
@@ -43,9 +42,6 @@ class PySenseElasticubeTests(unittest.TestCase):
 
         rule = self.elasticube.add_data_security_rule('Dim_Dates', 'BusinessDay', 'numeric', shares=shares, members=["1"])
 
-        # This end point does not seem to work. Tested on swagger and it does not pull correct results
-        # The rule is there, but this endpoint does not pull them. Always returns empty
-        # assert len(self.elasticube.get_datasecurity_for_user(shares[0])) == 2
         assert len(self.elasticube.get_data_security()) == 2
         assert len(self.elasticube.
                    get_data_security_by_table_column('Dim_Dates', 'BusinessDay')) == 2
@@ -56,18 +52,10 @@ class PySenseElasticubeTests(unittest.TestCase):
         assert len(self.elasticube.
                    get_data_security_by_table_column('Dim_Dates', 'BusinessDay')) == 0
 
-    def test_cube_build_start_stop(self):
-        self.elasticube.stop_cube()
-        self.elasticube.start_cube()
-        self.elasticube.restart_cube()
-        self.elasticube.start_build('delta')
-        self.elasticube.stop_build()
-
     def test_run_sql(self):
         path = self.elasticube.run_sql("SELECT * FROM Dim_Dates", 'csv', self.tmp + 'file.csv')
         os.remove(path)
-        path = self.linux_elasticube.run_sql("SELECT * FROM Dim_Dates", 'csv', self.tmp + 'file.csv')
-        os.remove(path)
+
 
     @classmethod
     def tearDownClass(cls):

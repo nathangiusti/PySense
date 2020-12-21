@@ -1,3 +1,4 @@
+import time
 import unittest
 
 from PySense import PySense
@@ -27,6 +28,9 @@ class PySenseDataSetTests(unittest.TestCase):
         self.data_set.set_connection(new_connection)
         new_connection = self.data_set.get_connection()
         assert new_connection.json['timeout'] == 300
+        # We need to rebuild the cube or else we won't be able to add data security rules
+        self.py_client.get_data_models(title='PySense')[0].start_build('schema_changes')
+        time.sleep(10)  # Wait while cube builds
 
 
 if __name__ == '__main__':

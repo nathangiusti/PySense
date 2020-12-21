@@ -11,3 +11,4 @@ venv/*
 **/.DS_Store
 Test/resources/LinuxConfig.yaml
 Test/resources/WindowsConfig.yaml
+Test/resources/TestConfig.yaml

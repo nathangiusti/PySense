@@ -29,10 +29,12 @@ To use this script update the following values:
 
 from PySense import PySense
 
-dev_client = PySense.authenticate_by_file('C:\\PySense\\PySenseDev.yaml')
-prod_client = PySense.authenticate_by_file('C:\\PySense\\PySenseProd.yaml')
-
+dev_config_file_location = 'path//PySenseDev.yaml'
+prod_config_file_location = 'path//PySenseProd.yaml'
 dashboard_ids_to_migrate = ['5ebd430b7ff7cf2cbc2641a7', '5dcd92348fcb4538449c4323']
+
+dev_client = PySense.authenticate_by_file(dev_config_file_location)
+prod_client = PySense.authenticate_by_file(prod_config_file_location)
 
 for dashboard_id in dashboard_ids_to_migrate:
     dev_dashboard = dev_client.get_dashboard_by_id(dashboard_id)

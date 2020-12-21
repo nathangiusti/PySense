@@ -1,15 +1,13 @@
-import os
 import unittest
 
-from PySense import PySense, PySenseDataModel, SisenseRole
+from PySense import PySense, SisenseRole
 
 
 class PySenseTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('resources//WindowsConfig.yaml')
-        cls.py_client_linux = PySense.authenticate_by_file('resources//LinuxConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('resources//TestConfig.yaml')
         cls.resources = 'resources//'
         cls.tmp = 'tmp//'
 
@@ -35,7 +33,8 @@ class PySenseTests(unittest.TestCase):
         dash = self.py_client.import_dashboards(self.resources + 'AnotherDash.dash')
         assert dash is not None
         self.py_client.delete_dashboards(dash)
-        self.py_client.add_dashboards(dash)
+        dash = self.py_client.add_dashboards(dash)
+        self.py_client.delete_dashboards(dash)
 
     def test_create_dashboard(self):
         dashboard = self.py_client.create_dashboard('Test Dashboard')
@@ -66,18 +65,10 @@ class PySenseTests(unittest.TestCase):
         ret = self.py_client.get_elasticube_by_name('PySense')
         assert ret.get_title() == 'PySense'
 
-    def test_get_export_data_model(self):
-        data_model = self.py_client_linux.get_data_models(title='PySense')[0]
-        assert isinstance(data_model, PySenseDataModel.DataModel)
-
-        path = data_model.export_to_smodel(self.tmp + data_model.get_oid() + '.smodel')
-
-        os.remove(path)
-
     def test_branding(self):
-        branding = self.py_client_linux.get_branding()
+        branding = self.py_client.get_branding()
         assert branding is not None
-        self.py_client_linux.set_branding(branding)
+        self.py_client.set_branding(branding)
 
     def test_ui_settings(self):
         settings = self.py_client.get_ui_settings()[0]

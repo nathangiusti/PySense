@@ -47,7 +47,7 @@ class Elasticube:
         else:
             raise PySenseException('Cube {} is not currently running so this action cannot be performed')
 
-    def get_model(self):
+    def get_data_model(self):
         """Returns the data model object for the cube.
 
         Linux only
@@ -227,31 +227,6 @@ class Elasticube:
         resp_json = self.py_client.connector.rest_call('get', 'api/elasticubes/{}/{}/datasecurity/{}/{}'
                                                        .format(server_address, self.get_title(url_encoded=True),
                                                                 table, column))
-        ret_arr = []
-        for rule in resp_json:
-            ret_arr.append(PySenseRule.Rule(self.py_client, rule))
-        return ret_arr
-
-    def get_data_security_for_user(self, user, *, server_address=None):
-        """Returns an array of rules for the user on this cube
-
-        Warning: There may be a Sisense side issue with this endpoint.
-
-        Args:
-            user (User): The user to fetch data security for
-            server_address (str): (Optional) The server address of the ElastiCube.
-                Set this to your server ip if this method fails without it set.
-
-        Returns:
-            list[Rule]: The data security rules for this user
-        """
-
-        server_address = server_address if server_address else self.server_address
-        user_id = user.get_id()
-
-        resp_json = self.py_client.connector.rest_call('get', 'api/elasticubes/{}/{}/{}/datasecurity'
-                                                       .format(server_address, self.get_title(url_encoded=True),
-                                                               user_id))
         ret_arr = []
         for rule in resp_json:
             ret_arr.append(PySenseRule.Rule(self.py_client, rule))
@@ -481,3 +456,11 @@ class Elasticube:
             elif share['type'] == 'group':
                 ret_arr.append(self.py_client.get_group_by_id(share['partyId']))
         return ret_arr
+
+    def get_creator(self):
+        """Get the creator of the elasticube
+
+        Returns:
+            User: The user who created the elasticube
+        """
+        return self.py_client.get_user_by_id(self.json['creator'])

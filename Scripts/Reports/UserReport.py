@@ -9,9 +9,10 @@ import csv
 from datetime import datetime
 from PySense import PySense
 
-py_client = PySense.authenticate_by_file('C:\\PySense\\PySenseConfig.yaml')
+config_file_location = 'path//SampleConfig.yaml'
+report_name = 'path//UserReport.csv'
 
-report_name = 'UserReport.csv'
+py_client = PySense.authenticate_by_file(config_file_location)
 users = py_client.get_users()
 
 with open(report_name, 'w', newline='') as csv_file:

@@ -13,9 +13,9 @@ path_to_backup: A path to your backup directory. Only needed if backing up dashb
 """
 from PySense import PySense
 
-config_file_location = 'SampleConfig.yaml'
-path_to_backup = '/Sisense/Dashboard/Backups/'
-dash_file = '/Path/DashToDelete.txt'
+config_file_location = 'path//SampleConfig.yaml'
+path_to_backup = 'path//Backups//'
+dash_file = 'path//Backups//DashToDelete.txt'
 backup_dashboards = True
 
 py_client = PySense.authenticate_by_file(config_file_location)

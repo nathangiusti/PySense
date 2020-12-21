@@ -7,16 +7,16 @@ class PySensePluginTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.py_client = PySense.authenticate_by_file('resources//WindowsConfig.yaml')
+        cls.py_client = PySense.authenticate_by_file('resources//TestConfig.yaml')
         cls.plugin = cls.py_client.get_plugins(search='jumpToDashboard')[0]
 
     def test_enable_disable(self):
-        assert self.plugin.get_is_enabled() is True
-        self.plugin.set_plugin_enabled(False)
+        enabled = self.plugin.get_is_enabled()
+        self.plugin.set_plugin_enabled(not enabled)
         self.plugin = self.py_client.get_plugins(search='jumpToDashboard')[0]
-        assert self.plugin.get_is_enabled() is False
-        self.plugin.set_plugin_enabled(True)
-        assert self.plugin.get_is_enabled() is True
+        assert self.plugin.get_is_enabled() == (not enabled)
+        self.plugin.set_plugin_enabled(enabled)
+        assert self.plugin.get_is_enabled() == enabled
 
     def test_getters(self):
         assert self.plugin.get_name() is not None

@@ -114,7 +114,7 @@ class DataModelMixIn:
                 ret_arr.append(PySenseDataModel.DataModel(self, data_model))
             return ret_arr
 
-    def delete_data_model(self, data_models):
+    def delete_data_models(self, data_models):
         &#34;&#34;&#34;Deletes the given data models
 
         Args:
@@ -292,7 +292,7 @@ class DataModelMixIn:
                 ret_arr.append(PySenseDataModel.DataModel(self, data_model))
             return ret_arr
 
-    def delete_data_model(self, data_models):
+    def delete_data_models(self, data_models):
         &#34;&#34;&#34;Deletes the given data models
 
         Args:
@@ -437,8 +437,8 @@ add_data_model(new_data_model, target_data_model=old_data_model)</p>
     return PySenseDataModel.DataModel(self, data_model_json)</code></pre>
 </details>
 </dd>
-<dt id="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.delete_data_model"><code class="name flex">
-<span>def <span class="ident">delete_data_model</span></span>(<span>self, data_models)</span>
+<dt id="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.delete_data_models"><code class="name flex">
+<span>def <span class="ident">delete_data_models</span></span>(<span>self, data_models)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Deletes the given data models</p>
@@ -451,7 +451,7 @@ add_data_model(new_data_model, target_data_model=old_data_model)</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def delete_data_model(self, data_models):
+<pre><code class="python">def delete_data_models(self, data_models):
     &#34;&#34;&#34;Deletes the given data models
 
     Args:
@@ -688,7 +688,7 @@ If it does, try the file from UI to verify it is a PySense issue or a Sisense is
 <h4><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn" href="#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn">DataModelMixIn</a></code></h4>
 <ul class="">
 <li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.add_data_model" href="#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.add_data_model">add_data_model</a></code></li>
-<li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.delete_data_model" href="#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.delete_data_model">delete_data_model</a></code></li>
+<li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.delete_data_models" href="#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.delete_data_models">delete_data_models</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.get_data_models" href="#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.get_data_models">get_data_models</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.import_schema" href="#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.import_schema">import_schema</a></code></li>
 <li><code><a title="PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.import_sdata" href="#PySense.PySenseMixIns.DataModelMixIn.DataModelMixIn.import_sdata">import_sdata</a></code></li>

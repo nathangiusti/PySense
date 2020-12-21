@@ -86,7 +86,7 @@ class DataModelMixIn:
                 ret_arr.append(PySenseDataModel.DataModel(self, data_model))
             return ret_arr
 
-    def delete_data_model(self, data_models):
+    def delete_data_models(self, data_models):
         """Deletes the given data models
 
         Args:
