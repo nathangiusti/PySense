@@ -107,7 +107,7 @@ class PySense(BrandingMixIn.BrandingMixIn, ConnectionMixIn.ConnectionMixIn, Dash
         if param_dict is None:
             self.param_dict = {}
         else:
-            self.param_dict = {}
+            self.param_dict = param_dict
 
         default_dict = {
             'CUBE_CACHE_TIMEOUT_SECONDS': 60
