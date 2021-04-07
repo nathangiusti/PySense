@@ -1,3 +1,18 @@
+**V 1.0.2 Release Notes**
+
+- Breaking changes
+    - None
+
+- Additions
+    - None
+        
+- Fixes
+    - Additional parameters now handled correctly
+    
+- Known Issues
+    - REST API sometimes becomes unresponsive on Linux builds
+    - REST API sometimes fails uploading sdata files
+
 **V 1.0.1 Release Notes**
 
 - Breaking changes

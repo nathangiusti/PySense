@@ -35,23 +35,16 @@ Install PySense with pip:
 
 [Tutorial Videos](https://www.youtube.com/playlist?list=PL0xO3VH5OF2JD2KiZs_41zvKvPyebg6MW)
 
-**V 1.0.1 Release Notes**
+**V 1.0.2 Release Notes**
 
 - Breaking changes
-    - Elasticube.get_model -> Elasticube.get_data_model
-    - Elasticube.get_data_security_for_user removed as the API does not appear to work
-    - PySense.delete_data_model now PySense.delete_data_models 
+    - None
 
 - Additions
-    - Elasticube.get_creator returns the user who created the elasticube
-    - DataModel.get_creator returns the user who created the data model
+    - None
         
 - Fixes
-    - Testing is now more platform agnostic
-        - Non platform specific tests will run against TestConfig
-        - Platform specific tests will only run if specified and with a targeted config file
-        - More details in updated dev_readme.md
-    - Tests now more resilient against being cancelled before completed
+    - Additional parameters now handled correctly
     
 - Known Issues
     - REST API sometimes becomes unresponsive on Linux builds
