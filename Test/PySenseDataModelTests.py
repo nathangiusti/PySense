@@ -23,12 +23,12 @@ class PySenseDataModelTests(unittest.TestCase):
         new_data_model = self.py_client.import_schema(self.resources + 'AnotherModel.smodel')
         assert new_data_model is not None
         new_data_model = self.py_client.import_schema(self.resources + 'AnotherModel.smodel',
-                                                  target_data_model=new_data_model)
+                                                  target_data_model_id=new_data_model.get_oid())
         path = new_data_model.export_to_smodel(self.tmp + 'Temp.smodel')
         os.remove(path)
         path = new_data_model.export_to_sdata(self.tmp + 'Temp.sdata')
         # This method often fails due to API limitations
-        # new_data_model = self.py_client.import_sdata(self.tmp + 'Temp.sdata', target_data_model=self.data_model)
+        # new_data_model = self.py_client.import_sdata(self.tmp + 'Temp.sdata', target_data_model_id=self.data_model.get_oid())
         os.remove(path)
 
         self.py_client.delete_data_models(new_data_model)

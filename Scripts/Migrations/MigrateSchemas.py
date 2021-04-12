@@ -56,7 +56,7 @@ dev_data_model = dev_client.get_data_models(title=data_model_to_migrate)
 
 if overwrite:
     prod_data_model = prod_client.get_data_models(title=data_model_to_overwrite)
-    prod_client.add_data_model(dev_data_model, target_data_model=prod_data_model)
+    prod_client.add_data_model(dev_data_model, target_data_model_id=prod_data_model.get_oid())
 else:
     title = new_title if new_title is not None else None
     prod_client.add_data_model(dev_data_model, title=title)

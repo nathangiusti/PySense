@@ -3,7 +3,7 @@ from PySense import PySenseDataModel, PySenseUtils, SisenseVersion
 
 class DataModelMixIn:
 
-    def add_data_model(self, data_model, *, title=None, target_data_model=None):
+    def add_data_model(self, data_model, *, title=None, target_data_model_id=None):
         """Adds a new data model to the instance.
 
         Sisense does not support this in Windows
@@ -28,8 +28,6 @@ class DataModelMixIn:
         """
 
         PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, 'add_data_model')
-
-        target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
         query_params = {'title': title, 'datamodelId': target_data_model_id}
         data_model_json = self.connector.rest_call('post', 'api/v2/datamodel-imports/schema',
@@ -97,7 +95,7 @@ class DataModelMixIn:
         for data_model in PySenseUtils.make_iterable(data_models):
             self.connector.rest_call('delete', 'api/v2/datamodels/{}'.format(data_model.get_oid()))
 
-    def import_schema(self, path, *, title=None, target_data_model=None):
+    def import_schema(self, path, *, title=None, target_data_model_id=None):
         """Import schema file from path
 
         Sisense does not support this in Windows
@@ -119,15 +117,13 @@ class DataModelMixIn:
         """
         PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, 'import_schema')
 
-        target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
-
         query_params = {'title': title, 'datamodelId': target_data_model_id}
         data_model_json = self.connector.rest_call('post', 'api/v2/datamodel-imports/schema',
                                                    query_params=query_params, json_payload=PySenseUtils.read_json(path))
 
         return PySenseDataModel.DataModel(self, data_model_json)
 
-    def import_sdata(self, path, *, title=None, target_data_model=None):
+    def import_sdata(self, path, *, title=None, target_data_model_id=None):
         """Import sdata file from path
 
         Linux only
@@ -151,8 +147,6 @@ class DataModelMixIn:
             target_data_model: (Optional) The data model to update.
         """
         PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, 'import_schema')
-
-        target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
 
         query_params = {'title': title, 'datamodelId': target_data_model_id}
         data_model_json = self.connector.rest_call('post', 'api/v2/datamodel-imports/stream/full',
