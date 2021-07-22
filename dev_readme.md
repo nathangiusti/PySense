@@ -23,6 +23,10 @@
       2. Documentation is created from function comments (so comment your functions)
       3. Regenerate it with pdoc after before every release
       4. Html is viewed through link in readme
+      5. Sample pdoc run:
+    
+    "venv/Scripts/pdoc3.exe" --html --output-dir Documentation PySense
+
    2. PySense Tutorial: Contains assets relating to PySense training series
    3. PySense: The actual code, which we will cover below
    4. Scripts: 
