@@ -443,10 +443,17 @@ class Dashboard:
         else:
             return None
 
-    def publish(self):
-        """Publishes the dashboard"""
+    def publish(self, force=False):
+        """Publishes the dashboard
 
-        self.py_client.connector.rest_call('post', 'api/v1/dashboards/{}/publish'.format(self.get_oid()))
+        Args:
+            force: bool, When set to 'true' the published dashboard will override the recipient's
+                         local copy immediately.
+        """
+        query_params = {'force': 'true' if force else 'false'}
+
+        self.py_client.connector.rest_call('post', 'api/v1/dashboards/{}/publish'.format(self.get_oid()),
+                                           query_params=query_params)
 
     def get_created_date(self):
         """Returns the creation datetime of the dashboard
