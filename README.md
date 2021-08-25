@@ -1,4 +1,4 @@
-** Note from the Author **
+**Note from the Author**
 
 I no longer work for Sisense and thus I do not have access to a Sisense instance in order to test or further develop this code. 
 
