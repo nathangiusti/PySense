@@ -35,13 +35,13 @@ Install PySense with pip:
 
 [Tutorial Videos](https://www.youtube.com/playlist?list=PL0xO3VH5OF2JD2KiZs_41zvKvPyebg6MW)
 
-**V 1.0.3 Release Notes**
+**V 1.0.4 Release Notes**
 
 - Breaking changes
     - None
 
 - Additions
-    - Force dashboard republish option
+    - Fixed issue with removing duplicates when adding shares to a dashboard
         
 - Fixes
     - None
