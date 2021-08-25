@@ -1,3 +1,21 @@
+** Note from the Author **
+
+I no longer work for Sisense and thus I do not have access to a Sisense instance in order to test or further develop this code. 
+
+If you wish to update PySense you can open a Pull Request which I will review and merge as time allows. 
+
+If you spot errors in the code which can be fixed easily, you may open an issue and I will attempt to fix it as time allows. 
+
+As I do not have a Sisense instance I cannot guarantee any functionality nor can I effectivly troubleshoot any issues which arise. 
+
+I am invested in maintaining this to the best of my ability for those who have used this. 
+
+You are free to fork and modify the code in your own repo as needed per the terms of GNU General Public License v3.0
+
+Cheers, 
+
+Nathan Giusti
+
 **Overview**
 
 PySense is the fastest, easiest way to manage and automate your Sisense deployment. 
