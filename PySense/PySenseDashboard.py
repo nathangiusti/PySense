@@ -135,7 +135,7 @@ class Dashboard:
         for share in PySenseUtils.make_iterable(shares):
             share_id = share.get_id()
             for curr_share in curr_shares['sharesTo']:
-                if 'shareId' == curr_share['shareId']:
+                if share_id == curr_share['shareId']:
                     share_id = None
 
             if share_id is not None:

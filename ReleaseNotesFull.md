@@ -1,3 +1,18 @@
+**V 1.0.4 Release Notes**
+
+- Breaking changes
+    - None
+
+- Additions
+    - Fixed issue with removing duplicates when adding shares to a dashboard
+        
+- Fixes
+    - None
+    
+- Known Issues
+    - REST API sometimes becomes unresponsive on Linux builds
+    - REST API sometimes fails uploading sdata files
+  
 **V 1.0.3 Release Notes**
 
 - Breaking changes
