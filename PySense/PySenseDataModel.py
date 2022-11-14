@@ -103,10 +103,10 @@ class DataModel:
         Only supported on Linux
 
         Args:
-            path (str): Path to save location of the smodel file.
+            path (str): (Optional) Path to save location of the smodel file.
 
         Returns:
-            str: The path of the created file
+            The path of the created file or the JSON response if path is None
         """
 
         PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, 'export_to_smodel')
@@ -115,10 +115,12 @@ class DataModel:
             'datamodelId': self.get_oid(),
             'type': 'schema-latest'
         }
-        self.py_client.connector.rest_call('get', '/api/v2/datamodel-exports/schema',
+        result = self.py_client.connector.rest_call('get', '/api/v2/datamodel-exports/schema',
                                            query_params=query_params, path=path)
-
-        return path
+        if path is None:
+            return result
+        else:
+            return path
 
     def export_to_sdata(self, path):
         """Download data model as an sdata file.
@@ -126,10 +128,10 @@ class DataModel:
         Only supported on Linux
 
         Args:
-            path (str): Path to save location of the sdata file.
+            path (str): (Optional) Path to save location of the sdata file.
 
         Returns:
-            str: The path of the created file
+            The path of the created file or the JSON response if path is None
         """
 
         PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, 'export_to_sdata')
@@ -137,10 +139,13 @@ class DataModel:
         query_params = {
             'datamodelId': self.get_oid()
         }
-        self.py_client.connector.rest_call('get', '/api/v2/datamodel-exports/stream/full',
+        result = self.py_client.connector.rest_call('get', '/api/v2/datamodel-exports/stream/full',
                                            query_params=query_params, path=path, raw=True)
 
-        return path
+        if path is None:
+            return result
+        else:
+            return path
 
     def get_creator(self):
         """Get the creator of the data model
