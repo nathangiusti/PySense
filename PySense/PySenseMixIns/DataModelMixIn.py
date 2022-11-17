@@ -97,6 +97,36 @@ class DataModelMixIn:
         for data_model in PySenseUtils.make_iterable(data_models):
             self.connector.rest_call('delete', 'api/v2/datamodels/{}'.format(data_model.get_oid()))
 
+    def import_schema_from_dict(self, schema, *, title=None, target_data_model=None):
+        """Import schema file from a dictionary
+
+        Sisense does not support this in Windows
+
+        Can be used to update an existing data model by adding it to target data model.
+
+        To add a new model with a new title
+        import_schema_from_dict(schema, title='New Title')
+
+        To update an existing model
+        import_schema_from_dict(schema, target_data_model=old_data_model)
+
+        If updating an existing data model, no modifications to title will happen.
+
+        Args:
+            schema (dict): The schema smodel as a dict
+            title: (Optional) Title to give the data model
+            target_data_model: (Optional) The data model to update.
+        """
+        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, 'import_schema')
+
+        target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
+
+        query_params = {'title': title, 'datamodelId': target_data_model_id}
+        data_model_json = self.connector.rest_call('post', 'api/v2/datamodel-imports/schema',
+                                                   query_params=query_params, json_payload=schema)
+
+        return PySenseDataModel.DataModel(self, data_model_json)
+
     def import_schema(self, path, *, title=None, target_data_model=None):
         """Import schema file from path
 
@@ -117,15 +147,7 @@ class DataModelMixIn:
             title: (Optional) Title to give the data model
             target_data_model: (Optional) The data model to update.
         """
-        PySenseUtils.validate_version(self, SisenseVersion.Version.LINUX, 'import_schema')
-
-        target_data_model_id = target_data_model.get_oid() if target_data_model is not None else None
-
-        query_params = {'title': title, 'datamodelId': target_data_model_id}
-        data_model_json = self.connector.rest_call('post', 'api/v2/datamodel-imports/schema',
-                                                   query_params=query_params, json_payload=PySenseUtils.read_json(path))
-
-        return PySenseDataModel.DataModel(self, data_model_json)
+        return self.import_schema_from_dict(schema=PySenseUtils.read_json(path), title=title, target_data_model=target_data_model)
 
     def import_sdata(self, path, *, title=None, target_data_model=None):
         """Import sdata file from path
