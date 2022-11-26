@@ -1,3 +1,19 @@
+**V 1.0.5 Release Notes**
+
+- Breaking changes
+    - None
+
+- Additions
+    - Datamodel exports can now return as a string. Before these changes you could only save the model to a file.
+    - Split up the import_schema function from DataModelMixIn to provide functionality to upload a schema from dictionary.
+        
+- Fixes
+    - None
+    
+- Known Issues
+    - REST API sometimes becomes unresponsive on Linux builds
+    - REST API sometimes fails uploading sdata files
+
 **V 1.0.4 Release Notes**
 
 - Breaking changes

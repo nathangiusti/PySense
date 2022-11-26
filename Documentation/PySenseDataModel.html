@@ -131,10 +131,10 @@ class DataModel:
         Only supported on Linux
 
         Args:
-            path (str): Path to save location of the smodel file.
+            path (str): (Optional) Path to save location of the smodel file.
 
         Returns:
-            str: The path of the created file
+            The path of the created file or the JSON response if path is None
         &#34;&#34;&#34;
 
         PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;export_to_smodel&#39;)
@@ -143,10 +143,12 @@ class DataModel:
             &#39;datamodelId&#39;: self.get_oid(),
             &#39;type&#39;: &#39;schema-latest&#39;
         }
-        self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
+        result = self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
                                            query_params=query_params, path=path)
-
-        return path
+        if path is None:
+            return result
+        else:
+            return path
 
     def export_to_sdata(self, path):
         &#34;&#34;&#34;Download data model as an sdata file.
@@ -154,10 +156,10 @@ class DataModel:
         Only supported on Linux
 
         Args:
-            path (str): Path to save location of the sdata file.
+            path (str): (Optional) Path to save location of the sdata file.
 
         Returns:
-            str: The path of the created file
+            The path of the created file or the JSON response if path is None
         &#34;&#34;&#34;
 
         PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;export_to_sdata&#39;)
@@ -165,10 +167,13 @@ class DataModel:
         query_params = {
             &#39;datamodelId&#39;: self.get_oid()
         }
-        self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
+        result = self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
                                            query_params=query_params, path=path, raw=True)
 
-        return path
+        if path is None:
+            return result
+        else:
+            return path
 
     def get_creator(self):
         &#34;&#34;&#34;Get the creator of the data model
@@ -316,10 +321,10 @@ Each data model has 0 to many data sets which define the tables in the data mode
         Only supported on Linux
 
         Args:
-            path (str): Path to save location of the smodel file.
+            path (str): (Optional) Path to save location of the smodel file.
 
         Returns:
-            str: The path of the created file
+            The path of the created file or the JSON response if path is None
         &#34;&#34;&#34;
 
         PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;export_to_smodel&#39;)
@@ -328,10 +333,12 @@ Each data model has 0 to many data sets which define the tables in the data mode
             &#39;datamodelId&#39;: self.get_oid(),
             &#39;type&#39;: &#39;schema-latest&#39;
         }
-        self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
+        result = self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
                                            query_params=query_params, path=path)
-
-        return path
+        if path is None:
+            return result
+        else:
+            return path
 
     def export_to_sdata(self, path):
         &#34;&#34;&#34;Download data model as an sdata file.
@@ -339,10 +346,10 @@ Each data model has 0 to many data sets which define the tables in the data mode
         Only supported on Linux
 
         Args:
-            path (str): Path to save location of the sdata file.
+            path (str): (Optional) Path to save location of the sdata file.
 
         Returns:
-            str: The path of the created file
+            The path of the created file or the JSON response if path is None
         &#34;&#34;&#34;
 
         PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;export_to_sdata&#39;)
@@ -350,10 +357,13 @@ Each data model has 0 to many data sets which define the tables in the data mode
         query_params = {
             &#39;datamodelId&#39;: self.get_oid()
         }
-        self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
+        result = self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
                                            query_params=query_params, path=path, raw=True)
 
-        return path
+        if path is None:
+            return result
+        else:
+            return path
 
     def get_creator(self):
         &#34;&#34;&#34;Get the creator of the data model
@@ -399,13 +409,10 @@ Each data model has 0 to many data sets which define the tables in the data mode
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>path</code></strong> :&ensp;<code>str</code></dt>
-<dd>Path to save location of the sdata file.</dd>
+<dd>(Optional) Path to save location of the sdata file.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>str</code></dt>
-<dd>The path of the created file</dd>
-</dl></div>
+<p>The path of the created file or the JSON response if path is None</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -416,10 +423,10 @@ Each data model has 0 to many data sets which define the tables in the data mode
     Only supported on Linux
 
     Args:
-        path (str): Path to save location of the sdata file.
+        path (str): (Optional) Path to save location of the sdata file.
 
     Returns:
-        str: The path of the created file
+        The path of the created file or the JSON response if path is None
     &#34;&#34;&#34;
 
     PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;export_to_sdata&#39;)
@@ -427,10 +434,13 @@ Each data model has 0 to many data sets which define the tables in the data mode
     query_params = {
         &#39;datamodelId&#39;: self.get_oid()
     }
-    self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
+    result = self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/stream/full&#39;,
                                        query_params=query_params, path=path, raw=True)
 
-    return path</code></pre>
+    if path is None:
+        return result
+    else:
+        return path</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataModel.DataModel.export_to_smodel"><code class="name flex">
@@ -442,13 +452,10 @@ Each data model has 0 to many data sets which define the tables in the data mode
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>path</code></strong> :&ensp;<code>str</code></dt>
-<dd>Path to save location of the smodel file.</dd>
+<dd>(Optional) Path to save location of the smodel file.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>str</code></dt>
-<dd>The path of the created file</dd>
-</dl></div>
+<p>The path of the created file or the JSON response if path is None</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -459,10 +466,10 @@ Each data model has 0 to many data sets which define the tables in the data mode
     Only supported on Linux
 
     Args:
-        path (str): Path to save location of the smodel file.
+        path (str): (Optional) Path to save location of the smodel file.
 
     Returns:
-        str: The path of the created file
+        The path of the created file or the JSON response if path is None
     &#34;&#34;&#34;
 
     PySenseUtils.validate_version(self.py_client, SisenseVersion.Version.LINUX, &#39;export_to_smodel&#39;)
@@ -471,10 +478,12 @@ Each data model has 0 to many data sets which define the tables in the data mode
         &#39;datamodelId&#39;: self.get_oid(),
         &#39;type&#39;: &#39;schema-latest&#39;
     }
-    self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
+    result = self.py_client.connector.rest_call(&#39;get&#39;, &#39;/api/v2/datamodel-exports/schema&#39;,
                                        query_params=query_params, path=path)
-
-    return path</code></pre>
+    if path is None:
+        return result
+    else:
+        return path</code></pre>
 </details>
 </dd>
 <dt id="PySense.PySenseDataModel.DataModel.get_creator"><code class="name flex">
