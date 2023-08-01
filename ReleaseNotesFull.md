@@ -1,3 +1,18 @@
+**V 1.0.6 Release Notes**
+
+- Breaking changes
+    - None
+
+- Additions
+    - None
+  
+- Fixes
+    - Resolve issue with id vs oid in User.update()
+    
+- Known Issues
+    - REST API sometimes becomes unresponsive on Linux builds
+    - REST API sometimes fails uploading sdata files
+    
 **V 1.0.5 Release Notes**
 
 - Breaking changes

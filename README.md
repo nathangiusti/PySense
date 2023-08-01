@@ -53,17 +53,16 @@ Install PySense with pip:
 
 [Tutorial Videos](https://www.youtube.com/playlist?list=PL0xO3VH5OF2JD2KiZs_41zvKvPyebg6MW)
 
-**V 1.0.5 Release Notes**
+**V 1.0.6 Release Notes**
 
 - Breaking changes
     - None
 
 - Additions
-    - Datamodel exports can now return as a string. Before these changes you could only save the model to a file.
-    - Split up the import_schema function from DataModelMixIn to provide functionality to upload a schema from dictionary.
-        
-- Fixes
     - None
+  
+- Fixes
+    - Resolve issue with id vs oid in User.update()
     
 - Known Issues
     - REST API sometimes becomes unresponsive on Linux builds
