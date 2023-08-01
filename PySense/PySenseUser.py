@@ -117,7 +117,7 @@ class User:
         user_groups = groups if groups is not None else self.get_groups()
         group_arr = []
         for group in PySenseUtils.make_iterable(user_groups):
-            group_arr.append(group.get_oid())
+            group_arr.append(group.get_id())
 
         user_json = {
                 'email': email if email else self.get_email(),
