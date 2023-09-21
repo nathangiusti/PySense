@@ -53,7 +53,7 @@ Install PySense with pip:
 
 [Tutorial Videos](https://www.youtube.com/playlist?list=PL0xO3VH5OF2JD2KiZs_41zvKvPyebg6MW)
 
-**V 1.0.6 Release Notes**
+**V 1.0.7 Release Notes**
 
 - Breaking changes
     - None
@@ -62,7 +62,7 @@ Install PySense with pip:
     - None
   
 - Fixes
-    - Resolve issue with id vs oid in User.update()
+    - Updated format_host to return https scheme. Before http would be redirected to https causing API request method to change to GET. This caused errors for POST, PUT, etc.
     
 - Known Issues
     - REST API sometimes becomes unresponsive on Linux builds
