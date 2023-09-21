@@ -1,3 +1,19 @@
+**V 1.0.7 Release Notes**
+
+- Breaking changes
+    - None
+
+- Additions
+    - None
+  
+- Fixes
+    - Updated format_host to return https scheme. Before http would be redirected to https causing API request method to change to GET. This caused errors for POST, PUT, etc.
+    
+- Known Issues
+    - REST API sometimes becomes unresponsive on Linux builds
+    - REST API sometimes fails uploading sdata files
+    
+
 **V 1.0.6 Release Notes**
 
 - Breaking changes

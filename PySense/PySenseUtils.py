@@ -2,14 +2,22 @@ import json
 
 from collections.abc import Iterable
 from datetime import datetime
+from urllib.parse import urlparse, urlunparse
 
 from PySense import PySenseException
 
 
 def format_host(host):
     """Formats host for PySense"""
-    if not host.startswith('http'):
-        host = 'http://' + host
+    parsed_host = urlparse(host)
+
+    # Add https string if no scheme provided. 
+    # Otherwise, host parsed as path not netloc.
+    if parsed_host.scheme == '':
+        parsed_host = urlparse('https://' + host)
+        host = urlunparse(parsed_host)
+    if parsed_host.scheme != 'https':
+        host = host.replace(parsed_host.scheme, 'https')
     if host.endswith('/'):
         host = host[:-1]
     return host
