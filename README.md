@@ -1,3 +1,8 @@
+** Update 2025-09-16 **
+
+Sisense now has their own version of PySense that is being actively maintained. Please use that library. 
+https://github.com/sisense/pysisense/.
+
 **Note from the Author**
 
 I no longer work for Sisense and thus I do not have access to a Sisense instance in order to test or further develop this code. 
